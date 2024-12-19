@@ -1,0 +1,34 @@
+[package]
+authors = []
+description = ""
+edition = "2021"
+license = ""
+name = "hooks"
+repository = ""
+
+
+[dependencies]
+chrono = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+strum = { workspace = true }
+strum_macros = { workspace = true }
+uuid = { workspace = true }
+
+dioxus = { version = "0.6.1", features = ["fullstack", "router"] }
+dioxus-free-icons = { version = "0.9.0", features = ["font-awesome-solid", "ionicons"] }
+dioxus-logger = "0.6.1"
+dioxus-sdk = { git = "https://github.com/DioxusLabs/sdk.git", features = [] }
+
+futures = "0.3.31"
+tailwind_fuse = "0.3.1"
+
+tracing-wasm = { version = "0.2.1", optional = true }
+wasm-bindgen-futures = { version = "0.4.49", optional = true }
+web-sys = { version = "0.3.76", features = ["Clipboard", "Navigator", "Window"], optional = true }
+
+
+[features]
+default = []
+desktop = ["dioxus/desktop"]
+web = ["chrono/wasmbind", "dep:tracing-wasm", "dep:wasm-bindgen-futures", "dep:web-sys", "dioxus/web", "uuid/js"]
