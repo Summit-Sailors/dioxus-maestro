@@ -3,7 +3,7 @@ authors = []
 description = ""
 edition = "2021"
 license = ""
-name = "ui"
+name = "maestro-ui"
 repository = ""
 
 

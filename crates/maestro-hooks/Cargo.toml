@@ -3,7 +3,7 @@ authors = []
 description = ""
 edition = "2021"
 license = ""
-name = "hooks"
+name = "maestro-hooks"
 repository = ""
 
 
