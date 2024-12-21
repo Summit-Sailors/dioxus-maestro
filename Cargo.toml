@@ -40,6 +40,7 @@ inherits = "dev"
 
 [workspace.dependencies]
 maestro-hooks = { path = "crates/maestro-hooks" }
+maestro-toast = { path = "crates/maestro-toast" }
 maestro-ui = { path = "crates/maestro-ui" }
 
 bon = "3.3.0"
