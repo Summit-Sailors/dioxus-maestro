@@ -1,9 +1,9 @@
 use std::fmt::Display;
 
 #[derive(Debug, Clone)]
-pub struct ID(usize);
+pub struct ToastID(usize);
 
-impl ID {
+impl ToastID {
 	pub fn new() -> Self {
 		Self(100000)
 	}
@@ -20,7 +20,13 @@ impl ID {
 	}
 }
 
-impl Display for ID {
+impl Default for ToastID {
+	fn default() -> Self {
+		Self::new()
+	}
+}
+
+impl Display for ToastID {
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
 		f.write_fmt(format_args!("{}", self.0))
 	}
