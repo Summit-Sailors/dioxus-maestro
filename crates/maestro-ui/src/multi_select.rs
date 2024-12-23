@@ -1,9 +1,11 @@
-use dioxus::prelude::*;
-use dioxus_free_icons::{
-	icons::io_icons::{IoCheckmarkOutline, IoChevronDownOutline},
-	Icon,
+use {
+	dioxus::prelude::*,
+	dioxus_free_icons::{
+		icons::io_icons::{IoCheckmarkOutline, IoChevronDownOutline},
+		Icon,
+	},
+	tailwind_fuse::tw_join,
 };
-use tailwind_fuse::tw_join;
 
 #[component]
 pub fn MultiSelect<T: std::clone::Clone + std::cmp::PartialEq + std::fmt::Display + 'static>(
@@ -43,8 +45,8 @@ pub fn MultiSelect<T: std::clone::Clone + std::cmp::PartialEq + std::fmt::Displa
 						icon: IoChevronDownOutline,
 						class: tw_join!(
 								"absolute top-0 bottom-0 my-auto right-3 transition-all ease-linear fill-none",
-								(is_opened()).then_some("rotate-180")
-						)
+								is_opened().then_some("rotate-180")
+						),
 					}
 				}
 				div {
@@ -69,7 +71,7 @@ pub fn MultiSelect<T: std::clone::Clone + std::cmp::PartialEq + std::fmt::Displa
 								class: tw_join!(
 										"fill-none ml-auto", if current_value.contains(& value) { "opacity-100" } else {
 										"opacity-0" }
-								)
+								),
 							}
 						}
 					}

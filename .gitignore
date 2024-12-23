@@ -2,7 +2,7 @@
 *-lock.yaml
 
 *.env*
-
+!**/.env.example
 # Mac stuff:
 .DS_Store
 

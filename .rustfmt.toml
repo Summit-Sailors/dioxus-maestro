@@ -1,6 +1,6 @@
 # taplo: schema="https://json.schemastore.org/rustfmt.json"
 
-fn_args_layout = "Compressed"
+fn_args_layout = "Tall"
 group_imports = "StdExternalCrate"
 merge_imports = true
 
@@ -20,7 +20,7 @@ wrap_comments = true
 
 # Misc
 format_code_in_doc_comments = true
-# inline_attribute_width = 0
+inline_attribute_width = 0
 match_arm_blocks = false
 match_block_trailing_comma = true
 newline_style = "Unix"
