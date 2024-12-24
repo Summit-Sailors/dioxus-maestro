@@ -65,31 +65,9 @@ pub struct SearchRequest {
 	#[serde(skip_serializing_if = "Option::is_none")]
 	pub location: Option<String>,
 	#[serde(skip_serializing_if = "Option::is_none")]
-	pub uule: Option<String>,
+	pub device: Option<Device>,
 	#[serde(skip_serializing_if = "Option::is_none")]
-	pub ludocid: Option<String>,
-	#[serde(skip_serializing_if = "Option::is_none")]
-	pub lsig: Option<String>,
-	#[serde(skip_serializing_if = "Option::is_none")]
-	pub kgmid: Option<String>,
-	#[serde(skip_serializing_if = "Option::is_none")]
-	pub si: Option<String>,
-	#[serde(skip_serializing_if = "Option::is_none")]
-	pub ibp: Option<String>,
-	#[serde(skip_serializing_if = "Option::is_none")]
-	pub uds: Option<String>,
-	#[serde(skip_serializing_if = "Option::is_none")]
-	pub google_domain: Option<String>,
-	#[serde(skip_serializing_if = "Option::is_none")]
-	pub gl: Option<String>,
-	#[serde(skip_serializing_if = "Option::is_none")]
-	pub hl: Option<String>,
-	#[serde(skip_serializing_if = "Option::is_none")]
-	pub cr: Option<String>,
-	#[serde(skip_serializing_if = "Option::is_none")]
-	pub lr: Option<String>,
-	#[serde(skip_serializing_if = "Option::is_none")]
-	pub tbs: Option<String>,
+	pub tbs: Option<ETimeFrame>,
 	#[serde(skip_serializing_if = "Option::is_none")]
 	pub tbm: Option<SearchType>,
 	#[serde(skip_serializing_if = "Option::is_none")]
@@ -103,64 +81,15 @@ pub struct SearchRequest {
 	#[serde(skip_serializing_if = "Option::is_none")]
 	pub filter: Option<u8>,
 	#[serde(skip_serializing_if = "Option::is_none")]
-	pub device: Option<Device>,
-	#[serde(skip_serializing_if = "Option::is_none")]
-	pub no_cache: Option<bool>,
-	#[serde(skip_serializing_if = "Option::is_none")]
-	#[serde(rename = "async")]
-	pub is_async: Option<bool>,
-	#[serde(skip_serializing_if = "Option::is_none")]
-	pub zero_trace: Option<bool>,
-	#[serde(skip_serializing_if = "Option::is_none")]
 	pub output: Option<OutputFormat>,
 }
 
-/// Main response struct containing all possible result types
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SearchResponse {
-	pub search_metadata: SearchMetadata,
-	pub search_parameters: SearchParameters,
-	pub search_information: SearchInformation,
-	pub recipes_results: Option<Vec<RecipeResult>>,
-	pub shopping_results: Option<Vec<ShoppingResult>>,
-	pub local_results: Option<LocalResults>,
-	pub knowledge_graph: Option<KnowledgeGraph>,
+	#[serde(flatten)]
+	pub metadata: HashMap<String, serde_json::Value>,
+	#[serde(default)]
 	pub organic_results: Vec<OrganicResult>,
-	pub related_searches: Option<Vec<RelatedSearch>>,
-	pub pagination: Pagination,
-	pub serpapi_pagination: SerpapiPagination,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct SearchMetadata {
-	pub id: String,
-	pub status: String,
-	pub json_endpoint: String,
-	pub created_at: String,
-	pub processed_at: String,
-	pub google_url: String,
-	pub raw_html_file: String,
-	pub total_time_taken: f64,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct SearchParameters {
-	pub engine: String,
-	pub q: String,
-	pub location_requested: Option<String>,
-	pub location_used: Option<String>,
-	pub google_domain: String,
-	pub hl: Option<String>,
-	pub gl: Option<String>,
-	pub device: Option<String>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct SearchInformation {
-	pub organic_results_state: String,
-	pub query_displayed: String,
-	pub total_results: u64,
-	pub time_taken_displayed: f64,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -168,99 +97,11 @@ pub struct OrganicResult {
 	pub position: u32,
 	pub title: String,
 	pub link: String,
+	pub redirect_link: String,
 	pub displayed_link: String,
 	pub snippet: Option<String>,
-	pub snippet_highlighted_words: Option<Vec<String>>,
-	pub sitelinks: Option<Sitelinks>,
-	pub cached_page_link: Option<String>,
-	pub related_pages_link: Option<String>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct RecipeResult {
-	pub title: String,
-	pub link: String,
-	pub source: String,
-	pub rating: Option<f32>,
-	pub reviews: Option<u32>,
-	pub ingredients: Vec<String>,
-	pub thumbnail: Option<String>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct ShoppingResult {
-	pub position: u32,
-	pub title: String,
-	pub link: String,
-	pub source: String,
-	pub price: String,
-	pub extracted_price: f64,
-	pub thumbnail: Option<String>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct LocalResults {
-	pub more_locations_link: Option<String>,
-	pub places: Vec<LocalPlace>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct LocalPlace {
-	pub position: u32,
-	pub title: String,
-	pub place_id: String,
-	pub lsig: String,
-	pub place_id_search: String,
-	pub rating: Option<f32>,
-	pub reviews: Option<u32>,
-	pub type_: Option<String>,
-	pub address: Option<String>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct KnowledgeGraph {
-	pub title: String,
-	pub type_: Option<String>,
-	pub description: Option<String>,
-	pub source: Option<KnowledgeGraphSource>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct KnowledgeGraphSource {
-	pub name: String,
-	pub link: String,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Sitelinks {
-	pub inline: Vec<InlineLink>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct InlineLink {
-	pub title: String,
-	pub link: String,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct RelatedSearch {
-	pub query: String,
-	pub link: String,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Pagination {
-	pub current: u32,
-	pub next: Option<String>,
-	pub other_pages: HashMap<String, String>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct SerpapiPagination {
-	pub current: u32,
-	pub next_link: Option<String>,
-	pub next: Option<String>,
-	pub other_pages: HashMap<String, String>,
+	#[serde(flatten)]
+	pub additional_fields: HashMap<String, serde_json::Value>,
 }
 
 #[derive(Debug)]
@@ -280,31 +121,30 @@ impl SerpApiRoute {
 	}
 }
 
+#[derive(Debug, Clone, Eq, strum_macros::Display, PartialEq, Serialize, Deserialize, strum_macros::EnumIter, strum_macros::EnumString)]
+pub enum ETimeFrame {
+	#[strum(to_string = "qdr:h")]
+	Hour,
+	#[strum(to_string = "qdr:d")]
+	Day,
+	#[strum(to_string = "qdr:w")]
+	Week,
+	#[strum(to_string = "qdr:m")]
+	Month,
+	#[strum(to_string = "qdr:y")]
+	Year,
+}
+
 #[bon::builder]
 pub async fn serpapi_request(
 	q: String,
 	location: Option<String>,
-	uule: Option<String>,
-	ludocid: Option<String>,
-	lsig: Option<String>,
-	kgmid: Option<String>,
-	si: Option<String>,
-	ibp: Option<String>,
-	uds: Option<String>,
-	google_domain: Option<String>,
-	gl: Option<String>,
-	hl: Option<String>,
-	cr: Option<String>,
-	lr: Option<String>,
-	tbs: Option<String>,
+	tbs: Option<ETimeFrame>,
 	safe: Option<SafeSearch>,
 	nfpr: Option<bool>,
 	filter: Option<u8>,
 	start: Option<u32>,
 	num: Option<u32>,
-	no_cache: Option<bool>,
-	async_param: Option<bool>,
-	zero_trace: Option<bool>,
 	output: Option<OutputFormat>,
 	#[builder(default = Engine::Google)] engine: Engine,
 	#[builder(default = Device::Desktop)] device: Device,
@@ -318,18 +158,6 @@ pub async fn serpapi_request(
 			q,
 			api_key: std::env::var("SERPAPI_API_KEY").expect("SERPAPI_API_KEY env var is missing"),
 			location,
-			uule,
-			ludocid,
-			lsig,
-			kgmid,
-			si,
-			ibp,
-			uds,
-			google_domain,
-			gl,
-			hl,
-			cr,
-			lr,
 			tbs,
 			tbm: Some(search_type),
 			start,
@@ -338,9 +166,6 @@ pub async fn serpapi_request(
 			nfpr,
 			filter,
 			device: Some(device),
-			no_cache,
-			is_async: async_param,
-			zero_trace,
 			output,
 		})
 		.send()
