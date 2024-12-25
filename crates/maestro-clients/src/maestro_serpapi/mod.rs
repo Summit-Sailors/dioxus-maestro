@@ -1,5 +1,4 @@
 use {
-	reqwest::Client,
 	reqwest_middleware::ClientWithMiddleware,
 	serde::{Deserialize, Serialize},
 	std::collections::HashMap,
@@ -149,7 +148,7 @@ pub async fn serpapi_request(
 	#[builder(default = Engine::Google)] engine: Engine,
 	#[builder(default = Device::Desktop)] device: Device,
 	#[builder(default = SearchType::Regular)] search_type: SearchType,
-	#[builder(default = Client::new().into())] client: ClientWithMiddleware,
+	#[builder(default = ClientWithMiddleware::default())] client: ClientWithMiddleware,
 ) -> Result<SearchResponse, reqwest_middleware::Error> {
 	let search_resp = client
 		.get(SerpApiRoute::Search.url_path())
