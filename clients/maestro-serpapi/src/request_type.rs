@@ -52,7 +52,7 @@ pub enum SafeSearch {
 	Off,
 }
 
-#[derive(Debug, Clone, Eq, strum_macros::Display, PartialEq, Serialize, Deserialize, strum_macros::EnumIter, strum_macros::EnumString)]
+#[derive(Clone, Debug, Deserialize, strum_macros::Display, strum_macros::EnumIter, strum_macros::EnumString, Eq, PartialEq, Serialize)]
 pub enum ETimeFrame {
 	#[strum(to_string = "qdr:h")]
 	Hour,

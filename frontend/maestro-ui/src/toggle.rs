@@ -2,7 +2,7 @@ use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 use strum_macros::{Display, EnumIter, EnumString};
 
-#[derive(Debug, Clone, Copy, PartialEq, Default, Eq, Serialize, Deserialize, Display, EnumString, EnumIter)]
+#[derive(Clone, Copy, Debug, Default, Deserialize, Display, EnumIter, EnumString, Eq, PartialEq, Serialize)]
 pub enum EToggleSwitchLabelPlacement {
 	Left,
 	#[default]
@@ -11,7 +11,7 @@ pub enum EToggleSwitchLabelPlacement {
 	Center,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Default, Eq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
 pub struct ToggleSwitchLabelStatesProp {
 	pub on: &'static str,
 	pub off: &'static str,

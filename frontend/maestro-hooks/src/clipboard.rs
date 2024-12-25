@@ -1,7 +1,7 @@
 use wasm_bindgen_futures::JsFuture;
 use web_sys::window;
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum ClipboardError {
 	FailedToRead,
 	FailedToSet,

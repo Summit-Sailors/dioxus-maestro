@@ -7,7 +7,7 @@ use {
 	validator::Validate,
 };
 
-#[derive(PartialEq, Props, Clone)]
+#[derive(Clone, PartialEq, Props)]
 pub struct SelectProps<TField>
 where
 	TField: Clone + Serialize + PartialEq + 'static + for<'de> Deserialize<'de>,

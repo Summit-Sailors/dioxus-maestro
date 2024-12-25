@@ -16,7 +16,7 @@ pub enum InputVariant {
 	Underlined,
 }
 
-#[derive(PartialEq, Clone, Copy)]
+#[derive(Clone, Copy, PartialEq)]
 pub enum InputType {
 	Text,
 	Search,
@@ -35,7 +35,7 @@ impl InputType {
 	}
 }
 
-#[derive(PartialEq, Clone, Props)]
+#[derive(Clone, PartialEq, Props)]
 pub struct InputProps {
 	#[props(default = false)]
 	pub disabled: bool,

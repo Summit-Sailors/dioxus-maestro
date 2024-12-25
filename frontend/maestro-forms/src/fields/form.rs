@@ -5,7 +5,7 @@ use {
 	validator::Validate,
 };
 
-#[derive(PartialEq, Props, Clone)]
+#[derive(Clone, PartialEq, Props)]
 pub struct FormProps<T>
 where
 	T: Validate + Clone + Serialize + PartialEq + 'static + for<'de> Deserialize<'de>,
@@ -18,7 +18,7 @@ where
 	children_maker: Component<InnerComponentProps<T>>,
 }
 
-#[derive(PartialEq, Props, Clone)]
+#[derive(Clone, PartialEq, Props)]
 pub struct InnerComponentProps<T>
 where
 	T: Validate + Clone + Serialize + PartialEq + 'static + for<'de> Deserialize<'de>,
@@ -31,10 +31,10 @@ where
 	T: Validate + Clone + Serialize + PartialEq + 'static + for<'de> Deserialize<'de>,
 {
 	let form = use_formik::<T>(props.initial_value);
-	let Component_inner = props.children_maker;
+	let InnerComponent = props.children_maker;
 	rsx! {
-    form {..props.attributes,
-      Component_inner { form }
-    }
-  }
+		form {..props.attributes,
+			InnerComponent { form }
+		}
+	}
 }

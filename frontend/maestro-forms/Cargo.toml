@@ -23,7 +23,7 @@ itertools = { version = "0.13.0" }
 dioxus = { version = "0.6.1", features = ["fullstack", "router"] }
 dioxus-free-icons = { version = "0.9.0", features = ["font-awesome-solid", "ionicons"] }
 dioxus-logger = "0.6.1"
-dioxus-sdk = { git = "https://github.com/DioxusLabs/sdk.git", features = [] }
+dioxus-sdk = { git = "https://github.com/DioxusLabs/sdk.git", features = ["timing"] }
 
 futures = "0.3.31"
 tailwind_fuse = "0.3.1"

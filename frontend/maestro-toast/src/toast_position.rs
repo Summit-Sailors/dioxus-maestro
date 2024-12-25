@@ -1,4 +1,4 @@
-#[derive(Debug, Default, PartialEq, Eq, Clone)]
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub enum EToastPosition {
 	BottomLeft,
 	#[default]

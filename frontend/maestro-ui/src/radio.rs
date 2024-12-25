@@ -6,7 +6,7 @@ use {crate::label::Label, dioxus::prelude::*, tailwind_fuse::*};
 )]
 pub struct RadioClass {}
 
-#[derive(PartialEq, Clone, Props)]
+#[derive(Clone, PartialEq, Props)]
 pub struct RadioProps {
 	#[props(default = false)]
 	pub disabled: bool,

@@ -6,7 +6,7 @@ use {
 	validator::Validate,
 };
 
-#[derive(PartialEq, Props, Clone)]
+#[derive(Clone, PartialEq, Props)]
 pub struct TextAreaProps {
 	pub name: String,
 	#[props(default = 3)]

@@ -8,7 +8,7 @@ pub struct TextareaClass {
 	pub variant: InputVariant,
 }
 
-#[derive(PartialEq, Clone, Props)]
+#[derive(Clone, PartialEq, Props)]
 pub struct TextareaProps {
 	#[props(default = false)]
 	pub disabled: bool,

@@ -93,5 +93,6 @@ where
 	T: Validate + Clone + Serialize + PartialEq + 'static + for<'de> Deserialize<'de>,
 {
 	use super::use_formik::Formik;
-	use_context::<Formik<T>>().get_form_field(name.into())
+	let form = use_context::<Formik<T>>();
+	form.get_form_field(name.into())
 }

@@ -4,7 +4,7 @@ use {dioxus::prelude::*, tailwind_fuse::*};
 #[tw(class = "flex w-full text-md relative flex-col gap-2")]
 pub struct LabelClass {}
 
-#[derive(PartialEq, Clone, Props)]
+#[derive(Clone, PartialEq, Props)]
 pub struct LabelProps {
 	#[props(default = false)]
 	pub id: Option<String>,

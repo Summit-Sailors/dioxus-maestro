@@ -45,7 +45,7 @@ pub enum ButtonSize {
 	IconSm,
 }
 
-#[derive(PartialEq, Clone, Copy)]
+#[derive(Clone, Copy, PartialEq)]
 pub enum ButtonType {
 	Submit,
 	Button,
@@ -62,7 +62,7 @@ impl ButtonType {
 	}
 }
 
-#[derive(PartialEq, Clone, Props)]
+#[derive(Clone, PartialEq, Props)]
 pub struct ButtonProps {
 	#[props(default = ButtonVariant::Default)]
 	pub variant: ButtonVariant,
