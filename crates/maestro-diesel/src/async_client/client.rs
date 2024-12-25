@@ -1,5 +1,5 @@
 use {
-	super::async_types::DbPoolAsync,
+	super::types::DbPoolAsync,
 	diesel_async::pooled_connection::{deadpool, AsyncDieselConnectionManager},
 };
 

@@ -1,0 +1,11 @@
+[package]
+authors = []
+description = ""
+edition = "2021"
+license = ""
+name = "maestro-misanthropic"
+repository = ""
+
+
+[dependencies]
+misanthropic = { version = "0.5.1" }

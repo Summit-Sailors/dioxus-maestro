@@ -1,5 +1,5 @@
 use {
-	super::sync_types::DbPoolSync,
+	super::types::DbPoolSync,
 	diesel::{r2d2, PgConnection},
 };
 

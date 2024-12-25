@@ -1,0 +1,17 @@
+[package]
+authors = []
+description = ""
+edition = "2021"
+license = ""
+name = "maestro-diesel"
+repository = ""
+
+
+[dependencies]
+diesel = { version = "2.2.6", features = ["chrono", "postgres", "r2d2", "serde_json", "uuid"], optional = true }
+diesel-async = { version = "0.5.2", features = ["deadpool", "pool", "postgres"], optional = true }
+
+
+[features]
+async = ["dep:diesel-async"]
+sync = ["dep:diesel"]

@@ -1,0 +1,21 @@
+[package]
+authors = []
+description = ""
+edition = "2021"
+license = ""
+name = "maestro-sqlx"
+repository = ""
+
+
+[dependencies]
+serde = { workspace = true }
+
+sqlx = { version = "0.8.2", features = ["postgres", "runtime-tokio"] }
+
+apalis = { version = "0.5.5", features = ["cron", "postgres"], optional = true }
+tokio = { version = "1.42.0", optional = true }
+
+
+[features]
+apalis-async = ["dep:apalis"]
+apalis-sync = ["dep:apalis", "dep:tokio"]

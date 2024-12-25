@@ -39,8 +39,11 @@ inherits = "dev"
 
 
 [workspace.dependencies]
-maestro-clients = { path = "crates/maestro-clients" }
+maestro-diesel = { path = "crates/maestro-diesel" }
 maestro-hooks = { path = "crates/maestro-hooks" }
+maestro-misanthropic = { path = "crates/maestro-misanthropic" }
+maestro-serpapi = { path = "crates/maestro-serpapi" }
+maestro-sqlx = { path = "crates/maestro-sqlx" }
 maestro-toast = { path = "crates/maestro-toast" }
 maestro-ui = { path = "crates/maestro-ui" }
 
