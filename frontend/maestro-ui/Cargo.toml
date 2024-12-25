@@ -20,7 +20,8 @@ dioxus-free-icons = { workspace = true }
 dioxus-logger = { workspace = true }
 dioxus-sdk = { workspace = true }
 
-tailwind_fuse = "0.3.1"
+tailwind_fuse = { workspace = true }
+
 
 tracing-wasm = { version = "0.2.1", optional = true }
 

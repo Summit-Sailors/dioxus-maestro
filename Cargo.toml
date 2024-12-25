@@ -39,13 +39,15 @@ inherits = "dev"
 
 
 [workspace.dependencies]
-maestro-diesel = { path = "crates/maestro-diesel" }
-maestro-hooks = { path = "crates/maestro-hooks" }
-maestro-misanthropic = { path = "crates/maestro-misanthropic" }
-maestro-serpapi = { path = "crates/maestro-serpapi" }
-maestro-sqlx = { path = "crates/maestro-sqlx" }
-maestro-toast = { path = "crates/maestro-toast" }
-maestro-ui = { path = "crates/maestro-ui" }
+maestro-diesel = { path = "clients/maestro-diesel" }
+maestro-misanthropic = { path = "clients/maestro-misanthropic" }
+maestro-serpapi = { path = "clients/maestro-serpapi" }
+maestro-sqlx = { path = "clients/maestro-sqlx" }
+
+maestro-forms = { path = "frontend/maestro-forms" }
+maestro-hooks = { path = "frontend/maestro-hooks" }
+maestro-toast = { path = "frontend/maestro-toast" }
+maestro-ui = { path = "frontend/maestro-ui" }
 
 anyhow = "1.0.95"
 bon = "3.3.0"
