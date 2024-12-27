@@ -1,5 +1,7 @@
-#[cfg(feature = "async")]
+#[cfg(all(feature = "async", feature = "server"))]
 pub mod async_client;
 
-#[cfg(feature = "sync")]
+#[cfg(all(feature = "sync", feature = "server"))]
 pub mod sync_client;
+
+pub mod extensions;
