@@ -89,7 +89,7 @@ pub fn ToastFrame(mut manager: Signal<ToastManager>) -> Element {
 	let _ = use_resource(move || async move {
 		loop {
 			let now = chrono::Local::now().timestamp();
-			manager.write().list.retain(|_, item| if let Some(hide_after) = item.hide_after { now < hide_after } else { true });
+			manager.write().list.retain(|_, item| now < item.hide_after);
 			time_sleep(100).await;
 		}
 	});

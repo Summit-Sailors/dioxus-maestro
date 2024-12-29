@@ -1,0 +1,18 @@
+[package]
+authors = []
+description = ""
+edition = "2021"
+license = ""
+name = "maestro-query"
+repository = ""
+
+[dependencies]
+bon = { workspace = true }
+
+maestro-hooks = { workspace = true }
+
+dioxus-lib = { version = "0.6.1", default-features = false, features = ["hooks", "macro", "signals"] }
+dioxus-radio = "0.3.0"
+futures-util = "0.3.31"
+instant = { version = "0.1.13", features = ["wasm-bindgen"] }
+warnings = "0.2.1"

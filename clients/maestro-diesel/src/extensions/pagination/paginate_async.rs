@@ -23,7 +23,7 @@ impl<T> Paginated<T> {
 	{
 		let results: Vec<(U, i64)> = {
 			use diesel_async::RunQueryDsl;
-			self.load::<(U, i64)>(&mut conn.get().await.expect("cant get conn from pool")).await?
+			self.load::<(U, i64)>(&mut conn.get().await.expect("cant get conn from pool")).await? // boxed queries seem diff, might need pinning
 		};
 		let total = results.first().map(|x| x.1).unwrap_or(0);
 		let records = results.into_iter().map(|x| x.0).collect();

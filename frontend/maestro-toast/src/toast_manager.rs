@@ -9,7 +9,7 @@ use {
 #[derive(Clone, Debug)]
 pub struct ToastManagerItem {
 	pub info: ToastInfo,
-	pub hide_after: Option<i64>,
+	pub hide_after: i64,
 }
 
 #[derive(Debug)]
@@ -39,7 +39,7 @@ impl ToastManager {
 				self.list.remove(&id);
 			}
 		}
-		let hide_after = info.hide_after.map(|duration| chrono::Local::now().timestamp() + duration as i64);
+		let hide_after = chrono::Local::now().timestamp() + info.hide_after as i64;
 		self.list.insert(toast_id, ToastManagerItem { info, hide_after });
 		toast_id
 	}

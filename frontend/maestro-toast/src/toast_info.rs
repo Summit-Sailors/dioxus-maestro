@@ -11,5 +11,6 @@ pub struct ToastInfo {
 	#[builder(default)]
 	pub position: EToastPosition,
 	pub icon: Option<EToastCode>,
-	pub hide_after: Option<usize>,
+	#[builder(default = 10)]
+	pub hide_after: usize,
 }

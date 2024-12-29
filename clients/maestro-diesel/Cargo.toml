@@ -8,6 +8,7 @@ repository = ""
 
 
 [dependencies]
+bon = { workspace = true }
 serde = { workspace = true }
 validator = { workspace = true }
 
