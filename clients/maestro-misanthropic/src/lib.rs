@@ -2,6 +2,6 @@ use misanthropic::Client;
 
 pub type MisanthropicClient = misanthropic::Client;
 
-pub fn create_misanthropic_client() -> MisanthropicClient {
-	Client::new(std::env::var("ANTHROPIC_API_KEY").expect("ANTHROPIC_API_KEY ENV VAR")).expect("couldnt create athropic client")
+pub fn create_misanthropic_client(api_key: &str) -> MisanthropicClient {
+	Client::new(api_key.to_string()).expect("couldnt create athropic client")
 }
