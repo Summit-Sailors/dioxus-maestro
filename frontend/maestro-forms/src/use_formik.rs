@@ -57,7 +57,7 @@ where
 			Err(errors) => {
 				for (field_name, field_errors) in errors.field_errors() {
 					for field_error in field_errors {
-						self.push_field_error(field_name.to_string(), format!("{:?}", field_error));
+						self.push_field_error(field_name.to_string(), field_error.message.as_deref().unwrap_or("Unknown error").to_owned());
 					}
 				}
 				self.is_valid.set(false);
