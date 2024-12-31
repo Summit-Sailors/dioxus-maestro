@@ -1,4 +1,5 @@
 pub mod button;
+pub mod calendar;
 pub mod input;
 pub mod label;
 pub mod multi_select;
