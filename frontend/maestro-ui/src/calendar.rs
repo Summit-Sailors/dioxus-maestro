@@ -198,8 +198,8 @@ pub fn CalendarComponent(props: CalendarProps) -> Element {
           }
         }
       }
-      div { class: "p-4 calendar-days",
-        div { class: "grid grid-cols-7 gap-2 mb-2",
+      div { class: "p-4 calendar-body",
+        div { class: "grid grid-cols-7 gap-2 mb-2 calendar-days",
           {
               DAYS.iter()
                   .map(|day| {
