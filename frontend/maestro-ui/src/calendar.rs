@@ -3,7 +3,7 @@ use {
 	chrono::{Datelike, NaiveDate, Utc},
 	dioxus::prelude::*,
 	dioxus_free_icons::{
-		icons::ld_icons::{LdChevronLeft, LdChevronRight, LdChevronsLeft, LdChevronsRight},
+		icons::ld_icons::{LdCalendar, LdChevronLeft, LdChevronRight, LdChevronsLeft, LdChevronsRight},
 		Icon,
 	},
 	tailwind_fuse::*,
@@ -35,7 +35,8 @@ pub struct CalendarProps {
 	show_week_numbers: Option<bool>,
 	locale: Option<String>,
 	#[props(default = true)]
-	pub is_full: bool,
+	is_full: bool,
+	button_label: Option<String>,
 }
 
 // Calendar may be styled via custom styles: for this provided classNames "calendar" and "calendar-*": add in input.css appropriate tailwind classes
@@ -58,11 +59,12 @@ pub fn Calendar(props: CalendarProps) -> Element {
           class: "calendar-button",
           on_click: move |_| is_open.toggle(),
           stop_propagation: true,
+          Icon { class: "h-4 w-4", icon: LdCalendar }
           {
               if selected_date().is_some() {
                   selected_date().unwrap().format("%b %d, %y").to_string()
               } else {
-                  "Select date".to_string()
+                  props.button_label.clone().unwrap_or("Select date".to_string())
               }
           }
         }
