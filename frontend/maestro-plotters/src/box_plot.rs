@@ -1,5 +1,6 @@
 use {
 	crate::chart_options::ChartOptions,
+	maestro_toast::ctx::use_toast,
 	plotters::{data::Quartiles, prelude::*},
 	plotters_canvas::CanvasBackend,
 };
@@ -24,14 +25,10 @@ pub fn render_box_plot(canvas_id: &str, data: Vec<Vec<f32>>, options: ChartOptio
 	Ok(())
 }
 
-use {
-	dioxus::prelude::*,
-	dioxus_logger::tracing::info,
-	maestro_toast::{toast_info::ToastInfo, toast_manager::ToastManager},
-};
+use {dioxus::prelude::*, dioxus_logger::tracing::info, maestro_toast::toast_info::ToastInfo};
 
 pub fn use_box_plot(canvas_id: String, data: Memo<Option<Vec<Vec<f32>>>>, options: ChartOptions) {
-	let mut toast = use_context::<Signal<ToastManager>>();
+	let mut toast = use_toast();
 	use_effect(move || {
 		if let Some(data) = data() {
 			if let Err(e) = render_box_plot(canvas_id.as_str(), data.clone(), options.clone()) {

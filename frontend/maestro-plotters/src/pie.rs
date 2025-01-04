@@ -1,4 +1,5 @@
 use {
+	maestro_toast::ctx::use_toast,
 	plotters::{prelude::*, style::RGBColor},
 	plotters_canvas::CanvasBackend,
 	std::{error::Error, f32::consts::PI},
@@ -120,14 +121,10 @@ impl PieChart {
 	}
 }
 
-use {
-	dioxus::prelude::*,
-	dioxus_logger::tracing::info,
-	maestro_toast::{toast_info::ToastInfo, toast_manager::ToastManager},
-};
+use {dioxus::prelude::*, dioxus_logger::tracing::info, maestro_toast::toast_info::ToastInfo};
 
 pub fn use_pie_chart(canvas_id: String, sizes: Memo<Option<Vec<i32>>>, colors: Vec<RGBColor>, labels: Memo<Option<Vec<String>>>, options: PieChartOptions) {
-	let mut toast = use_context::<Signal<ToastManager>>();
+	let mut toast = use_toast();
 	use_effect(move || {
 		if let (Some(sizes), Some(labels)) = (sizes(), labels()) {
 			if let Err(e) = PieChart::new(sizes.clone(), colors.clone(), labels.clone(), options.clone()).render(canvas_id.as_str()) {

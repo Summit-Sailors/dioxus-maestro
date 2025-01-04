@@ -1,3 +1,5 @@
+#![allow(non_snake_case)]
+
 mod cached_result;
 mod result;
 mod use_mutation;

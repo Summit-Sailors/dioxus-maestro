@@ -2,11 +2,11 @@ use {
 	crate::chart_options::ChartOptions,
 	dioxus::prelude::*,
 	dioxus_logger::tracing::info,
-	maestro_toast::{toast_info::ToastInfo, toast_manager::ToastManager},
+	maestro_toast::{ctx::use_toast, toast_info::ToastInfo},
 };
 
 pub fn use_stacked_bar_hook(canvas_id: String, data: Memo<Option<Vec<(String, Vec<f32>)>>>, options: ChartOptions) {
-	let mut toast = use_context::<Signal<ToastManager>>();
+	let mut toast = use_toast();
 	use_effect(move || {
 		if let Some(data) = data() {
 			if let Err(e) = render_stacked_bar_chart(canvas_id.as_str(), data.clone(), options.clone()) {

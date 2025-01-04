@@ -1,5 +1,3 @@
-#![allow(non_snake_case)]
-
 use {
 	crate::{id::ToastID, toast_info::ToastInfo},
 	dioxus_logger::tracing::debug,

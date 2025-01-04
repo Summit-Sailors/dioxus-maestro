@@ -1,5 +1,6 @@
 use {
 	crate::chart_options::ChartOptions,
+	maestro_toast::ctx::use_toast,
 	plotters::{prelude::*, style::colors::colormaps},
 	plotters_canvas::CanvasBackend,
 	std::fmt::Display,
@@ -42,11 +43,7 @@ pub fn render_heatmap<Label: Display + Clone>(
 	Ok(())
 }
 
-use {
-	dioxus::prelude::*,
-	dioxus_logger::tracing::info,
-	maestro_toast::{toast_info::ToastInfo, toast_manager::ToastManager},
-};
+use {dioxus::prelude::*, dioxus_logger::tracing::info, maestro_toast::toast_info::ToastInfo};
 
 pub fn use_heat_map<Label: Display + Clone + PartialEq>(
 	canvas_id: String,
@@ -54,7 +51,7 @@ pub fn use_heat_map<Label: Display + Clone + PartialEq>(
 	labels: Memo<Option<Vec<Label>>>,
 	options: ChartOptions,
 ) {
-	let mut toast = use_context::<Signal<ToastManager>>();
+	let mut toast = use_toast();
 	use_effect(move || {
 		if let (Some(data), Some(labels)) = (data(), labels()) {
 			if let Err(e) = render_heatmap(canvas_id.as_str(), data.clone(), labels.clone(), options.clone()) {

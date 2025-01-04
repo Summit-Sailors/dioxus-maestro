@@ -1,4 +1,3 @@
-#![allow(non_snake_case)]
 use {
 	crate::{toast_code::EToastCode, toast_manager::ToastManager, toast_position::EToastPosition},
 	dioxus::prelude::*,
