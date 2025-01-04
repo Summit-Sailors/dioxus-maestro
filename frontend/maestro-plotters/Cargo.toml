@@ -3,11 +3,12 @@ authors = []
 description = ""
 edition = "2021"
 license = ""
-name = "maestro-forms"
+name = "maestro-plotters"
 repository = ""
 
 
 [dependencies]
+bon = { workspace = true }
 chrono = { workspace = true }
 maestro-toast = { workspace = true }
 serde = { workspace = true }
@@ -20,15 +21,34 @@ validator = { version = "0.19", features = ["derive"] }
 
 itertools = { version = "0.14.0" }
 
-dioxus = { version = "0.6.1", features = ["fullstack", "router"] }
+dioxus = { version = "0.6.1" }
 dioxus-free-icons = { version = "0.9.0", features = ["font-awesome-solid", "ionicons"] }
 dioxus-logger = "0.6.1"
 dioxus-sdk = { git = "https://github.com/DioxusLabs/sdk.git", features = ["timing"] }
+
+markdown-to-html = "0.1.3"
+plotters = { version = "0.3.7", default-features = false, features = [
+  "bitmap_backend",
+  "bitmap_encoder",
+  "bitmap_gif",
+  "chrono",
+  "svg_backend",
+  # "ttf",
+  "all_elements",
+  "all_series",
+  "colormaps",
+  "deprecated_items",
+  "full_palette",
+  "image",
+] }
+plotters-backend = { version = "0.3.7" }
+plotters-canvas = { version = "0.3.0" }
 
 futures = "0.3.31"
 tailwind_fuse = "0.3.1"
 
 tracing-wasm = { version = "0.2.1", optional = true }
+wasm-bindgen = { version = "0.2.99", optional = true }
 wasm-bindgen-futures = { version = "0.4.49", optional = true }
 web-sys = { version = "0.3.76", features = ["Clipboard", "Navigator", "Window"], optional = true }
 
@@ -36,4 +56,4 @@ web-sys = { version = "0.3.76", features = ["Clipboard", "Navigator", "Window"],
 [features]
 default = []
 desktop = ["dioxus/desktop"]
-web = ["chrono/wasmbind", "dep:tracing-wasm", "dep:wasm-bindgen-futures", "dep:web-sys", "dioxus/web", "uuid/js"]
+web = ["chrono/wasmbind", "dep:tracing-wasm", "dep:wasm-bindgen", "dep:wasm-bindgen-futures", "dep:web-sys", "dioxus/web", "uuid/js"]
