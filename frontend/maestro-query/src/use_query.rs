@@ -1,3 +1,4 @@
+#![allow(clippy::disallowed_types)]
 use {
 	dioxus_lib::prelude::*,
 	futures_util::Future,

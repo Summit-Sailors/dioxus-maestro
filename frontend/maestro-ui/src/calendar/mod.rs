@@ -80,7 +80,7 @@ pub fn use_calendar() {}
 
 #[component]
 pub fn Calendar(display_props: CalendarDisplayProps, select_props: CalendarSelectProps) -> Element {
-	let CalendarDisplayProps { mut display_month, mut display_year, events, is_full } = display_props;
+	let CalendarDisplayProps { mut display_month, mut display_year, is_full, .. } = display_props;
 	let CalendarSelectProps { selected_day, selected_month, selected_year, .. } = select_props;
 
 	let hover_date = use_signal(|| None::<NaiveDate>);
@@ -198,9 +198,9 @@ pub fn CalendarMaybeWrapper(CalendarMaybeWrapperProps { is_full, children, selec
 
 #[component]
 pub fn CalendarDayComponent(delta: u8, display_props: CalendarDisplayProps, select_props: CalendarSelectProps, state_props: CalendarStateProps) -> Element {
-	let CalendarDisplayProps { display_month, display_year, events, is_full } = display_props;
+	let CalendarDisplayProps { display_month, display_year, .. } = display_props;
 	let CalendarSelectProps { max_date, min_date, mut selected_day, mut selected_month, mut selected_year } = select_props;
-	let CalendarStateProps { mut hover_date, selected_date } = state_props;
+	let CalendarStateProps { mut hover_date, .. } = state_props;
 	let selected_date = use_memo(move || NaiveDate::from_ymd_opt(selected_year(), selected_month() as u32, selected_day() as u32).unwrap());
 	let first_day = display_month().first_day(display_year());
 	let last_day = display_month().last_day(display_year());

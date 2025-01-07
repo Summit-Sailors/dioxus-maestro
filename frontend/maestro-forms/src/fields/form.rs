@@ -1,5 +1,5 @@
 use {
-	crate::use_formik::{use_formik, Formik},
+	crate::use_formik::{use_init_form_ctx, Formik},
 	dioxus::prelude::*,
 	serde::{Deserialize, Serialize},
 	validator::Validate,
@@ -10,12 +10,12 @@ pub struct FormProps<T>
 where
 	T: Validate + Clone + Serialize + PartialEq + 'static + for<'de> Deserialize<'de>,
 {
+	inner: Component<InnerComponentProps<T>>,
 	pub initial_value: T,
 	#[props(optional)]
 	pub onsubmit: Option<EventHandler<FormEvent>>,
 	#[props(extends = GlobalAttributes, extends = form)]
 	pub attributes: Vec<Attribute>,
-	children_maker: Component<InnerComponentProps<T>>,
 }
 
 #[derive(Clone, PartialEq, Props)]
@@ -30,8 +30,8 @@ pub fn Form<T>(props: FormProps<T>) -> Element
 where
 	T: Validate + Clone + Serialize + PartialEq + 'static + for<'de> Deserialize<'de>,
 {
-	let form = use_formik::<T>(props.initial_value);
-	let InnerComponent = props.children_maker;
+	let form = use_init_form_ctx::<T>(props.initial_value);
+	let InnerComponent = props.inner;
 	rsx! {
 		form {..props.attributes,
 			InnerComponent { form }

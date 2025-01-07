@@ -12,7 +12,7 @@ use {
 pub struct InputProps {
 	pub name: String,
 	#[props(optional)]
-	pub oninput: Option<EventHandler<Value>>,
+	pub oninput: Option<EventHandler<String>>,
 	#[props(optional)]
 	pub onblur: Option<EventHandler<FocusEvent>>,
 	#[props(extends = GlobalAttributes, extends = input)]
@@ -25,11 +25,10 @@ where
 {
 	let mut field = use_formik_field::<TForm>(props.name.clone());
 
-	let mut debounced_input = use_debounce(Duration::from_millis(200), move |text_input| {
-		let value = Value::String(text_input);
-		field.set_value(value.clone());
+	let mut debounced_input = use_debounce(Duration::from_millis(200), move |text_input: String| {
+		field.set_value(Value::String(text_input.clone()));
 		if let Some(handler) = &props.oninput {
-			handler.call(value);
+			handler.call(text_input);
 		}
 	});
 

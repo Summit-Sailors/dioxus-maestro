@@ -1,8 +1,10 @@
 use {
 	crate::use_form_field::use_formik_field,
 	dioxus::prelude::*,
+	dioxus_sdk::utils::timing::use_debounce,
 	serde::{Deserialize, Serialize},
 	serde_json::Value,
+	std::time::Duration,
 	validator::Validate,
 };
 
@@ -12,7 +14,7 @@ pub struct TextAreaProps {
 	#[props(default = 3)]
 	pub rows: u32,
 	#[props(optional)]
-	pub onchange: Option<EventHandler<FormEvent>>,
+	pub oninput: Option<EventHandler<Value>>,
 	#[props(optional)]
 	pub onblur: Option<EventHandler<FocusEvent>>,
 	#[props(extends = GlobalAttributes, extends = textarea)]
@@ -26,25 +28,29 @@ where
 {
 	let mut field = use_formik_field::<T>(props.name.clone());
 
+	let mut debounced_input = use_debounce(Duration::from_millis(200), move |text_input| {
+		let value = Value::String(text_input);
+		field.set_value(value.clone());
+		if let Some(handler) = &props.oninput {
+			handler.call(value);
+		}
+	});
+
 	rsx! {
-    textarea {
-      name: "{props.name}",
-      rows: "{props.rows}",
-      value: "{field.value}",
-      ontouchstart: move |_| field.set_touched(true),
-      onchange: move |evt| {
-          field.set_value(Value::String(evt.value().clone()));
-          if let Some(handler) = &props.onchange {
-              handler.call(evt);
-          }
-      },
-      onblur: move |evt| {
-          field.set_touched(true);
-          if let Some(handler) = &props.onblur {
-              handler.call(evt);
-          }
-      },
-      ..props.attributes,
-    }
-  }
+		textarea {
+			name: "{props.name}",
+			rows: "{props.rows}",
+			value: "{field.get_value::<String>()}",
+			oninput: move |evt| {
+					debounced_input.action(evt.value());
+			},
+			onblur: move |evt| {
+					field.set_touched(true);
+					if let Some(handler) = &props.onblur {
+							handler.call(evt);
+					}
+			},
+			..props.attributes,
+		}
+	}
 }

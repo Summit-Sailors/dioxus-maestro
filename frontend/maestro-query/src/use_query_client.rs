@@ -1,3 +1,4 @@
+#![allow(clippy::disallowed_types)]
 use {
 	crate::{cached_result::CachedResult, result::QueryResult},
 	dioxus_lib::prelude::*,

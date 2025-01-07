@@ -2,19 +2,19 @@ use {
 	crate::use_form_field::use_formik_field,
 	dioxus::prelude::*,
 	serde::{Deserialize, Serialize},
-	serde_json::Value,
-	std::collections::HashMap,
+	std::{collections::HashMap, fmt::Debug, hash::Hash},
 	validator::Validate,
 };
 
 #[derive(Clone, PartialEq, Props)]
 pub struct SelectProps<TField>
 where
-	TField: Clone + Serialize + PartialEq + 'static + for<'de> Deserialize<'de>,
+	TField: Clone + Serialize + PartialEq + Hash + Eq + Debug + 'static + for<'de> Deserialize<'de>,
 {
 	pub name: String,
+	pub values: Vec<TField>,
 	#[props(optional)]
-	pub label_map: Option<HashMap<Value, String>>,
+	pub labels: Option<Vec<String>>,
 	#[props(optional)]
 	pub onchange: Option<EventHandler<TField>>,
 	#[props(optional)]
@@ -23,94 +23,57 @@ where
 	pub attributes: Vec<Attribute>,
 }
 
-impl<TField> SelectProps<TField>
-where
-	TField: Clone + Serialize + PartialEq + 'static + for<'de> Deserialize<'de>,
-{
-	fn get_inverted_label_map(&self) -> Option<HashMap<String, Value>> {
-		if let Some(map) = &self.label_map {
-			return Some(map.clone().into_iter().map(|(k, v)| (v, k)).collect());
-		}
-		None
-	}
-}
-
 #[component]
-pub fn SelectFormField<TForm, TField>(props: SelectProps<TField>) -> Element
+pub fn SelectFormField<TForm, TField>(SelectProps::<TField> { attributes, labels, name, values, onblur, onchange }: SelectProps<TField>) -> Element
 where
 	TForm: Validate + Clone + Serialize + PartialEq + 'static + for<'de> Deserialize<'de>,
-	TField: Clone + Serialize + PartialEq + 'static + for<'de> Deserialize<'de>,
+	TField: Clone + Serialize + PartialEq + Hash + Eq + Debug + 'static + for<'de> Deserialize<'de>,
 {
-	let mut field = use_formik_field::<TForm>(props.name.clone());
-	let map = use_signal(|| props.label_map.clone());
-	let inverted_map = use_signal(|| props.get_inverted_label_map());
-	let values = use_signal(|| map().into_iter().flatten().map(|map| map.0).collect::<Vec<Value>>());
+	let mut field = use_formik_field::<TForm>(name.clone());
+	let value_to_label_map = use_memo({
+		to_owned![labels, values];
+		move || {
+			labels
+				.clone()
+				.map(|labels| values.clone().into_iter().zip(labels.into_iter()).collect::<HashMap<TField, String>>())
+				.clone()
+				.unwrap_or(values.clone().into_iter().map(|value| (value.clone(), format!("{value:#?}"))).collect::<HashMap<TField, String>>())
+		}
+	});
+	let label_to_value_map = use_memo(move || value_to_label_map().clone().into_iter().map(|(k, v)| (v, k)).collect::<HashMap<String, TField>>());
 
 	rsx! {
-    select {
-      name: props.name,
-      multiple: false,
-      ontouchstart: move |_| field.set_touched(true),
-      onchange: move |evt| {
-          match map() {
-              Some(_) => {
-                  let label = evt.value();
-                  let inverted_map = inverted_map().unwrap();
-                  let value = inverted_map.get(&label).unwrap();
-                  field.set_value(value.clone());
-                  if let Some(handler) = props.onchange {
-                      handler.call(serde_json::from_value(value.clone()).unwrap());
-                  }
-              }
-              None => {
-                  let value = Value::from(evt.value());
-                  field.set_value(Value::from(evt.value()));
-                  if let Some(handler) = props.onchange {
-                      handler.call(serde_json::from_value(value.clone()).unwrap());
-                  }
-              }
-          }
-      },
-      onblur: move |evt| {
-          field.set_touched(true);
-          if let Some(handler) = props.onblur {
-              handler.call(evt);
-          }
-      },
-      ..props.attributes,
-      match props.label_map {
-          Some(label_map) => {
-              rsx! {
-                {
-                    values
-                        .iter()
-                        .map(|value| {
-                            let label = label_map.get(&value).unwrap();
-                            rsx! {
-                              option { value: "{label}", selected: field.value.read().clone() == value.clone(), "{label}" }
-                            }
-                        })
-                }
-              }
-          }
-          None => {
-              rsx! {
-                {
-                    values
-                        .iter()
-                        .map(|value| {
-                            rsx! {
-                              option {
-                                value: value.to_string(),
-                                selected: field.value.read().clone() == value.clone(),
-                                "{value}"
-                              }
-                            }
-                        })
-                }
-              }
-          }
-      }
-    }
-  }
+		select {
+			name,
+			multiple: false,
+			onchange: move |evt| {
+					let label_to_value_map = label_to_value_map();
+					let value = label_to_value_map.get(&evt.value()).unwrap();
+					field.set_value(value.clone());
+					if let Some(handler) = onchange {
+							handler.call(value.clone());
+					}
+			},
+			onblur: move |evt| {
+					field.set_touched(true);
+					if let Some(handler) = onblur {
+							handler.call(evt);
+					}
+			},
+			..attributes,
+
+			{
+					values
+							.clone()
+							.into_iter()
+							.map(|value| {
+									let map = value_to_label_map();
+									let label = map.get(&value).unwrap();
+									rsx! {
+										option { value: "{label}", selected: field.get_value::<TField>() == value, "{label}" }
+									}
+							})
+			}
+		}
+	}
 }

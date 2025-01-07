@@ -38,7 +38,7 @@ impl FormField {
 	where
 		TValue: Serialize,
 	{
-		self.set_json_value(serde_json::to_value(value).unwrap());
+		self.set_json_value(serde_json::to_value(value).expect("Failed to serialize with serde_json"));
 	}
 
 	pub fn get_json_value(&self) -> Value {
@@ -49,7 +49,11 @@ impl FormField {
 	where
 		TReturnType: for<'de> serde::Deserialize<'de>,
 	{
-		serde_json::from_value(self.get_json_value()).unwrap()
+		serde_json::from_value(self.value.read().clone()).expect("Failed to parse with serde_json")
+	}
+
+	pub fn clear_errors(&mut self) {
+		self.errors.clear();
 	}
 
 	pub fn push_error(&mut self, error: String) {
@@ -58,25 +62,6 @@ impl FormField {
 
 	pub fn set_touched(&mut self, touched: bool) {
 		self.touched.set(touched);
-	}
-}
-
-impl From<FormField> for String {
-	fn from(val: FormField) -> Self {
-		serde_json::from_value(val.value.read().clone()).expect("Failed to parse with serde_json")
-	}
-}
-
-impl From<FormField> for usize {
-	fn from(val: FormField) -> Self {
-		serde_json::from_value(val.value.read().clone()).expect("Failed to parse with serde_json")
-	}
-}
-
-impl From<FormField> for url::Url {
-	fn from(val: FormField) -> Self {
-		let value: String = serde_json::from_value(val.value.read().clone()).expect("Failed to parse with serde_json");
-		url::Url::parse(value.as_str()).expect("cant parse url")
 	}
 }
 
@@ -92,7 +77,5 @@ pub fn use_formik_field<T>(name: impl Into<String>) -> FormField
 where
 	T: Validate + Clone + Serialize + PartialEq + 'static + for<'de> Deserialize<'de>,
 {
-	use super::use_formik::Formik;
-	let form = use_context::<Formik<T>>();
-	form.get_form_field(name.into())
+	use_context::<super::use_formik::Formik<T>>().get_form_field(name.into())
 }

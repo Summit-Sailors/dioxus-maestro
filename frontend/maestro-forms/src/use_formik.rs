@@ -13,7 +13,7 @@ where
 	T: Validate + Clone + Serialize + PartialEq + 'static + for<'de> Deserialize<'de>,
 {
 	pub initial_values: ReadOnlySignal<T>,
-	pub fields: ReadOnlySignal<Vec<FormField>>,
+	pub form_fields: Signal<Vec<FormField>>,
 	pub name_to_id_map: ReadOnlySignal<HashMap<String, usize>>,
 	pub id_to_name_map: ReadOnlySignal<HashMap<usize, String>>,
 	pub is_submitting: Signal<bool>,
@@ -27,20 +27,19 @@ where
 {
 	pub fn new(initial_values: T) -> Self {
 		let json_value = serde_json::to_value(&initial_values).expect("Failed to serialize initial values");
-		let (fields, name_to_id_map, id_to_name_map) = if let Value::Object(map) = json_value {
-			let fields_vec: ReadOnlySignal<Vec<FormField>> =
-				ReadOnlySignal::new(Signal::new(map.clone().into_iter().map(|(_key, value)| FormField::new(value)).collect()));
+		let (form_fields, name_to_id_map, id_to_name_map) = if let Value::Object(map) = json_value {
+			let form_fields: Signal<Vec<FormField>> = Signal::new(map.clone().into_iter().map(|(_key, value)| FormField::new(value)).collect());
 			let name_to_id_map: ReadOnlySignal<HashMap<String, usize>> =
 				ReadOnlySignal::new(Signal::new(map.clone().into_iter().enumerate().map(|(id, (key, _value))| (key, id)).collect()));
 			let id_to_name_map: ReadOnlySignal<HashMap<usize, String>> =
 				ReadOnlySignal::new(Signal::new(map.clone().into_iter().enumerate().map(|(id, (key, _value))| (id, key)).collect()));
-			(fields_vec, name_to_id_map, id_to_name_map)
+			(form_fields, name_to_id_map, id_to_name_map)
 		} else {
-			panic!("Initial values must be serde_json serializable");
+			panic!("Initial values must be serde_json::Value::Object serializable");
 		};
 		Self {
 			initial_values: ReadOnlySignal::new(Signal::new(initial_values.to_owned())),
-			fields,
+			form_fields,
 			name_to_id_map,
 			id_to_name_map,
 			is_submitting: Signal::new(false),
@@ -49,41 +48,12 @@ where
 		}
 	}
 
-	pub fn validate_all(&mut self) -> bool {
-		match self.as_struct().validate() {
-			Ok(_) => {
-				self.is_valid.set(true);
-			},
-			Err(errors) => {
-				for (field_name, field_errors) in errors.field_errors() {
-					for field_error in field_errors {
-						self.push_field_error(field_name.to_string(), field_error.message.as_deref().unwrap_or("Unknown error").to_owned());
-					}
-				}
-				self.is_valid.set(false);
-			},
-		}
-		*self.is_valid.read()
-	}
-
 	pub fn reset_form(&mut self) {
-		for mut field in self.fields.read().clone() {
+		for field in self.form_fields.write().iter_mut() {
 			field.reset();
 		}
 		self.is_dirty.set(false);
 		self.is_valid.set(true);
-	}
-
-	fn get_name_to_id_map(&self) -> HashMap<String, usize> {
-		self.name_to_id_map.read().clone()
-	}
-
-	fn get_id_to_name_map(&self) -> HashMap<usize, String> {
-		self.id_to_name_map.read().clone()
-	}
-
-	fn get_fields(&self) -> Vec<FormField> {
-		self.fields.read().clone()
 	}
 
 	pub fn set_field_json_value(&mut self, name: String, value: Value) {
@@ -105,8 +75,7 @@ where
 	}
 
 	pub fn get_form_field(&self, name: String) -> FormField {
-		let map = self.get_name_to_id_map();
-		*self.get_fields().get(*map.get(&name).unwrap()).unwrap()
+		*self.form_fields.read().get(*self.name_to_id_map.read().get(&name).unwrap()).unwrap()
 	}
 
 	pub fn get_field_value<TReturnType>(&mut self, name: String) -> TReturnType
@@ -121,10 +90,28 @@ where
 	}
 
 	pub fn as_struct(&self) -> T {
-		let map_inverted = self.get_id_to_name_map();
+		let map_inverted = self.id_to_name_map.read();
 		let json_map: Map<String, Value> =
-			self.fields.read().clone().iter().enumerate().map(|(id, field)| (map_inverted.get(&id).unwrap().clone(), field.get_json_value())).collect();
+			self.form_fields.read().iter().enumerate().map(|(id, field)| (map_inverted.get(&id).unwrap().clone(), field.get_json_value())).collect();
 		serde_json::from_value(Value::Object(json_map)).expect("Failed to reconstruct form values into struct")
+	}
+
+	pub fn as_validated_struct(&mut self) -> (T, bool) {
+		let form_struct = self.as_struct();
+		match self.as_struct().validate() {
+			Ok(()) => {
+				self.is_valid.set(true);
+			},
+			Err(errors) => {
+				for (field_name, field_errors) in errors.field_errors() {
+					for field_error in field_errors {
+						self.push_field_error(field_name.to_string(), field_error.message.as_deref().unwrap_or("Unknown error").to_owned());
+					}
+				}
+				self.is_valid.set(false);
+			},
+		}
+		(form_struct, *self.is_valid.read())
 	}
 }
 
@@ -139,7 +126,7 @@ where
 
 impl<T> Copy for Formik<T> where T: Validate + Clone + Serialize + PartialEq + 'static + for<'de> Deserialize<'de> {}
 
-pub fn use_formik<T>(initial_values: T) -> Formik<T>
+pub fn use_init_form_ctx<T>(initial_values: T) -> Formik<T>
 where
 	T: Validate + Clone + Serialize + PartialEq + 'static + for<'de> Deserialize<'de>,
 {
