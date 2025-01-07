@@ -1,3 +1,5 @@
+#![allow(non_snake_case)]
+
 pub mod button;
 pub mod calendar;
 pub mod input;
