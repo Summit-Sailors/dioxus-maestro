@@ -1,7 +1,6 @@
 #![allow(non_snake_case)]
 
 use dioxus::prelude::*;
-use dioxus_router::prelude::*;
 
 mod components;
 mod models;
@@ -16,8 +15,8 @@ fn main() {
 }
 
 #[component]
-fn App(cx: Scope) -> Element {
-  cx.render(rsx! {
+fn App() -> Element {
+  rsx! {
     Router::<routes::Route> {}
-  })
+  }
 }
