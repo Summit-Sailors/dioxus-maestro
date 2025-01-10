@@ -1,0 +1,115 @@
+# Maestro Forms Demo
+
+A demo of the maestro-forms system for Dioxus applications.
+
+## Core Features
+
+### 1. Form Management
+
+- Type-safe form handling with Serde integration
+- Real-time form state tracking
+- Automatic field validation
+- Support for both async and sync operations
+
+### 2. Field Components
+
+- Text inputs with debounced updates
+- Select fields with custom value/label mapping
+- Textarea with configurable rows
+- Extensible field wrapper system
+
+### 3. Validation
+
+- Built-in validation using the `validator` crate
+- Real-time field-level error handling
+- Visual validation state indicators
+- Custom validation rules support
+
+### 4. Database Integration
+
+- Async/sync SQLx client support
+- Apalis storage integration
+- Transaction handling
+- Connection pooling
+
+### 5. Developer Experience
+
+- Form state debugging tools
+- Real-time form data visualization
+- Comprehensive error handling
+- Loading state management
+
+## Component Architecture
+
+### FormFieldWrapper
+
+The `FormFieldWrapper` component provides styling and error handling for form fields:
+
+```rust
+FormFieldWrapper {
+  label: "Username",
+  field: form.get_form_field("username".to_string()),
+  // child input component
+}
+```
+
+### FormStateDebugger
+
+Helps developers inspect form state during development:
+
+```rust
+FormStateDebugger {
+  form: form
+}
+```
+
+## Best Practices
+
+1. **Form Initialization**
+   - Always provide default values
+   - Use the `Default` trait when possible
+   - Initialize validation rules through derive macros
+
+2. **Error Handling**
+   - Implement field-level error messages
+   - Show validation state indicators
+   - Provide clear feedback on submission
+
+3. **State Management**
+   - Track form dirty state
+   - Handle loading states
+   - Manage async operations properly
+
+4. **User Experience**
+   - Debounce input updates
+   - Show loading indicators
+   - Provide clear validation feedback
+
+## API Examples
+
+### Form Setup
+
+```rust
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Validate)]
+pub struct User {
+    #[validate(length(min = 3, max = 20))]
+    pub username: String,
+    // ... other fields
+}
+
+Form {
+    initial_value: User::default(),
+    onsubmit: on_submit,
+    // ... form content
+}
+```
+
+### Database Integration
+
+```rust
+// async usage
+let storage = create_apalis_storage_async().await;
+
+// sync usage
+let storage = create_apalis_storage_sync();
+```
