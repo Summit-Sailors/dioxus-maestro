@@ -7,9 +7,9 @@ use validator::Validate;
 #[derive(Clone)]
 pub struct FormStateDebuggerProps<T>
 where
-    T: Validate + Clone + Serialize + PartialEq + 'static + for<'de> Deserialize<'de>,
+  T: Validate + Clone + Serialize + PartialEq + 'static + for<'de> Deserialize<'de>,
 {
-    pub form: Formik<T>,
+  pub form: Formik<T>,
 }
 
 #[component]

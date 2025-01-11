@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use validator::Validate;
+use apalis_core::storage::Job;
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Validate)]
 pub struct User {
@@ -15,6 +16,10 @@ pub struct User {
   pub role: String,
 }
 
+impl Job for User {
+  const NAME: &'static str = "maestro::User";
+}
+
 impl Default for User {
   fn default() -> Self {
     Self {
@@ -26,3 +31,4 @@ impl Default for User {
     }
   }
 }
+

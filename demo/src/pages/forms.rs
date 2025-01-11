@@ -2,34 +2,19 @@ use dioxus::prelude::*;
 use maestro_forms::fields::{form::{Form, InnerComponentProps}, select::SelectFormField, text::TextFormInput, textarea::TextArea};
 use maestro_sqlx::{async_client::apalis_storage::create_apalis_storage_async, sync_client::apalis_storage::create_apalis_storage_sync};
 use maestro_toast::{ctx::use_toast, toast_info::ToastInfo};
-use serde::{Deserialize, Serialize};
-use validator::Validate;
 
 use crate::{components::forms::{form_field_wrapper::FormFieldWrapper, form_state_debugger::FormStateDebugger}, models::user::User};
 
-#[derive(Props, PartialEq, Clone)]
-struct FormContentProps<T>
-where
-  T: Validate + Clone + Serialize + PartialEq + 'static + for<'de> Deserialize<'de>,
-{
-  form_props: InnerComponentProps<T>,
-  roles: Vec<String>,
-}
+const AVAILABLE_ROLES: &[&str] = &["admin", "user", "moderator"];
 
-type DataMmodel = User;
-
-#[component]
-fn FormContent<T>(props: FormContentProps<T>) -> Element 
-where
-    T: Validate + Clone + Serialize + PartialEq + 'static + for<'de> Deserialize<'de>,
-{
+fn form_content(props: InnerComponentProps<User>) -> Element {
   let loading = use_signal(|| false);
   
   rsx! {
     div { class: "space-y-4 bg-white p-6 rounded-lg shadow",
       FormFieldWrapper {
         label: "Username",
-        field: props.form_props.form.get_form_field("username".to_string()),
+        field: props.form.get_form_field("username".to_string()),
         TextFormInput::<User> {
           name: "username",
           class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
@@ -38,7 +23,7 @@ where
 
       FormFieldWrapper {
         label: "Email",
-        field: props.form_props.form.get_form_field("email".to_string()),
+        field: props.form.get_form_field("email".to_string()),
         TextFormInput::<User> {
           name: "email",
           class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
@@ -47,7 +32,7 @@ where
 
       FormFieldWrapper {
         label: "Bio",
-        field: props.form_props.form.get_form_field("bio".to_string()),
+        field: props.form.get_form_field("bio".to_string()),
         TextArea::<User> {
           name: "bio",
           rows: 4,
@@ -57,10 +42,10 @@ where
 
       FormFieldWrapper {
         label: "Role",
-        field: props.form_props.form.get_form_field("role".to_string()),
+        field: props.form.get_form_field("role".to_string()),
         SelectFormField::<User, String> {
           name: "role",
-          values: props.roles.clone(),
+          values: AVAILABLE_ROLES.iter().map(|&s| s.to_string()).collect(),
           class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
         }
       }
@@ -83,74 +68,58 @@ where
         }
       }
       
-      FormStateDebugger { form: props.form_props.form }
+      FormStateDebugger { form: props.form }
     }
   }
 }
 
 #[component]
 pub fn FormsDemo() -> Element {
-    let toast = use_toast();
-    let is_async = use_signal(|| true);
-    
-    let roles = vec![
-      "admin".to_string(),
-      "user".to_string(),
-      "moderator".to_string(),
-    ];
+  let mut toast = use_toast();
+  let mut is_async = use_signal(|| true);
 
-    let on_submit = move |event: FormEvent| {
-      if *is_async.read() {
-        spawn(async move {
-          // async storage example
-          let storage = create_apalis_storage_async::<DataMmodel>().await;
-          // API call simulate
-          tokio::time::sleep(std::time::Duration::from_secs(1)).await;
-          toast.write().popup(ToastInfo::builder().context("Form submitted successfully (async)!".to_string()).build());
-        });
-      } else {
-        // sync storage example
-        let storage = create_apalis_storage_sync::<DataMmodel>();
-        // processing simulate
-        std::thread::sleep(std::time::Duration::from_secs(1));
-        toast.write().popup(ToastInfo::builder().context("Form submitted successfully (sync)!".to_string()).build());
-      }
-    };
+  let on_submit = move |_event: FormEvent| {
+    if *is_async.read() {
+      spawn(async move {
+        let _storage = create_apalis_storage_async::<User>().await;
+        tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+        toast.write().popup(ToastInfo::builder().context("Form submitted successfully (async)!".to_string()).build());
+      });
+    } else {
+      let _storage = create_apalis_storage_sync::<User>();
+      std::thread::sleep(std::time::Duration::from_secs(1));
+      toast.write().popup(ToastInfo::builder().context("Form submitted successfully (sync)!".to_string()).build());
+    }
+  };
 
-    let async_class = if *is_async.read() { "bg-blue-500 text-white" } else { "bg-gray-200" };
-    let sync_class = if !*is_async.read() { "bg-blue-500 text-white" } else { "bg-gray-200" };
+  let async_class = if *is_async.read() { "bg-blue-500 text-white" } else { "bg-gray-200" };
+  let sync_class = if !*is_async.read() { "bg-blue-500 text-white" } else { "bg-gray-200" };
 
-    rsx! {
-      div { class: "max-w-4xl mx-auto p-6",
-        div { class: "mb-8",
-          h1 { class: "text-3xl font-bold mb-2", "Maestro Forms Demo" }
-          p { class: "text-gray-600", "A comprehensive demonstration of form handling with validation and database integration." }
+  rsx! {
+    div { class: "max-w-4xl mx-auto p-6",
+      div { class: "mb-8",
+        h1 { class: "text-3xl font-bold mb-2", "Maestro Forms Demo" }
+        p { class: "text-gray-600", "A comprehensive demonstration of form handling with validation and database integration." }
 
-          div { class: "mt-4",
-            button {
-              class: format!("px-4 py-2 rounded {}", async_class),
-              onclick: move |_| is_async.set(true),
-              "Async Mode"
-            }
-            button {
-              class: format!("ml-2 px-4 py-2 rounded {}", sync_class),
-              onclick: move |_| is_async.set(false),
-              "Sync Mode"
-            }
+        div { class: "mt-4",
+          button {
+            class: format!("px-4 py-2 rounded {}", async_class),
+            onclick: move |_| is_async.set(true),
+            "Async Mode"
+          }
+          button {
+            class: format!("ml-2 px-4 py-2 rounded {}", sync_class),
+            onclick: move |_| is_async.set(false),
+            "Sync Mode"
           }
         }
+      }
 
-        Form {
-          initial_value: User::default(),
-          onsubmit: on_submit,
-          inner: move |form_props| rsx! {
-            FormContent {
-              form_props: form_props,
-              roles: roles.clone()
-            }
-          },
-          ..Default::default()
-        }
+      Form {
+        initial_value: User::default(),
+        onsubmit: on_submit,
+        inner: form_content
       }
     }
+  }
 }
