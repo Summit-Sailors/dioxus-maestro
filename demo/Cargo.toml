@@ -17,8 +17,9 @@ validator = { workspace = true }
 
 # local deps
 maestro-forms = { workspace = true }
-maestro-sqlx = { workspace = true }
+maestro-sqlx = { workspace = true, features = ["apalis-async", "apalis-sync"]}
 maestro-toast = { workspace = true }
+apalis = { version = "0.6.3", features = ["limit"] }
 
 [features]
 default = ["web"]

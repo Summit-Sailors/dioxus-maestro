@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use validator::Validate;
 
 #[derive(Props, PartialEq)]
+#[derive(Clone)]
 pub struct FormStateDebuggerProps<T>
 where
     T: Validate + Clone + Serialize + PartialEq + 'static + for<'de> Deserialize<'de>,
