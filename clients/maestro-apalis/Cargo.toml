@@ -1,0 +1,22 @@
+[package]
+authors = []
+description = ""
+edition = "2021"
+license = ""
+name = "maestro-apalis"
+repository = ""
+
+
+[dependencies]
+maestro-sqlx = { path = "../maestro-sqlx" }
+
+bon = { workspace = true }
+serde = { workspace = true }
+
+apalis = { version = "0.5.5", features = ["cron", "postgres"], optional = true }
+tokio = { version = "1.43.0", optional = true }
+
+
+[features]
+acreate = ["dep:apalis", "maestro-sqlx/acreate"]
+create = ["acreate", "dep:tokio", "maestro-sqlx/create"]

@@ -160,7 +160,7 @@ pub fn Calendar(display_props: CalendarDisplayProps, select_props: CalendarSelec
 	}
 }
 
-#[derive(Clone, Props, PartialEq)]
+#[derive(Clone, PartialEq, Props)]
 pub struct CalendarMaybeWrapperProps {
 	is_full: bool,
 	selected_date: Memo<NaiveDate>,

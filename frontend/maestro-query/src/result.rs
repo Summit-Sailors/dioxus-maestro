@@ -1,6 +1,6 @@
 use {crate::cached_result::CachedResult, std::mem};
 
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum QueryResult<T, E> {
 	Ok(T),
 	Err(E),
