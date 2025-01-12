@@ -1,8 +1,8 @@
 use {
-	super::types::DbPoolAsync,
+	super::AsyncDieselPool,
 	diesel_async::pooled_connection::{deadpool, AsyncDieselConnectionManager},
 };
 
-pub fn create_db_pool_diesel_async(connection_url: &str) -> DbPoolAsync {
+pub fn acreate_diesel_pool(connection_url: &str) -> AsyncDieselPool {
 	deadpool::Pool::builder(AsyncDieselConnectionManager::<diesel_async::AsyncPgConnection>::new(connection_url)).build().expect("db pool creation failed")
 }

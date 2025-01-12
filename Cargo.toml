@@ -39,10 +39,7 @@ inherits = "dev"
 
 
 [workspace.dependencies]
-maestro-diesel = { path = "clients/maestro-diesel" }
-maestro-misanthropic = { path = "clients/maestro-misanthropic" }
-maestro-serpapi = { path = "clients/maestro-serpapi" }
-maestro-sqlx = { path = "clients/maestro-sqlx" }
+
 
 maestro-forms = { path = "frontend/maestro-forms" }
 maestro-hooks = { path = "frontend/maestro-hooks" }
@@ -53,21 +50,22 @@ maestro-ui = { path = "frontend/maestro-ui" }
 anyhow = "1.0.95"
 bon = "3.3.2"
 chrono = { version = "0.4.39", features = ["serde"] }
+futures = { version = "0.3.31" }
+itertools = { version = "0.14.0" }
 num-traits = { version = "0.2.19", features = [] }
-reqwest = { version = "0.12.11", features = ["json", "multipart"] }
-reqwest-middleware = { version = "0.4.0", features = ["json", "multipart"] }
+schemars = { version = "0.8.21" }
 serde = { version = "1.0.217", features = ["derive"] }
-serde_json = "1.0.134"
+serde_json = "1.0.135"
 strum = "0.26.3"
 strum_macros = "0.26.4"
 url = { version = "2.5.4", features = ["serde"] }
-uuid = { version = "1.11.0", features = ["serde", "v4"] }
+uuid = { version = "1.11.1", features = ["serde", "v4"] }
 validator = { version = "0.19.0", features = ["derive"] }
 
 dioxus = { version = "0.6.1", features = ["fullstack", "router"] }
-dioxus-free-icons = { version = "0.9.0", features = ["feather", "font-awesome-solid", "ionicons", "lucide"] }
+dioxus-free-icons = { version = "0.9.0", features = ["bootstrap", "feather", "font-awesome-solid", "ionicons", "lucide"] }
 dioxus-logger = "0.6.1"
-dioxus-sdk = { git = "https://github.com/DioxusLabs/sdk.git", features = [] }
+dioxus-sdk = { git = "https://github.com/DioxusLabs/sdk.git", features = ["timing"] }
 
 tailwind_fuse = { version = "0.3.1", features = ["variant"] }
 
@@ -87,10 +85,6 @@ unused_lifetimes = "warn"
 trivial_casts = "allow"
 unused_qualifications = "allow"
 
-[workspace.lints.rustdoc]
-all = "warn"
-broken_intra_doc_links = "warn"
-missing_crate_level_docs = "warn"
 
 # See also clippy.toml
 [workspace.lints.clippy]

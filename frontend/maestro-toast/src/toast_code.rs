@@ -1,4 +1,4 @@
-#[derive(Clone, Debug, Default, Eq, PartialEq)]
+#[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub enum EToastCode {
 	Success,
 	Warning,

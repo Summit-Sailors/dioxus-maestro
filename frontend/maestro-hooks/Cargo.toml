@@ -10,6 +10,8 @@ repository = ""
 [dependencies]
 bon = { workspace = true, features = ["experimental-getter", "implied-bounds"] }
 chrono = { workspace = true }
+futures = { workspace = true }
+itertools = { workspace = true }
 maestro-toast = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
@@ -17,18 +19,14 @@ strum = { workspace = true }
 strum_macros = { workspace = true }
 url = { workspace = true }
 uuid = { workspace = true }
-validator = { version = "0.19", features = ["derive"] }
+validator = { workspace = true }
 
-itertools = { version = "0.13.0" }
-
-dioxus = { version = "0.6.1", features = ["fullstack", "router"] }
-dioxus-free-icons = { version = "0.9.0", features = ["font-awesome-solid", "ionicons"] }
+dioxus = { workspace = true }
+dioxus-free-icons = { workspace = true }
 dioxus-lib = { version = "0.6.1", default-features = false, features = ["hooks", "macro", "signals"] }
-dioxus-logger = "0.6.1"
-dioxus-sdk = { git = "https://github.com/DioxusLabs/sdk.git", features = [] }
-
-futures = "0.3.31"
-tailwind_fuse = "0.3.1"
+dioxus-logger = { workspace = true }
+dioxus-sdk = { workspace = true }
+tailwind_fuse = { workspace = true }
 
 copypasta = { version = "0.10.1", optional = true }
 tracing-wasm = { version = "0.2.1", optional = true }

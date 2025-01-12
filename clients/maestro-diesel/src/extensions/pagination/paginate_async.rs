@@ -1,6 +1,6 @@
 use {
 	super::{dtos::PaginatedResultDTO, paginate::Paginated},
-	crate::async_client::types::DbPoolAsync,
+	crate::async_client::AsyncDieselPool,
 	diesel::QueryResult,
 	diesel_async::{methods::LoadQuery, AsyncPgConnection},
 };
@@ -16,7 +16,7 @@ impl<T> PaginateAsync for T {
 }
 
 impl<T> Paginated<T> {
-	pub async fn aload_and_count<'a, U>(self, conn: DbPoolAsync) -> QueryResult<(Vec<U>, i64)>
+	pub async fn aload_and_count<'a, U>(self, conn: AsyncDieselPool) -> QueryResult<(Vec<U>, i64)>
 	where
 		Self: LoadQuery<'a, AsyncPgConnection, (U, i64)> + 'a,
 		U: std::marker::Send,
@@ -30,7 +30,7 @@ impl<T> Paginated<T> {
 		Ok((records, total))
 	}
 
-	pub async fn aload_paginated<'a, U>(self, conn: DbPoolAsync) -> QueryResult<PaginatedResultDTO<U>>
+	pub async fn aload_paginated<'a, U>(self, conn: AsyncDieselPool) -> QueryResult<PaginatedResultDTO<U>>
 	where
 		Self: LoadQuery<'a, AsyncPgConnection, (U, i64)> + 'a,
 		U: std::marker::Send,

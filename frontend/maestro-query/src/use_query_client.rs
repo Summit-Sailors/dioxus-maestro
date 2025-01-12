@@ -45,7 +45,7 @@ pub(crate) struct QueryListeners<T, E, K> {
 	pub(crate) query_fn: Arc<Box<QueryFn<T, E, K>>>,
 }
 
-#[derive(PartialEq, Eq, Hash, Clone)]
+#[derive(Clone, PartialEq, Eq, Hash)]
 pub(crate) struct RegistryEntry<K> {
 	pub(crate) query_keys: Vec<K>,
 	pub(crate) query_fn_id: TypeId,

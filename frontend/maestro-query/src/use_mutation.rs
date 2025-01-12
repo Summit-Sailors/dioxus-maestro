@@ -115,7 +115,7 @@ where
 	}
 }
 
-#[derive(PartialEq, Debug)]
+#[derive(Debug, PartialEq)]
 pub enum MutationResult<T, E> {
 	Ok(T),
 	Err(E),

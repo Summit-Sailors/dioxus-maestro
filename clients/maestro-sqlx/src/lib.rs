@@ -1,7 +1,8 @@
-pub mod pool;
+#[cfg(any(feature = "acreate", feature = "create"))]
+pub use sqlx::PgPool as SqlxPgPool;
 
-#[cfg(feature = "apalis-sync")]
-pub mod sync_client;
+#[cfg(feature = "acreate")]
+pub mod acreate;
 
-#[cfg(feature = "apalis-async")]
-pub mod async_client;
+#[cfg(feature = "create")]
+pub mod create;
