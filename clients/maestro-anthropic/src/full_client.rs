@@ -1,23 +1,18 @@
 use {
-	super::{
-		prompt::{IsComplete, PromptBuilder},
-		AnthropicStream,
-	},
-	crate::prompt::{SetMessages, SetSystem, SetToolChoice, SetTools},
-	eventsource_stream::Eventsource,
+	futures::StreamExt,
 	reqwest::{
 		header::{HeaderMap, HeaderValue, CONTENT_TYPE},
-		Client, Method, StatusCode,
+		Client, StatusCode,
 	},
 	serde::{Deserialize, Serialize},
-	std::{env, num::NonZeroU16},
+	std::num::NonZeroU16,
 };
 
 pub type AnthropicResult<T> = std::result::Result<T, AnthropicClientError>;
 
 #[derive(Clone)]
 pub struct AnthropicClient {
-	pub(crate) inner: Client,
+	inner: Client,
 }
 
 impl AnthropicClient {
@@ -35,33 +30,96 @@ impl AnthropicClient {
 		Self { inner: Client::builder().default_headers(headers).build().unwrap() }
 	}
 
-	pub async fn message<S: IsComplete>(&self, prompt: PromptBuilder<S>) -> AnthropicResult<super::response::ResponseMessage> {
-		let response = self.inner.request(Method::POST, Self::DEFAULT_URL).json(&prompt.build(false)).send().await?;
+	pub async fn chat(&self, request: ChatRequest) -> AnthropicResult<ChatResponse> {
+		let response = self.inner.post(Self::DEFAULT_URL).json(&request).send().await?;
 		if response.status() != StatusCode::OK {
 			return Err(response.json::<AnthropicErrorWrapper>().await?.error.into());
 		}
 		Ok(serde_json::from_slice(&response.bytes().await?)?)
 	}
 
-	pub async fn stream<S: IsComplete>(&self, prompt: PromptBuilder<S>) -> AnthropicResult<AnthropicStream> {
-		let response = self.inner.request(Method::POST, Self::DEFAULT_URL).json(&prompt.build(true)).send().await?;
-		if response.status() != StatusCode::OK {
-			return Err(response.json::<AnthropicErrorWrapper>().await?.error.into());
-		}
-		Ok(AnthropicStream::new(response.bytes_stream().eventsource()))
-	}
+	pub async fn stream_chat(&self, request: ChatRequest) -> AnthropicResult<impl futures::Stream<Item = AnthropicResult<ChatStreamEvent>> + Send + 'static> {
+		use {eventsource_stream::Eventsource, futures::TryStreamExt};
+		let client = self.inner.clone();
+		let stream = futures::stream::once(async move {
+			let response = client.post(Self::DEFAULT_URL).json(&request).send().await?;
+			if response.status() != StatusCode::OK {
+				return Err(AnthropicClientError::Anthropic(response.json::<AnthropicErrorWrapper>().await?.error));
+			}
+			Ok::<_, AnthropicClientError>(response.bytes_stream().eventsource().map(|event| match event {
+				Ok(event) => match serde_json::from_str::<ChatStreamEvent>(&event.data) {
+					Ok(event) => Ok(event),
+					Err(error) => Err(AnthropicClientError::Parse(error)),
+				},
+				Err(error) => Err(AnthropicClientError::Stream(error)),
+			}))
+		})
+		.try_flatten();
 
-	pub async fn call_tool(&self, prompt: PromptBuilder<SetToolChoice<SetTools<SetSystem<SetMessages>>>>) -> AnthropicResult<serde_json::Value> {
-		self
-			.message(prompt)
-			.await?
-			.message
-			.content
-			.last()
-			.and_then(|block| block.tool_use())
-			.map(|tool_use| tool_use.input.to_owned())
-			.ok_or(AnthropicClientError::UnexpectedResponse { message: "No tool use result found" })
+		Ok(stream)
 	}
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ChatRequest {
+	pub model: String,
+	pub messages: Vec<Message>,
+	pub max_tokens: Option<u32>,
+	pub stream: bool,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Message {
+	pub role: String,
+	pub content: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ChatResponse {
+	pub content: Vec<ContentBlock>,
+	pub stop_reason: Option<String>,
+	pub usage: Usage,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ContentBlock {
+	#[serde(rename = "type")]
+	pub block_type: String,
+	pub text: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Usage {
+	pub input_tokens: u32,
+	pub output_tokens: u32,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(tag = "type")]
+pub enum ChatStreamEvent {
+	#[serde(rename = "content_block_start")]
+	ContentBlockStart { index: usize, content_block: ContentBlock },
+	#[serde(rename = "content_block_delta")]
+	ContentBlockDelta { index: usize, delta: ContentDelta },
+	#[serde(rename = "content_block_stop")]
+	ContentBlockStop { index: usize },
+	#[serde(rename = "message_start")]
+	MessageStart { message: ChatResponse },
+	#[serde(rename = "message_delta")]
+	MessageDelta { delta: MessageDelta },
+	#[serde(rename = "message_stop")]
+	MessageStop,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ContentDelta {
+	pub text: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct MessageDelta {
+	pub stop_reason: Option<String>,
+	pub usage: Option<Usage>,
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -73,15 +131,13 @@ pub enum AnthropicClientError {
 	Parse(#[from] serde_json::Error),
 	#[error("Anthropic error: {0}")]
 	Anthropic(#[from] AnthropicError),
-	#[error("Unexpected response: {message}")]
-	#[allow(missing_docs)]
-	UnexpectedResponse { message: &'static str },
+	#[error("Stream error: {0}")]
+	Stream(#[from] eventsource_stream::EventStreamError<reqwest::Error>),
 }
 
 #[derive(Debug, thiserror::Error, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
-#[allow(missing_docs)]
 pub enum AnthropicError {
 	#[error("invalid request (400): {message}")]
 	#[serde(rename = "invalid_request_error")]
@@ -96,7 +152,6 @@ pub enum AnthropicError {
 	#[serde(rename = "not_found_error")]
 	NotFound { message: String },
 	#[error("request too large (413): {message}")]
-	// This inconsistency is in the API.
 	RequestTooLarge { message: String },
 	#[error("rate limit (429): {message}")]
 	#[serde(rename = "rate_limit_error")]
@@ -108,7 +163,6 @@ pub enum AnthropicError {
 	#[error("overloaded (529): {message}")]
 	#[serde(rename = "overloaded_error")]
 	Overloaded { message: String },
-	// Anthropic's API specifies they can add more error codes in the future.
 	#[error("unknown error ({code}): {message}")]
 	Unknown { code: NonZeroU16, message: String },
 }
@@ -130,7 +184,6 @@ impl AnthropicError {
 }
 
 #[derive(Deserialize)]
-#[serde(tag = "error")]
-pub(crate) struct AnthropicErrorWrapper {
-	pub(crate) error: AnthropicError,
+struct AnthropicErrorWrapper {
+	error: AnthropicError,
 }
