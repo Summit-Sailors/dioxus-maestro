@@ -14,7 +14,7 @@ pub struct Prompt {
 	pub model: Model,
 	#[builder(default = NonZeroU16::new(8192).unwrap())]
 	pub max_tokens: NonZeroU16,
-	#[builder(default = 0.7)]
+	#[builder(default = 0.2)]
 	pub temperature: f32,
 	#[serde(skip_serializing_if = "Option::is_none")]
 	pub system: Option<String>,
