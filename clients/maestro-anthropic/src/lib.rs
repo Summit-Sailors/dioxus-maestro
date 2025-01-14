@@ -28,3 +28,6 @@ pub use stream::Stream as AnthropicStream;
 pub mod from_server;
 #[cfg(all(feature = "server", feature = "dioxus"))]
 pub use from_server::extract_anthropic_client;
+
+#[cfg(feature = "server")]
+pub mod full_client;

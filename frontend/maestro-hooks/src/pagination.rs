@@ -6,10 +6,10 @@ pub struct UsePagination {
 	pub page_size: Signal<i32>,
 
 	pub counter_label: Memo<String>,
-	pub can_next_idx: Memo<bool>,
-	pub can_prev_idx: Memo<bool>,
-	pub can_next_page: Memo<bool>,
-	pub can_prev_page: Memo<bool>,
+	pub next_idx_disabled: Memo<bool>,
+	pub prev_idx_disabled: Memo<bool>,
+	pub next_page_disabled: Memo<bool>,
+	pub prev_page_disabled: Memo<bool>,
 }
 
 impl Clone for UsePagination {
@@ -20,30 +20,66 @@ impl Clone for UsePagination {
 
 impl Copy for UsePagination {}
 
-pub fn use_pagination(total: Memo<i32>) -> UsePagination {
-	let idx = use_signal(|| 0);
-	let mut page = use_signal(|| 1);
+pub fn use_pagination(total: Memo<i32>) -> (UsePagination, (impl FnMut(), impl FnMut(), impl FnMut(), impl FnMut())) {
+	let mut idx = use_signal(|| 0);
+	let mut page = use_signal(|| 0);
 	let page_size = use_signal(|| 10);
 	let mut touched = use_signal(|| false);
-	let last_page = use_memo(move || ((total() as f64) / (page_size() as f64)).ceil() as i32);
-	let can_next_idx = use_memo(move || idx() != total());
-	let can_prev_idx = use_memo(move || idx() != 0);
-	let can_next_page = use_memo(move || page() != last_page());
-	let can_prev_page = use_memo(move || page() != 1);
-	let counter_label = use_memo(move || format!("{} of {}", page(), total()));
 
-	use_effect(move || {
-		if idx() != 0 {
+	let last_page = use_memo(move || ((total() as f64) / (page_size() as f64)).ceil() as i32 - 1);
+	let next_idx_disabled = use_memo(move || idx() == total() - 1);
+	let prev_idx_disabled = use_memo(move || idx() == 0);
+	let next_page_disabled = use_memo(move || page() == last_page());
+	let prev_page_disabled = use_memo(move || page() == 0);
+	let counter_label = use_memo(move || format!("idx {} of {} - page {} of {}", idx(), total() - 1, page(), last_page()));
+	let next_idx = move || {
+		if !touched() {
 			touched.set(true);
 		}
-	});
-	use_effect(move || {
-		if touched() && (idx() % page_size() == 0) {
-			page += 1;
+		if !next_idx_disabled() {
+			let mut idx = idx.write();
+			*idx += 1;
+			if !next_page_disabled() && *idx % page_size() == 0 {
+				page += 1;
+			}
 		}
-		if idx() > page_size() && idx() % page_size() == page_size() - 1 {
-			page -= 1;
+	};
+	let next_page = move || {
+		if !touched() {
+			touched.set(true);
 		}
-	});
-	UsePagination { idx, page, page_size, can_next_idx, can_prev_idx, can_next_page, can_prev_page, counter_label }
+		if !next_page_disabled() {
+			let mut page = page.write();
+			*page += 1;
+			idx.set(*page * page_size());
+		}
+	};
+	let prev_page = move || {
+		if !touched() {
+			touched.set(true);
+		}
+		if !next_page_disabled() {
+			let mut page = page.write();
+			*page -= 1;
+			idx.set(*page * page_size());
+		}
+	};
+
+	let prev_idx = move || {
+		if !touched() {
+			touched.set(true);
+		}
+		if !prev_idx_disabled() {
+			let mut idx = idx.write();
+			*idx -= 1;
+			if !prev_page_disabled() && *idx % page_size() == page_size() - 1 {
+				page += 1;
+			}
+		}
+	};
+
+	(
+		UsePagination { idx, page, page_size, next_idx_disabled, prev_idx_disabled, next_page_disabled, prev_page_disabled, counter_label },
+		(next_idx, prev_idx, next_page, prev_page),
+	)
 }
