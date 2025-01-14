@@ -1,6 +1,7 @@
+use maestro_diesel::{ sync_client::create_db_pool_diesel, async_client::client::acreate_diesel_pool };
 use dioxus::prelude::*;
+use async_std::task::sleep;
 use maestro_forms::fields::{form::{Form, InnerComponentProps}, select::SelectFormField, text::TextFormInput, textarea::TextArea};
-use maestro_sqlx::{async_client::apalis_storage::create_apalis_storage_async, sync_client::apalis_storage::create_apalis_storage_sync};
 use maestro_toast::{ctx::use_toast, toast_info::ToastInfo};
 
 use crate::{components::forms::{form_field_wrapper::FormFieldWrapper, form_state_debugger::FormStateDebugger}, models::user::User};
@@ -56,13 +57,13 @@ fn form_content(props: InnerComponentProps<User>) -> Element {
         disabled: *loading.read(),
         
         if *loading.read() {
-          span { 
-            class: "inline-flex items-center",
             span { 
-              class: "mr-2", 
-              "Loading..." 
+              class: "inline-flex items-center",
+              span { 
+                class: "mr-2", 
+                "Loading..." 
+              }
             }
-          }
         } else {
           "Submit"
         }
@@ -79,16 +80,21 @@ pub fn FormsDemo() -> Element {
   let mut is_async = use_signal(|| true);
 
   let on_submit = move |_event: FormEvent| {
+    let db_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     if *is_async.read() {
       spawn(async move {
-        let _storage = create_apalis_storage_async::<User>().await;
-        tokio::time::sleep(std::time::Duration::from_secs(1)).await;
-        toast.write().popup(ToastInfo::builder().context("Form submitted successfully (async)!".to_string()).build());
+        let _pool = acreate_diesel_pool(&db_url);
+        sleep(std::time::Duration::from_secs(1)).await;
+        toast.write().popup(ToastInfo::builder()
+          .context("Form submitted successfully (async)!".to_string())
+          .build());
       });
     } else {
-      let _storage = create_apalis_storage_sync::<User>();
+      let _pool = create_db_pool_diesel(&db_url);
       std::thread::sleep(std::time::Duration::from_secs(1));
-      toast.write().popup(ToastInfo::builder().context("Form submitted successfully (sync)!".to_string()).build());
+      toast.write().popup(ToastInfo::builder()
+        .context("Form submitted successfully (sync)!".to_string())
+        .build());
     }
   };
 

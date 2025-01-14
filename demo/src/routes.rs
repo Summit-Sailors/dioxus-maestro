@@ -43,12 +43,12 @@ fn Forms() -> Element {
 
 #[component]
 fn Hooks() -> Element {
-  rsx!(div { "Hooks Demo Coming Soon" })
+  rsx!(div { Hooks {} })
 }
 
 #[component]
 fn Plotters() -> Element {
-  rsx!(div { "Charts Demo Coming Soon" })
+  rsx!(div { Plotters {} })
 }
 
 #[component]
