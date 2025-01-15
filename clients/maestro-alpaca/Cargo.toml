@@ -1,0 +1,42 @@
+[package]
+authors = []
+description = ""
+edition = "2021"
+license = ""
+name = "maestro-alpaca"
+repository = ""
+resolver = "2"
+
+
+[dependencies]
+
+
+anyhow = { workspace = true }
+bon = { workspace = true }
+chrono = { workspace = true }
+futures = { workspace = true }
+itertools = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+strum = { workspace = true }
+strum_macros = { workspace = true }
+url = { workspace = true }
+uuid = { workspace = true }
+validator = { workspace = true }
+
+
+diesel = { version = "2.2.6", features = ["chrono", "postgres", "serde_json", "uuid"], optional = true }
+diesel-async = { version = "0.5.2", features = ["postgres"], optional = true }
+diesel-derive-enum = { version = "2.1.0", features = ["postgres"], optional = true }
+
+reqwest = { version = "0.12.12", optional = true, features = ["json"] }
+
+dioxus = { version = "0.6.1", features = ["fullstack"], optional = true }
+dioxus-logger = { workspace = true, optional = true }
+
+[build-dependencies]
+dotenvy = { git = "https://github.com/allan2/dotenvy.git", features = ["macros"] }
+
+[features]
+dioxus = ["dep:dioxus", "dep:dioxus-logger"]
+server = ["dep:diesel", "dep:diesel-async", "dep:diesel-derive-enum", "dep:reqwest"]
