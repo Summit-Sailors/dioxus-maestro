@@ -53,7 +53,7 @@ fn Plotters() -> Element {
 
 #[component]
 fn Query() -> Element {
-  rsx!(div Query {})
+  rsx!(div { Query {} })
 }
 
 #[component]
