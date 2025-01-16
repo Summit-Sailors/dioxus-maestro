@@ -1,292 +1,178 @@
-
-use crate::models::user::User;
+use async_std::sync::RwLock;
+use dioxus::fullstack::once_cell;
 use dioxus::prelude::*;
 use maestro_query::prelude::*;
-use maestro_sqlx::{create::create_sqlx_pool, SqlxPgPool};
+use validator::Validate;
+use std::collections::HashMap;
+use std::fmt::Error;
 use std::sync::Arc;
 
-pub fn Query() -> Element {
-  let client = use_init_query_client::<Vec<User>, String, String>();
-  
-  rsx! {
-    div { class: "container mx-auto p-6",
-      h1 { class: "text-3xl font-bold mb-8", "Maestro Query Demo" }
-      
-      div { class: "grid grid-cols-1 md:grid-cols-2 gap-6",
-        // query 
-        { QueryExamples {} }
-        
-        // mutation 
-        { MutationExamples {} }
-      }
-    }
-  }
+use crate::models::user::User;
+
+// simulated backend storage
+static USERS: once_cell::sync::Lazy<Arc<RwLock<HashMap<String, User>>>> = 
+  once_cell::sync::Lazy::new(|| Arc::new(RwLock::new(HashMap::new())));
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum UserError {
+  NotFound,
+  ValidationError(String),
+  DatabaseError(String),
 }
 
+// component to display user list
 #[component]
-fn QueryExamples() -> Element {
-  let pool = use_signal(|| None::<Arc<SqlxPgPool>>);
-  let db_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-  
-  use_effect(move || async move {
-    let db_pool = create_sqlx_pool(db_url).await;
-    pool.replace(Some(Arc::new(db_pool)));
-  });
+pub fn UserList() -> Element {
+    let query_client: UseQueryClient<Vec<User>, Error, String> = use_init_query_client();
+    
+    let users = use_get_query([String::from("users")], |_| async move {
+      let users = USERS.read().await;
+      QueryResult::Ok::<Vec<User>, Error>(users.values().cloned().collect::<Vec<User>>())
+    });
 
-  // basic users query
-  let users_query = use_get_query(["all_users"], move |_| {
-    let pool = pool.clone();
-    async move {
-      match &*pool.get() {
-        Some(pool) => {
-          match sqlx::query_as!(
-            User,
-            "SELECT username, email, bio, age, role FROM users"
-          )
-          .fetch_all(pool)
-          .await {
-            Ok(users) => QueryResult::Ok(users),
-            Err(e) => QueryResult::Err(e.to_string()),
-          }
-        }
-        None => QueryResult::Loading(None),
+    let delete_mutation = use_mutation(|username: String| async move {
+      let mut users = USERS.write().await;
+      match users.remove(&username) {
+        Some(_) => MutationResult::Ok(()),
+        None => MutationResult::Err(UserError::NotFound),
       }
-    }
-  });
+    });
 
-  // filtered users query
-  let role_filter = use_signal(|| "admin".to_string());
-  let filtered_users = use_get_query([role_filter.get().clone()], move |keys| {
-    let pool = pool.clone();
-    let role = &keys[0];
-    async move {
-      match &*pool.get() {
-        Some(pool) => {
-          match sqlx::query_as!(
-            User,
-            "SELECT username, email, bio, age, role FROM users WHERE role = $1",
-            role
-          )
-          .fetch_all(pool)
-          .await {
-            Ok(users) => QueryResult::Ok(users),
-            Err(e) => QueryResult::Err(e.to_string()),
-          }
-        }
-        None => QueryResult::Loading(None),
+    let handle_delete = move |username: String| {
+      let delete_mutation = delete_mutation;
+      let query_client = query_client;
+      async move {
+        delete_mutation.mutate(username.clone());
+        query_client.invalidate_query(String::from("users"));
       }
-    }
-  });
+    };
 
-  rsx! {
-    div { class: "bg-white rounded-lg shadow p-6",
-      h2 { class: "text-2xl font-semibold mb-4", "Query Examples" }
-
-      // all users section
-      section { class: "mb-8",
-        h3 { class: "text-xl font-medium mb-3", "All Users" }
-        
-        div { class: "space-y-2",
-          if users_query.result().is_loading() {
-            div { class: "text-gray-500", "Loading users..." }
-          } else if let QueryResult::Ok(users) = &users_query.result().value() {
-            users.iter().map(|user| {
-              rsx! {
-                div { class: "border rounded p-3",
-                  p { class: "font-medium", "{user.username}" }
-                  p { class: "text-sm text-gray-600", "Role: {user.role}" }
-                  p { class: "text-sm text-gray-600", "Email: {user.email}" }
+    rsx! {
+      div {
+        h2 { "Users List" }
+        match users.result().value() {
+          QueryResult::Loading(_) => rsx!{ div { "Loading users..." } },
+          QueryResult::Err(e) => rsx!{ div { "Error: {e}" } },
+          QueryResult::Ok(users) => rsx!{
+              div {
+                {
+                  users.iter().map(|user| rsx!(
+                    div {
+                      key: "{user.username}",
+                      class: "user-item",
+                      p { "Username: {user.username}" }
+                      p { "Email: {user.email}" }
+                      p { "Age: {user.age}" }
+                      p { "Role: {user.role}" }
+                      button {
+                        onclick: move |_| handle_delete(user.username.clone()),
+                        "Delete User"
+                      }
+                    }
+                ))
                 }
               }
-            })
-          } else if let QueryResult::Err(error) = &users_query.result().value() {
-            div { class: "text-red-500", "Error: {error}" }
-          }
-        }
-      }
-
-      // filtered users section
-      section {
-        h3 { class: "text-xl font-medium mb-3", "Filtered Users" }
-        
-        div { class: "mb-4",
-          select {
-            class: "border rounded px-3 py-2",
-            value: "{role_filter}",
-            onchange: move |evt| role_filter.set(evt.value.clone()),
-            option { value: "admin", "Admin" }
-            option { value: "user", "User" }
-            option { value: "moderator", "Moderator" }
-          }
-        }
-
-        div { class: "space-y-2",
-          if filtered_users.result().is_loading() {
-            div { class: "text-gray-500", "Loading filtered users..." }
-          } else if let QueryResult::Ok(users) = &filtered_users.result().value() {
-            users.iter().map(|user| {
-              rsx! {
-                div { class: "border rounded p-3",
-                  p { class: "font-medium", "{user.username}" }
-                  p { class: "text-sm text-gray-600", "Email: {user.email}" }
-                }
-              }
-            })
-          } else if let QueryResult::Err(error) = &filtered_users.result().value() {
-              div { class: "text-red-500", "Error: {error}" }
           }
         }
       }
     }
-  }
 }
 
+// component to create/edit user
 #[component]
-fn MutationExamples() -> Element {
-  let pool = use_signal(|| None::<Arc<SqlxPgPool>>);
-  let db_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-
-  
-  use_effect(move ||
-    async move {
-      let db_pool = create_sqlx_pool(&db_url).await;
-      pool.set(Some(Arc::new(db_pool)));
-  });
-
-  // Create user mutation
-  let create_user = use_mutation(move |user: User| {
-    let pool = pool.clone();
-    async move {
-      match &*pool.get() {
-        Some(pool) => {
-          match sqlx::query_as!(
-            User,
-            "INSERT INTO users (username, email, bio, age, role) 
-              VALUES ($1, $2, $3, $4, $5)
-              RETURNING username, email, bio, age, role",
-            user.username,
-            user.email,
-            user.bio,
-            user.age,
-            user.role
-          )
-          .fetch_one(pool)
-          .await {
-            Ok(user) => MutationResult::Ok(user),
-            Err(e) => MutationResult::Err(e.to_string()),
-          }
-        }
-        None => MutationResult::Err("Database connection not available".to_string()),
+pub fn UserForm(initial_user: Option<User>, on_success: EventHandler) -> Element {
+    let mut user = use_signal(|| initial_user.unwrap_or_default());
+    
+    let create_mutation = use_mutation(|new_user: User| async move {
+      if let Err(e) = new_user.validate() {
+        return MutationResult::Err(UserError::ValidationError(e.to_string()));
       }
+
+      let mut users = USERS.write().await;
+      users.insert(new_user.username.clone(), new_user.clone());
+      MutationResult::Ok(new_user)
+    });
+
+    let handle_submit = move |event: FormEvent| {
+        event.prevent_default();
+        to_owned![create_mutation, on_success, user];
+        
+        async move {
+            create_mutation.mutate(user.read().to_owned());
+            if create_mutation.result().is_ok() {
+                on_success.call(());
+            }
+        }
+    };
+
+    rsx! {
+        form {
+            onsubmit: handle_submit,
+            div {
+                label { "Username:" }
+                input {
+                    value: "{user.read().username}",
+                    oninput: move |e| user.set(User {
+                        username: e.value().clone(),
+                        ..*user.read()
+                    })
+                }
+            }
+            div {
+                label { "Email:" }
+                input {
+                    value: "{user.read().email}",
+                    oninput: move |e| user.set(User {
+                        email: e.value().clone(),
+                        ..*user.read()
+                    })
+                }
+            }
+            div {
+                label { "Bio:" }
+                textarea {
+                    value: "{user.read().bio}",
+                    oninput: move |e| user.set(User {
+                        bio: e.value().clone(),
+                        ..*user.read()
+                    })
+                }
+            }
+            div {
+                label { "Age:" }
+                input {
+                    r#type: "number",
+                    value: "{user.read().age}",
+                    oninput: move |e| user.set(User {
+                        age: e.value().parse().unwrap_or(18),
+                        ..*user.read()
+                    })
+                }
+            }
+            div {
+                label { "Role:" }
+                select {
+                    value: "{user.read().role}",
+                    onchange: move |e| user.set(User {
+                        role: e.value().clone(),
+                        ..*user.read()
+                    }),
+                    option { value: "", "Select Role" }
+                    option { value: "user", "User" }
+                    option { value: "admin", "Admin" }
+                }
+            }
+            button {
+                r#type: "submit",
+                disabled: create_mutation.result().is_loading(),
+                {if create_mutation.result().is_loading() { "Saving..." } else { "Save User" }}
+            }
+            {match *create_mutation.result() {
+                MutationResult::Err(UserError::ValidationError(ref e)) => Some(rsx!{
+                    div { class: "error", "{e}" }
+                }),
+                _ => None
+            }}
+        }
     }
-  });
-
-  let user = use_signal(User::default);
-
-  rsx! {
-    div { class: "bg-white rounded-lg shadow p-6",
-      h2 { class: "text-2xl font-semibold mb-4", "Mutation Examples" }
-
-      form {
-        class: "space-y-4",
-        onsubmit: move |ev| {
-          ev.prevent_default();
-          create_user.mutate(user.get().clone());
-        },
-
-        div {
-          label { class: "block text-sm font-medium mb-1", "Username" }
-          input {
-            class: "border rounded px-3 py-2 w-full",
-            value: "{user.get().username}",
-            oninput: move |ev| {
-              let mut new_user = user.get().clone();
-              new_user.username = ev.value().clone();
-              user.set(new_user);
-            }
-          }
-        }
-
-        div {
-          label { class: "block text-sm font-medium mb-1", "Email" }
-          input {
-            class: "border rounded px-3 py-2 w-full",
-            r#type: "email",
-            value: "{user.get().email}",
-            oninput: move |ev| {
-              let mut new_user = user.get().clone();
-              new_user.email = ev.value().clone();
-              user.set(new_user);
-            }
-          }
-        }
-
-        div {
-          label { class: "block text-sm font-medium mb-1", "Bio" }
-          textarea {
-            class: "border rounded px-3 py-2 w-full",
-            value: "{user.get().bio}",
-            oninput: move |ev| {
-              let mut new_user = user.get().clone();
-              new_user.bio = ev.value().clone();
-              user.set(new_user);
-            }
-          }
-        }
-
-        div {
-          label { class: "block text-sm font-medium mb-1", "Age" }
-          input {
-            class: "border rounded px-3 py-2 w-full",
-            r#type: "number",
-            value: "{user.get().age}",
-            oninput: move |ev| {
-              let mut new_user = user.get().clone();
-              new_user.age = ev.value().parse().unwrap_or(18);
-              user.set(new_user);
-            }
-          }
-        }
-
-        div {
-          label { class: "block text-sm font-medium mb-1", "Role" }
-          select {
-            class: "border rounded px-3 py-2 w-full",
-            value: "{user.get().role}",
-            onchange: move |ev| {
-              let mut new_user = user.get().clone();
-              new_user.role = ev.value().clone();
-              user.set(new_user);
-            },
-            option { value: "", "Select a role" }
-            option { value: "admin", "Admin" }
-            option { value: "user", "User" }
-            option { value: "moderator", "Moderator" }
-          }
-        }
-
-        button {
-          class: "bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50",
-          r#type: "submit",
-          disabled: create_user.result().is_loading(),
-          if create_user.result().is_loading() {
-            "Creating..."
-          } else {
-            "Create User"
-          }
-        }
-
-        // mutation status messages
-        {match *create_user.result() {
-          MutationResult::Ok(_) => render! {
-            div { class: "text-green-500 mt-2", "User created successfully!" }
-          },
-          MutationResult::Err(error) => render! {
-            div { class: "text-red-500 mt-2", "Error: {error}" }
-          },
-          _ => None
-        }}
-      }
-    }
-  }
 }
