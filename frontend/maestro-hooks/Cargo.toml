@@ -30,11 +30,11 @@ tailwind_fuse = { workspace = true }
 
 copypasta = { version = "0.10.1", optional = true }
 tracing-wasm = { version = "0.2.1", optional = true }
-wasm-bindgen-futures = { version = "0.4.49", optional = true }
+wasm-bindgen-futures = { version = "0.4.50", optional = true }
 web-sys = { version = "0.3.76", features = ["Clipboard", "Navigator", "Window"], optional = true }
 
 
 [features]
-default = []
+default = ["web"]
 desktop = ["dep:copypasta", "dioxus/desktop"]
 web = ["chrono/wasmbind", "dep:tracing-wasm", "dep:wasm-bindgen-futures", "dep:web-sys", "dioxus/web", "uuid/js"]

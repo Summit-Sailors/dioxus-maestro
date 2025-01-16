@@ -53,7 +53,7 @@ fn Plotters() -> Element {
 
 #[component]
 fn Query() -> Element {
-  rsx!(div { "Query Demo Coming Soon" })
+  rsx!(div Query {})
 }
 
 #[component]

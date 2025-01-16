@@ -1,17 +1,14 @@
-// TODO: under dev
 
 use crate::models::user::User;
 use dioxus::prelude::*;
 use maestro_query::prelude::*;
-use maestro_sqlx::pool::create_db_pool_sqlx;
-use sqlx::PgPool;
+use maestro_sqlx::{create::create_sqlx_pool, SqlxPgPool};
 use std::sync::Arc;
 
-
-pub fn HooksPage(cx: Scope) -> Element {
+pub fn Query() -> Element {
   let client = use_init_query_client::<Vec<User>, String, String>();
-    
-  render! {
+  
+  rsx! {
     div { class: "container mx-auto p-6",
       h1 { class: "text-3xl font-bold mb-8", "Maestro Query Demo" }
       
@@ -26,15 +23,14 @@ pub fn HooksPage(cx: Scope) -> Element {
   }
 }
 
-fn QueryExamples(cx: Scope) -> Element {
-  let pool = use_signal(cx, || None::<Arc<PgPool>>);
+#[component]
+fn QueryExamples() -> Element {
+  let pool = use_signal(|| None::<Arc<SqlxPgPool>>);
+  let db_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
   
-  use_effect(cx, (), |_| {
-    to_owned![pool];
-    async move {
-      let db_pool = create_db_pool_sqlx().await;
-      pool.set(Some(Arc::new(db_pool)));
-    }
+  use_effect(move || async move {
+    let db_pool = create_sqlx_pool(db_url).await;
+    pool.replace(Some(Arc::new(db_pool)));
   });
 
   // basic users query
@@ -59,7 +55,7 @@ fn QueryExamples(cx: Scope) -> Element {
   });
 
   // filtered users query
-  let role_filter = use_state(cx, || "admin".to_string());
+  let role_filter = use_signal(|| "admin".to_string());
   let filtered_users = use_get_query([role_filter.get().clone()], move |keys| {
     let pool = pool.clone();
     let role = &keys[0];
@@ -82,7 +78,7 @@ fn QueryExamples(cx: Scope) -> Element {
     }
   });
 
-  render! {
+  rsx! {
     div { class: "bg-white rounded-lg shadow p-6",
       h2 { class: "text-2xl font-semibold mb-4", "Query Examples" }
 
@@ -146,15 +142,15 @@ fn QueryExamples(cx: Scope) -> Element {
 }
 
 #[component]
-fn MutationExamples(cx: Scope) -> Element {
-  let pool = use_state(cx, || None::<Arc<PgPool>>);
+fn MutationExamples() -> Element {
+  let pool = use_signal(|| None::<Arc<SqlxPgPool>>);
+  let db_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+
   
-  use_effect(cx, (), |_| {
-    to_owned![pool];
+  use_effect(move ||
     async move {
-      let db_pool = create_db_pool_sqlx().await;
+      let db_pool = create_sqlx_pool(&db_url).await;
       pool.set(Some(Arc::new(db_pool)));
-    }
   });
 
   // Create user mutation
@@ -185,9 +181,9 @@ fn MutationExamples(cx: Scope) -> Element {
     }
   });
 
-  let user = use_state(cx, User::default);
+  let user = use_signal(User::default);
 
-  render! {
+  rsx! {
     div { class: "bg-white rounded-lg shadow p-6",
       h2 { class: "text-2xl font-semibold mb-4", "Mutation Examples" }
 
@@ -205,7 +201,7 @@ fn MutationExamples(cx: Scope) -> Element {
             value: "{user.get().username}",
             oninput: move |ev| {
               let mut new_user = user.get().clone();
-              new_user.username = ev.value.clone();
+              new_user.username = ev.value().clone();
               user.set(new_user);
             }
           }
@@ -219,7 +215,7 @@ fn MutationExamples(cx: Scope) -> Element {
             value: "{user.get().email}",
             oninput: move |ev| {
               let mut new_user = user.get().clone();
-              new_user.email = ev.value.clone();
+              new_user.email = ev.value().clone();
               user.set(new_user);
             }
           }
@@ -232,7 +228,7 @@ fn MutationExamples(cx: Scope) -> Element {
             value: "{user.get().bio}",
             oninput: move |ev| {
               let mut new_user = user.get().clone();
-              new_user.bio = ev.value.clone();
+              new_user.bio = ev.value().clone();
               user.set(new_user);
             }
           }
@@ -246,7 +242,7 @@ fn MutationExamples(cx: Scope) -> Element {
             value: "{user.get().age}",
             oninput: move |ev| {
               let mut new_user = user.get().clone();
-              new_user.age = ev.value.parse().unwrap_or(18);
+              new_user.age = ev.value().parse().unwrap_or(18);
               user.set(new_user);
             }
           }
@@ -259,7 +255,7 @@ fn MutationExamples(cx: Scope) -> Element {
             value: "{user.get().role}",
             onchange: move |ev| {
               let mut new_user = user.get().clone();
-              new_user.role = ev.value.clone();
+              new_user.role = ev.value().clone();
               user.set(new_user);
             },
             option { value: "", "Select a role" }
@@ -281,7 +277,7 @@ fn MutationExamples(cx: Scope) -> Element {
         }
 
         // mutation status messages
-        {match create_user.result() {
+        {match *create_user.result() {
           MutationResult::Ok(_) => render! {
             div { class: "text-green-500 mt-2", "User created successfully!" }
           },

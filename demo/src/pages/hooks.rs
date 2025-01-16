@@ -6,8 +6,8 @@ use maestro_hooks::{
 };
 
 #[component]
-pub fn Hooks(cx: Scope) -> Element {
-    let total_items = use_memo(cx);
+pub fn Hooks() -> Element {
+    let total_items = use_explicit_memo();
     let clipboard = use_clipboard();
     let expensive_computation = use_explicit_memo(
       total_items(),  // dependency
@@ -20,13 +20,13 @@ pub fn Hooks(cx: Scope) -> Element {
     let pagination = use_pagination(total_items);
     
     // state for clipboard demo
-    let clipboard_content = use_state(cx, String::new);
-    let copy_status = use_state(cx, || "");
+    let clipboard_content = use_signal(String::new);
+    let copy_status = use_signal();
     
     // items for pagination demo
     let items = (1..=50).collect::<Vec<i32>>();
     
-    cx.render(rsx! {
+    rsx! {
       div {
         class: "maestro-hooks-demo",
         
@@ -40,12 +40,12 @@ pub fn Hooks(cx: Scope) -> Element {
               input {
                 placeholder: "Type something to copy",
                 value: "{clipboard_content}",
-                oninput: move |e| clipboard_content.set(e.value.clone())
+                oninput: move |e| clipboard_content.set(e.value().clone())
               }
               
               button {
                 onclick: move |_| async move {
-                  if let Ok(()) = clipboard.set(clipboard_content.get().clone()).await {
+                  if let Ok(()) = clipboard.set(clipboard_content().get().clone()).await {
                     copy_status.set("Content copied!");
                   } else {
                     copy_status.set("Failed to copy");
@@ -151,5 +151,5 @@ pub fn Hooks(cx: Scope) -> Element {
           }
         }
       }
-    })
+    }
 }
