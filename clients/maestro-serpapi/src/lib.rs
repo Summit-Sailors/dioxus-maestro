@@ -4,3 +4,6 @@ pub mod routes;
 
 #[cfg(feature = "server")]
 pub mod client;
+
+#[cfg(feature = "dioxus")]
+pub mod functions;

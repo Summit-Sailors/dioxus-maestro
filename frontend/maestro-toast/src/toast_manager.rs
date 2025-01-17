@@ -28,6 +28,10 @@ impl ToastManager {
 		Self { list: BTreeMap::new(), maximum_toast, id_manager: ToastID::new() }
 	}
 
+	pub fn error(&mut self, e_string: String) {
+		self.popup(ToastInfo::builder().context(e_string).build());
+	}
+
 	pub fn popup(&mut self, info: ToastInfo) -> usize {
 		let toast_id = self.id_manager.add();
 		if self.list.len() >= self.maximum_toast.into() {
