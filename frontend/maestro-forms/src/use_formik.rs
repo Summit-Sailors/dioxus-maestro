@@ -66,11 +66,11 @@ where
 		self.is_dirty.set(true);
 	}
 
-	pub fn get_field_json_signal(&mut self, name: String) -> Signal<Value> {
+	pub fn get_field_json_signal(&self, name: String) -> Signal<Value> {
 		self.get_form_field(name).value
 	}
 
-	pub fn get_field_json_value(&mut self, name: String) -> Value {
+	pub fn get_field_json_value(&self, name: String) -> Value {
 		self.get_field_json_signal(name).read().clone()
 	}
 
@@ -78,7 +78,7 @@ where
 		*self.form_fields.read().get(*self.name_to_id_map.read().get(&name).unwrap()).unwrap()
 	}
 
-	pub fn get_field_value<TReturnType>(&mut self, name: String) -> TReturnType
+	pub fn get_field_value<TReturnType>(&self, name: String) -> TReturnType
 	where
 		TReturnType: for<'de> serde::Deserialize<'de>,
 	{
@@ -90,7 +90,7 @@ where
 	}
 
 	pub fn as_struct(&self) -> T {
-		let map_inverted = self.id_to_name_map.read();
+		let map_inverted = self.id_to_name_map.peek();
 		let json_map: Map<String, Value> =
 			self.form_fields.read().iter().enumerate().map(|(id, field)| (map_inverted.get(&id).unwrap().clone(), field.get_json_value())).collect();
 		serde_json::from_value(Value::Object(json_map)).expect("Failed to reconstruct form values into struct")

@@ -24,14 +24,14 @@ futures = { workspace = true }
 
 derive_more = { version = "1.0.0", features = ["display", "from", "is_variant"] }
 
+dioxus = { version = "0.6.1", features = ["fullstack"], optional = true }
 eventsource-stream = { version = "0.2.3", optional = true }
 reqwest = { version = "0.12.12", features = ["json", "stream"], optional = true }
 static_assertions = { version = "1.1.0", optional = true }
 thiserror = { version = "2.0.11", optional = true }
+tokio = { version = "1.43.0", optional = true }
 zeroize = { version = "1.8.1", features = ["derive"], optional = true }
-
-dioxus = { version = "0.6.1", features = ["fullstack"], optional = true }
 
 [features]
 dioxus = ["dep:dioxus"]
-server = ["dep:eventsource-stream", "dep:reqwest", "dep:static_assertions", "dep:thiserror", "dep:zeroize", "dioxus?/server"]
+server = ["dep:eventsource-stream", "dep:reqwest", "dep:static_assertions", "dep:thiserror", "dep:tokio", "dep:zeroize", "dioxus?/server"]

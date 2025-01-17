@@ -31,3 +31,6 @@ pub use from_server::extract_anthropic_client;
 
 #[cfg(feature = "server")]
 pub mod full_client;
+
+#[cfg(feature = "dioxus")]
+pub mod functions;
