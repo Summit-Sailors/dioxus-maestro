@@ -11,57 +11,66 @@ use plotters::style::RGBColor;
 
 #[component]
 pub fn Plotters() -> Element {
-  let bar_data = use_explicit_memo((), || {
-    Some(vec![
-      ("Jan".to_string(), 100.0),
-      ("Feb".to_string(), 150.0),
-      ("Mar".to_string(), 80.0),
-      ("Apr".to_string(), 200.0),
-      ("May".to_string(), 120.0),
-      ("Jun".to_string(), 160.0),
-    ])
+  let bar_data = Memo::new(move || {
+    use_explicit_memo((), || {
+      Some(vec![
+        ("Jan".to_string(), 100.0f32),
+        ("Feb".to_string(), 150.0f32),
+        ("Mar".to_string(), 80.0f32),
+        ("Apr".to_string(), 200.0f32),
+        ("May".to_string(), 120.0f32),
+        ("Jun".to_string(), 160.0f32),
+      ])
+    })
   });
 
-  let line_data = use_explicit_memo((), || {
-    Some(vec![
-      // first series
-      vec![
-        (1.0, 10.0),
-        (2.0, 25.0),
-        (3.0, 15.0),
-        (4.0, 30.0),
-        (5.0, 20.0),
-      ],
-      // second series for comparison
-      vec![
-        (1.0, 15.0),
-        (2.0, 20.0),
-        (3.0, 25.0),
-        (4.0, 22.0),
-        (5.0, 28.0),
-      ],
-    ])
+  let line_data = Memo::new(move || {
+    use_explicit_memo((), || {
+      Some(vec![
+        vec![
+          (1.0f32, 10.0f32),
+          (2.0f32, 25.0f32),
+          (3.0f32, 15.0f32),
+          (4.0f32, 30.0f32),
+          (5.0f32, 20.0f32),
+        ],
+        vec![
+          (1.0f32, 15.0f32),
+          (2.0f32, 20.0f32),
+          (3.0f32, 25.0f32),
+          (4.0f32, 22.0f32),
+          (5.0f32, 28.0f32),
+        ],
+      ])
+    })
   });
 
-  let pie_sizes = use_explicit_memo((), || Some(vec![30, 20, 15, 35]));
-    let pie_labels = use_explicit_memo((), || {
+  let pie_sizes = Memo::new(move || {
+    use_explicit_memo((), || Some(vec![30, 20, 15, 35]))
+  });
+
+  let pie_labels = Memo::new(move || {
+    use_explicit_memo((), || {
       Some(vec![
         "Category A".to_string(),
         "Category B".to_string(),
         "Category C".to_string(),
         "Category D".to_string(),
       ])
-    });
+    })
+  });
 
-  let radar_data = use_explicit_memo((), || {
-    Some(vec![
-      ("Speed".to_string(), 80.0),
-      ("Power".to_string(), 60.0),
-      ("Accuracy".to_string(), 90.0),
-      ("Agility".to_string(), 70.0),
-      ("Defense".to_string(), 85.0),
-      ("Recovery".to_string(), 75.0),
-    ])
+  let radar_data = Memo::new(move || {
+    use_explicit_memo((), || {
+      Some(vec![
+        ("Speed".to_string(), 80.0f32),
+        ("Power".to_string(), 60.0f32),
+        ("Accuracy".to_string(), 90.0f32),
+        ("Agility".to_string(), 70.0f32),
+        ("Defense".to_string(), 85.0f32),
+        ("Recovery".to_string(), 75.0f32),
+      ])
+    })
   });
 
   let chart_options = ChartOptions::builder()

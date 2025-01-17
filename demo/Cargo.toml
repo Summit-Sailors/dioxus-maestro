@@ -17,6 +17,7 @@ maestro-hooks = { path = "../frontend/maestro-hooks" }
 maestro-forms = { path = "../frontend/maestro-forms" }
 maestro-plotters = { path = "../frontend/maestro-plotters" }
 maestro-query = { path = "../frontend/maestro-query" }
+maestro-radio = { path = "../frontend/maestro-radio" }
 
 
 # thrird party deps

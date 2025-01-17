@@ -10,7 +10,7 @@ use std::sync::Arc;
 use crate::models::user::User;
 
 // simulated backend storage
-static USERS: once_cell::sync::Lazy<Arc<RwLock<HashMap<String, User>>>> = 
+pub static USERS: once_cell::sync::Lazy<Arc<RwLock<HashMap<String, User>>>> = 
   once_cell::sync::Lazy::new(|| Arc::new(RwLock::new(HashMap::new())));
 
 #[derive(Debug, Clone, PartialEq)]
@@ -22,61 +22,61 @@ pub enum UserError {
 
 #[component]
 pub fn Query() -> Element {
-    let query_client: UseQueryClient<Vec<User>, Error, String> = use_init_query_client();
-    
-    // query result in a signal to avoid temporary value issue
-    let users_query = use_get_query([String::from("users")], |_| async move {
-      let users = USERS.read().await;
-      QueryResult::Ok::<Vec<User>, Error>(users.values().cloned().collect::<Vec<User>>())
-    });
+  let query_client: UseQueryClient<Vec<User>, Error, String> = use_init_query_client();
+  
+  // query result in a signal to avoid temporary value issue
+  let users_query = use_get_query([String::from("users")], |_| async move {
+    let users = USERS.read().await;
+    QueryResult::Ok::<Vec<User>, Error>(users.values().cloned().collect::<Vec<User>>())
+  });
 
-    let delete_mutation = use_mutation(|username: String| async move {
-      let mut users = USERS.write().await;
-      match users.remove(&username) {
+  let delete_mutation = use_mutation(|username: String| async move {
+    let mut users = USERS.write().await;
+    match users.remove(&username) {
         Some(_) => MutationResult::Ok(()),
         None => MutationResult::Err(UserError::NotFound),
-      }
-    });
-
-    let handle_delete = move |username: String| {
-      let delete_mutation = delete_mutation.clone();
-      let query_client = query_client.clone();
-      async move {
-        delete_mutation.mutate(username);
-        query_client.invalidate_query(String::from("users"));
-      }
-    };
-
-    rsx! {
-      div {
-        h2 { "Users List" }
-        {match users_query.result().value() {
-          QueryResult::Loading(_) => rsx!{ div { "Loading users..." } },
-          QueryResult::Err(e) => rsx!{ div { "Error: {e}" } },
-          QueryResult::Ok(users) => rsx!{
-            div {
-              {users.iter().map(|user| {
-                let user = user.clone();
-                rsx!(
-                  div {
-                    key: "{user.username}",
-                    class: "user-item",
-                    p { "Username: {user.username}" }
-                    p { "Email: {user.email}" }
-                    p { "Age: {user.age}" }
-                    p { "Role: {user.role}" }
-                    button {
-                      onclick: move |_| handle_delete(user.username.clone()),
-                      "Delete User"
-                    }
-                  }
-                )
-              })}
-            }
-          }
-        }}
-      }
     }
+  });
+
+  let handle_delete = move |username: String| {
+    let delete_mutation = delete_mutation.clone();
+    let query_client = query_client.clone();
+    async move {
+      delete_mutation.mutate(username);
+      query_client.invalidate_query(String::from("users"));
+    }
+  };
+
+  rsx! {
+    div {
+      h2 { "Users List" }
+      {match users_query.result().value() {
+        QueryResult::Loading(_) => rsx!{ div { "Loading users..." } },
+        QueryResult::Err(e) => rsx!{ div { "Error: {e}" } },
+        QueryResult::Ok(users) => rsx!{
+          div {
+            {users.iter().map(|user| {
+              let user = user.clone();
+              rsx!(
+                div {
+                  key: "{user.username}",
+                  class: "user-item",
+                  p { "Username: {user.username}" }
+                  p { "Email: {user.email}" }
+                  p { "Age: {user.age}" }
+                  p { "Role: {user.role}" }
+                  button {
+                    onclick: move |_| handle_delete(user.username.clone()),
+                    "Delete User"
+                  }
+                }
+              )
+            })}
+          }
+        }
+      }}
+    }
+  }
 }
 
 #[component]

@@ -58,12 +58,12 @@ fn Query() -> Element {
 
 #[component]
 fn Radio() -> Element {
-  rsx!(div { "Radio Demo Coming Soon" })
+  rsx!(div { Radio {} })
 }
 
 #[component]
 fn Toast() -> Element {
-  rsx!(div { "Toast Demo Coming Soon" })
+  rsx!(div { Toast {} })
 }
 
 #[component]
