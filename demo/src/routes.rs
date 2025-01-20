@@ -68,7 +68,7 @@ fn Toast() -> Element {
 
 #[component]
 fn UI() -> Element {
-  rsx!(div { "UI Demo Coming Soon" })
+  rsx!(div { UI {} })
 }
 
 #[component]

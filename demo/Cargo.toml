@@ -18,6 +18,7 @@ maestro-forms = { path = "../frontend/maestro-forms" }
 maestro-plotters = { path = "../frontend/maestro-plotters" }
 maestro-query = { path = "../frontend/maestro-query" }
 maestro-radio = { path = "../frontend/maestro-radio" }
+maestro-ui = { path = "../frontend/maestro-ui" }
 
 
 # thrird party deps
@@ -35,6 +36,7 @@ dioxus-ssr = "0.6.1"
 async-std = "1.13.0"
 web-sys = "0.3.76"
 plotters = "0.3.7"
+chrono = "0.4.39"
 
 [features]
 default = ["web"]
