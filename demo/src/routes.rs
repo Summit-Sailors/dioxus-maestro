@@ -48,27 +48,27 @@ fn Hooks() -> Element {
 
 #[component]
 fn Plotters() -> Element {
-  rsx!(div { "Plotters is coming soon" })
+  rsx!(div { Plotters {  } })
 }
 
 #[component]
 fn Query() -> Element {
-  rsx!(div { "Query" })
+  rsx!(div { Query {  } })
 }
 
 #[component]
 fn Radio() -> Element {
-  rsx!(div { "Radio" })
+  rsx!(div { Radio {  } })
 }
 
 #[component]
 fn Toast() -> Element {
-  rsx!(div { "Toast" })
+  rsx!(div { Toast {  } })
 }
 
 #[component]
 fn UI() -> Element {
-  rsx!(div { "UI" })
+  rsx!(div { UI { } })
 }
 
 #[component]
