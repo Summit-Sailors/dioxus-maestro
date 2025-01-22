@@ -43,7 +43,6 @@ plotters = { version = "0.3.7", default-features = false, features = [
 plotters-backend = { version = "0.3.7" }
 plotters-canvas = { version = "0.3.0" }
 
-
 tailwind_fuse = { workspace = true }
 
 tracing-wasm = { version = "0.2.1", optional = true }
