@@ -65,8 +65,8 @@ TextFormInput::<User> {
 
 ```toml
 [dependencies]
-dioxus-maestro = "0.1.0"
-validator = "0.16"
+dioxus-maestro = ""
+validator = ""
 ```
 
 2.Define your form structure:

@@ -57,7 +57,7 @@ Add maestro-hooks to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-maestro-hooks = { version = "0.1.0", features = ["desktop", "web"] }
+dioxus-maestro = { version = "0.1.0", features = ["desktop", "web"] }
 ```
 
 ## Usage Examples

@@ -36,7 +36,7 @@ Add maestro-plotters to your Cargo.toml:
 
 ```toml
 [dependencies]
-maestro-plotters = "0.1.0"
+dioxus-maestro = ""
 ```
 
 ## Usage

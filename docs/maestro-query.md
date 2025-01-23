@@ -1,4 +1,4 @@
-# Dioxus Maestro Query
+# Maestro Query
 
 A powerful and flexible query management system for Dioxus applications that provides advanced caching, synchronization, and state management capabilities.
 
