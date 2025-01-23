@@ -1,6 +1,10 @@
 #![allow(non_snake_case)]
 
-use {dioxus::prelude::*, maestro_toast::toast_manager::ToastManager};
+use {
+  dioxus::prelude::*, 
+  maestro_toast::toast_manager::ToastManager,
+  dioxus_logger::tracing::Level
+};
 
 mod components;
 mod models;
@@ -9,8 +13,7 @@ mod routes;
 
 fn main() {
 	//  logger
-	wasm_logger::init(wasm_logger::Config::default());
-
+  dioxus_logger::init(Level::INFO).expect("logger failed to init");
 	launch(App);
 }
 

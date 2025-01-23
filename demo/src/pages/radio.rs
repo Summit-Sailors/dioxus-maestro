@@ -1,6 +1,8 @@
-use dioxus::prelude::*;
-use maestro_radio::use_radio::{use_init_radio_station, use_radio, RadioChannel, RadioStation};
-use std::fmt::Display;
+use {
+  dioxus::prelude::*,
+  maestro_radio::use_radio::{use_init_radio_station, use_radio, RadioChannel, RadioStation},
+  std::fmt::Display
+};
 
 // our app state
 #[derive(Clone, Debug)]
@@ -45,7 +47,7 @@ impl Display for CounterChannel {
 
 // Main Radio Demo Component
 #[component]
-pub fn Radio() -> Element {
+pub fn RadioDemo() -> Element {
   let _station: RadioStation<CounterState, CounterChannel> = use_init_radio_station(|| CounterState {
     count: 0,
     last_update: "No updates yet".to_string(),

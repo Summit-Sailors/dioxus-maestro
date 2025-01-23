@@ -1,5 +1,7 @@
-use dioxus::prelude::*;
-use crate::routes::Route;
+use {
+  dioxus::prelude::*,
+  crate::routes::Route
+};
 
 #[component]
 pub fn HomePage() -> Element {
@@ -66,7 +68,7 @@ fn FeatureCard(title: &'static str, description: &'static str, route: Route) -> 
       Link {
         class: "mt-4 inline-block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600",
         to: route,
-        "Learn More"
+        "Explore"
       }
     }
   }

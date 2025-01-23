@@ -1,13 +1,14 @@
-use async_std::sync::RwLock;
-use dioxus::fullstack::once_cell;
-use dioxus::prelude::*;
-use maestro_query::prelude::*;
-use validator::Validate;
-use std::collections::HashMap;
-use std::fmt::Error;
-use std::sync::Arc;
-
-use crate::models::user::User;
+use {
+  async_std::sync::RwLock,
+  dioxus::fullstack::once_cell,
+  dioxus::prelude::*,
+  maestro_query::prelude::*,
+  validator::Validate,
+  std::collections::HashMap,
+  std::fmt::Error,
+  std::sync::Arc,
+  crate::models::user::User,
+};
 
 // simulated backend storage
 pub static USERS: once_cell::sync::Lazy<Arc<RwLock<HashMap<String, User>>>> = 
@@ -21,7 +22,7 @@ pub enum UserError {
 }
 
 #[component]
-pub fn Query() -> Element {
+pub fn QueryDemo() -> Element {
   let query_client: UseQueryClient<Vec<User>, Error, String> = use_init_query_client();
   
   // query result in a signal to avoid temporary value issue

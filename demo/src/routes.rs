@@ -1,5 +1,18 @@
-use dioxus::prelude::*;
-use crate::pages::{forms::FormsDemo, home::HomePage};
+
+use {
+  crate::pages::{
+    forms::FormsDemo, 
+    home::HomePage, 
+    hooks::HooksDemo, 
+    plotters::PlottersDemo, 
+    query::QueryDemo, 
+    radio::RadioDemo, 
+    toast::ToastDemo, 
+    ui::UIDemo
+  }, 
+  dioxus::prelude::*,
+  maestro_toast::init::use_init_toast_ctx
+};
 
 #[derive(Routable, Clone, PartialEq)]
 pub enum Route {
@@ -43,32 +56,32 @@ fn Forms() -> Element {
 
 #[component]
 fn Hooks() -> Element {
-  rsx!(div { Hooks {} })
+  rsx!(div { HooksDemo {} })
 }
 
 #[component]
 fn Plotters() -> Element {
-  rsx!(div { Plotters {  } })
+  rsx!(div { PlottersDemo {  } })
 }
 
 #[component]
 fn Query() -> Element {
-  rsx!(div { Query {  } })
+  rsx!(div { QueryDemo {  } })
 }
 
 #[component]
 fn Radio() -> Element {
-  rsx!(div { Radio {  } })
+  rsx!(div { RadioDemo {  } })
 }
 
 #[component]
 fn Toast() -> Element {
-  rsx!(div { Toast {  } })
+  rsx!(div { ToastDemo {  } })
 }
 
 #[component]
 fn UI() -> Element {
-  rsx!(div { UI { } })
+  rsx!(div { UIDemo { } })
 }
 
 #[component]

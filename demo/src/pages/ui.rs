@@ -1,21 +1,24 @@
-use dioxus::prelude::*;
-use maestro_ui::{
-  button::{Button, ButtonSize, ButtonType, ButtonVariant},
-  calendar::{Calendar, CalendarDisplayProps, CalendarSelectProps},
-  input::{Input, InputType, InputVariant},
-  label::Label,
-  multi_select::MultiSelect,
-  radio::Radio,
-  range::Range,
-  select::Select,
-  spinner::FreeIconSpinner,
-  textarea::Textarea,
-  toggle::{EToggleSwitchLabelPlacement, ToggleSwitch, ToggleSwitchLabelStatesProp},
+use {
+  dioxus::prelude::*,
+  chrono::{Datelike, Local, NaiveDate},
+  maestro_ui::{
+    button::{Button, ButtonSize, ButtonType, ButtonVariant},
+    calendar::{Calendar, CalendarDisplayProps, CalendarSelectProps},
+    input::{Input, InputType, InputVariant},
+    label::Label,
+    multi_select::MultiSelect,
+    radio::Radio,
+    range::Range,
+    select::Select,
+    spinner::FreeIconSpinner,
+    textarea::Textarea,
+    toggle::{EToggleSwitchLabelPlacement, ToggleSwitch, ToggleSwitchLabelStatesProp},
+  },
+
 };
-use chrono::{Datelike, Local, NaiveDate};
 
 #[component]
-pub fn UI() -> Element {
+pub fn UIDemo() -> Element {
   let mut selected_option = use_signal(|| "Option 1".to_string());
   let mut selected_options = use_signal(Vec::<String>::new);
   let toggle_state = use_signal(|| false);
