@@ -1,45 +1,58 @@
 [package]
-name = "demo"
-version = "0.1.0"
 authors = ["bigs <oketchs702@gmail.com>"]
 edition = "2021"
+name = "demo"
+version = "0.1.0"
 
 [dependencies]
 # local deps
 
 # clients
-maestro-diesel = { path = "../clients/maestro-diesel", features = ["async", "sync", "server"] }
-maestro-sqlx = { path = "../clients/maestro-sqlx", features = ["acreate", "create"] }
+maestro-diesel = { path = "../clients/maestro-diesel", features = ["async", "server", "sync"], optional = true }
+maestro-sqlx = { path = "../clients/maestro-sqlx", features = ["acreate", "create"], optional = true }
 
 # components and utilities
-maestro-toast = { path = "../frontend/maestro-toast" }
-maestro-hooks = { path = "../frontend/maestro-hooks" }
 maestro-forms = { path = "../frontend/maestro-forms" }
+maestro-hooks = { path = "../frontend/maestro-hooks" }
 maestro-plotters = { path = "../frontend/maestro-plotters" }
 maestro-query = { path = "../frontend/maestro-query" }
 maestro-radio = { path = "../frontend/maestro-radio" }
+maestro-toast = { path = "../frontend/maestro-toast" }
 maestro-ui = { path = "../frontend/maestro-ui" }
 
 
 # thrird party deps
 dioxus = { version = "0.6.1", features = ["fullstack", "router"] }
-dioxus-web = "0.6.1"
-dioxus-router = "0.6.1"
+# dioxus-web = "0.6.1"
+# dioxus-router = "0.6.1"
+apalis = { version = "0.5.5", features = ["cron", "postgres"], optional = true }
+apalis-core = { version = "0.5.5", optional = true }
 log = "0.4"
-wasm-logger = "0.2"
 serde = { version = "1.0.217", features = ["derive"] }
 serde_json = "1.0.134"
 validator = { version = "0.19.0", features = ["derive"] }
-apalis = { version = "0.5.5", features = ["cron", "postgres"], optional = true }
-apalis-core = "0.5.5"
-dioxus-ssr = "0.6.1"
+wasm-logger = "0.2"
+# dioxus-ssr = "0.6.1"
 async-std = "1.13.0"
+chrono = { workspace = true }
+plotters = { version = "0.3.7", default-features = false, features = [
+  "all_elements",
+  "all_series",
+  "bitmap_backend",
+  "bitmap_encoder",
+  "bitmap_gif",
+  "chrono",
+  "colormaps",
+  "deprecated_items",
+  "full_palette",
+  "image",
+  "svg_backend",
+] }
 web-sys = "0.3.76"
-plotters = "0.3.7"
-chrono = "0.4.39"
 
 [features]
 default = ["web"]
+desktop = ["apalis", "dioxus/desktop"]
+mobile = ["apalis", "dioxus/mobile"]
+server = ["dep:apalis-core", "dep:maestro-diesel", "dep:maestro-sqlx", "dioxus/server"]
 web = ["dioxus/web"]
-desktop = ["dioxus/desktop", "apalis"]
-mobile = ["dioxus/mobile", "apalis"]
