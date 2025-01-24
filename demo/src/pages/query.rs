@@ -1,17 +1,27 @@
 use {
-  async_std::sync::RwLock,
-  dioxus::fullstack::once_cell,
-  dioxus::prelude::*,
-  maestro_query::prelude::*,
-  validator::Validate,
-  std::collections::HashMap,
-  std::fmt::Error,
-  std::sync::Arc,
-  crate::models::user::User,
+  crate::{
+    components::forms::form_field_wrapper::FormFieldWrapper, 
+    models::user::User
+  }, async_std::sync::RwLock, dioxus::{fullstack::once_cell, prelude::*}, maestro_forms::fields::{
+    form::{
+      Form, 
+      InnerComponentProps
+    }, 
+    select::SelectFormField, 
+    text::TextFormInput, 
+    textarea::TextArea
+  }, 
+  maestro_query::prelude::*, 
+  maestro_ui::button::{
+    Button, ButtonSize, ButtonType, ButtonVariant
+  }, 
+  std::{
+    collections::HashMap, fmt::Error, sync::Arc
+  }, validator::Validate,
 };
 
-// simulated backend storage
-pub static USERS: once_cell::sync::Lazy<Arc<RwLock<HashMap<String, User>>>> = 
+// Simulated backend storage
+pub static USERS: once_cell::sync::Lazy<Arc<RwLock<HashMap<String, User>>>> =
   once_cell::sync::Lazy::new(|| Arc::new(RwLock::new(HashMap::new())));
 
 #[derive(Debug, Clone, PartialEq)]
@@ -20,6 +30,8 @@ pub enum UserError {
   ValidationError(String),
   DatabaseError(String),
 }
+
+const AVAILABLE_ROLES: &[&str] = &["admin", "user", "moderator"];
 
 #[component]
 pub fn QueryDemo() -> Element {
@@ -34,8 +46,8 @@ pub fn QueryDemo() -> Element {
   let delete_mutation = use_mutation(|username: String| async move {
     let mut users = USERS.write().await;
     match users.remove(&username) {
-        Some(_) => MutationResult::Ok(()),
-        None => MutationResult::Err(UserError::NotFound),
+      Some(_) => MutationResult::Ok(()),
+      None => MutationResult::Err(UserError::NotFound),
     }
   });
 
@@ -43,31 +55,51 @@ pub fn QueryDemo() -> Element {
     let delete_mutation = delete_mutation.clone();
     let query_client = query_client.clone();
     async move {
-      delete_mutation.mutate(username);
+      delete_mutation.mutate(username.clone());
       query_client.invalidate_query(String::from("users"));
     }
   };
 
+  let mut show_form = use_signal(|| false);
+
   rsx! {
-    div {
-      h2 { "Users List" }
+    div { class: "container mx-auto p-4",
+      h2 { class: "text-2xl font-bold mb-4", "Users List" }
+      
+      Button {
+        class: "bg-blue-500 text-white px-4 py-2 rounded mb-4",
+        on_click: move |_| show_form.set(!show_form()),
+        if *show_form.read() { "Hide Form" } else { "Add User" }
+      }
+
+      if *show_form.read() {
+        UserForm {
+          on_success: move |_| {
+            show_form.set(false);
+            query_client.invalidate_query(String::from("users"));
+          }
+        }
+      }
+
       {match users_query.result().value() {
-        QueryResult::Loading(_) => rsx!{ div { "Loading users..." } },
-        QueryResult::Err(e) => rsx!{ div { "Error: {e}" } },
+        QueryResult::Loading(_) => rsx!{ div { class: "text-gray-500", "Loading users..." } },
+        QueryResult::Err(e) => rsx!{ div { class: "text-red-500", "Error: {e}" } },
         QueryResult::Ok(users) => rsx!{
-          div {
+          div { class: "grid gap-4",
             {users.iter().map(|user| {
               let user = user.clone();
               rsx!(
-                div {
+                div { 
                   key: "{user.username}",
-                  class: "user-item",
-                  p { "Username: {user.username}" }
+                  class: "border p-4 rounded shadow-md bg-white",
+                  p { class: "font-semibold", "Username: {user.username}" }
                   p { "Email: {user.email}" }
                   p { "Age: {user.age}" }
                   p { "Role: {user.role}" }
-                  button {
-                    onclick: move |_| handle_delete(user.username.clone()),
+                  Button {
+                    class: "mt-2",
+                    variant: ButtonVariant::Destructive,
+                    on_click: move |_| handle_delete(user.username.clone()),
                     "Delete User"
                   }
                 }
@@ -80,105 +112,120 @@ pub fn QueryDemo() -> Element {
   }
 }
 
+pub fn form_content(props: InnerComponentProps<User>) -> Element {
+  let loading = use_signal(|| false);
+  let error_message = use_signal(|| String::new());
+
+  rsx! {
+    div { class: "space-y-4 bg-white p-6 rounded-lg shadow",
+      if !error_message().is_empty() {
+        div { 
+          class: "bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative", 
+          role: "alert",
+          "{error_message()}"
+        }
+      }
+
+      FormFieldWrapper {
+        label: "Username",
+        field: props.form.get_form_field("username".to_string()),
+        TextFormInput::<User> {
+          name: "username",
+          class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+        }
+      }
+
+      FormFieldWrapper {
+        label: "Email",
+        field: props.form.get_form_field("email".to_string()),
+        TextFormInput::<User> {
+          name: "email",
+          class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+        }
+      }
+
+      FormFieldWrapper {
+        label: "Bio",
+        field: props.form.get_form_field("bio".to_string()),
+        TextArea::<User> {
+          name: "bio",
+          rows: 4,
+          class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+        }
+      }
+
+      FormFieldWrapper {
+        label: "Role",
+        field: props.form.get_form_field("role".to_string()),
+        SelectFormField::<User, String> {
+          name: "role",
+          values: AVAILABLE_ROLES.iter().map(|&s| s.to_string()).collect(),
+          class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+        }
+      }
+
+      Button {
+        class: "w-full mt-6 px-4 py-2",
+        button_type: ButtonType::Submit,
+        disabled: loading(),
+        variant: ButtonVariant::Default,
+        size: ButtonSize::Default,
+        if loading() {
+          "Loading..."
+        } else {
+          "Submit"
+        }
+      }
+    }
+  }
+}
+
 #[component]
-pub fn UserForm(initial_user: Option<User>, on_success: EventHandler) -> Element {
-  let mut user = use_signal(|| initial_user.unwrap_or_default());
-  
+pub fn UserForm(on_success: Option<EventHandler>) -> Element {
   let create_mutation = use_mutation(|new_user: User| async move {
     if let Err(e) = new_user.validate() {
       return MutationResult::Err(UserError::ValidationError(e.to_string()));
     }
-
     let mut users = USERS.write().await;
     users.insert(new_user.username.clone(), new_user.clone());
     MutationResult::Ok(new_user)
   });
 
-  let handle_submit = move |event: FormEvent| {
+  let mut error_message = use_signal(|| String::new());
+  let mut loading = use_signal(|| false);
+
+  let handle_submit = move |event: FormEvent| async move {
     event.prevent_default();
-    to_owned![create_mutation, on_success, user];
-    
-    async move {
-      create_mutation.mutate(user.read().clone());
-      if create_mutation.result().is_ok() {
-        on_success.call(());
+    loading.set(true);
+
+    spawn(async move {
+      let result = create_mutation.result();
+      match *result {
+        MutationResult::Ok(_) => {
+          error_message.set(String::new());
+          loading.set(false);
+          if let Some(handler) = on_success {
+            handler.call(());
+          }
+        },
+        MutationResult::Err(ref e) => {
+          match e {
+            UserError::ValidationError(msg) => error_message.set(msg.clone()),
+            UserError::NotFound => error_message.set("User not found".to_string()),
+            UserError::DatabaseError(msg) => error_message.set(msg.clone()),
+          }
+          loading.set(false);
+        },
+        _ => {}
       }
-    }
+    });
   };
 
   rsx! {
-    form {
+    Form {
+      initial_value: User::default(),
       onsubmit: handle_submit,
-      div {
-        label { "Username:" }
-        input {
-          value: "{user.read().username}",
-          oninput: move |e| {
-            let mut new_user = user.read().clone();
-            new_user.username = e.value().clone();
-            user.set(new_user);
-          }
-        }
-      }
-      div {
-          label { "Email:" }
-          input {
-            value: "{user.read().email}",
-            oninput: move |e| {
-              let mut new_user = user.read().clone();
-              new_user.email = e.value().clone();
-              user.set(new_user);
-            }
-          }
-      }
-      div {
-          label { "Bio:" }
-          textarea {
-            value: "{user.read().bio}",
-            oninput: move |e| {
-              let mut new_user = user.read().clone();
-              new_user.bio = e.value().clone();
-              user.set(new_user);
-            }
-          }
-      }
-      div {
-          label { "Age:" }
-          input {
-            r#type: "number",
-            value: "{user.read().age}",
-            oninput: move |e| {
-              let mut new_user = user.read().clone();
-              new_user.age = e.value().parse().unwrap_or(18);
-              user.set(new_user);
-            }
-          }
-      }
-      div {
-          label { "Role:" }
-          select {
-            value: "{user.read().role}",
-            onchange: move |e| {
-              let mut new_user = user.read().clone();
-              new_user.role = e.value().clone();
-              user.set(new_user);
-            },
-            option { value: "", "Select Role" }
-            option { value: "user", "User" }
-            option { value: "admin", "Admin" }
-          }
-      }
-      button {
-        r#type: "submit",
-        disabled: create_mutation.result().is_loading(),
-        {if create_mutation.result().is_loading() { "Saving..." } else { "Save User" }}
-      }
-      {match *create_mutation.result() {
-        MutationResult::Err(UserError::ValidationError(ref e)) => Some(rsx!{
-          div { class: "error", "{e}" }
-        }),
-        _ => None
-      }}
+      inner: form_content
     }
   }
 }

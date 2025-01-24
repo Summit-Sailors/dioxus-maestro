@@ -2,22 +2,21 @@ use {
 	crate::{
 		components::forms::{form_field_wrapper::FormFieldWrapper, form_state_debugger::FormStateDebugger},
 		models::user::User,
-	},
-	async_std::task::sleep,
-	dioxus::prelude::*,
-	maestro_forms::fields::{
+	}, async_std::task::sleep, dioxus::prelude::*, maestro_forms::fields::{
 		form::{Form, InnerComponentProps},
 		select::SelectFormField,
 		text::TextFormInput,
 		textarea::TextArea,
-	},
-	maestro_toast::{ctx::use_toast, toast_info::ToastInfo},
-	web_sys::console::info,
+	}, maestro_toast::{
+    ctx::use_toast, toast_info::ToastInfo
+  }, 
+  maestro_ui::button::{Button, ButtonSize, ButtonType, ButtonVariant}, 
+  web_sys::console::info
 };
 
 const AVAILABLE_ROLES: &[&str] = &["admin", "user", "moderator"];
 
-fn form_content(props: InnerComponentProps<User>) -> Element {
+pub fn form_content(props: InnerComponentProps<User>) -> Element {
   let loading = use_signal(|| false);
 
   rsx! {
@@ -60,14 +59,14 @@ fn form_content(props: InnerComponentProps<User>) -> Element {
           }
       }
 
-      button {
-        class: "w-full mt-6 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50",
-        r#type: "submit",
+      Button {
+        class: "w-full mt-6 px-4 py-2",
+        button_type: ButtonType::Submit,
         disabled: loading(),
+        variant: ButtonVariant::Default,
+        size: ButtonSize::Default,
         if loading() {
-          span { class: "inline-flex items-center",
-            span { class: "mr-2", "Loading..." }
-          }
+          "Loading..."
         } else {
           "Submit"
         }
@@ -83,23 +82,37 @@ pub fn FormsDemo() -> Element {
   let mut toast = use_toast();
   let mut is_async = use_signal(|| true);
 
-  let on_submit = move |event: FormEvent| async move {
+  let on_submit = move |event: FormEvent, (submitted_user, is_valid): (User, bool)| async move {
     event.prevent_default();
+    let user = submitted_user;
     let db_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
 
-    // different signal modification techniques
-    is_async.set(true);  //  direct set
-    is_async.with_mut(|state| *state = true);  // mutation via closure
-    *is_async.write() = true;  // direct write
+    if is_valid {
+      is_async.set(true);
 
-    if *is_async.read() { 
-      if async_post(db_url).await.is_ok() {
-        toast.write().popup(ToastInfo::builder().context("Form submitted successfully (async)!".to_string()).build());
-      };
-    } else {
-      if sync_post(db_url).await.is_ok() {
-        toast.write().popup(ToastInfo::builder().context("Form submitted successfully (sync)!".to_string()).build());
+      if *is_async.read() { 
+        if async_post(db_url).await.is_ok() {
+          toast.write().popup(
+            ToastInfo::builder()
+              .context(format!("Form submitted successfully for user: {}", user.username))
+              .build()
+          );
+        }
+      } else {
+        if sync_post(db_url).await.is_ok() {
+          toast.write().popup(
+            ToastInfo::builder()
+              .context(format!("Form submitted successfully for user: {}", user.username))
+              .build()
+          );
+        }
       }
+    } else {
+      toast.write().popup(
+        ToastInfo::builder()
+          .context("Form validation failed. Please check your inputs.".to_owned())
+          .build()
+      );
     }
   };
 
@@ -131,8 +144,9 @@ pub fn FormsDemo() -> Element {
       Form {
         initial_value: User::default(),
         onsubmit: on_submit,
-        inner: form_content,
+        inner: form_content
       }
+    
     }
   }
 }

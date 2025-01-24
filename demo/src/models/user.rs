@@ -2,7 +2,7 @@
 use apalis_core::storage::Job;
 use {
 	serde::{Deserialize, Serialize},
-	validator::Validate,
+	validator::Validate
 };
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Validate)]
@@ -18,10 +18,6 @@ pub struct User {
 	#[validate(length(min = 2, message = "Please select a role"))]
 	pub role: String,
 }
-
-// impl Job for User {
-// 	const NAME: &'static str = "maestro::User";
-// }
 
 impl Default for User {
 	fn default() -> Self {
