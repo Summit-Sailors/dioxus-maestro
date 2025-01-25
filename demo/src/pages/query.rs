@@ -194,37 +194,46 @@ pub fn UserForm(on_success: Option<EventHandler>) -> Element {
   let mut error_message = use_signal(|| String::new());
   let mut loading = use_signal(|| false);
 
-  let handle_submit = move |event: FormEvent| async move {
-    event.prevent_default();
-    loading.set(true);
+  let on_submit = Some(Callback::new(
+    move |(event, (_submitted_user, is_valid)): (Event<FormData>, (User, bool))| {
+      event.prevent_default();
+      loading.set(true);
 
-    spawn(async move {
-      let result = create_mutation.result();
-      match *result {
-        MutationResult::Ok(_) => {
-          error_message.set(String::new());
-          loading.set(false);
-          if let Some(handler) = on_success {
-            handler.call(());
+      spawn(async move {
+        if is_valid {
+          let result = create_mutation.result();
+          match *result {
+            MutationResult::Ok(_) => {
+              error_message.set(String::new());
+              loading.set(false);
+              if let Some(handler) = on_success {
+                handler.call(());
+              }
+            }
+            MutationResult::Err(ref e) => {
+              match e {
+                UserError::ValidationError(msg) => error_message.set(msg.clone()),
+                UserError::NotFound => {
+                  error_message.set("User not found".to_string())
+                }
+                UserError::DatabaseError(msg) => error_message.set(msg.clone()),
+              }
+              loading.set(false);
+            }
+            _ => {}
           }
-        },
-        MutationResult::Err(ref e) => {
-          match e {
-            UserError::ValidationError(msg) => error_message.set(msg.clone()),
-            UserError::NotFound => error_message.set("User not found".to_string()),
-            UserError::DatabaseError(msg) => error_message.set(msg.clone()),
-          }
-          loading.set(false);
-        },
-        _ => {}
-      }
-    });
-  };
+        } else {
+            error_message.set("Form validation failed. Please check your inputs.".to_string());
+            loading.set(false);
+        }
+      });
+    },
+  ));
 
   rsx! {
     Form {
       initial_value: User::default(),
-      onsubmit: handle_submit,
+      onsubmit: on_submit,
       inner: form_content
     }
   }

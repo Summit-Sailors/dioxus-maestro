@@ -31,32 +31,32 @@ pub fn form_content(props: InnerComponentProps<User>) -> Element {
       }
 
       FormFieldWrapper {
-          label: "Email",
-          field: props.form.get_form_field("email".to_string()),
-          TextFormInput::<User> {
-            name: "email",
-            class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
-          }
+        label: "Email",
+        field: props.form.get_form_field("email".to_string()),
+        TextFormInput::<User> {
+          name: "email",
+          class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+        }
       }
 
       FormFieldWrapper {
-          label: "Bio",
-          field: props.form.get_form_field("bio".to_string()),
-          TextArea::<User> {
-            name: "bio",
-            rows: 4,
-            class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
-          }
+        label: "Bio",
+        field: props.form.get_form_field("bio".to_string()),
+        TextArea::<User> {
+          name: "bio",
+          rows: 4,
+          class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+        }
       }
 
       FormFieldWrapper {
-          label: "Role",
-          field: props.form.get_form_field("role".to_string()),
-          SelectFormField::<User,String> {
-            name: "role",
-            values: AVAILABLE_ROLES.iter().map(|&s| s.to_string()).collect(),
-            class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
-          }
+        label: "Role",
+        field: props.form.get_form_field("role".to_string()),
+        SelectFormField::<User,String> {
+          name: "role",
+          values: AVAILABLE_ROLES.iter().map(|&s| s.to_string()).collect(),
+          class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+        }
       }
 
       Button {
@@ -82,39 +82,43 @@ pub fn FormsDemo() -> Element {
   let mut toast = use_toast();
   let mut is_async = use_signal(|| true);
 
-  let on_submit = move |event: FormEvent, (submitted_user, is_valid): (User, bool)| async move {
+  let on_submit = Some(Callback::new(
+    move |(event, (submitted_user, is_valid)): (Event<FormData>, (User, bool))| {
     event.prevent_default();
-    let user = submitted_user;
+
     let db_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
 
     if is_valid {
-      is_async.set(true);
-
-      if *is_async.read() { 
-        if async_post(db_url).await.is_ok() {
-          toast.write().popup(
-            ToastInfo::builder()
-              .context(format!("Form submitted successfully for user: {}", user.username))
-              .build()
-          );
+      spawn(async move {
+        match async_post(db_url).await {
+          Ok(_) => {
+            toast.write().popup(
+              ToastInfo::builder()
+                .context(format!(
+                  "Form submitted successfully for user: {}",
+                  submitted_user.username
+                ))
+                .build(),
+            );
+          }
+          Err(_) => {
+            toast.write().popup(
+              ToastInfo::builder()
+                .context("Submission failed".to_string())
+                .build(),
+            );
+          }
         }
-      } else {
-        if sync_post(db_url).await.is_ok() {
-          toast.write().popup(
-            ToastInfo::builder()
-              .context(format!("Form submitted successfully for user: {}", user.username))
-              .build()
-          );
-        }
-      }
+      });
     } else {
       toast.write().popup(
         ToastInfo::builder()
           .context("Form validation failed. Please check your inputs.".to_owned())
-          .build()
+          .build(),
       );
     }
-  };
+  }));
+
 
   let async_class = if *is_async.read() { "bg-blue-500 text-white" } else { "bg-gray-200" };
   let sync_class = if !*is_async.read() { "bg-blue-500 text-white" } else { "bg-gray-200" };

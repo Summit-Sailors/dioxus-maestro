@@ -27,6 +27,8 @@ apalis = { version = "0.5.5", features = ["cron", "postgres"], optional = true }
 apalis-core = { version = "0.5.5", optional = true }
 log = "0.4"
 serde = { version = "1.0.217", features = ["derive"] }
+strum = "0.26.3"
+strum_macros = "0.26.4"
 validator = { version = "0.19", features = ["derive"] }
 serde_json = "1.0.134"
 dioxus-logger = "0.6.2"
@@ -46,6 +48,9 @@ plotters = { version = "0.3.7", default-features = false, features = [
   "svg_backend",
 ] }
 web-sys = "0.3.76"
+
+[build-dependencies]
+dotenvy = { git = "https://github.com/allan2/dotenvy.git", features = ["macros"] }
 
 [features]
 default = ["web"]
