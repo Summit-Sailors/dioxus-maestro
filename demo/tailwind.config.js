@@ -21,6 +21,13 @@ module.exports = {
         "dm-mono": ["DM Mono", "mono"],
         poppins: ["Poppins", "serif"],
       },
+      colors: {
+        primary: {
+          light: "#4f46e5",
+          DEFAULT: "#3b82f6",
+          dark: "#2563eb",
+        },
+      },
     },
   },
   plugins: [],

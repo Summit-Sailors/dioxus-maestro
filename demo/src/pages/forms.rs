@@ -10,8 +10,7 @@ use {
 	}, maestro_toast::{
     ctx::use_toast, toast_info::ToastInfo
   }, 
-  maestro_ui::button::{Button, ButtonSize, ButtonType, ButtonVariant}, 
-  web_sys::console::info
+  maestro_ui::button::{Button, ButtonSize, ButtonType, ButtonVariant}
 };
 
 const AVAILABLE_ROLES: &[&str] = &["admin", "user", "moderator"];
@@ -20,13 +19,14 @@ pub fn form_content(props: InnerComponentProps<User>) -> Element {
   let loading = use_signal(|| false);
 
   rsx! {
-    div { class: "space-y-4 bg-white p-6 rounded-lg shadow",
+    div { class: "space-y-6",
       FormFieldWrapper {
         label: "Username",
         field: props.form.get_form_field("username".to_string()),
         TextFormInput::<User> {
           name: "username",
-          class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+          placeholder: "Enter your username",
+          class: "w-full p-2 rounded-md border border-gray-300 focus:ring focus:ring-blue-300 focus:outline-none",
         }
       }
 
@@ -35,7 +35,8 @@ pub fn form_content(props: InnerComponentProps<User>) -> Element {
         field: props.form.get_form_field("email".to_string()),
         TextFormInput::<User> {
           name: "email",
-          class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+          placeholder: "Enter your email address",
+          class: "w-full p-2 rounded-md border border-gray-300 focus:ring focus:ring-blue-300 focus:outline-none",
         }
       }
 
@@ -44,35 +45,37 @@ pub fn form_content(props: InnerComponentProps<User>) -> Element {
         field: props.form.get_form_field("bio".to_string()),
         TextArea::<User> {
           name: "bio",
+          placeholder: "Tell us about yourself...",
           rows: 4,
-          class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+          class: "w-full p-2 rounded-md border border-gray-300 focus:ring focus:ring-blue-300 focus:outline-none",
         }
       }
 
       FormFieldWrapper {
         label: "Role",
         field: props.form.get_form_field("role".to_string()),
-        SelectFormField::<User,String> {
+        SelectFormField::<User, String> {
           name: "role",
           values: AVAILABLE_ROLES.iter().map(|&s| s.to_string()).collect(),
-          class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+          class: "w-full p-2 rounded-md border border-gray-300 focus:ring focus:ring-blue-300 focus:outline-none",
         }
       }
 
       Button {
-        class: "w-full mt-6 px-4 py-2",
+        class: format!(
+          "mt-4 py-2 rounded-md text-white font-semibold {} transition-opacity duration-200",
+          if loading() { "bg-gray-400 cursor-not-allowed opacity-70" } else { "bg-blue-500 hover:bg-blue-600" }
+        ),
         button_type: ButtonType::Submit,
         disabled: loading(),
-        variant: ButtonVariant::Default,
         size: ButtonSize::Default,
-        if loading() {
-          "Loading..."
-        } else {
-          "Submit"
-        }
+        variant: ButtonVariant::Default,
+        if loading() { "Loading..." } else { "Submit" }
       }
 
-      FormStateDebugger { form: props.form }
+      FormStateDebugger {
+        form: props.form,
+      }
     }
   }
 }
