@@ -1,5 +1,4 @@
 use {
-  std::{cell::RefCell, rc::Rc},
   dioxus::prelude::*,
   maestro_hooks::{
     clipboard::use_clipboard,
@@ -11,7 +10,8 @@ use {
 #[component]
 pub fn HooksDemo() -> Element {
   let total_items = use_signal(|| 50);
-  let clipboard = Rc::new(RefCell::new(use_clipboard()));
+  // a signal to hold the clipboard to avoid moving
+  let clipboard = use_signal(|| use_clipboard());
 
   // use explicit_memo (dependencies and initialization function)
   let expensive_computation = use_explicit_memo(
@@ -31,67 +31,55 @@ pub fn HooksDemo() -> Element {
     div {
       class: "maestro-hooks-demo container mx-auto px-4 py-8 space-y-12",
 
-      // clipboard hook demo
+      // clipboard demo
       section {
         class: "clipboard-demo bg-gray-50 p-6 rounded-lg shadow-md",
 
         h2 { class: "text-xl font-bold mb-4", "Clipboard Hook Demo" }
-        p { class: "mb-4 text-gray-600", "The clipboard hook provides cross-platform clipboard functionality with error handling." }
+        
+        input {
+          class: "border rounded px-3 py-2 shadow-sm w-full focus:ring focus:ring-blue-200",
+          placeholder: "Type something to copy",
+          value: "{clipboard_content}",
+          oninput: move |e| clipboard_content.set(e.value().clone()),
+        },
 
         div {
-          class: "flex flex-col space-y-4",
-
-          input {
-            class: "border rounded px-3 py-2 shadow-sm w-full focus:ring focus:ring-blue-200",
-            placeholder: "Type something to copy",
-            value: "{clipboard_content}",
-            oninput: move |e| clipboard_content.set(e.value().clone()),
-          },
-
-          div {
-            class: "flex space-x-4",
-            button {
-              onclick: {
-                let clipboard = Rc::clone(&clipboard);
-                move |_| {
-                  let clipboard = Rc::clone(&clipboard);
-                  async move {
-                    let mut clipboard = clipboard.borrow_mut();
-                    if let Ok(()) = clipboard.set(clipboard_content().to_string()).await {
-                      copy_status.set("Content copied!".to_string());
-                      clipboard_content.set(String::new());
-                    } else {
-                      copy_status.set("Failed to copy".to_string());
-                    }
-                  }
+          class: "flex space-x-4 mt-4",
+          button {
+            onclick: move |_| {
+              let content = clipboard_content();
+              let mut clipboard_ref = clipboard();
+              spawn(async move {
+                match clipboard_ref.set(content).await {
+                  Ok(_) => copy_status.set("Content copied!".to_string()),
+                  Err(_) => copy_status.set("Failed to copy".to_string()),
                 }
-              },
-              class: "rounded-md bg-blue-500 text-white py-2 px-4 hover:bg-blue-700",
-              "Copy to Clipboard"
+                clipboard_content.set(String::new());
+              });
             },
-            button {
-              onclick: {
-                let clipboard = Rc::clone(&clipboard);
-                move |_| {
-                  let clipboard = Rc::clone(&clipboard);
-                  async move {
-                    let mut clipboard = clipboard.borrow_mut();
-                    if let Ok(content) = clipboard.get().await {
-                      clipboard_content.set(content);
-                      copy_status.set("Content pasted!".to_string());
-                    } else {
-                      copy_status.set("Failed to paste".to_string());
-                    }
-                  }
-                }
-              },
-              class: "rounded-md bg-green-500 text-white py-2 px-4 hover:bg-green-700",
-              "Paste from Clipboard"
-            }
+            class: "rounded-md bg-blue-500 text-white py-2 px-4 hover:bg-blue-700",
+            "Copy to Clipboard"
           },
-
-          p { class: "mt-2 text-sm text-gray-500", "{copy_status}" }
+          button {
+            onclick: move |_| {
+              let mut clipboard_ref = clipboard();
+              spawn(async move {
+                match clipboard_ref.get().await {
+                  Ok(content) => {
+                    clipboard_content.set(content);
+                    copy_status.set("Content pasted!".to_string());
+                  },
+                  Err(_) => copy_status.set("Failed to paste".to_string()),
+                }
+              });
+            },
+            class: "rounded-md bg-green-500 text-white py-2 px-4 hover:bg-green-700",
+            "Paste from Clipboard"
+          }
         }
+
+        p { class: "mt-2 text-sm text-gray-500", "{copy_status}" }
       }
 
       // explicit memo hook demo

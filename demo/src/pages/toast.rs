@@ -2,9 +2,7 @@ use {
   dioxus::prelude::*,
   maestro_toast::{
     ctx::use_toast, 
-    init::use_init_toast_ctx, 
     toast_code::EToastCode, 
-    toast_frame_component::ToastFrame, 
     toast_info::ToastInfo, 
     toast_position::EToastPosition
   }
@@ -12,7 +10,6 @@ use {
 
 #[component]
 pub fn ToastDemo() -> Element {
-  let toast_manager = use_init_toast_ctx();
   let mut toast = use_toast();
   
   let show_success = move |_| {
@@ -80,7 +77,6 @@ pub fn ToastDemo() -> Element {
   };
 
   rsx! {
-    ToastFrame { manager: toast_manager }
 
     div {
       class: "flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4",

@@ -6,3 +6,4 @@ pub mod query;
 pub mod radio;
 pub mod toast;
 pub mod ui;
+pub mod calendar;

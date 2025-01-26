@@ -8,8 +8,7 @@ use {
 #[component]
 pub fn Layout(children: Element) -> Element {
   let toast = use_init_toast_ctx();
-  println!("toast initialized correctly");
-  
+
   rsx! {
     // ToastFrame { manager: toast }
     div {
@@ -26,29 +25,33 @@ pub fn Layout(children: Element) -> Element {
 #[component]
 fn NavigationMenu() -> Element {
   let navigator = use_navigator();
-  
+  let current_route = use_route::<Route>();
+
   rsx! {
     div {
       class: "p-6 bg-gray-800 text-white h-screen flex flex-col space-y-4",
-      {Route::iter().map(|route| {
-        let route_name = route.name();
-        rsx! {
-          Link {
-            to: route.clone(),
-            class: "py-2 px-4 rounded-md hover:bg-gray-700 transition",
-            aria_label: route_name,
-            Button {
-              class: "w-full text-left text-white",
-              variant: ButtonVariant::Default,
-              button_type: ButtonType::Button,
-              on_click: move |_| {
-                navigator.push(route.clone());
-              },
-              "{route_name}"
+      {Route::iter()
+        .filter(|route| *route != current_route)
+        .map(|route| {
+          let route_name = route.name();
+          rsx! {
+            Link {
+              to: route.clone(),
+              class: "py-2 px-4 rounded-md hover:bg-gray-700 transition",
+              aria_label: route_name,
+              Button {
+                class: "w-full text-left text-white",
+                variant: ButtonVariant::Default,
+                button_type: ButtonType::Button,
+                on_click: move |_| {
+                    navigator.push(route.clone());
+                },
+                "{route_name}"
+              }
             }
           }
-        }
-      })}
+        })
+      }
     }
   }
 }
