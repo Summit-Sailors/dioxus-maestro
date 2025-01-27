@@ -27,33 +27,102 @@ pub fn UIDemo() -> Element {
       h1 { class: "text-3xl font-bold mb-8", "Maestro UI Components" }
       
       // buttons section
-      ComponentSection {
+      ComponentSectionUI {
         title: "Buttons",
         description: "Various button styles, sizes, and types with different variants",
         div { class: "grid grid-cols-2 md:grid-cols-3 gap-6",
-          Button { class: "px-4 py-2 rounded-lg font-medium transition-colors hover:bg-blue-700", variant: ButtonVariant::Default, button_type: ButtonType::Button, on_click: move |_| { log::info!("Default Button clicked"); }, "Default Button" }
-          Button { class: "px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600", variant: ButtonVariant::Destructive, button_type: ButtonType::Button, on_click: move |_| { log::info!("Destructive Button clicked"); }, "Destructive Button" }
-          Button { class: "px-4 py-2 border border-gray-400 rounded-lg hover:bg-gray-100", variant: ButtonVariant::Outline, button_type: ButtonType::Reset, on_click: move |_| { log::info!("Outline Button clicked and form reset"); }, "Outline Button" }
-          Button { class: "px-2 py-1 rounded-md bg-gray-300 text-sm hover:bg-gray-400", variant: ButtonVariant::Secondary, size: ButtonSize::Sm, button_type: ButtonType::Submit, on_click: move |_| { log::info!("Small Submit Button clicked"); }, "Small Button" }
-          Button { class: "px-6 py-3 rounded-lg bg-transparent border border-gray-300 text-gray-600 hover:text-black", variant: ButtonVariant::Ghost, size: ButtonSize::Lg, button_type: ButtonType::Button, on_click: move |_| { log::info!("Large Ghost Button clicked"); }, "Large Button" }
-          Button { class: "text-blue-500 underline hover:text-blue-700", variant: ButtonVariant::Link, button_type: ButtonType::Button, on_click: move |_| { log::info!("Link Button clicked"); }, "Link Button" }
-          Button { class: "w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300", variant: ButtonVariant::Icon, size: ButtonSize::IconLg, button_type: ButtonType::Button, on_click: move |_| { log::info!("Icon Button clicked"); }, children: rsx! { i { class: "fas fa-plus" } } }
+          Button { 
+            class: "px-4 py-2 rounded-lg font-medium transition-colors hover:bg-blue-700", 
+            variant: ButtonVariant::Default, 
+            button_type: ButtonType::Button, 
+            on_click: move |_| { log::info!("Default Button clicked"); }, "Default Button" 
+          }
+          Button { 
+            class: "px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600", 
+            variant: ButtonVariant::Destructive, 
+            button_type: ButtonType::Button, 
+            on_click: move |_| { log::info!("Destructive Button clicked"); }, 
+            "Destructive Button" 
+          }
+          Button { 
+            class: "px-4 py-2 border border-gray-400 rounded-lg hover:bg-gray-100", 
+            variant: ButtonVariant::Outline, 
+            button_type: ButtonType::Reset, 
+            on_click: move |_| { log::info!("Outline Button clicked and form reset"); }, 
+            "Outline Button" 
+          }
+          Button { 
+            class: "px-2 py-1 rounded-md bg-gray-300 text-sm hover:bg-gray-400", 
+            variant: ButtonVariant::Secondary, 
+            size: ButtonSize::Sm, 
+            button_type: ButtonType::Submit, 
+            on_click: move |_| { log::info!("Small Submit Button clicked"); }, 
+            "Small Button" 
+          }
+          Button { 
+            class: "px-6 py-3 rounded-lg bg-transparent border border-gray-300 text-gray-600 hover:text-black", 
+            variant: ButtonVariant::Ghost, 
+            size: ButtonSize::Lg, 
+            button_type: ButtonType::Button, 
+            on_click: move |_| { log::info!("Large Ghost Button clicked"); }, 
+            "Large Button" 
+          }
+          Button { 
+            class: "text-blue-500 underline hover:text-blue-700", 
+            variant: ButtonVariant::Link, 
+            button_type: ButtonType::Button, 
+            on_click: move |_| { log::info!("Link Button clicked"); }, 
+            "Link Button" 
+          }
+          Button { 
+            class: "w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300", 
+            variant: ButtonVariant::Icon, 
+            size: ButtonSize::IconLg, 
+            button_type: ButtonType::Button, 
+            on_click: move |_| { log::info!("Icon Button clicked"); }, 
+            children: rsx! { i { class: "fas fa-plus" } } 
+          }
         }
       }
 
       // input fields section
-      ComponentSection {
+      ComponentSectionUI {
         title: "Input Fields",
         description: "Text inputs with different variants and states",
         div { class: "space-y-4",
-          Label { label_text: "Default Input".to_string(), Input { class: "border rounded-lg px-3 py-2 w-full focus:ring focus:ring-blue-300", value: text_input.read().to_string(), on_change: move |value| text_input.set(value), placeholder: "Type something...".to_string(), } }
-          Label { label_text: "Underlined Input".to_string(), Input { class: "border-b border-gray-400 w-full focus:ring focus:ring-blue-300", variant: InputVariant::Underlined, value: text_input.read().to_string(), on_change: move |value| text_input.set(value), placeholder: Some("Type something...".to_string()), } }
-          Label { label_text: "Password Input".to_string(), Input { class: "border rounded-lg px-3 py-2 w-full focus:ring focus:ring-red-300", input_type: InputType::Password, value: text_input.read().to_string(), on_change: move |value| text_input.set(value), placeholder: "Enter password...".to_string(), } }
+          Label { 
+            label_text: "Default Input".to_string(), 
+            Input { 
+              class: "border rounded-lg px-3 py-2 w-full focus:ring focus:ring-blue-300", 
+              value: text_input.read().to_string(), 
+              on_change: move |value| text_input.set(value), 
+              placeholder: "Type something...".to_string(),
+            } 
+          }
+          Label { 
+            label_text: "Underlined Input".to_string(), 
+            Input { 
+              class: "border-b border-gray-400 w-full focus:ring focus:ring-blue-300", 
+              variant: InputVariant::Underlined, 
+              value: text_input.read().to_string(), 
+              on_change: move |value| text_input.set(value), 
+              placeholder: Some("Type something...".to_string()), 
+            } 
+          }
+          Label { 
+            label_text: "Password Input".to_string(), 
+            Input { 
+              class: "border rounded-lg px-3 py-2 w-full focus:ring focus:ring-red-300", 
+              input_type: InputType::Password, value: text_input.read().to_string(), 
+              on_change: move |value| text_input.set(value), 
+              placeholder: "Enter password...".to_string(), 
+            } 
+          }
         }
       }
 
       // select and multiselect section
-      ComponentSection {
+      ComponentSectionUI {
         title: "Selection Components",
         description: "Single and multiple selection components",
 
@@ -81,9 +150,9 @@ pub fn UIDemo() -> Element {
           }
         }
       }
-
+    
       // toggle and radio section
-      ComponentSection {
+      ComponentSectionUI {
         title: "Toggle and Radio",
         description: "Toggle switches and radio buttons",
 
@@ -119,7 +188,7 @@ pub fn UIDemo() -> Element {
       }
 
       // textarea and spinner section
-      ComponentSection {
+      ComponentSectionUI {
         title: "Textarea and Loading",
         description: "Textarea component with multiple configurations and loading spinner",
 
@@ -185,14 +254,14 @@ pub fn UIDemo() -> Element {
 }
 
 #[derive(Props, Clone, PartialEq)]
-pub struct ComponentSectionProps {
+pub struct ComponentSectionUIProps {
   title: &'static str,
   description: &'static str,
   children: Element,
 }
 
 #[component]
-fn ComponentSection(props: ComponentSectionProps) -> Element {
+fn ComponentSectionUI(props: ComponentSectionUIProps) -> Element {
   rsx! {
     section { class: "mb-12",
       h2 { class: "text-2xl font-semibold mb-2", {props.title} }

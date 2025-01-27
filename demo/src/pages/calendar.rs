@@ -1,8 +1,10 @@
 use {
-  chrono::{Datelike, Local, NaiveDate}, dioxus::prelude::*, maestro_ui::{
+  chrono::{Datelike, Local, NaiveDate}, 
+  dioxus::prelude::*, 
+  maestro_ui::{
     button::{Button, ButtonVariant},
     calendar::{
-      Calendar, CalendarDisplayProps, CalendarSelectProps
+      Calendar, CalendarDisplayProps, CalendarSelectProps, Event as MaestroEvent
     },
   }
 };
@@ -10,15 +12,15 @@ use {
 #[component]
 pub fn CalendarDemo() -> Element {
   let mut basic_display_month = use_signal(|| Local::now().date_naive().month().into());
-  let mut basic_display_year = use_signal(|| Local::now().date_naive().year());
-  let mut basic_selected_day = use_signal(|| (Local::now().date_naive().day() as u8).into());
-  let mut basic_selected_month = use_signal(|| Local::now().date_naive().month().into());
-  let mut basic_selected_year = use_signal(|| Local::now().date_naive().year());
+  let basic_display_year = use_signal(|| Local::now().date_naive().year());
+  let basic_selected_day = use_signal(|| (Local::now().date_naive().day() as u8).into());
+  let basic_selected_month = use_signal(|| Local::now().date_naive().month().into());
+  let basic_selected_year = use_signal(|| Local::now().date_naive().year());
 
   let today = Local::now().date_naive();
   let min_date = NaiveDate::from_ymd_opt(today.year(), today.month(), 1).unwrap();
   let max_date = min_date.checked_add_months(chrono::Months::new(3)).unwrap();
-  
+
   let events = use_signal(|| vec![
     Event {
       date: NaiveDate::from_ymd_opt(today.year(), today.month(), 15).unwrap(),
@@ -30,14 +32,18 @@ pub fn CalendarDemo() -> Element {
       title: "Product Launch".to_string(),
       color: Some("#10B981".to_string()),
     }
-  ]);
+    ].into_iter().map(|e| MaestroEvent {
+      date: e.date,
+      title: e.title,
+      color: e.color,
+    }).collect::<Vec<MaestroEvent>>());
 
   rsx! {
     div { 
-      class: "space-y-8 max-w-4xl mx-auto py-8",
+      class: "space-y-10 max-w-5xl mx-auto py-12 bg-gray-50 px-6 rounded-lg shadow-lg",
       
       h1 { 
-        class: "text-3xl font-bold mb-8", 
+        class: "text-4xl font-bold text-gray-800 mb-8 text-center", 
         "Maestro UI Calendar Demos" 
       }
       
@@ -61,9 +67,10 @@ pub fn CalendarDemo() -> Element {
         }
         
         div {
-          class: "mt-4 flex space-x-2",
+          class: "mt-4 flex space-x-3 justify-center",
           Button {
             variant: ButtonVariant::Outline,
+            class: "px-4 py-2 border rounded-lg shadow-sm hover:shadow-md",
             on_click: move |_| {
               basic_display_month.set(basic_display_month().prev());
             },
@@ -71,6 +78,7 @@ pub fn CalendarDemo() -> Element {
           }
           Button {
             variant: ButtonVariant::Outline,
+            class: "px-4 py-2 border rounded-lg shadow-sm hover:shadow-md",
             on_click: move |_| {
               basic_display_month.set(basic_display_month().next());
             },
@@ -128,13 +136,13 @@ pub fn CalendarDemo() -> Element {
           div { 
             class: "mt-4 space-y-2",
             h3 { 
-              class: "text-lg font-semibold", 
+              class: "text-lg font-semibold text-gray-700", 
               "Upcoming Events:" 
             }
             {events.read().iter().map(|event| {
               rsx! {
                 div { 
-                  class: "flex items-center space-x-2",
+                  class: "flex items-center space-x-3 text-gray-800",
                   div { 
                     class: "w-3 h-3 rounded-full", 
                     style: format!("background-color: {}", event.color.clone().unwrap_or_default())
@@ -165,14 +173,13 @@ pub struct ComponentSectionProps {
 fn ComponentSection(props: ComponentSectionProps) -> Element {
   rsx! {
     section { class: "mb-12",
-      h2 { class: "text-2xl font-semibold mb-2", {props.title} }
+      h2 { class: "text-2xl font-semibold mb-3 text-gray-700", {props.title} }
       p { class: "text-gray-600 mb-6", {props.description} }
-      div { class: "bg-white p-6 rounded-lg shadow-sm border", {props.children} }
+      div { class: "bg-white p-8 rounded-lg shadow-md border", {props.children} }
     }
   }
 }
 
-// event struct for demonstration
 #[derive(Clone, PartialEq)]
 struct Event {
   date: NaiveDate,

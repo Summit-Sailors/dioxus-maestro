@@ -28,15 +28,17 @@ impl ECalendarDay {
 	}
 
 	pub fn days_until_sunday(&self) -> u8 {
-		7 - self.days_from_sunday()
+		(7 - self.days_from_sunday()) % 7
 	}
 
 	pub fn next(&self) -> Self {
-		*self + 1
+		let next_day = (*self as u8 + 1) % 7;
+		Self::from_repr(next_day).unwrap()
 	}
 
 	pub fn prev(&self) -> Self {
-		*self - 1
+		let prev_day = (*self as u8 + 6) % 7;
+		Self::from_repr(prev_day).unwrap()
 	}
 }
 
@@ -45,7 +47,8 @@ where
 	T: AsPrimitive<u32>,
 {
 	fn from(day: T) -> Self {
-		((day.as_()) % 7).into()
+		let day_num = day.as_() % 7;
+		Self::from_repr(day_num as u8).unwrap()
 	}
 }
 
@@ -53,7 +56,8 @@ impl Add<ECalendarDay> for ECalendarDay {
 	type Output = Self;
 
 	fn add(self, rhs: ECalendarDay) -> Self::Output {
-		self + rhs as u8
+		let new_day = (self as u8 + rhs as u8) % 7;
+		Self::from_repr(new_day).unwrap()
 	}
 }
 
@@ -61,7 +65,8 @@ impl Sub<ECalendarDay> for ECalendarDay {
 	type Output = Self;
 
 	fn sub(self, rhs: ECalendarDay) -> Self::Output {
-		self - rhs as u8
+		let new_day = (self as u8 + 7 - rhs as u8) % 7;
+		Self::from_repr(new_day).unwrap()
 	}
 }
 
@@ -72,7 +77,8 @@ where
 	type Output = Self;
 
 	fn add(self, rhs: T) -> Self::Output {
-		Self::from_repr(self as u8 + rhs.as_()).unwrap()
+		let new_day = (self as u8 + rhs.as_()) % 7;
+		Self::from_repr(new_day).unwrap()
 	}
 }
 
@@ -83,6 +89,7 @@ where
 	type Output = Self;
 
 	fn sub(self, rhs: T) -> Self::Output {
-		Self::from_repr(self as u8 - rhs.as_()).unwrap()
+		let new_day = (self as u8 + 7 - (rhs.as_() % 7)) % 7;
+		Self::from_repr(new_day).unwrap()
 	}
 }

@@ -9,7 +9,8 @@ use {
       query::QueryDemo,
       radio::RadioDemo,
       toast::ToastDemo,
-      ui::UIDemo
+      ui::UIDemo,
+      calendar::CalendarDemo
     }
 	},
 	dioxus::prelude::*,
@@ -35,6 +36,8 @@ pub enum Route {
 	ToastDemo {},
 	#[route("/ui")]
 	UIDemo {},
+	#[route("/calendar")]
+	CalendarDemo {},
 }
 
 impl Route {
@@ -48,6 +51,7 @@ impl Route {
 			Route::RadioDemo {} => "Radio",
 			Route::ToastDemo {} => "Toast",
 			Route::UIDemo {} => "UI",
+      Route::CalendarDemo {} => "Calendar"
 		}
 	}
 }
