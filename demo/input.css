@@ -2,3 +2,141 @@
 
 @layer theme, base, components, utilities;
 
+/* base toast styles */
+.maestro-toast {
+  @apply transition-all duration-200 ease-in-out;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  width: max-content;
+}
+
+/* toast variants */
+.maestro-toast__success {
+  --toast-bg: #3c763d;
+  --toast-text: #dff0d8;
+  --toast-border: #d6e9c6;
+  --toast-progress: #d6e9c6;
+}
+
+.maestro-toast__warning {
+  --toast-bg: #8a6d3b;
+  --toast-text: #fcf8e3;
+  --toast-border: #faebcc;
+  --toast-progress: #faebcc;
+}
+
+.maestro-toast__error {
+  --toast-bg: #a94442;
+  --toast-text: #f2dede;
+  --toast-border: #ebccd1;
+  --toast-progress: #ebccd1;
+}
+
+.maestro-toast__info {
+  --toast-bg: #31708f;
+  --toast-text: #d9edf7;
+  --toast-border: #bce8f1;
+  --toast-progress: #bce8f1;
+}
+
+.maestro-toast__default {
+  --toast-bg: #374151;
+  --toast-text: #ffffff;
+  --toast-border: #4b5563;
+  --toast-progress: #6b7280;
+}
+
+/* custom properties for easy theme customization */
+.maestro-toast {
+  background-color: var(--toast-bg);
+  color: var(--toast-text);
+  border: 1px solid var(--toast-border);
+}
+
+/* progress bar */
+.maestro-toast::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background-color: var(--toast-progress);
+  transition: width 100ms linear;
+}
+
+/* toast container positions */
+.toast-scope [id^="wrap-"] {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  width: max-content;
+  max-width: 384px;
+}
+
+/* animations */
+@keyframes toast-slide-in-right {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes toast-slide-in-left {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* animation classes */
+[id="wrap-bottom-right"] .maestro-toast,
+[id="wrap-top-right"] .maestro-toast {
+  animation: toast-slide-in-right 0.3s ease-out;
+}
+
+[id="wrap-bottom-left"] .maestro-toast,
+[id="wrap-top-left"] .maestro-toast {
+  animation: toast-slide-in-left 0.3s ease-out;
+}
+
+/* hover effects */
+.maestro-toast:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* custom style hooks for developers */
+.maestro-toast :where(h2) {
+  font-weight: 500;
+  margin: 0;
+}
+
+.maestro-toast :where(button) {
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.maestro-toast :where(button):hover {
+  opacity: 1;
+}
+
+/* responsive design */
+@media (max-width: 640px) {
+  .toast-scope [id^="wrap-"] {
+    max-width: calc(100vw - 2rem);
+  }
+  
+  .maestro-toast {
+    width: 100%;
+    max-width: 100%;
+  }
+}
