@@ -17,7 +17,7 @@ maestro-hooks = { path = "../frontend/maestro-hooks" }
 maestro-plotters = { path = "../frontend/maestro-plotters" }
 maestro-query = { path = "../frontend/maestro-query" }
 maestro-radio = { path = "../frontend/maestro-radio" }
-maestro-toast = { path = "../frontend/maestro-toast" }
+maestro-toast = { path = "../frontend/maestro-toast", features = ["web"]}
 maestro-ui = { path = "../frontend/maestro-ui" }
 
 

@@ -1,17 +1,19 @@
 use {
   dioxus::prelude::*,
   maestro_radio::use_radio::{use_init_radio_station, use_radio, RadioChannel, RadioStation},
-  std::fmt::Display
+  std::fmt::Display,
 };
 
-// our app state
 #[derive(Clone, Debug)]
 struct CounterState {
   pub count: i32,
   pub last_update: String,
+  // channel-specific counts to track per-channel state
+  pub increment_count: i32,
+  pub decrement_count: i32,
+  pub reset_count: i32,
 }
 
-// our channels for different types of updates
 #[derive(PartialEq, Eq, Clone)]
 pub enum CounterChannel {
   Increment,
@@ -20,7 +22,6 @@ pub enum CounterChannel {
   All,
 }
 
-// Implement RadioChannel trait for our channel enum
 impl RadioChannel<CounterState> for CounterChannel {
   fn derive_channel(self, _radio: &CounterState) -> Vec<Self> {
     match self {
@@ -45,19 +46,22 @@ impl Display for CounterChannel {
   }
 }
 
-// Main Radio Demo Component
 #[component]
 pub fn RadioDemo() -> Element {
-  let _station: RadioStation<CounterState, CounterChannel> = use_init_radio_station(|| CounterState {
+  let station: RadioStation<CounterState, CounterChannel> = use_init_radio_station(|| CounterState {
     count: 0,
     last_update: "No updates yet".to_string(),
+    increment_count: 0,
+    decrement_count: 0,
+    reset_count: 0,
   });
+
+  provide_context(station);
 
   rsx! {
     div { 
       class: "max-w-4xl mx-auto p-6 space-y-8",
       
-      // header section
       div { 
         class: "text-center mb-8",
         h1 { 
@@ -70,11 +74,9 @@ pub fn RadioDemo() -> Element {
         }
       }
 
-      // main content grid
       div { 
           class: "grid grid-cols-1 md:grid-cols-2 gap-6",
           
-          // counter controls section
           div { 
             class: "bg-white p-6 rounded-lg shadow-sm border border-gray-200",
             h2 { 
@@ -84,7 +86,6 @@ pub fn RadioDemo() -> Element {
             CounterControls {}
           }
 
-          // display section
           div { 
             class: "bg-white p-6 rounded-lg shadow-sm border border-gray-200",
             h2 { 
@@ -94,7 +95,6 @@ pub fn RadioDemo() -> Element {
             CounterDisplay {}
           }
 
-          // channel Monitor
           div { 
             class: "md:col-span-2 bg-white p-6 rounded-lg shadow-sm border border-gray-200",
             h2 { 
@@ -108,29 +108,33 @@ pub fn RadioDemo() -> Element {
   }
 }
 
-// component for counter controls
 #[component]
 fn CounterControls() -> Element {
-  let mut radio = use_radio(CounterChannel::All);
+  let mut increment_radio = use_radio(CounterChannel::Increment);
+  let mut decrement_radio = use_radio(CounterChannel::Decrement);
+  let mut reset_radio = use_radio(CounterChannel::Reset);
 
   let handle_increment = move |_| {
-    let mut guard = radio.write_channel(CounterChannel::Increment);
+    let mut guard = increment_radio.write();
     let state = &mut *guard;
     state.count += 1;
+    state.increment_count = state.count;
     state.last_update = "Incremented".to_string();
   };
 
   let handle_decrement = move |_| {
-    let mut guard = radio.write_channel(CounterChannel::Decrement);
+    let mut guard = decrement_radio.write();
     let state = &mut *guard;
     state.count -= 1;
+    state.decrement_count = state.count;
     state.last_update = "Decremented".to_string();
   };
 
   let handle_reset = move |_| {
-    let mut guard = radio.write_channel(CounterChannel::Reset);
+    let mut guard = reset_radio.write();
     let state = &mut *guard;
     state.count = 0;
+    state.reset_count = state.count;
     state.last_update = "Reset".to_string();
   };
 
@@ -156,12 +160,16 @@ fn CounterControls() -> Element {
   }
 }
 
-// component for displaying counter value
 #[component]
 fn CounterDisplay() -> Element {
-  let radio = use_radio(CounterChannel::All);
-  let state = radio.read();
-
+  // separate radios for each action
+  let increment_radio = use_radio(CounterChannel::Increment);
+  let _decrement_radio = use_radio(CounterChannel::Decrement);
+  let _reset_radio = use_radio(CounterChannel::Reset);
+  
+  // reading the latest state from any of the radios (they all share the same state)
+  let state = increment_radio.read();
+  
   rsx! {
     div { 
       class: "space-y-4",
@@ -177,38 +185,26 @@ fn CounterDisplay() -> Element {
   }
 }
 
-// component for monitoring channel activities
 #[component]
 fn ChannelMonitor() -> Element {
-  let increment_radio = use_radio(CounterChannel::Increment);
-  let decrement_radio = use_radio(CounterChannel::Decrement);
-  let reset_radio = use_radio(CounterChannel::Reset);
-
-  let increment_count = increment_radio.read().count;
-  let decrement_count = decrement_radio.read().count;
-  let reset_count = reset_radio.read().count;
-
   rsx! {
     div { 
       class: "grid grid-cols-3 gap-4",
-      
-      // individual channel monitors
       ChannelCard {
         channel: CounterChannel::Increment,
-        value: increment_count
+        value: use_radio(CounterChannel::Increment).read().increment_count
       }
       ChannelCard {
         channel: CounterChannel::Decrement,
-        value: decrement_count
+        value: use_radio(CounterChannel::Decrement).read().decrement_count
       }
       ChannelCard {
         channel: CounterChannel::Reset,
-        value: reset_count
+        value: use_radio(CounterChannel::Reset).read().reset_count
       }
     }
   }
 }
-
 
 #[component]
 fn ChannelCard(channel: CounterChannel, value: i32) -> Element {

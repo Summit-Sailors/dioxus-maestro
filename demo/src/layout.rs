@@ -10,7 +10,7 @@ pub fn Layout(children: Element) -> Element {
   let toast = use_init_toast_ctx();
 
   rsx! {
-    // ToastFrame { manager: toast }
+    ToastFrame { manager: toast }
     div {
       class: "grid grid-cols-7 h-screen bg-gray-50 text-gray-800",
       NavigationMenu {}
@@ -44,7 +44,7 @@ fn NavigationMenu() -> Element {
                 variant: ButtonVariant::Default,
                 button_type: ButtonType::Button,
                 on_click: move |_| {
-                    navigator.push(route.clone());
+                  navigator.push(route.clone());
                 },
                 "{route_name}"
               }

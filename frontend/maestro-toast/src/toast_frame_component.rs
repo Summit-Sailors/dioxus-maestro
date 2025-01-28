@@ -8,7 +8,9 @@ use {
 	tailwind_fuse::tw_join,
 };
 
-// Added custom classNames "maestro-toast" and "maestro-toast__*" - in input.css they may be used by developers to customize view
+/// 
+/// Added custom classNames "maestro-toast" and "maestro-toast__*" - in input.css they may be used by developers to customize view
+///  
 
 #[component]
 pub fn ToastFrame(mut manager: Signal<ToastManager>) -> Element {
