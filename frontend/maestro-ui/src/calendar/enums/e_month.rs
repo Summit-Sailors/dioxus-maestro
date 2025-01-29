@@ -30,7 +30,8 @@ where
 	T: AsPrimitive<u8>,
 {
 	fn from(prim: T) -> Self {
-		(((prim.as_()) % 12) + 1).into()
+		let month_num = ((prim.as_() - 1) % 12) + 1;
+		Self::from_repr(month_num).unwrap()
 	}
 }
 
@@ -38,9 +39,9 @@ impl ECalendarMonth {
 	pub fn num_days(&self, year: i32) -> u8 {
 		let month = *self as u32;
 		NaiveDate::from_ymd_opt(year, month, 1)
-			.unwrap() // safe since we know 1st of any month exists
+			.unwrap()
 			.checked_add_months(chrono::Months::new(1))
-			.unwrap() // safe since adding 1 month to valid date is always valid
+			.unwrap()
 			.signed_duration_since(NaiveDate::from_ymd_opt(year, month, 1).unwrap())
 			.num_days() as u8
 	}
@@ -54,11 +55,13 @@ impl ECalendarMonth {
 	}
 
 	pub fn next(&self) -> Self {
-		*self + 1
+		let next_month = (*self as u8 % 12) + 1;
+		Self::from_repr(next_month).unwrap()
 	}
 
 	pub fn prev(&self) -> Self {
-		*self - 1
+		let prev_month = if *self as u8 == 1 { 12 } else { *self as u8 - 1 };
+		Self::from_repr(prev_month).unwrap()
 	}
 }
 
@@ -85,7 +88,8 @@ where
 	type Output = Self;
 
 	fn add(self, rhs: T) -> Self::Output {
-		Self::from_repr(self as u8 + rhs.as_()).unwrap()
+		let result = if self as u8 == 11 { 12 } else { (self as u8 + rhs.as_()) % 12 };
+		Self::from_repr(result).unwrap()
 	}
 }
 
@@ -96,6 +100,7 @@ where
 	type Output = Self;
 
 	fn sub(self, rhs: T) -> Self::Output {
-		Self::from_repr(self as u8 - rhs.as_()).unwrap()
+		let result = if self as u8 == 1 { 12 } else { (self as u8 + 12 - (rhs.as_() % 12)) % 12 };
+		Self::from_repr(result).unwrap()
 	}
 }
