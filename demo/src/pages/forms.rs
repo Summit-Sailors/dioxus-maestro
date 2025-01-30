@@ -26,7 +26,7 @@ pub fn form_content(props: InnerComponentProps<User>) -> Element {
         TextFormInput::<User> {
           name: "username",
           placeholder: "Enter your username",
-          class: "w-full p-2 rounded-md border border-gray-300 focus:ring focus:ring-blue-300 focus:outline-none",
+          class: "w-full p-2 rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none placeholder-opacity-50",
         }
       }
 
@@ -36,7 +36,7 @@ pub fn form_content(props: InnerComponentProps<User>) -> Element {
         TextFormInput::<User> {
           name: "email",
           placeholder: "Enter your email address",
-          class: "w-full p-2 rounded-md border border-gray-300 focus:ring focus:ring-blue-300 focus:outline-none",
+          class: "w-full p-2 rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none placeholder-opacity-50",
         }
       }
 
@@ -47,7 +47,7 @@ pub fn form_content(props: InnerComponentProps<User>) -> Element {
           name: "bio",
           placeholder: "Tell us about yourself...",
           rows: 4,
-          class: "w-full p-2 rounded-md border border-gray-300 focus:ring focus:ring-blue-300 focus:outline-none",
+          class: "w-full p-2 rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none placeholder-opacity-50",
         }
       }
 
@@ -57,15 +57,15 @@ pub fn form_content(props: InnerComponentProps<User>) -> Element {
         SelectFormField::<User, String> {
           name: "role",
           values: AVAILABLE_ROLES.iter().map(|&s| s.to_string()).collect(),
-          class: "w-full p-2 rounded-md border border-gray-300 focus:ring focus:ring-blue-300 focus:outline-none",
+          class: "w-full p-2 rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none placeholder-opacity-50",
         }
       }
 
       Button {
         class: format!(
-          "mt-4 py-2 rounded-md text-white font-semibold {} transition-opacity duration-200",
-          if loading() { "bg-gray-400 cursor-not-allowed opacity-70" } else { "bg-blue-500 hover:bg-blue-600" }
-        ),
+          "mt-4 py-2 rounded-md text-white font-semibold transition-all duration-200 {}",
+          if loading() { "bg-gray-400 cursor-not-allowed opacity-70" } else { "bg-blue-500 hover:bg-blue-600 transform hover:scale-105" }
+        ),               
         button_type: ButtonType::Submit,
         disabled: loading(),
         size: ButtonSize::Default,
@@ -136,15 +136,15 @@ pub fn FormsDemo() -> Element {
 
         div { class: "mt-4",
           button {
-            class: format!("px-4 py-2 rounded {}", async_class),
+            class: format!("px-4 py-2 rounded-md font-medium transition-all duration-200 {}", async_class),
             onclick: move |_| is_async.set(true),
             "Async Mode"
           }
           button {
-            class: format!("ml-2 px-4 py-2 rounded {}", sync_class),
+            class: format!("ml-2 px-4 py-2 rounded-md font-medium transition-all duration-200 {}", sync_class),
             onclick: move |_| is_async.set(false),
             "Sync Mode"
-          }
+          }        
         }
       }
 
