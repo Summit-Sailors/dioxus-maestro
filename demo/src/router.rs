@@ -6,7 +6,7 @@ use {
       home::HomePage,
       hooks::HooksDemo,
       plotters::PlottersDemo,
-      query::QueryDemo,
+      query::CompleteQueryDemo,
       radio::RadioDemo,
       toast::ToastDemo,
       ui::UIDemo,
@@ -29,7 +29,7 @@ pub enum Route {
 	#[route("/plotters")]
 	PlottersDemo {},
 	#[route("/query")]
-	QueryDemo {},
+	CompleteQueryDemo {},
 	#[route("/radio")]
 	RadioDemo {},
 	#[route("/toast")]
@@ -47,7 +47,7 @@ impl Route {
 			Route::FormsDemo {} => "Form",
 			Route::HooksDemo {} => "Hooks",
 			Route::PlottersDemo {} => "Plotters",
-			Route::QueryDemo {} => "Query",
+			Route::CompleteQueryDemo {} => "Query",
 			Route::RadioDemo {} => "Radio",
 			Route::ToastDemo {} => "Toast",
 			Route::UIDemo {} => "UI",

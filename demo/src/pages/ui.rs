@@ -4,7 +4,6 @@ use {
     button::{Button, ButtonSize, ButtonType, ButtonVariant}, 
     input::{Input, InputType, InputVariant}, 
     label::Label, 
-    multi_select::MultiSelect, 
     radio::Radio, select::Select, 
     spinner::FreeIconSpinner, 
     textarea::Textarea, 
@@ -129,22 +128,20 @@ pub fn UIDemo() -> Element {
         div { class: "space-y-6",
           Select {
             values: vec!["Option 1".to_string(), "Option 2".to_string(), "Option 3".to_string()],
-            current_value: selected_option.read().to_string(),
+            current_value: Some(selected_option.read().to_string()),
+            multi: false,
             callback: move |value| selected_option.set(value),
+            multi_callback: move |_| {},
             label: Some("Single Select".into()),
+            placeholder: Some("Select an option".into()),
           }
-          MultiSelect {
+          
+          Select {
             values: vec!["Item 1".to_string(), "Item 2".to_string(), "Item 3".to_string()],
-            current_value: selected_options.read().to_vec(),
-            callback: move |value| {
-              let mut current = selected_options.read().to_vec();
-              if current.contains(&value) {
-                current.retain(|x| x != &value);
-              } else {
-                current.push(value);
-              }
-              selected_options.set(current);
-            },
+            current_value: None,
+            multi: true,
+            callback: move |_| {},
+            multi_callback: move |value| selected_options.set(value),
             label: Some("Multi Select".into()),
             placeholder: Some("Select items...".into()),
           }
@@ -158,29 +155,30 @@ pub fn UIDemo() -> Element {
 
         div { class: "space-y-6",
           div { class: "space-y-4",
-            ToggleSwitch {
-              state: toggle_state,
-              label_states: Some(ToggleSwitchLabelStatesProp {
-                on: "Enabled",
-                off: "Disabled"
-              }),
-              label_placement: Some(EToggleSwitchLabelPlacement::Right),
-            }
+          ToggleSwitch {
+            state: toggle_state,
+            label_states: Some(ToggleSwitchLabelStatesProp {
+              on: "Enabled",
+              off: "Disabled"
+            }),
+            label_placement: Some(EToggleSwitchLabelPlacement::Right)
           }
+        }
+    
           div { class: "space-y-2",
             Radio {
               name: "radio-group".to_string(),
               label: "Option 1".to_string(),
               checked: true,
               on_change: move |_| {},
-              class: "flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50 focus:ring-2 focus:ring-primary"
+              class: "flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50 focus:ring-2 focus:ring-primary disabled:opacity-80 disabled:bg-gray-300"
             }
             Radio {
               name: "radio-group".to_string(),
               label: "Option 2".to_string(),
               checked: false,
               on_change: move |_| {},
-              class: "flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50 focus:ring-2 focus:ring-primary"
+              class: "flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50 focus:ring-2 focus:ring-primary disabled:opacity-80 disabled:bg-gray-300"
             }
           }
         }

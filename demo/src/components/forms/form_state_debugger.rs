@@ -20,6 +20,13 @@ where
 {
 	let form = props.form;
 	let mut show_debug = use_signal(|| false);
+  let mut serialized_form = use_signal(|| String::new());
+
+  use_effect(move || {
+    let serialized = serde_json::to_string_pretty(&form.as_struct())
+      .unwrap_or_else(|_| "Serialization error".to_string());
+    serialized_form.set(serialized);
+  });
 
 	rsx! {
 		div { class: "mt-8 p-4 bg-gray-100 rounded-lg",
@@ -37,10 +44,8 @@ where
 				}
 			}
 			{
-      show_debug()
+        show_debug()
         .then(|| {
-          let serialized_form = serde_json::to_string_pretty(&form.as_struct())
-            .unwrap_or_else(|_| "Serialization error".to_string());
           rsx! {
             div { class: "mt-4 space-y-2",
               div {
@@ -58,7 +63,7 @@ where
                 "{form.is_submitting.read()}"
               }
               pre { class: "mt-4 p-4 bg-gray-800 text-white rounded overflow-auto",
-                code { "{serialized_form}" }
+                code { "{serialized_form.read()}" }
               }
             }
           }

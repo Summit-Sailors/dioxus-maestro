@@ -54,20 +54,20 @@ pub fn ToggleSwitch(
 
 #[component]
 pub fn RawToggleSwitch(mut state: Signal<bool>) -> Element {
-	rsx! {
-		button {
-			class: "relative inline-flex h-6 w-11 items-center rounded-full transition-colors",
-			class: if state() { "bg-blue-600" } else { "bg-gray-200" },
-			r#type: "button",
-			role: "switch",
-			aria_checked: state,
-			onclick: move |_| {
-					state.set(!state());
-			},
-			div {
-				class: "absolute h-5 w-5 transform rounded-full bg-white transition-transform",
-				class: if state() { "translate-x-6" } else { "translate-x-0.5" }
-			}
-		}
-	}
+  rsx! {
+    button {
+      class: "relative inline-flex h-6 w-11 items-center rounded-full transition-colors",
+      class: if state() { "bg-blue-600" } else { "bg-gray-500" },
+      r#type: "button",
+      role: "switch",
+      aria_checked: state,
+      onclick: move |_| {
+          state.set(!state());
+      },
+      div {
+        class: "absolute h-5 w-5 transform rounded-full bg-white transition-transform",
+        class: if state() { "translate-x-6" } else { "translate-x-0.5" }
+      }
+    }
+  }
 }

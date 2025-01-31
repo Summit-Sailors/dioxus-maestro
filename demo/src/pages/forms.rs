@@ -57,7 +57,7 @@ pub fn form_content(props: InnerComponentProps<User>) -> Element {
         SelectFormField::<User, String> {
           name: "role",
           values: AVAILABLE_ROLES.iter().map(|&s| s.to_string()).collect(),
-          class: "w-full p-2 rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none placeholder-opacity-50",
+          class: "w-full p-2 rounded-md border border-gray-300 focus:ring focus:ring-blue-300 focus:outline-none",
         }
       }
 
@@ -87,7 +87,8 @@ pub fn FormsDemo() -> Element {
 
   let on_submit = Some(Callback::new(
     move |(event, (submitted_user, is_valid)): (Event<FormData>, (User, bool))| {
-    event.prevent_default();
+
+      event.prevent_default();
 
     let db_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
 
@@ -149,7 +150,10 @@ pub fn FormsDemo() -> Element {
       }
 
       Form {
-        initial_value: User::default(),
+        initial_value: User {
+          role: AVAILABLE_ROLES[0].to_string(),
+          ..User::default()
+        },
         onsubmit: on_submit,
         inner: form_content
       }
