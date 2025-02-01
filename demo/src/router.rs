@@ -37,7 +37,7 @@ pub enum Route {
 	#[route("/ui")]
 	UIDemo {},
 	#[route("/calendar")]
-	CalendarDemo {},
+	CalendarDemo {}
 }
 
 impl Route {

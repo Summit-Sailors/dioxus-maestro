@@ -1,8 +1,8 @@
 use {
   async_std::task::sleep, dioxus::prelude::*, maestro_hooks::{
-      clipboard::use_clipboard,
-      explicit_memo::use_explicit_memo,
-      pagination::use_pagination,
+    clipboard::use_clipboard,
+    explicit_memo::use_explicit_memo,
+    pagination::use_pagination,
   }, maestro_query::prelude::futures_util::FutureExt, std::time::Duration
 };
 
@@ -28,7 +28,7 @@ pub fn HooksDemo() -> Element {
           // could return a placeholder value, or a message indicating
           // that the computation is in progress.
           // no blocking here!
-          0 // or any other suitable placeholder
+          0
         }
     };
       format!("Sum of 1 to {}: {} and async result: {}", *total_items.read(), sum, async_result)

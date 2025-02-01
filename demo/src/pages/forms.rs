@@ -1,7 +1,7 @@
 use {
 	crate::{
 		components::forms::{form_field_wrapper::FormFieldWrapper, form_state_debugger::FormStateDebugger},
-		models::user::User,
+		models::user::{User, AVAILABLE_ROLES},
 	}, async_std::task::sleep, dioxus::prelude::*, maestro_forms::fields::{
 		form::{Form, InnerComponentProps},
 		select::SelectFormField,
@@ -13,10 +13,11 @@ use {
   maestro_ui::button::{Button, ButtonSize, ButtonType, ButtonVariant}
 };
 
-const AVAILABLE_ROLES: &[&str] = &["admin", "user", "moderator"];
-
 pub fn form_content(props: InnerComponentProps<User>) -> Element {
   let loading = use_signal(|| false);
+  
+  let role_values = AVAILABLE_ROLES.iter().map(|&s| s.to_string()).collect::<Vec<_>>();
+  let role_labels = AVAILABLE_ROLES.iter().map(|&s| s.to_string()).collect::<Vec<_>>();
 
   rsx! {
     div { class: "space-y-6",
@@ -56,20 +57,21 @@ pub fn form_content(props: InnerComponentProps<User>) -> Element {
         field: props.form.get_form_field("role".to_string()),
         SelectFormField::<User, String> {
           name: "role",
-          values: AVAILABLE_ROLES.iter().map(|&s| s.to_string()).collect(),
+          values: role_values,
+          labels: Some(role_labels),
           class: "w-full p-2 rounded-md border border-gray-300 focus:ring focus:ring-blue-300 focus:outline-none",
         }
       }
 
       Button {
-        class: format!(
-          "mt-4 py-2 rounded-md text-white font-semibold transition-all duration-200 {}",
-          if loading() { "bg-gray-400 cursor-not-allowed opacity-70" } else { "bg-blue-500 hover:bg-blue-600 transform hover:scale-105" }
-        ),               
         button_type: ButtonType::Submit,
         disabled: loading(),
         size: ButtonSize::Default,
         variant: ButtonVariant::Default,
+        class: format!(
+          "mt-4 py-2 rounded-md text-white font-semibold transition-all duration-200 {}",
+          if loading() { "bg-gray-400 cursor-not-allowed opacity-70" } else { "bg-blue-500 hover:bg-blue-600 transform hover:scale-105" }
+        ),
         if loading() { "Loading..." } else { "Submit" }
       }
 
@@ -84,36 +86,61 @@ pub fn form_content(props: InnerComponentProps<User>) -> Element {
 pub fn FormsDemo() -> Element {
   let mut toast = use_toast();
   let mut is_async = use_signal(|| true);
+  let mut loading = use_signal(|| false);
 
-  let on_submit = Some(Callback::new(
-    move |(event, (submitted_user, is_valid)): (Event<FormData>, (User, bool))| {
-
-      event.prevent_default();
-
-    let db_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-
+  let on_submit = move |(event, (submitted_user, is_valid)): (FormEvent, (User, bool))| {
+    event.prevent_default();
+    
     if is_valid {
-      spawn(async move {
-        match async_post(db_url).await {
-          Ok(_) => {
-            toast.write().popup(
-              ToastInfo::builder()
-                .context(format!(
-                  "Form submitted successfully for user: {}",
-                  submitted_user.username
-                ))
-                .build(),
-            );
+      loading.set(true);
+      
+      if *is_async.read() {
+        spawn(async move {
+          match async_post(std::env::var("DATABASE_URL").expect("DATABASE_URL must be set")).await {
+            Ok(_) => {
+              toast.write().popup(
+                ToastInfo::builder()
+                  .context(format!(
+                    "Form submitted successfully for user: {}",
+                    submitted_user.username
+                  ))
+                  .build(),
+              );
+            }
+            Err(_) => {
+              toast.write().popup(
+                ToastInfo::builder()
+                  .context("Submission failed".to_string())
+                  .build(),
+              );
+            }
           }
-          Err(_) => {
-            toast.write().popup(
-              ToastInfo::builder()
-                .context("Submission failed".to_string())
-                .build(),
-            );
+          loading.set(false);
+        });
+      } else {
+        spawn(async move {
+          match sync_post(std::env::var("DATABASE_URL").expect("DATABASE_URL must be set")).await {
+            Ok(_) => {
+              toast.write().popup(
+                ToastInfo::builder()
+                  .context(format!(
+                    "Form submitted successfully for user: {}",
+                    submitted_user.username
+                  ))
+                  .build(),
+              );
+            }
+            Err(_) => {
+              toast.write().popup(
+                ToastInfo::builder()
+                  .context("Submission failed".to_string())
+                  .build(),
+              );
+            }
           }
-        }
-      });
+          loading.set(false);
+        });
+      }
     } else {
       toast.write().popup(
         ToastInfo::builder()
@@ -121,8 +148,7 @@ pub fn FormsDemo() -> Element {
           .build(),
       );
     }
-  }));
-
+  };
 
   let async_class = if *is_async.read() { "bg-blue-500 text-white" } else { "bg-gray-200" };
   let sync_class = if !*is_async.read() { "bg-blue-500 text-white" } else { "bg-gray-200" };
@@ -154,10 +180,9 @@ pub fn FormsDemo() -> Element {
           role: AVAILABLE_ROLES[0].to_string(),
           ..User::default()
         },
-        onsubmit: on_submit,
+        onsubmit: Some(EventHandler::new(on_submit)),
         inner: form_content
       }
-    
     }
   }
 }

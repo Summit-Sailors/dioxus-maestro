@@ -1,6 +1,5 @@
 use {
-  dioxus::prelude::*,
-  maestro_ui::{
+  dioxus::prelude::*, dioxus_free_icons::{ Icon, icons::fa_solid_icons::FaRubleSign}, maestro_ui::{
     button::{Button, ButtonSize, ButtonType, ButtonVariant}, 
     input::{Input, InputType, InputVariant}, 
     label::Label, 
@@ -8,7 +7,7 @@ use {
     spinner::FreeIconSpinner, 
     textarea::Textarea, 
     toggle::{EToggleSwitchLabelPlacement, ToggleSwitch, ToggleSwitchLabelStatesProp}
-  },
+  }
 
 };
 
@@ -20,6 +19,13 @@ pub fn UIDemo() -> Element {
   let mut text_input = use_signal(String::new);
   let mut text_area_value = use_signal(String::new);
   let mut entered_text = use_signal(String::new);
+
+  let selected_value = use_signal(|| "option1".to_string());
+
+  let handle_radio_change = |value: String| {
+      let mut selected_value = selected_value.clone();
+      move |_| selected_value.set(value.clone())
+  };
 
   rsx! {
     div { class: "max-w-4xl mx-auto py-8 px-4",
@@ -73,13 +79,20 @@ pub fn UIDemo() -> Element {
             on_click: move |_| { log::info!("Link Button clicked"); }, 
             "Link Button" 
           }
-          Button { 
-            class: "w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300", 
-            variant: ButtonVariant::Icon, 
-            size: ButtonSize::IconLg, 
-            button_type: ButtonType::Button, 
-            on_click: move |_| { log::info!("Icon Button clicked"); }, 
-            children: rsx! { i { class: "fas fa-plus" } } 
+          
+          Button {
+            class: "w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center hover:bg-gray-300",
+            variant: ButtonVariant::Icon,
+            size: ButtonSize::IconLg,
+            button_type: ButtonType::Button,
+            on_click: move |_| { log::info!("Icon Button clicked"); },
+            children: rsx! {
+              Icon {
+                icon: FaRubleSign,
+                width: 16,
+                height: 16
+              }
+            }
           }
         }
       }
@@ -164,25 +177,35 @@ pub fn UIDemo() -> Element {
             label_placement: Some(EToggleSwitchLabelPlacement::Right)
           }
         }
-    
-          div { class: "space-y-2",
-            Radio {
-              name: "radio-group".to_string(),
-              label: "Option 1".to_string(),
-              checked: true,
-              on_change: move |_| {},
-              class: "flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50 focus:ring-2 focus:ring-primary disabled:opacity-80 disabled:bg-gray-300"
-            }
-            Radio {
-              name: "radio-group".to_string(),
-              label: "Option 2".to_string(),
-              checked: false,
-              on_change: move |_| {},
-              class: "flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50 focus:ring-2 focus:ring-primary disabled:opacity-80 disabled:bg-gray-300"
+        div { class: "space-y-6",
+          div { class: " items-center gap-2",  
+          Radio { 
+              label: "Option 1", 
+              name: "group", 
+              checked: *selected_value.read() == "option1", 
+              on_change: handle_radio_change("option1".to_string()) 
             }
           }
+          div { class: " items-center gap-2",
+            Radio { 
+              label: "Option 2", 
+              name: "group", 
+              checked: *selected_value.read() == "option2", 
+              on_change: handle_radio_change("option2".to_string()) 
+            }
+          }
+          div { class: "items-center gap-2",
+            Radio { 
+              label: "Option 3 (Disabled)", 
+              name: "group", 
+              disabled: true, 
+              checked: *selected_value.read() == "option3", 
+              on_change: handle_radio_change("option3".to_string()) 
+            }
+          }
+            p { class: "text-sm", "Selected Option: {selected_value}" }
+          }
         }
-
       }
 
       // textarea and spinner section

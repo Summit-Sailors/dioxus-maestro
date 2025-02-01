@@ -48,6 +48,7 @@ plotters = { version = "0.3.7", default-features = false, features = [
   "svg_backend",
 ] }
 web-sys = "0.3.76"
+dioxus-free-icons.workspace = true
 
 [build-dependencies]
 dotenvy = { git = "https://github.com/allan2/dotenvy.git", features = ["macros"] }

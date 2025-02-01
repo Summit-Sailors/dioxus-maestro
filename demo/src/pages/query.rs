@@ -1,7 +1,7 @@
 use {
   crate::{
     components::forms::form_field_wrapper::FormFieldWrapper, 
-    models::user::User
+    models::user::{User, AVAILABLE_ROLES}
   }, async_std::sync::RwLock, dioxus::{fullstack::once_cell, prelude::*}, maestro_forms::fields::{
     form::{
       Form, 
@@ -30,8 +30,6 @@ pub enum UserError {
   ValidationError(String),
   DatabaseError(String),
 }
-
-const AVAILABLE_ROLES: &[&str] = &["admin", "user", "moderator"];
 
 #[component]
 pub fn BasicQueryDemo() -> Element {
@@ -208,14 +206,11 @@ pub fn OptimisticUserForm(on_success: Option<EventHandler>) -> Element {
   });
 
   let handle_submit = move |(event, (user, is_valid)): (Event<FormData>, (User, bool))| {
-    println!("user, is_valid");
     event.prevent_default();
     if !is_valid {
       error_message.set("Form validation failed".to_string());
       return;
     }
-
-    println!("{:?}, {}", user, is_valid);
 
     // start mutation
     create_mutation.mutate(user.clone());
@@ -468,20 +463,48 @@ pub fn ParallelQueriesDemo() -> Element {
 #[component]
 pub fn CompleteQueryDemo() -> Element {
   rsx! {
-    div { class: "container mx-auto p-4",
-      h1 { class: "text-3xl font-bold mb-8", "Maestro Query Demonstrations" }
+    div { 
+      class: "min-h-screen w-full flex flex-col items-center justify-start",
       
-      // Users Demo
-      BasicQueryDemo {}
-      
-      // Cache Demo
-      CacheDemo {}
-      
-      // Silent Mutation Demo
-      SilentMutationDemo {}
-      
-      // Manual Mutation Demo
-      ManualMutationDemo {}
+      div { 
+        class: "w-full max-w-4xl px-4 py-8",
+        
+        div { 
+          class: "text-center mb-8",
+          h1 { 
+            class: "text-3xl font-bold",
+            "Maestro Query Demonstrations" 
+          }
+        }
+
+        div {
+          class: "space-y-8",
+          
+          // Users Demo
+          div { 
+            class: "w-full",
+            BasicQueryDemo {}
+          }
+          
+          // Cache Demo
+          div { 
+            class: "w-full",
+            CacheDemo {}
+          }
+          
+          // Silent Mutation Demo
+          div { 
+            class: "w-full",
+            SilentMutationDemo {}
+          }
+          
+          // Manual Mutation Demo
+          div { 
+            class: "w-full",
+            ManualMutationDemo {}
+          }
+        }
+      }
     }
   }
 }
