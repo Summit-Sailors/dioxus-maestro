@@ -13,7 +13,7 @@ use {
   }, 
   maestro_query::prelude::*, 
   maestro_ui::button::{
-    Button, ButtonSize, ButtonType, ButtonVariant
+    Button, ButtonVariant
   }, 
   std::{
     collections::HashMap, fmt::Error, sync::Arc
@@ -172,16 +172,18 @@ pub fn form_content(props: InnerComponentProps<User>) -> Element {
         }
       }
 
-      Button {
+      button {
+        r#type: "submit",
+        disabled: *loading.read(),
         class: format!(
-          "mt-4 py-2 rounded-md text-white font-semibold {} transition-opacity duration-200",
-          if loading() { "bg-gray-400 cursor-not-allowed opacity-70" } else { "bg-blue-500 hover:bg-blue-600" }
+            "w-full mt-4 py-2 rounded-md text-white font-semibold transition-all duration-200 {}",
+            if *loading.read() { 
+              "bg-gray-400 cursor-not-allowed opacity-70" 
+            } else { 
+              "bg-blue-500 hover:bg-blue-600" 
+            }
         ),
-        button_type: ButtonType::Submit,
-        disabled: loading(),
-        size: ButtonSize::Default,
-        variant: ButtonVariant::Default,
-        if loading() { "Loading..." } else { "Submit" }
+        if *loading.read() { "Loading..." } else { "Submit" }
       }
     }
   }
@@ -198,16 +200,20 @@ pub fn OptimisticUserForm(on_success: Option<EventHandler>) -> Element {
     let mut users = USERS.write().await;
     
     if let Err(e) = new_user.validate() {
-      return MutationResult::Err(UserError::ValidationError(e.to_string()));
+        return MutationResult::Err(UserError::ValidationError(e.to_string()));
     }
-    
+
+    log::info!("Adding user: {:?}", new_user);
+
     users.insert(new_user.username.clone(), new_user.clone());
+
     MutationResult::Ok(new_user)
   });
 
   let handle_submit = move |(event, (user, is_valid)): (Event<FormData>, (User, bool))| {
     event.prevent_default();
     if !is_valid {
+      println!("An error");
       error_message.set("Form validation failed".to_string());
       return;
     }
