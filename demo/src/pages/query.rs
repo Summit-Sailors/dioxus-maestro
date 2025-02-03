@@ -12,9 +12,9 @@ use {
     textarea::TextArea
   }, 
   maestro_query::prelude::*, 
-  maestro_ui::button::{
-    Button, ButtonVariant
-  }, 
+  maestro_ui::button::
+    Button
+  , 
   std::{
     collections::HashMap, fmt::Error, sync::Arc
   }, validator::Validate,
@@ -43,22 +43,16 @@ pub fn BasicQueryDemo() -> Element {
   let delete_mutation = use_mutation(|username: String| async move {
     let mut users = USERS.write().await;
     match users.remove(&username) {
-      Some(_) => MutationResult::Ok::<(), UserError>(()),
-      None => MutationResult::Err(UserError::NotFound),
+        Some(_) => MutationResult::Ok::<(), UserError>(()),
+        None => MutationResult::Err(UserError::NotFound),
     }
   });
 
   let handle_delete = move |username: String| {
-    let delete_mutation = delete_mutation.clone();
-    let query_client = query_client.clone();
-
-    {
-      delete_mutation.mutate(username);
-
-      if delete_mutation.result().is_ok() {
-        query_client.invalidate_query(String::from("users"));
-      }
-    };
+    delete_mutation.mutate(username);
+    if delete_mutation.result().is_ok() {
+      query_client.invalidate_query(String::from("users"));
+    }
   };
 
   let mut show_form = use_signal(|| false);
@@ -101,10 +95,10 @@ pub fn BasicQueryDemo() -> Element {
                   p { "Email: {user.email}" }
                   p { "Age: {user.age}" }
                   p { "Role: {user.role}" }
-                  Button {
+                  button {
                     class: "mt-2",
-                    variant: ButtonVariant::Destructive,
-                    on_click: move |_| handle_delete(user.username.clone()),
+                    r#type: "button",
+                    onclick: move |_| handle_delete(user.username.clone()),
                     "Delete User"
                   }
                 }
@@ -117,57 +111,60 @@ pub fn BasicQueryDemo() -> Element {
   }
 }
 
-pub fn form_content(props: InnerComponentProps<User>) -> Element {
+#[component]
+pub fn FormContent(props: InnerComponentProps<User>) -> Element {
   let loading = use_signal(|| false);
-  let error_message = use_signal(|| String::new());
+  
+  let role_values = AVAILABLE_ROLES.iter().map(|&s| s.to_string()).collect::<Vec<_>>();
+  let role_labels = AVAILABLE_ROLES.iter().map(|&s| s.to_string()).collect::<Vec<_>>();
 
+  let input_class = "w-full p-2 rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none placeholder-opacity-50";
+  
   rsx! {
-    div { class: "space-y-4 bg-white p-6 rounded-lg shadow",
-      if !error_message().is_empty() {
-        div { 
-          class: "bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative", 
-          role: "alert",
-          "{error_message()}"
-        }
-      }
-
+    div { 
+      class: "space-y-6",
       FormFieldWrapper {
         label: "Username",
         field: props.form.get_form_field("username".to_string()),
+        show_validation: Some(true),
         TextFormInput::<User> {
           name: "username",
           placeholder: "Enter your username",
-          class: "w-full p-2 rounded-md border border-gray-300 focus:ring focus:ring-blue-300 focus:outline-none",
+          class: "{input_class}",
         }
       }
 
       FormFieldWrapper {
         label: "Email",
         field: props.form.get_form_field("email".to_string()),
+        show_validation: Some(true),
         TextFormInput::<User> {
           name: "email",
           placeholder: "Enter your email address",
-          class: "w-full p-2 rounded-md border border-gray-300 focus:ring focus:ring-blue-300 focus:outline-none",
+          class: "{input_class}",
         }
       }
 
       FormFieldWrapper {
         label: "Bio",
         field: props.form.get_form_field("bio".to_string()),
+        show_validation: Some(true),
         TextArea::<User> {
           name: "bio",
           placeholder: "Tell us about yourself...",
           rows: 4,
-          class: "w-full p-2 rounded-md border border-gray-300 focus:ring focus:ring-blue-300 focus:outline-none",
+          class: "{input_class}",
         }
       }
 
       FormFieldWrapper {
         label: "Role",
         field: props.form.get_form_field("role".to_string()),
+        show_validation: Some(true),
         SelectFormField::<User, String> {
           name: "role",
-          values: AVAILABLE_ROLES.iter().map(|&s| s.to_string()).collect(),
+          values: role_values,
+          labels: Some(role_labels),
           class: "w-full p-2 rounded-md border border-gray-300 focus:ring focus:ring-blue-300 focus:outline-none",
         }
       }
@@ -189,39 +186,32 @@ pub fn form_content(props: InnerComponentProps<User>) -> Element {
   }
 }
 
+
 #[component]
 pub fn OptimisticUserForm(on_success: Option<EventHandler>) -> Element {
   let query_client: UseQueryClient<Vec<User>, UserError, String> = use_init_query_client();
-
   let mut error_message = use_signal(|| String::new());
   
   let create_mutation = use_mutation(|new_user: User| async move {
-    async_std::task::sleep(std::time::Duration::from_secs(1)).await;
     let mut users = USERS.write().await;
     
     if let Err(e) = new_user.validate() {
-        return MutationResult::Err(UserError::ValidationError(e.to_string()));
+      return MutationResult::Err(UserError::ValidationError(e.to_string()));
     }
 
     log::info!("Adding user: {:?}", new_user);
-
     users.insert(new_user.username.clone(), new_user.clone());
-
     MutationResult::Ok(new_user)
   });
 
-  let handle_submit = move |(event, (user, is_valid)): (Event<FormData>, (User, bool))| {
-    event.prevent_default();
+  let handle_submit = move |(_event, (user, is_valid)): (Event<FormData>, (User, bool))| {
     if !is_valid {
-      println!("An error");
       error_message.set("Form validation failed".to_string());
       return;
     }
 
-    // start mutation
-    create_mutation.mutate(user.clone());
+    create_mutation.mutate(user);
     
-    // handle mutation result and invalidate query on success
     spawn(async move {
       while create_mutation.result().is_loading() {
         async_std::task::sleep(std::time::Duration::from_millis(50)).await;
@@ -232,6 +222,9 @@ pub fn OptimisticUserForm(on_success: Option<EventHandler>) -> Element {
         if let Some(handler) = on_success {
           handler.call(());
         }
+      } else {
+        log::error!("Mutation failed: {:?}", create_mutation.result());
+        // error message setting
       }
     });
   };
@@ -244,11 +237,12 @@ pub fn OptimisticUserForm(on_success: Option<EventHandler>) -> Element {
       Form {
         initial_value: User::default(),
         onsubmit: handle_submit,
-        inner: form_content
+        inner: FormContent
       }
     }
   }
 }
+
 
 #[component]
 pub fn CacheDemo() -> Element {

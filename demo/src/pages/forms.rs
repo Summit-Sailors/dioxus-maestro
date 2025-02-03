@@ -11,7 +11,7 @@ use {
 	}, 
   maestro_toast::{
     ctx::use_toast, toast_info::ToastInfo
-  }, std::time::{SystemTime, UNIX_EPOCH}
+  }
 };
 
 #[component]
@@ -94,18 +94,21 @@ pub fn FormContent(props: InnerComponentProps<User>) -> Element {
   }
 }
 
-async fn simulate_submission(_is_async: bool, delay_ms: u64) -> Result<(), String> {
-  // network delay sim
-  async_std::task::sleep(std::time::Duration::from_millis(delay_ms)).await;
-  
-  // success rate sim (95% success)
-  let now = SystemTime::now()
-    .duration_since(UNIX_EPOCH)
-    .unwrap()
-    .as_nanos();
+static mut SEED: u32 = 1;
 
-  let success = (now % 100) < 95; // 95% success rate
-  
+fn simple_prng() -> u32 {
+  unsafe {
+    SEED = SEED.wrapping_mul(1664525).wrapping_add(1013904223);
+    SEED
+  }
+}
+
+async fn simulate_submission(_is_async: bool, delay_ms: u64) -> Result<(), String> {
+  async_std::task::sleep(std::time::Duration::from_millis(delay_ms)).await;
+
+  let random_number = simple_prng();
+  let success = (random_number % 100) < 95;
+
   if success {
     Ok(())
   } else {
@@ -119,8 +122,7 @@ pub fn FormsDemo() -> Element {
   let mut is_async = use_signal(|| true);
   let mut loading = use_signal(|| false);
 
-  let on_submit = move |(event, (submitted_user, is_valid)): (FormEvent, (User, bool))| {
-    event.prevent_default();
+  let on_submit = move |(_event, (submitted_user, is_valid)): (FormEvent, (User, bool))| {
     if is_valid {
       loading.set(true);
       let mut toast_clone = toast.clone();
