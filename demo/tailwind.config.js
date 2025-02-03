@@ -18,8 +18,7 @@ module.exports = {
       },
       animation: { highlight: "highlight 1s" },
       fontFamily: {
-        "dm-mono": ["DM Mono", "mono"],
-        poppins: ["Poppins", "serif"],
+        inter: ['Inter', 'sans-serif'],
       },
       colors: {
         primary: {

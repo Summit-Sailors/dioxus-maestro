@@ -115,27 +115,27 @@ fn CounterControls() -> Element {
   let mut reset_radio = use_radio(CounterChannel::Reset);
 
   let handle_increment = move |_| {
-    let mut guard = increment_radio.write();
-    let state = &mut *guard;
-    state.count += 1;
-    state.increment_count = state.count;
-    state.last_update = "Incremented".to_string();
+    increment_radio.write_with(|mut state| {
+      state.count += 1;
+      state.increment_count = state.count;
+      state.last_update = "Incremented".to_string();
+    });
   };
 
   let handle_decrement = move |_| {
-    let mut guard = decrement_radio.write();
-    let state = &mut *guard;
-    state.count -= 1;
-    state.decrement_count = state.count;
-    state.last_update = "Decremented".to_string();
+    decrement_radio.write_with(|mut state| {
+      state.count -= 1;
+      state.decrement_count = state.count;
+      state.last_update = "Decremented".to_string();
+    });
   };
 
   let handle_reset = move |_| {
-    let mut guard = reset_radio.write();
-    let state = &mut *guard;
-    state.count = 0;
-    state.reset_count = state.count;
-    state.last_update = "Reset".to_string();
+    reset_radio.write_with(|mut state| {
+      state.count = 0;
+      state.reset_count = state.count;
+      state.last_update = "Reset".to_string();
+    });
   };
 
   rsx! {

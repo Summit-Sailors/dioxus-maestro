@@ -32,7 +32,7 @@ pub fn UIDemo() -> Element {
       h1 { class: "text-3xl font-bold mb-8", "Maestro UI Components" }
       
       // buttons section
-      ComponentSectionUI {
+      ComponentSection {
         title: "Buttons",
         description: "Various button styles, sizes, and types with different variants",
         div { class: "grid grid-cols-2 md:grid-cols-3 gap-6",
@@ -98,7 +98,7 @@ pub fn UIDemo() -> Element {
       }
 
       // input fields section
-      ComponentSectionUI {
+      ComponentSection {
         title: "Input Fields",
         description: "Text inputs with different variants and states",
         div { class: "space-y-4",
@@ -134,7 +134,7 @@ pub fn UIDemo() -> Element {
       }
 
       // select and multiselect section
-      ComponentSectionUI {
+      ComponentSection {
         title: "Selection Components",
         description: "Single and multiple selection components",
 
@@ -162,7 +162,7 @@ pub fn UIDemo() -> Element {
       }
     
       // toggle and radio section
-      ComponentSectionUI {
+      ComponentSection {
         title: "Toggle and Radio",
         description: "Toggle switches and radio buttons",
 
@@ -209,7 +209,7 @@ pub fn UIDemo() -> Element {
       }
 
       // textarea and spinner section
-      ComponentSectionUI {
+      ComponentSection {
         title: "Textarea and Loading",
         description: "Textarea component with multiple configurations and loading spinner",
 
@@ -275,14 +275,14 @@ pub fn UIDemo() -> Element {
 }
 
 #[derive(Props, Clone, PartialEq)]
-pub struct ComponentSectionUIProps {
-  title: &'static str,
-  description: &'static str,
-  children: Element,
+pub struct ComponentSectionProps {
+  pub title: &'static str,
+  pub description: &'static str,
+  pub children: Element,
 }
 
 #[component]
-fn ComponentSectionUI(props: ComponentSectionUIProps) -> Element {
+pub fn ComponentSection(props: ComponentSectionProps) -> Element {
   rsx! {
     section { class: "mb-12",
       h2 { class: "text-2xl font-semibold mb-2", {props.title} }

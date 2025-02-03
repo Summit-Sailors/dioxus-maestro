@@ -1,10 +1,8 @@
 use {
-  chrono::{Datelike, Local, NaiveDate}, 
-  dioxus::prelude::*, 
-  maestro_ui::{
+  crate::pages::ui::ComponentSection, chrono::{Datelike, Local, NaiveDate}, dioxus::prelude::*, maestro_ui::{
     button::{Button, ButtonVariant},
     calendar::{
-      Calendar, CalendarDisplayProps, CalendarSelectProps, Event as MaestroEvent
+      Calendar, CalendarDisplayProps, CalendarSelectProps, Event
     },
   }
 };
@@ -32,11 +30,11 @@ pub fn CalendarDemo() -> Element {
       title: "Product Launch".to_string(),
       color: Some("#10B981".to_string()),
     }
-    ].into_iter().map(|e| MaestroEvent {
+    ].into_iter().map(|e | Event {
       date: e.date,
       title: e.title,
       color: e.color,
-    }).collect::<Vec<MaestroEvent>>());
+    }).collect::<Vec<Event>>());
 
   rsx! {
     div { 
@@ -160,29 +158,4 @@ pub fn CalendarDemo() -> Element {
       }
     }
   }
-}
-
-#[derive(Props, Clone, PartialEq)]
-pub struct ComponentSectionProps {
-  title: &'static str,
-  description: &'static str,
-  children: Element,
-}
-
-#[component]
-fn ComponentSection(props: ComponentSectionProps) -> Element {
-  rsx! {
-    section { class: "mb-12",
-      h2 { class: "text-2xl font-semibold mb-3 text-gray-700", {props.title} }
-      p { class: "text-gray-600 mb-6", {props.description} }
-      div { class: "bg-white p-8 rounded-lg shadow-md border", {props.children} }
-    }
-  }
-}
-
-#[derive(Clone, PartialEq)]
-struct Event {
-  date: NaiveDate,
-  title: String,
-  color: Option<String>,
 }

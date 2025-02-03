@@ -1,7 +1,7 @@
 use {
 	crate::{
 		components::forms::{form_field_wrapper::FormFieldWrapper, form_state_debugger::FormStateDebugger},
-		models::user::{User, AVAILABLE_ROLES},
+		models::user::{Role, User},
 	}, 
   dioxus::prelude::*, maestro_forms::fields::{
 		form::{Form, InnerComponentProps},
@@ -11,17 +11,20 @@ use {
 	}, 
   maestro_toast::{
     ctx::use_toast, toast_info::ToastInfo
-  }
+  }, maestro_ui::button::{Button, ButtonSize, ButtonType, ButtonVariant}, strum::VariantNames, tailwind_fuse::tw_join
 };
 
 #[component]
 pub fn FormContent(props: InnerComponentProps<User>) -> Element {
   let loading = use_signal(|| false);
   
-  let role_values = AVAILABLE_ROLES.iter().map(|&s| s.to_string()).collect::<Vec<_>>();
-  let role_labels = AVAILABLE_ROLES.iter().map(|&s| s.to_string()).collect::<Vec<_>>();
+  let role_values = Role::VARIANTS.iter().map(|&s| s.to_string()).collect::<Vec<_>>();
+  let role_labels = Role::VARIANTS.iter().map(|&s| s.to_string()).collect::<Vec<_>>();
 
-  let input_class = "w-full p-2 rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none placeholder-opacity-50";
+  let input_class = tw_join!(
+    "w-full p-2 rounded-md border border-gray-300 shadow-sm",
+    "focus:ring-2 focus:ring-blue-400 focus:outline-none placeholder-opacity-50"
+  );
   
   rsx! {
     div { 
@@ -29,7 +32,7 @@ pub fn FormContent(props: InnerComponentProps<User>) -> Element {
       FormFieldWrapper {
         label: "Username",
         field: props.form.get_form_field("username".to_string()),
-        show_validation: Some(true),
+        show_validation: true,
         TextFormInput::<User> {
           name: "username",
           placeholder: "Enter your username",
@@ -40,7 +43,7 @@ pub fn FormContent(props: InnerComponentProps<User>) -> Element {
       FormFieldWrapper {
         label: "Email",
         field: props.form.get_form_field("email".to_string()),
-        show_validation: Some(true),
+        show_validation: true,
         TextFormInput::<User> {
           name: "email",
           placeholder: "Enter your email address",
@@ -51,7 +54,7 @@ pub fn FormContent(props: InnerComponentProps<User>) -> Element {
       FormFieldWrapper {
         label: "Bio",
         field: props.form.get_form_field("bio".to_string()),
-        show_validation: Some(true),
+        show_validation: true,
         TextArea::<User> {
           name: "bio",
           placeholder: "Tell us about yourself...",
@@ -63,7 +66,7 @@ pub fn FormContent(props: InnerComponentProps<User>) -> Element {
       FormFieldWrapper {
         label: "Role",
         field: props.form.get_form_field("role".to_string()),
-        show_validation: Some(true),
+        show_validation: true,
         SelectFormField::<User, String> {
           name: "role",
           values: role_values,
@@ -72,23 +75,29 @@ pub fn FormContent(props: InnerComponentProps<User>) -> Element {
         }
       }
 
-      button {
-        r#type: "submit",
-        disabled: *loading.read(),
-        class: format!(
-            "w-full mt-4 py-2 rounded-md text-white font-semibold transition-all duration-200 {}",
-            if *loading.read() { 
-              "bg-gray-400 cursor-not-allowed opacity-70" 
-            } else { 
-              "bg-blue-500 hover:bg-blue-600" 
-            }
-        ),
-        if *loading.read() { "Loading..." } else { "Submit" }
-      }
+      Button {
+				button_type: ButtonType::Submit,
+				disabled: loading(),
+				prevent_default: false,
+				size: ButtonSize::Default,
+				variant: ButtonVariant::Default,
+				class: tw_join!(
+          "mt-4 py-2 rounded-md text-white font-semibold transition-all duration-200",
+          if loading() {
+              "bg-gray-400 cursor-not-allowed opacity-70"
+          } else {
+              "bg-blue-500 hover:bg-blue-600 transform hover:scale-105"
+          }
+      ),
+				if loading() {
+					"Loading..."
+				} else {
+					"Submit"
+				}
+			}
 
       FormStateDebugger {
-        form: props.form,
-        initial_expanded: Some(false)
+        form: props.form
       }
     }
   }
@@ -122,7 +131,7 @@ pub fn FormsDemo() -> Element {
   let mut is_async = use_signal(|| true);
   let mut loading = use_signal(|| false);
 
-  let on_submit = move |(_event, (submitted_user, is_valid)): (FormEvent, (User, bool))| {
+  let on_submit = move |(_event, (submitted_user, is_valid)): (FormEvent, (User, bool))| async move {
     if is_valid {
       loading.set(true);
       let mut toast_clone = toast.clone();
@@ -163,12 +172,16 @@ pub fn FormsDemo() -> Element {
     }
   };
 
-  let mode_button_base = "px-4 py-2 rounded-md font-medium transition-all duration-200";
-  let async_class = format!("{} {}",
-    mode_button_base,
+  let mode_button_base = tw_join!(
+    "px-4 py-2 rounded-md font-medium transition-all duration-200"
+  );
+
+  let async_class = tw_join!(
+    mode_button_base.clone(),
     if *is_async.read() { "bg-blue-500 text-white" } else { "bg-gray-200" }
   );
-  let sync_class = format!("{} {}",
+
+  let sync_class = tw_join!(
     mode_button_base,
     if !*is_async.read() { "bg-blue-500 text-white" } else { "bg-gray-200" }
   );
@@ -204,7 +217,7 @@ pub fn FormsDemo() -> Element {
 
       Form {
         initial_value: User {
-          role: AVAILABLE_ROLES[0].to_string(),
+          role: Role::Admin,
           ..User::default()
         },
         onsubmit: on_submit,

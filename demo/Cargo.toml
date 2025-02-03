@@ -34,6 +34,7 @@ serde_json = "1.0.134"
 dioxus-logger = "0.6.2"
 async-std = "1.13.0"
 chrono = { workspace = true }
+tailwind_fuse = { version = "0.3.1", features = ["variant"] }
 plotters = { version = "0.3.7", default-features = false, features = [
   "all_elements",
   "all_series",

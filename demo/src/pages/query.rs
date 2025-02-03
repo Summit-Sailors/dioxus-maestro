@@ -1,7 +1,7 @@
 use {
   crate::{
     components::forms::form_field_wrapper::FormFieldWrapper, 
-    models::user::{User, AVAILABLE_ROLES}
+    models::user::{Role, User}
   }, async_std::sync::RwLock, dioxus::{fullstack::once_cell, prelude::*}, maestro_forms::fields::{
     form::{
       Form, 
@@ -10,14 +10,10 @@ use {
     select::SelectFormField, 
     text::TextFormInput, 
     textarea::TextArea
-  }, 
-  maestro_query::prelude::*, 
-  maestro_ui::button::
-    Button
-  , 
-  std::{
+  }, maestro_query::prelude::*, maestro_ui::button::{
+    Button, ButtonSize, ButtonType, ButtonVariant}, std::{
     collections::HashMap, fmt::Error, sync::Arc
-  }, validator::Validate,
+  }, strum::VariantNames, validator::Validate
 };
 
 // simulated backend storage
@@ -115,8 +111,8 @@ pub fn BasicQueryDemo() -> Element {
 pub fn FormContent(props: InnerComponentProps<User>) -> Element {
   let loading = use_signal(|| false);
   
-  let role_values = AVAILABLE_ROLES.iter().map(|&s| s.to_string()).collect::<Vec<_>>();
-  let role_labels = AVAILABLE_ROLES.iter().map(|&s| s.to_string()).collect::<Vec<_>>();
+  let role_values = Role::VARIANTS.iter().map(|&s| s.to_string()).collect::<Vec<_>>();
+  let role_labels = Role::VARIANTS.iter().map(|&s| s.to_string()).collect::<Vec<_>>();
 
   let input_class = "w-full p-2 rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none placeholder-opacity-50";
   
@@ -126,7 +122,7 @@ pub fn FormContent(props: InnerComponentProps<User>) -> Element {
       FormFieldWrapper {
         label: "Username",
         field: props.form.get_form_field("username".to_string()),
-        show_validation: Some(true),
+        show_validation: true,
         TextFormInput::<User> {
           name: "username",
           placeholder: "Enter your username",
@@ -137,7 +133,7 @@ pub fn FormContent(props: InnerComponentProps<User>) -> Element {
       FormFieldWrapper {
         label: "Email",
         field: props.form.get_form_field("email".to_string()),
-        show_validation: Some(true),
+        show_validation: true,
         TextFormInput::<User> {
           name: "email",
           placeholder: "Enter your email address",
@@ -148,7 +144,7 @@ pub fn FormContent(props: InnerComponentProps<User>) -> Element {
       FormFieldWrapper {
         label: "Bio",
         field: props.form.get_form_field("bio".to_string()),
-        show_validation: Some(true),
+        show_validation: true,
         TextArea::<User> {
           name: "bio",
           placeholder: "Tell us about yourself...",
@@ -160,7 +156,7 @@ pub fn FormContent(props: InnerComponentProps<User>) -> Element {
       FormFieldWrapper {
         label: "Role",
         field: props.form.get_form_field("role".to_string()),
-        show_validation: Some(true),
+        show_validation: true,
         SelectFormField::<User, String> {
           name: "role",
           values: role_values,
@@ -169,19 +165,26 @@ pub fn FormContent(props: InnerComponentProps<User>) -> Element {
         }
       }
 
-      button {
-        r#type: "submit",
-        disabled: *loading.read(),
-        class: format!(
-            "w-full mt-4 py-2 rounded-md text-white font-semibold transition-all duration-200 {}",
-            if *loading.read() { 
-              "bg-gray-400 cursor-not-allowed opacity-70" 
-            } else { 
-              "bg-blue-500 hover:bg-blue-600" 
-            }
-        ),
-        if *loading.read() { "Loading..." } else { "Submit" }
-      }
+      Button {
+				button_type: ButtonType::Submit,
+				disabled: loading(),
+				prevent_default: false,
+				size: ButtonSize::Default,
+				variant: ButtonVariant::Default,
+				class: format!(
+          "mt-4 py-2 rounded-md text-white font-semibold transition-all duration-200 {}",
+          if loading() {
+            "bg-gray-400 cursor-not-allowed opacity-70"
+          } else {
+            "bg-blue-500 hover:bg-blue-600 transform hover:scale-105"
+          },
+				),
+				if loading() {
+					"Loading..."
+				} else {
+					"Submit"
+				}
+			}
     }
   }
 }

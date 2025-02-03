@@ -1,8 +1,7 @@
 use {
   crate::router::Route, dioxus::prelude::*, 
-  maestro_toast::{init::use_init_toast_ctx, 
-  toast_frame_component::ToastFrame}, 
-  maestro_ui::button::{Button, ButtonType, ButtonVariant}, strum::IntoEnumIterator
+  maestro_toast::{init::use_init_toast_ctx, toast_frame_component::ToastFrame}, 
+  strum::IntoEnumIterator
 };
 
 #[component]
@@ -10,6 +9,11 @@ pub fn Layout(children: Element) -> Element {
   let toast = use_init_toast_ctx();
 
   rsx! {
+    head {
+      link { rel: "stylesheet", href: asset!("/assets/main.css") }
+      link { rel: "icon", href: asset!("/assets/favicon.ico") }
+    }
+
     ToastFrame { manager: toast }
     div {
       class: "grid grid-cols-7 h-screen bg-gray-50 text-gray-800",
@@ -24,7 +28,6 @@ pub fn Layout(children: Element) -> Element {
 
 #[component]
 fn NavigationMenu() -> Element {
-  let navigator = use_navigator();
   let current_route = use_route::<Route>();
 
   rsx! {
@@ -37,17 +40,9 @@ fn NavigationMenu() -> Element {
           rsx! {
             Link {
               to: route.clone(),
-              class: "py-2 px-4 rounded-md hover:bg-gray-700 transition",
+              class: "py-2 px-4 rounded-md hover:bg-gray-700 transition w-full text-left text-white",
               aria_label: route_name,
-              Button {
-                class: "w-full text-left text-white",
-                variant: ButtonVariant::Default,
-                button_type: ButtonType::Button,
-                on_click: move |_| {
-                  navigator.push(route.clone());
-                },
-                "{route_name}"
-              }
+              "{route_name}"
             }
           }
         })

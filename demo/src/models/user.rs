@@ -1,24 +1,31 @@
-#[cfg(feature = "server")]
-use apalis_core::storage::Job;
+
 use {
-	serde::{Deserialize, Serialize},
-	validator::Validate
+  serde::{Deserialize, Serialize}, 
+  strum_macros::{Display, EnumString, VariantNames}, 
+  validator::Validate
 };
 
-pub const AVAILABLE_ROLES: &[&str] = &["admin", "user", "moderator"];
+#[derive(EnumString, VariantNames, Debug, Serialize, Deserialize, Clone, PartialEq, Display)]
+pub enum Role {
+  #[strum(serialize = "admin")]
+  Admin,
+  #[strum(serialize = "user")]
+  User,
+  #[strum(serialize = "moderator")]
+  Moderator,
+}
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Validate)]
 pub struct User {
-	#[validate(length(min = 3, max = 20, message = "Username must be between 3 and 20 characters"))]
-	pub username: String,
-	#[validate(email(message = "Invalid email format"))]
-	pub email: String,
-	#[validate(length(min = 5, message = "Bio must be at least 5 characters"))]
-	pub bio: String,
-	#[validate(range(min = 18, max = 150, message = "Age must be between 18 and 150"))]
-	pub age: i32,
-	#[validate(length(min = 2, message = "Please select a role"))]
-	pub role: String,
+  #[validate(length(min = 3, max = 20, message = "Username must be between 3 and 20 characters"))]
+  pub username: String,
+  #[validate(email(message = "Invalid email format"))]
+  pub email: String,
+  #[validate(length(min = 5, message = "Bio must be at least 5 characters"))]
+  pub bio: String,
+  #[validate(range(min = 18, max = 150, message = "Age must be between 18 and 150"))]
+  pub age: i32,
+  pub role: Role,
 }
 
 impl Default for User {
@@ -28,11 +35,10 @@ impl Default for User {
       email: String::new(),
       bio: String::new(),
       age: 18,
-      role: AVAILABLE_ROLES[0].to_string(),
+      role: Role::Admin,
     }
   }
 }
-
 
 #[derive(Clone, PartialEq, Serialize, Deserialize)]
 pub struct UserAttrs {
