@@ -1,17 +1,15 @@
-use {
-  dioxus::prelude::*, 
-  dioxus_free_icons::{
-    icons::io_icons::{IoCheckmarkOutline, IoChevronDownOutline},
-    Icon
-  }, 
-  std::rc::Rc, tailwind_fuse::tw_join
-}; 
 
-  #[derive(Props, Clone)]
-  pub struct SelectProps<T>
-  where
-    T: std::clone::Clone + std::cmp::PartialEq + std::fmt::Display + 'static,
-  {
+use {
+  dioxus::prelude::*,
+  dioxus_free_icons::{icons::io_icons::{IoCheckmarkOutline, IoChevronDownOutline}, Icon},
+  tailwind_fuse::tw_join
+};
+
+#[derive(Props, Clone, PartialEq)]
+pub struct SelectProps<T>
+where
+  T: Clone + PartialEq + std::fmt::Display + 'static,
+{
   pub values: Vec<T>,
   pub current_value: Option<T>,
   pub multi: bool,
@@ -26,32 +24,12 @@ use {
   pub label_class: Option<String>,
   pub icon_down: Option<Element>,
   pub icon_check: Option<Element>,
-  pub option_renderer: Option<Rc<dyn Fn(&T) -> Element>>,
-}
-
-impl<T> PartialEq for SelectProps<T>
-where
-  T: Clone + PartialEq + std::fmt::Display + 'static,
-{
-  fn eq(&self, other: &Self) -> bool {
-    self.values == other.values
-      && self.current_value == other.current_value
-      && self.multi == other.multi
-      && self.label == other.label
-      && self.placeholder == other.placeholder
-      && self.option_class == other.option_class
-      && self.dropdown_class == other.dropdown_class
-      && self.container_class == other.container_class
-      && self.button_class == other.button_class
-      && self.label_class == other.label_class
-      && self.icon_down == other.icon_down
-      && self.icon_check == other.icon_check
-  }
+  pub option_renderer: Option<fn(&T) -> Element>,
 }
 
 
 #[component]
-pub fn Select<T: std::clone::Clone + std::cmp::PartialEq + std::fmt::Display + 'static>(props: SelectProps<T>) -> Element {
+pub fn Select<T: Clone + PartialEq + std::fmt::Display + 'static>(props: SelectProps<T>) -> Element {
   let mut is_opened = use_signal(|| false);
   let mut selected_options = use_signal(|| Vec::<T>::new());
 
@@ -59,20 +37,19 @@ pub fn Select<T: std::clone::Clone + std::cmp::PartialEq + std::fmt::Display + '
     if selected_options().is_empty() {
       props.placeholder.clone().unwrap_or_default()
     } else {
-      selected_options().iter().map(|v| format!("{v}, ")).collect::<String>().trim_end_matches(", ").to_string()
+      selected_options().iter().map(ToString::to_string).collect::<Vec<_>>().join(", ")
     }
   } else {
-    props.current_value.clone().map(|v| v.to_string()).unwrap_or(props.placeholder.clone().unwrap_or_default())
+    props.current_value.clone().map(|arg0: T| ToString::to_string(&arg0)).unwrap_or_else(|| props.placeholder.clone().unwrap_or_default())
   };
 
-  let icon_down = props.icon_down.unwrap_or_else(|| rsx!{ Icon { width: 16, height: 16, icon: IoChevronDownOutline } });
+  let icon_down = props.icon_down.clone().unwrap_or_else(|| rsx!{ Icon { width: 16, height: 16, icon: IoChevronDownOutline } });
   let icon_check = props.icon_check.clone().unwrap_or_else(|| rsx!{ Icon { width: 16, height: 16, icon: IoCheckmarkOutline } });
-
 
   rsx! {
     div {
       class: tw_join!("flex flex-col gap-2 w-full relative", props.container_class.clone().unwrap_or_default()),
-      if let Some(label) = props.label {
+      if let Some(label) = props.label.clone() {
         span { class: tw_join!("text-gray-400", props.label_class.clone().unwrap_or_default()), {label} }
       }
       div {
@@ -85,19 +62,19 @@ pub fn Select<T: std::clone::Clone + std::cmp::PartialEq + std::fmt::Display + '
           is_opened.toggle();
         },
         div {
-          class: "flex items-center justify-between py-2 px-3 w-full rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500",
+          class: "flex items-center justify-between py-2 px-3 w-full rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500 overflow-hidden whitespace-nowrap text-ellipsis",
           span { "{display_value}" }
           div { class: "ml-2", {icon_down} }
         }
         div {
           class: tw_join!(
-            "absolute flex flex-col gap-1 bg-gray-800 text-gray-200 p-4 w-full left-0 right-0 top-[100%] mt-3 rounded-md border border-gray-700",
+            "absolute flex flex-col gap-1 bg-gray-800 text-gray-200 p-4 w-full left-0 right-0 top-[100%] mt-3 rounded-md border border-gray-700 max-h-48 overflow-y-auto",
             if is_opened() { "flex z-40" } else { "hidden -z-40" }, props.dropdown_class.clone().unwrap_or_default()
           ),
           onclick: move |ev| {
             ev.stop_propagation();
           },
-          for value in props.values {
+          for value in props.values.clone() {
             div {
               key: "{value}",
               class: tw_join!("flex w-full items-center justify-between py-2 hover:bg-gray-700 rounded px-3 cursor-pointer", props.option_class.clone().unwrap_or_default()),
@@ -118,7 +95,7 @@ pub fn Select<T: std::clone::Clone + std::cmp::PartialEq + std::fmt::Display + '
                 }
               },
               {
-                if let Some(renderer) = props.option_renderer.as_ref() {
+                if let Some(renderer) = props.option_renderer {
                   renderer(&value)
                 } else {
                   rsx! { "{value}" }

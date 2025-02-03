@@ -182,7 +182,7 @@ pub fn UIDemo() -> Element {
           Radio { 
               label: "Option 1", 
               name: "group", 
-              checked: *selected_value.read() == "option1", 
+              checked: selected_value() == "option1", 
               on_change: handle_radio_change("option1".to_string()) 
             }
           }
@@ -190,7 +190,7 @@ pub fn UIDemo() -> Element {
             Radio { 
               label: "Option 2", 
               name: "group", 
-              checked: *selected_value.read() == "option2", 
+              checked: selected_value() == "option2", 
               on_change: handle_radio_change("option2".to_string()) 
             }
           }
@@ -199,7 +199,7 @@ pub fn UIDemo() -> Element {
               label: "Option 3 (Disabled)", 
               name: "group", 
               disabled: true, 
-              checked: *selected_value.read() == "option3", 
+              checked: selected_value() == "option3", 
               on_change: handle_radio_change("option3".to_string()) 
             }
           }

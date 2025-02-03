@@ -12,14 +12,14 @@ pub fn HooksDemo() -> Element {
   let clipboard = use_signal(|| use_clipboard());
 
   let expensive_computation = use_explicit_memo(
-    *total_items.read(),
+    total_items(),
     || {
       let future = async move {
         sleep(Duration::from_millis(100)).await;
         42 // this would be the value returned by the future in a real world setting
       };
 
-      let sum: i32 = (1..=*total_items.read()).sum();
+      let sum: i32 = (1..=total_items()).sum();
 
       let async_result = match future.now_or_never() {
         Some(result) => result, // future has completed, use the result
@@ -31,13 +31,13 @@ pub fn HooksDemo() -> Element {
           0
         }
     };
-      format!("Sum of 1 to {}: {} and async result: {}", *total_items.read(), sum, async_result)
+      format!("Sum of 1 to {}: {} and async result: {}", total_items(), sum, async_result)
     }
   );
 
   let page_size = 100;
   let (pagination, (mut next_idx, mut prev_idx, mut next_page, mut prev_page)) =
-      use_pagination(use_memo(move || *total_items.read()), page_size); 
+      use_pagination(use_memo(move || total_items()), page_size); 
 
   let mut clipboard_content = use_signal(String::new);
   let mut copy_status = use_signal(|| String::new());
@@ -108,7 +108,7 @@ pub fn HooksDemo() -> Element {
           class: "flex space-x-4 mb-4",
           button {
             onclick: move |_| {
-              let current = *total_items.read();
+              let current = total_items();
               total_items.set(current + 10);
             },
             class: "rounded-md bg-blue-500 text-white py-2 px-4 hover:bg-blue-700",
@@ -116,7 +116,7 @@ pub fn HooksDemo() -> Element {
           }
           button {
             onclick: move |_| {
-              let current = *total_items.read();
+              let current = total_items();
               total_items.set((current - 10).max(1));
             },
             class: "rounded-md bg-red-500 text-white py-2 px-4 hover:bg-red-700",
@@ -143,12 +143,13 @@ pub fn HooksDemo() -> Element {
           p {
             "Total Pages: {((*total_items.read() as f64) / (*pagination.page_size.read() as f64)).ceil() as i32}"
           }
+          p { "Current Index: {*pagination.idx.read()}" }
         }
 
         div {
           class: "items-container grid grid-cols-4 gap-4",
           {
-            let start_idx = *pagination.page.read() * *pagination.page_size.read();
+            let start_idx = *pagination.idx.read();
             let page_size = *pagination.page_size.read();
 
             items.iter()

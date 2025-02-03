@@ -103,25 +103,16 @@ pub fn FormContent(props: InnerComponentProps<User>) -> Element {
   }
 }
 
-static mut SEED: u32 = 1;
-
-fn simple_prng() -> u32 {
-  unsafe {
-    SEED = SEED.wrapping_mul(1664525).wrapping_add(1013904223);
-    SEED
-  }
-}
-
-async fn simulate_submission(_is_async: bool, delay_ms: u64) -> Result<(), String> {
+async fn simulate_submission(delay_ms: u64) -> Result<(), String> {
   async_std::task::sleep(std::time::Duration::from_millis(delay_ms)).await;
 
-  let random_number = simple_prng();
-  let success = (random_number % 100) < 95;
+  let success_rate = 95;
+  let success = js_sys::Math::random() * 100.0 < success_rate as f64;
 
   if success {
-    Ok(())
+      Ok(())
   } else {
-    Err("server error".to_string())
+      Err("server error".to_string())
   }
 }
 
@@ -136,11 +127,11 @@ pub fn FormsDemo() -> Element {
       loading.set(true);
       let mut toast_clone = toast.clone();
       let user_clone = submitted_user.clone();
-      let is_async_mode = *is_async.read();
+      let is_async_mode = is_async();
 
       spawn(async move {
         let delay = if is_async_mode { 1000 } else { 500 };
-        let result = simulate_submission(is_async_mode, delay).await;
+        let result = simulate_submission(delay).await;
 
         match result {
           Ok(_) => {
@@ -178,12 +169,12 @@ pub fn FormsDemo() -> Element {
 
   let async_class = tw_join!(
     mode_button_base.clone(),
-    if *is_async.read() { "bg-blue-500 text-white" } else { "bg-gray-200" }
+    if is_async() { "bg-blue-500 text-white" } else { "bg-gray-200" }
   );
 
   let sync_class = tw_join!(
     mode_button_base,
-    if !*is_async.read() { "bg-blue-500 text-white" } else { "bg-gray-200" }
+    if !is_async() { "bg-blue-500 text-white" } else { "bg-gray-200" }
   );
 
   rsx! {

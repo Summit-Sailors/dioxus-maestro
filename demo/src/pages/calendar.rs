@@ -36,126 +36,134 @@ pub fn CalendarDemo() -> Element {
       color: e.color,
     }).collect::<Vec<Event>>());
 
-  rsx! {
-    div { 
-      class: "space-y-10 max-w-5xl mx-auto py-12 bg-gray-50 px-6 rounded-lg shadow-lg",
-      
-      h1 { 
-        class: "text-4xl font-bold text-gray-800 mb-8 text-center", 
-        "Maestro UI Calendar Demos" 
-      }
-      
-      ComponentSection {
-        title: "Full Calendar",
-        description: "Fully configurable calendar with display and selection controls",
+    rsx! {
+      div { 
+        class: "flex flex-col items-center justify-center space-y-10 max-w-5xl mx-auto py-12 bg-gray-50 px-6 rounded-lg shadow-lg",
         
-        Calendar {
-          display_props: CalendarDisplayProps::builder()
-            .display_month(basic_display_month)
-            .display_year(basic_display_year)
-            .is_full(true)
-            .build(),
-          select_props: CalendarSelectProps::builder()
-            .selected_day(basic_selected_day)
-            .selected_month(basic_selected_month)
-            .selected_year(basic_selected_year)
-            .min_date(use_signal(|| Some(min_date)))
-            .max_date(use_signal(|| Some(max_date)))
-            .build()
+        h1 { 
+          class: "text-4xl font-bold text-gray-800 mb-8 text-center", 
+          "Maestro UI Calendar Demos" 
         }
         
-        div {
-          class: "mt-4 flex space-x-3 justify-center",
-          Button {
-            variant: ButtonVariant::Outline,
-            class: "px-4 py-2 border rounded-lg shadow-sm hover:shadow-md",
-            on_click: move |_| {
-              basic_display_month.set(basic_display_month().prev());
-            },
-            "Previous Month"
-          }
-          Button {
-            variant: ButtonVariant::Outline,
-            class: "px-4 py-2 border rounded-lg shadow-sm hover:shadow-md",
-            on_click: move |_| {
-              basic_display_month.set(basic_display_month().next());
-            },
-            "Next Month"
-          }
-        }
-      }
-      
-      ComponentSection {
-        title: "Compact Calendar",
-        description: "Space-efficient calendar with button trigger",
-        
-        Calendar {
-          display_props: CalendarDisplayProps::builder()
-            .is_full(false)
-            .build(),
-          select_props: CalendarSelectProps::builder().build()
-        }
-      }
-      
-      ComponentSection {
-        title: "Date Range Calendar",
-        description: "Calendar with min and max date constraints",
-        
-        div {
-          Calendar {
-            display_props: CalendarDisplayProps::builder().build(),
-            select_props: CalendarSelectProps::builder()
-              .min_date(use_signal(|| Some(min_date)))
-              .max_date(use_signal(|| Some(max_date)))
-              .build()
-          }
+        ComponentSection {
+          title: "Full Calendar",
+          description: "Fully configurable calendar with display and selection controls",
           
-          div { 
-            class: "mt-4 text-sm text-gray-600",
-            {format!("Allowed date range: {} to {}", 
-              min_date.format("%Y-%m-%d"), 
-              max_date.format("%Y-%m-%d"))}
-          }
-        }
-      }
-      
-      ComponentSection {
-        title: "Event-Enabled Calendar",
-        description: "Calendar with custom events demonstration",
-        
-        div {
-          Calendar {
-            display_props: CalendarDisplayProps::builder()
-              .events(events)
-              .build(),
-            select_props: CalendarSelectProps::builder().build()
-          }
-          
-          div { 
-            class: "mt-4 space-y-2",
-            h3 { 
-              class: "text-lg font-semibold text-gray-700", 
-              "Upcoming Events:" 
+          div {
+            class: "flex justify-center",
+            Calendar {
+              display_props: CalendarDisplayProps::builder()
+                .display_month(basic_display_month)
+                .display_year(basic_display_year)
+                .is_full(true)
+                .build(),
+              select_props: CalendarSelectProps::builder()
+                .selected_day(basic_selected_day)
+                .selected_month(basic_selected_month)
+                .selected_year(basic_selected_year)
+                .min_date(use_signal(|| Some(min_date)))
+                .max_date(use_signal(|| Some(max_date)))
+                .build()
             }
-            {events.read().iter().map(|event| {
-              rsx! {
-                div { 
-                  class: "flex items-center space-x-3 text-gray-800",
+          }
+          
+          div {
+            class: "mt-4 flex space-x-3 justify-center",
+            Button {
+              variant: ButtonVariant::Outline,
+              class: "px-4 py-2 border rounded-lg shadow-sm hover:shadow-md",
+              on_click: move |_| {
+                basic_display_month.set(basic_display_month().prev());
+              },
+              "Previous Month"
+            }
+            Button {
+              variant: ButtonVariant::Outline,
+              class: "px-4 py-2 border rounded-lg shadow-sm hover:shadow-md",
+              on_click: move |_| {
+                basic_display_month.set(basic_display_month().next());
+              },
+              "Next Month"
+            }
+          }
+        }
+        
+        ComponentSection {
+          title: "Compact Calendar",
+          description: "Space-efficient calendar with button trigger",
+          
+          div {
+            class: "flex justify-center",
+            Calendar {
+              display_props: CalendarDisplayProps::builder()
+                .is_full(false)
+                .build(),
+              select_props: CalendarSelectProps::builder().build()
+            }
+          }
+        }
+        
+        ComponentSection {
+          title: "Date Range Calendar",
+          description: "Calendar with min and max date constraints",
+          
+          div {
+            class: "flex flex-col items-center",
+            Calendar {
+              display_props: CalendarDisplayProps::builder().build(),
+              select_props: CalendarSelectProps::builder()
+                .min_date(use_signal(|| Some(min_date)))
+                .max_date(use_signal(|| Some(max_date)))
+                .build()
+            }
+            
+            div { 
+              class: "mt-4 text-sm text-gray-600 text-center",
+              {format!("Allowed date range: {} to {}", 
+                min_date.format("%Y-%m-%d"), 
+                max_date.format("%Y-%m-%d"))}
+            }
+          }
+        }
+        
+        ComponentSection {
+          title: "Event-Enabled Calendar",
+          description: "Calendar with custom events demonstration",
+          
+          div {
+            class: "flex flex-col items-center",
+            Calendar {
+              display_props: CalendarDisplayProps::builder()
+                .events(events)
+                .build(),
+              select_props: CalendarSelectProps::builder().build()
+            }
+            
+            div { 
+              class: "mt-4 space-y-2 text-center",
+              h3 { 
+                class: "text-lg font-semibold text-gray-700", 
+                "Upcoming Events:" 
+              }
+              {events.read().iter().map(|event| {
+                rsx! {
                   div { 
-                    class: "w-3 h-3 rounded-full", 
-                    style: format!("background-color: {}", event.color.clone().unwrap_or_default())
-                  }
-                  span { 
-                    {format!("{} - {}", 
-                      event.date.format("%b %d"), 
-                      event.title)}
+                    class: "flex items-center space-x-3 text-gray-800 justify-center",
+                    div { 
+                      class: "w-3 h-3 rounded-full", 
+                      style: format!("background-color: {}", event.color.clone().unwrap_or_default())
+                    }
+                    span { 
+                      {format!("{} - {}", 
+                        event.date.format("%b %d"), 
+                        event.title)}
+                    }
                   }
                 }
-              }
-            })}
+              })}
+            }
           }
         }
       }
-    }
   }
-}
+}  

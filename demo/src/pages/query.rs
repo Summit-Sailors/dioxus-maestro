@@ -60,13 +60,13 @@ pub fn BasicQueryDemo() -> Element {
       Button {
         class: "bg-blue-500 text-white px-4 py-2 rounded mb-4",
         on_click: move |_| {
-          let current_show_form = *show_form.read();
+          let current_show_form = show_form();
           show_form.set(!current_show_form);
         },
-        if *show_form.read() { "Hide Form" } else { "Add User" }
+        if show_form() { "Hide Form" } else { "Add User" }
       }
 
-      if *show_form.read() {
+      if show_form() {
         {log::info!("Rendering form");}
         OptimisticUserForm {
           on_success: move |_| {

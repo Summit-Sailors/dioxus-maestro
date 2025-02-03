@@ -6,6 +6,7 @@ use {
 };
 
 #[derive(EnumString, VariantNames, Debug, Serialize, Deserialize, Clone, PartialEq, Display)]
+#[serde(rename_all = "lowercase")]
 pub enum Role {
   #[strum(serialize = "admin")]
   Admin,
