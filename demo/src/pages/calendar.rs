@@ -38,10 +38,10 @@ pub fn CalendarDemo() -> Element {
 
     rsx! {
       div { 
-        class: "flex flex-col items-center justify-center space-y-10 max-w-5xl mx-auto py-12 bg-gray-50 px-6 rounded-lg shadow-lg",
+        class: "flex flex-col items-center justify-center space-y-10 max-w-full sm:max-w-5xl mx-auto py-12 px-4 sm:px-6 md:px-8 bg-gray-50 rounded-lg shadow-lg",
         
         h1 { 
-          class: "text-4xl font-bold text-gray-800 mb-8 text-center", 
+          class: "text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mb-8 text-center", 
           "Maestro UI Calendar Demos" 
         }
         
@@ -50,7 +50,7 @@ pub fn CalendarDemo() -> Element {
           description: "Fully configurable calendar with display and selection controls",
           
           div {
-            class: "flex justify-center",
+            class: "flex justify-center w-full md:w-3/4 lg:w-2/3 ",
             Calendar {
               display_props: CalendarDisplayProps::builder()
                 .display_month(basic_display_month)
@@ -66,12 +66,12 @@ pub fn CalendarDemo() -> Element {
                 .build()
             }
           }
-          
+      
           div {
-            class: "mt-4 flex space-x-3 justify-center",
+            class: "mt-4 flex flex-wrap justify-center space-x-3",
             Button {
               variant: ButtonVariant::Outline,
-              class: "px-4 py-2 border rounded-lg shadow-sm hover:shadow-md",
+              class: "px-4 py-2 border rounded-lg shadow-sm hover:shadow-md transition hover:bg-gray-200",
               on_click: move |_| {
                 basic_display_month.set(basic_display_month().prev());
               },
@@ -79,7 +79,7 @@ pub fn CalendarDemo() -> Element {
             }
             Button {
               variant: ButtonVariant::Outline,
-              class: "px-4 py-2 border rounded-lg shadow-sm hover:shadow-md",
+              class: "px-4 py-2 border rounded-lg shadow-sm hover:shadow-md transition hover:bg-gray-200",
               on_click: move |_| {
                 basic_display_month.set(basic_display_month().next());
               },
@@ -131,16 +131,16 @@ pub fn CalendarDemo() -> Element {
           description: "Calendar with custom events demonstration",
           
           div {
-            class: "flex flex-col items-center",
+            class: "flex flex-col items-center w-full",
             Calendar {
               display_props: CalendarDisplayProps::builder()
                 .events(events)
                 .build(),
               select_props: CalendarSelectProps::builder().build()
             }
-            
+      
             div { 
-              class: "mt-4 space-y-2 text-center",
+              class: "mt-4 space-y-2 text-center w-full",
               h3 { 
                 class: "text-lg font-semibold text-gray-700", 
                 "Upcoming Events:" 
@@ -148,7 +148,7 @@ pub fn CalendarDemo() -> Element {
               {events.read().iter().map(|event| {
                 rsx! {
                   div { 
-                    class: "flex items-center space-x-3 text-gray-800 justify-center",
+                    class: "flex flex-wrap items-center space-x-3 text-gray-800 justify-center",
                     div { 
                       class: "w-3 h-3 rounded-full", 
                       style: format!("background-color: {}", event.color.clone().unwrap_or_default())

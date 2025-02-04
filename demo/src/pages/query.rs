@@ -329,7 +329,7 @@ pub fn SilentMutationDemo() -> Element {
       
       p { class: "mb-4", "Counter: {counter}" }
       
-      div { class: "space-x-4",
+      div { class: "space-x-2",
           Button {
             class: "bg-blue-500 text-white px-4 py-2 rounded",
             on_click: handle_normal_mutation,

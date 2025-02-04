@@ -2,11 +2,9 @@
 module.exports = {
   mode: "all",
   content: [
-    // include all rust, html and css files in the src directory
-    "./src/**/*.{rs,html,css}",
-    // include all html files in the output (dist) directory
+    "./src/**/*.{rs,html,css,tsx}",
     "./dist/**/*.html",
-    "../frontend/**/*.{rs,html,css}",
+    "../frontend/**/*.{rs,html,css,tsx}",
   ],
   theme: {
     extend: {
@@ -27,7 +25,25 @@ module.exports = {
           dark: "#2563eb",
         },
       },
+      screens: {
+        'sm': '640px',
+        'md': '768px',
+        'lg': '1024px',
+        'xl': '1280px',
+        '2xl': '1536px',
+      },
     },
   },
   plugins: [],
+  safelist: [
+    'bg-gray-800',
+    'hidden',
+    'lg:block',
+    'lg:hidden',
+    'p-6',
+    'fixed',
+    'min-h-screen',
+    'overflow-y-auto',
+    'transition-all',
+  ],
 };

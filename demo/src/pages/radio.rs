@@ -60,49 +60,49 @@ pub fn RadioDemo() -> Element {
 
   rsx! {
     div { 
-      class: "max-w-4xl mx-auto p-6 space-y-8",
+      class: "max-w-6xl mx-auto p-6 space-y-8",
       
       div { 
         class: "text-center mb-8",
         h1 { 
-          class: "text-3xl font-bold text-gray-900 mb-4",
-          "Radio State Management Demo"
+          class: "text-3xl font-bold text-gray-900 mb-2",
+          "Radio State Management"
         }
         p { 
-          class: "text-gray-600",
-          "Demonstrating channel-based state management with multiple subscribers"
+          class: "text-gray-600 text-lg",
+          "Managing state with channel-based communication."
         }
       }
 
       div { 
-          class: "grid grid-cols-1 md:grid-cols-2 gap-6",
-          
-          div { 
-            class: "bg-white p-6 rounded-lg shadow-sm border border-gray-200",
-            h2 { 
-              class: "text-xl font-semibold mb-4",
-              "Counter Controls"
-            }
-            CounterControls {}
+        class: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6",
+        
+        div { 
+          class: "bg-white p-6 rounded-xl shadow-lg border border-gray-200",
+          h2 { 
+            class: "text-xl font-semibold mb-4",
+            "Counter Controls"
           }
+          CounterControls {}
+        }
 
-          div { 
-            class: "bg-white p-6 rounded-lg shadow-sm border border-gray-200",
-            h2 { 
-              class: "text-xl font-semibold mb-4",
-              "Counter Display"
-            }
-            CounterDisplay {}
+        div { 
+          class: "bg-white p-6 rounded-xl shadow-lg border border-gray-200",
+          h2 { 
+            class: "text-xl font-semibold mb-4",
+            "Counter Display"
           }
+          CounterDisplay {}
+        }
 
-          div { 
-            class: "md:col-span-2 bg-white p-6 rounded-lg shadow-sm border border-gray-200",
-            h2 { 
-              class: "text-xl font-semibold mb-4",
-              "Channel Monitor"
-            }
-            ChannelMonitor {}
+        div { 
+          class: "lg:col-span-3 bg-white p-6 rounded-xl shadow-lg border border-gray-200",
+          h2 { 
+            class: "text-xl font-semibold mb-4",
+            "Channel Monitor"
           }
+          ChannelMonitor {}
+        }
       }
     }
   }
@@ -140,19 +140,19 @@ fn CounterControls() -> Element {
 
   rsx! {
     div { 
-      class: "space-x-4",
+      class: "flex flex-col sm:flex-row gap-2",
       button {
-        class: "px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600",
+        class: "flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition",
         onclick: handle_increment,
         "Increment"
       }
       button {
-        class: "px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600",
+        class: "flex-1 px-4 py-2 bg-yellow-500 text-white rounded-lg shadow-md hover:bg-yellow-600 transition",
         onclick: handle_decrement,
         "Decrement"
       }
       button {
-        class: "px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600",
+        class: "flex-1 px-4 py-2 bg-red-500 text-white rounded-lg shadow-md hover:bg-red-600 transition",
         onclick: handle_reset,
         "Reset"
       }
@@ -172,13 +172,13 @@ fn CounterDisplay() -> Element {
   
   rsx! {
     div { 
-      class: "space-y-4",
+      class: "space-y-4 text-center",
       div {
-        class: "text-4xl font-bold text-center",
+        class: "text-5xl font-bold text-gray-900",
         "{state.count}"
       }
       div {
-        class: "text-sm text-gray-500 text-center",
+        class: "text-sm text-gray-500",
         "Last update: {state.last_update}"
       }
     }
@@ -189,7 +189,7 @@ fn CounterDisplay() -> Element {
 fn ChannelMonitor() -> Element {
   rsx! {
     div { 
-      class: "grid grid-cols-3 gap-4",
+      class: "grid grid-cols-1 sm:grid-cols-3 gap-4",
       ChannelCard {
         channel: CounterChannel::Increment,
         value: use_radio(CounterChannel::Increment).read().increment_count
@@ -210,14 +210,14 @@ fn ChannelMonitor() -> Element {
 fn ChannelCard(channel: CounterChannel, value: i32) -> Element {
   rsx! {
     div { 
-      class: "p-4 bg-gray-50 rounded-lg border border-gray-200",
+      class: "p-6 bg-gray-50 rounded-lg border border-gray-300 shadow-md",
       div {
-        class: "font-medium text-gray-700 mb-2",
+        class: "font-medium text-gray-700 mb-2 text-lg",
         "{channel} Channel"
       }
       div {
-        class: "text-2xl font-bold text-gray-900",
-        "Value: {value}"
+        class: "text-3xl font-bold text-gray-900",
+        "{value}"
       }
     }
   }

@@ -24,7 +24,7 @@ let email = use_signal(|| String::new());
 let errors = use_signal(|| Vec::new());
 
 // Use type-safe, structured form state:
-#[derive(Validate)]
+#[derive(Validate, Serialize, Deserialize)]
 struct UserForm {
   username: String,
   email: String
@@ -40,7 +40,7 @@ Form {
 2.**Built-in Validation**
 
 ```rust
-#[derive(Validate)]
+#[derive(Validate, Serialize, Deserialize)]
 pub struct User {
   #[validate(length(min = 3, max = 20))]
   username: String,
@@ -67,6 +67,7 @@ TextFormInput::<User> {
 [dependencies]
 dioxus-maestro = ""
 validator = ""
+serde = { version = "", features = ["derive"] }
 ```
 
 2.Define your form structure:
@@ -75,7 +76,7 @@ validator = ""
 use validator::Validate;
 use serde::{Serialize, Deserialize};
 
-#[derive(Validate, Serialize, Deserialize)]
+#[derive(Validate, Serialize, Deserialize, Clone, PartialEq)]
 pub struct UserForm {
   #[validate(length(min = 3))]
   username: String,

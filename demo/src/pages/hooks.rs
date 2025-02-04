@@ -173,13 +173,13 @@ pub fn HooksDemo() -> Element {
             disabled: "{*pagination.prev_idx_disabled.read()}",
             onclick: move |_| prev_idx(),
             class: "rounded-md bg-gray-300 text-gray-700 py-2 px-4 hover:bg-gray-400 disabled:opacity-50",
-            "Previous Item"
+            "Prev Item"
           }
           button {
             disabled: "{*pagination.prev_page_disabled.read()}",
             onclick: move |_| prev_page(),
             class: "rounded-md bg-gray-300 text-gray-700 py-2 px-4 hover:bg-gray-400 disabled:opacity-50",
-            "Previous Page"
+            "Prev Page"
           }
           button {
             disabled: "{*pagination.next_page_disabled.read()}",
