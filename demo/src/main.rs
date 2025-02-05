@@ -1,7 +1,7 @@
 
 #![allow(non_snake_case)]
 
-use {dioxus::prelude::*, dioxus_logger::tracing::Level, maestro_demo::router::Route};
+use {dioxus::prelude::*, dioxus_logger::tracing::Level, demo::router::Route};
 
 fn App() -> Element {
   rsx! {

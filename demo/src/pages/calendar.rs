@@ -1,5 +1,7 @@
 use {
-  crate::pages::ui::ComponentSection, chrono::{Datelike, Local, NaiveDate}, dioxus::prelude::*, maestro_ui::{
+  crate::components::ui::component_section::ComponentSection, 
+  chrono::{Datelike, Local, NaiveDate}, dioxus::prelude::*, 
+  maestro_ui::{
     button::{Button, ButtonVariant},
     calendar::{
       Calendar, CalendarDisplayProps, CalendarSelectProps, Event
@@ -30,11 +32,7 @@ pub fn CalendarDemo() -> Element {
       title: "Product Launch".to_string(),
       color: Some("#10B981".to_string()),
     }
-    ].into_iter().map(|e | Event {
-      date: e.date,
-      title: e.title,
-      color: e.color,
-    }).collect::<Vec<Event>>());
+  ]);
 
     rsx! {
       div { 
@@ -50,7 +48,7 @@ pub fn CalendarDemo() -> Element {
           description: "Fully configurable calendar with display and selection controls",
           
           div {
-            class: "flex justify-center w-full md:w-3/4 lg:w-2/3 ",
+            class: "flex flex-col items-center w-full",
             Calendar {
               display_props: CalendarDisplayProps::builder()
                 .display_month(basic_display_month)

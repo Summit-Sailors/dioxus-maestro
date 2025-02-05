@@ -1,5 +1,7 @@
 use {
-  dioxus::prelude::*, dioxus_free_icons::{ Icon, icons::fa_solid_icons::FaRubleSign}, maestro_ui::{
+  crate::components::ui::component_section::ComponentSection, 
+  dioxus::prelude::*, dioxus_free_icons::{ icons::fa_solid_icons::FaRubleSign, Icon}, 
+  maestro_ui::{
     button::{Button, ButtonSize, ButtonType, ButtonVariant}, 
     input::{Input, InputType, InputVariant}, 
     label::Label, 
@@ -270,24 +272,6 @@ pub fn UIDemo() -> Element {
           }
         }
       }
-    }
-  }
-}
-
-#[derive(Props, Clone, PartialEq)]
-pub struct ComponentSectionProps {
-  pub title: &'static str,
-  pub description: &'static str,
-  pub children: Element,
-}
-
-#[component]
-pub fn ComponentSection(props: ComponentSectionProps) -> Element {
-  rsx! {
-    section { class: "mb-12",
-      h2 { class: "text-2xl font-semibold mb-2", {props.title} }
-      p { class: "text-gray-600 mb-6", {props.description} }
-      div { class: "bg-white p-6 rounded-lg shadow-sm border", {props.children} }
     }
   }
 }
