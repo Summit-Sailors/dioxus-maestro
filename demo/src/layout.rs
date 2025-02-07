@@ -53,10 +53,10 @@ pub fn Layout(children: Element) -> Element {
 
       div {
         class: tw_join!(
-          "col-span-6 sm:col-span-1 p-4 sm:p-6 bg-white shadow-lg rounded-lg overflow-y-auto w-full relative"
+          "lg:col-span-6 md:col-span-4 sm:col-span-1 p-4 sm:p-6 bg-white shadow-lg overflow-y-auto w-full absolute"
         ),
         Outlet::<Route> {}
-      }
+      }      
     }
   }
 }

@@ -21,6 +21,7 @@ pub struct FormFieldWrapperProps {
 pub fn FormFieldWrapper(props: FormFieldWrapperProps) -> Element {
   let show_validation = props.show_validation;
   let has_error = show_validation && !props.field.errors.read().is_empty() && *props.field.touched.read();
+  
   let label_class = tw_join!(
     "block text-sm font-medium mb-1",
     if has_error { "text-red-600" } else { "text-gray-700" }
@@ -33,9 +34,9 @@ pub fn FormFieldWrapper(props: FormFieldWrapperProps) -> Element {
         class: "{label_class}",
         "{props.label}"
         if props.required.unwrap_or(false) {
-          span { 
-            class: "text-red-500 ml-1", 
-            "*" 
+          span {
+            class: "text-red-500 ml-1",
+            "*"
           }
         }
       }
@@ -43,9 +44,9 @@ pub fn FormFieldWrapper(props: FormFieldWrapperProps) -> Element {
         class: "relative",
         {props.children}
         if let Some(help_text) = &props.help_text {
-          p { 
+          p {
             class: "mt-1 text-sm text-gray-500",
-            "{help_text}" 
+            "{help_text}"
           }
         }
         {(has_error).then(|| rsx! {

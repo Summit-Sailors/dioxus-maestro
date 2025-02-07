@@ -22,7 +22,7 @@ pub struct User {
   pub username: String,
   #[validate(email(message = "Invalid email format"))]
   pub email: String,
-  #[validate(length(min = 5, message = "Bio must be at least 5 words"))]
+  #[validate(length(min = 3, message = "Bio must be at least 3 words"))]
   pub bio: String,
   #[validate(range(min = 18, max = 150, message = "Age must be between 18 and 150"))]
   pub age: i32,

@@ -39,8 +39,8 @@ pub fn BasicQueryDemo() -> Element {
   let delete_mutation = use_mutation(|username: String| async move {
     let mut users = USERS.write().await;
     match users.remove(&username) {
-        Some(_) => MutationResult::Ok::<(), UserError>(()),
-        None => MutationResult::Err(UserError::NotFound),
+      Some(_) => MutationResult::Ok::<(), UserError>(()),
+      None => MutationResult::Err(UserError::NotFound),
     }
   });
 
@@ -238,7 +238,7 @@ pub fn OptimisticUserForm(on_success: Option<EventHandler>) -> Element {
         div { class: "text-red-500 mb-4", "{error_message}" }
       }
       Form {
-        initial_value: User::default(),
+        initial_values: User::default(),
         onsubmit: handle_submit,
         inner: FormContent
       }

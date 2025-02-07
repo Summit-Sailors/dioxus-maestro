@@ -4,12 +4,12 @@ use {
     models::user::{Role, User},
   },
   dioxus::prelude::*,
-  maestro_forms::{fields::{
+  maestro_forms::fields::{
     form::{Form, InnerComponentProps},
     select::SelectFormField,
     text::TextFormInput,
     textarea::TextArea,
-  }, use_formik::Formik},
+  },
   maestro_toast::{
     ctx::use_toast, toast_info::ToastInfo
   },
@@ -21,6 +21,7 @@ use {
 #[component]
 pub fn FormContent(props: InnerComponentProps<User>) -> Element {
   let roles = Role::VARIANTS.iter().map(|&s| s.to_string()).collect::<Vec<_>>();
+
   let input_class = tw_join!(
     "w-full p-2 rounded-md border border-gray-300 shadow-sm",
     "focus:ring-2 focus:ring-blue-400 focus:outline-none placeholder-opacity-50"
@@ -135,28 +136,22 @@ async fn simulate_submission(delay_ms: u64) -> Result<(), String> {
 pub fn FormsDemo() -> Element {
   let mut toast = use_toast();
   let mut is_async = use_signal(|| true);
-  let mut submitting = use_signal(|| false);
-  // let mut form = use_context::<Formik<User>>();
 
   let on_submit = move |(_event, (submitted_user, is_valid)): (FormEvent, (User, bool))| async move {
     if !is_valid {
       toast.write().popup(
         ToastInfo::builder()
           .context("Form validation failed. Please check your inputs.".to_owned())
-          .build(),
+          .build(),   
       );
       return;
     }
 
-    submitting.set(true);
     let delay = if is_async() { 1000 } else { 500 };
     let result = simulate_submission(delay).await;
-    submitting.set(false);
-
+    
     match result {
       Ok(_) => {
-        // form.reset_form();
-        
         toast.write().popup(
           ToastInfo::builder()
             .context(format!(
@@ -173,7 +168,7 @@ pub fn FormsDemo() -> Element {
             .build(),
         );
       }
-    }
+    } 
   };
 
   let mode_button_base = tw_join!(
@@ -220,11 +215,12 @@ pub fn FormsDemo() -> Element {
       }
 
       Form {
-        initial_value: User {
-          role: Role::Admin,
-          ..User::default()
+        initial_values: User {
+            role: Role::Admin,
+            ..User::default()
         },
         onsubmit: on_submit,
+        auto_reset: Some(true),
         inner: FormContent,
       }
     }

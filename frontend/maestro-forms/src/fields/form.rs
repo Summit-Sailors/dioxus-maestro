@@ -5,38 +5,48 @@ use {
 	validator::Validate,
 };
 
+pub type FormResult<T> = (T, bool);
+
 #[derive(Clone, PartialEq, Props)]
 pub struct FormProps<T>
 where
-	T: Validate + Clone + Serialize + PartialEq + 'static + for<'de> Deserialize<'de>,
+  T: Validate + Clone + Serialize + PartialEq + 'static + for<'de> Deserialize<'de>,
 {
-	inner: Component<InnerComponentProps<T>>,
-	pub initial_value: T,
-	#[props(optional)]
-	pub onsubmit: Option<EventHandler<(FormEvent, (T, bool))>>,
-	#[props(extends = GlobalAttributes, extends = form)]
-	pub attributes: Vec<Attribute>,
+  inner: Component<InnerComponentProps<T>>,
+  pub initial_values: T,
+  #[props(optional)]
+  pub onsubmit: Option<EventHandler<FormResult<T>>>,
+  #[props(optional)]
+  pub auto_reset: Option<bool>,
+  #[props(extends = GlobalAttributes, extends = form)]
+  pub attributes: Vec<Attribute>,
 }
 
 #[derive(Clone, PartialEq, Props)]
 pub struct InnerComponentProps<T>
 where
-	T: Validate + Clone + Serialize + PartialEq + 'static + for<'de> Deserialize<'de>,
+  T: Validate + Clone + Serialize + PartialEq + 'static + for<'de> Deserialize<'de>,
 {
-	pub form: Formik<T>,
+  pub form: Formik<T>,
 }
-
-// Added onsubmit. It returns an event, (T, bool), where T - form.as_struct(), bool - is form valid
 
 pub fn Form<T>(props: FormProps<T>) -> Element
 where
-	T: Validate + Clone + Serialize + PartialEq + 'static + for<'de> Deserialize<'de>,
+  T: Validate + Clone + Serialize + PartialEq + 'static + for<'de> Deserialize<'de>,
 {
-	let mut form = use_init_form_ctx::<T>(props.initial_value);
-	let InnerComponent = props.inner;
-	rsx! {
+  let mut form = use_init_form_ctx(props.initial_values.clone());
+  let InnerComponent = props.inner;
+
+  form.should_auto_reset = props.auto_reset.unwrap_or(false);
+
+  rsx! {
     form {
-      onsubmit: move |e| props.onsubmit.unwrap_or_default().call((e, form.as_validated_struct())),
+      onsubmit: move |e| {
+        e.prevent_default();
+        if let Some(handler) = &props.onsubmit {
+          handler.call(form.submit());
+        }
+      },
       ..props.attributes,
       InnerComponent { form }
     }
