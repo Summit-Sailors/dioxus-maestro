@@ -1,5 +1,11 @@
 use {
-	super::use_form_field::FormField, crate::fields::form::FormResult, dioxus::prelude::*, serde::{Deserialize, Serialize}, serde_json::{Map, Value}, std::collections::HashMap, validator::Validate
+	super::use_form_field::FormField, 
+  crate::fields::form::FormResult, 
+  dioxus::prelude::*, 
+  serde::{Deserialize, Serialize}, 
+  serde_json::{Map, Value}, 
+  std::collections::HashMap, 
+  validator::Validate
 };
 
 #[derive(Debug, PartialEq)]
@@ -47,14 +53,17 @@ where
 		}
 	}
 
-  pub fn submit(&mut self) -> FormResult<T> {
+  pub fn submit(&mut self, callback: &Callback<FormResult<T>>) {
     self.is_submitting.set(true);
     let result = self.as_validated_struct();
+
+    callback.call(result.clone());
+
     if result.1 && self.should_auto_reset {
       self.reset_form();
     }
+
     self.is_submitting.set(false);
-    result
   }
 
   pub fn as_validated_struct(&mut self) -> FormResult<T> {

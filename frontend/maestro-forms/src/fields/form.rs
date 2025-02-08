@@ -39,14 +39,15 @@ where
 
   form.should_auto_reset = props.auto_reset.unwrap_or(false);
 
+  let onsubmit = move |_e: FormEvent| {
+    if let Some(submit_handler) = &props.onsubmit {
+      form.submit(submit_handler);
+    }
+  };
+
   rsx! {
     form {
-      onsubmit: move |e| {
-        e.prevent_default();
-        if let Some(handler) = &props.onsubmit {
-          handler.call(form.submit());
-        }
-      },
+      onsubmit: onsubmit,
       ..props.attributes,
       InnerComponent { form }
     }

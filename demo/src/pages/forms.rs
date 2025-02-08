@@ -52,7 +52,7 @@ pub fn FormsDemo() -> Element {
           toast.write().popup(
             ToastInfo::builder()
               .context(format!(
-                "Form submitted successfully for user: {}",
+                "Form submitted successfully for user: {:?}",
                 submitted_user.username
               ))
               .build()
@@ -118,7 +118,7 @@ pub fn FormsDemo() -> Element {
           ..User::default()
         },
         onsubmit: on_submit,
-        auto_reset: Some(true),
+        auto_reset: true,
         inner: FormContent,
       }
     }
