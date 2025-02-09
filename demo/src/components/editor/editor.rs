@@ -1,5 +1,8 @@
 use {
+  async_std::task::sleep,
   dioxus::prelude::*,
+  dioxus_free_icons::Icon,
+  dioxus_free_icons::icons::fa_solid_icons::{FaCompress, FaCopy, FaExpand},
   maestro_hooks::clipboard::use_clipboard,
 };
 
@@ -33,10 +36,14 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
     is_copying.set(true);
     spawn(async move {
       match clipboard.set(content).await {
-        Ok(_) => copy_status.set("Content copied!".to_string()),
+        Ok(_) => copy_status.set("Copied!".to_string()),
         Err(_) => copy_status.set("Failed to copy".to_string()),
       }
       is_copying.set(false);
+      spawn(async move {
+        sleep(std::time::Duration::from_secs(2)).await;
+        copy_status.set(String::new());
+      });
     });
   };
 
@@ -46,40 +53,53 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
 
   rsx! {
     div {
-      class: "demo-container w-full max-w-7xl mx-auto p-4 space-y-8",
+      class: "demo-container w-full max-w-7xl mx-auto p-4 space-y-6 bg-gray-50 rounded-lg shadow-lg",
       
       // header section with title and controls
       div {
-        class: "flex items-center justify-between bg-gray-100 p-4 rounded-t-lg",
-        h2 { class: "text-xl font-semibold text-gray-800", "{props.title}" }
+        class: "flex items-center justify-between bg-gray-800 p-4 rounded-t-lg text-white",
+        h2 { class: "text-xl font-semibold", "{props.title}" }
         div {
-            class: "flex space-x-2",
-            button {
-              class: "px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors flex items-center space-x-1",
-              disabled: "{is_copying()}",
-              onclick: handle_copy,
-              span { "Copy Code" }
+          class: "flex space-x-4",
+          button {
+            class: "p-2 rounded-full hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 relative",
+            disabled: "{is_copying()}",
+            onclick: handle_copy,
+            title: "Copy Code",
+            Icon {
+              icon: FaCopy,
+              width: 20,
+              height: 20,
             }
-            {
-            if copy_status().len() > 0 {
-              rsx! {
-                span { 
-                  class: "ml-2 text-sm",
-                  "{copy_status}"
-                }
-              }
-            } else {
-              rsx! { }
+            // tooltip for copy status
+            div {
+              class: format_args!("absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs py-1 px-2 rounded transition-opacity duration-300 {}", 
+                if copy_status().is_empty() { "opacity-0" } else { "opacity-100" }
+              ),
+              "{copy_status}"
             }
           }
           button {
-            class: "px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors",
+            class: "p-2 rounded-full hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500",
             onclick: toggle_expanded,
+            title: if is_expanded() { "Collapse Code" } else { "Expand Code" },
             {
               if is_expanded() {
-                "Hide Code"
+                rsx! {
+                  Icon {
+                    icon: FaCompress,
+                    width: 20,
+                    height: 20,
+                  }
+                }
               } else {
-                "Show Code"
+                rsx! {
+                  Icon {
+                    icon: FaExpand,
+                    width: 20,
+                    height: 20,
+                  }
+                }
               }
             }
           }
@@ -94,20 +114,15 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
 
       // code section (expandable)
       div {
-        class: "code-section transition-all duration-300",
-        style: {
-          if !is_expanded() {
-            "max-height: 0; overflow: hidden;"
-          } else {
-            ""
-          }
-        },
+        class: format_args!("code-section overflow-hidden transition-all duration-500 ease-in-out {}", 
+          if is_expanded() { "max-h-[1000px]" } else { "max-h-0" }
+        ),
         div {
           class: "bg-gray-900 p-6 rounded-lg shadow-md",
           pre {
             class: "text-gray-100 overflow-x-auto",
             code {
-              class: "language-{props.language}",
+              class: "language-{props.language} font-mono text-sm",
               "{code}"
             }
           }
