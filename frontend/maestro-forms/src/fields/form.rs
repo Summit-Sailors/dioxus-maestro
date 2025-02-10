@@ -15,7 +15,7 @@ where
   inner: Component<InnerComponentProps<T>>,
   pub initial_values: T,
   #[props(optional)]
-  pub onsubmit: Option<EventHandler<FormResult<T>>>,
+  pub onsubmit: Option<EventHandler<(FormEvent, FormResult<T>)>>,
   #[props(optional)]
   pub auto_reset: Option<bool>,
   #[props(extends = GlobalAttributes, extends = form)]
@@ -39,9 +39,10 @@ where
 
   form.should_auto_reset = props.auto_reset.unwrap_or(false);
 
-  let onsubmit = move |_e: FormEvent| {
+  let onsubmit = move |e: FormEvent| {
+    e.stop_propagation();
     if let Some(submit_handler) = &props.onsubmit {
-      form.submit(submit_handler);
+      form.submit(e, submit_handler);
     }
   };
 

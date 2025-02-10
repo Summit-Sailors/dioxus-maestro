@@ -1,9 +1,8 @@
 use {
   async_std::task::sleep,
   dioxus::prelude::*,
-  dioxus_free_icons::Icon,
-  dioxus_free_icons::icons::fa_solid_icons::{FaCompress, FaCopy, FaExpand},
-  maestro_hooks::clipboard::use_clipboard,
+  dioxus_free_icons::{icons::fa_solid_icons::{FaCompress, FaCopy, FaExpand}, Icon},
+  maestro_hooks::clipboard::use_clipboard, tailwind_fuse::tw_join,
 };
 
 #[derive(Props, PartialEq, Clone)]
@@ -14,10 +13,6 @@ pub struct CodeEditorProps {
   language: String,
   #[props(into, default = String::from("Example Code"))]
   title: String,
-  #[props(default = false)]
-  expanded: bool,
-  #[props(default = false)]
-  copy_status: bool,
   #[props(into)]
   demo: Element,
 }
@@ -25,7 +20,7 @@ pub struct CodeEditorProps {
 #[component]
 pub fn CodeEditor(props: CodeEditorProps) -> Element {
   let code = use_signal(|| props.code.clone());
-  let mut is_expanded = use_signal(|| props.expanded);
+  let mut is_expanded = use_signal(|| false);
   let clipboard = use_clipboard();
   let mut copy_status = use_signal(|| String::new());
   let mut is_copying = use_signal(|| false);
@@ -50,17 +45,20 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
   let toggle_expanded = move |_| {
     is_expanded.set(!is_expanded());
   };
-
+  
   rsx! {
     div {
-      class: "demo-container w-full max-w-7xl mx-auto p-4 space-y-6 bg-gray-50 rounded-lg shadow-lg",
-      
-      // header section with title and controls
+      class: tw_join!(
+        "p-2 bg-gray-800 rounded-lg",
+        "mt-4 sm:mt-8 mb-8",
+      ),
+    
+      // header section
       div {
-        class: "flex items-center justify-between bg-gray-800 p-4 rounded-t-lg text-white",
+        class: "flex items-center justify-between text-white",
         h2 { class: "text-xl font-semibold", "{props.title}" }
         div {
-          class: "flex space-x-4",
+          class: "flex space-x-2",
           button {
             class: "p-2 rounded-full hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 relative",
             disabled: "{is_copying()}",
@@ -71,9 +69,8 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
               width: 20,
               height: 20,
             }
-            // tooltip for copy status
             div {
-              class: format_args!("absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs py-1 px-2 rounded transition-opacity duration-300 {}", 
+              class: tw_join!("absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs py-1 px-2 rounded transition-opacity duration-300 {}", 
                 if copy_status().is_empty() { "opacity-0" } else { "opacity-100" }
               ),
               "{copy_status}"
@@ -85,45 +82,47 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
             title: if is_expanded() { "Collapse Code" } else { "Expand Code" },
             {
               if is_expanded() {
-                rsx! {
-                  Icon {
-                    icon: FaCompress,
-                    width: 20,
-                    height: 20,
-                  }
-                }
+                rsx! { Icon { icon: FaCompress, width: 20, height: 20 } }
               } else {
-                rsx! {
-                  Icon {
-                    icon: FaExpand,
-                    width: 20,
-                    height: 20,
-                  }
-                }
+                rsx! { Icon { icon: FaExpand, width: 20, height: 20 } }
               }
             }
           }
         }
-      }
+      }    
 
-      // demo component section
       div {
-        class: "bg-white p-6 rounded-lg shadow-md border border-gray-200",
-        {props.demo}
-      }
-
-      // code section (expandable)
-      div {
-        class: format_args!("code-section overflow-hidden transition-all duration-500 ease-in-out {}", 
-          if is_expanded() { "max-h-[1000px]" } else { "max-h-0" }
+        class: tw_join!("grid gap-4 transition-all duration-500 ease-in-out", 
+          if is_expanded() { 
+            "lg:grid-cols-2 grid-cols-1"
+          } else { 
+            "grid-cols-1" 
+          }
         ),
+        
+        // demo component section
         div {
-          class: "bg-gray-900 p-6 rounded-lg shadow-md",
-          pre {
-            class: "text-gray-100 overflow-x-auto",
-            code {
-              class: "language-{props.language} font-mono text-sm",
-              "{code}"
+          class: "bg-gray-300 max-h-screen p-6 rounded-lg shadow-md border border-gray-200 mt-4",
+          {props.demo}
+        }
+
+        // code section
+        if is_expanded() {
+          h2 {  
+            class: "text-xl font-semibold items-stretch text-center",
+            "Source code"
+          }
+          div {
+            class: "bg-gray-900 rounded-lg shadow-md border border-gray-700 overflow-hidden transition-all duration-500 ease-in-out p-4 mt-4 sm:mt-8",
+            div {
+              class: "max-h-96 overflow-y-auto",
+              pre {
+                class: "text-gray-100 overflow-x-auto",
+                code {
+                  class: "language-{props.language} font-mono text-sm whitespace-pre",
+                  "{code}"
+                }
+              }
             }
           }
         }

@@ -121,9 +121,8 @@ pub fn OptimisticUserForm(on_success: Option<EventHandler>) -> Element {
     MutationResult::Ok(new_user)
   });
 
-  let handle_submit = move |result: FormResult<User>| {
+  let handle_submit = move |(_event, (submitted_user, is_valid)): (FormEvent, FormResult<User>)| {
     async move {
-      let (submitted_user, is_valid) = result;
       if !is_valid {
         error_message.set("Form validation failed".to_string());
         return;
@@ -182,7 +181,8 @@ pub fn CacheDemo() -> Element {
       h3 { class: "text-xl font-bold mb-4", "Cache Demonstration" }
       
       div { class: "mb-4",
-        p { "Cache Status: ",
+        p {
+          "Cache Status: ",
           if cached_query.result().is_fresh() {
             span { class: "text-green-500", "Fresh" }
           } else {

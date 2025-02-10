@@ -10,6 +10,6 @@ fn App() -> Element {
 }
 
 fn main() {
-  dioxus_logger::init(Level::INFO).expect("logger failed to init");
+  dioxus_logger::init(Level::INFO).expect("logger failed to initialize");
   dioxus::LaunchBuilder::new().launch(App);
 }

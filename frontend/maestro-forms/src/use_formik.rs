@@ -1,7 +1,7 @@
 use {
 	super::use_form_field::FormField, 
   crate::fields::form::FormResult, 
-  dioxus::prelude::*, 
+  dioxus::{dioxus_core::SpawnIfAsync, prelude::*}, 
   serde::{Deserialize, Serialize}, 
   serde_json::{Map, Value}, 
   std::collections::HashMap, 
@@ -53,17 +53,17 @@ where
 		}
 	}
 
-  pub fn submit(&mut self, callback: &Callback<FormResult<T>>) {
+  pub fn submit(&mut self, event: FormEvent, handler: &EventHandler<(FormEvent, FormResult<T>)>) {
     self.is_submitting.set(true);
     let result = self.as_validated_struct();
 
-    callback.call(result.clone());
+    handler.call((event, result.clone())).spawn();
 
     if result.1 && self.should_auto_reset {
       self.reset_form();
     }
 
-    self.is_submitting.set(false);
+    self.is_submitting.set(false); //TODO: needs to wait for the callback to finish executing.
   }
 
   pub fn as_validated_struct(&mut self) -> FormResult<T> {

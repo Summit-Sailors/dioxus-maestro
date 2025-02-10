@@ -1,6 +1,6 @@
 use {
   crate::{
-    components::layout::demo_wrapper::DemoWrapper, 
+    components::editor::editor::CodeEditor, 
     router::Route
   },
   dioxus::prelude::*,
@@ -16,15 +16,20 @@ pub fn Layout(children: Element) -> Element {
   let mut menu_open = use_signal(|| false);
   let current_route = use_route::<Route>();
   
-  let content = match current_route {
-    Route::HomePage {} => rsx! { {children} },
-    _ => rsx! {
-      DemoWrapper {
-        title: current_route.name(),
-        source_code: get_source_code(&current_route),
-        {children}
+  let content = rsx! {
+    match current_route {
+      Route::HomePage {} => rsx!{ Outlet<Route> {} },
+      _ => rsx! {
+        div {
+          class: "mt-8 items-stretch",
+          CodeEditor {
+            title: current_route.name(),
+            code: get_source_code(&current_route),
+            demo: rsx!{ Outlet<Route> {} },
+          }
+        }
       }
-    },
+    }
   };
 
   rsx! {
@@ -36,35 +41,35 @@ pub fn Layout(children: Element) -> Element {
     ToastFrame { manager: toast }
     
     div {
-      class: "min-h-screen bg-gray-50 flex flex-col relative",
+      class: "min-h-screen w-full bg-gray-50 flex flex-col relative",
       
       div {
-        class: "lg:hidden fixed top-0 left-0 w-full h-16 bg-gray-900 flex items-center justify-between px-4 z-50",
+        class: "lg:hidden top-0 left-0 w-full h-24 bg-gray-900 z-40 mb-8",
         
         button {
-          class: "p-2 rounded-md bg-gray-800 text-white hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-600",
+          class: "absolute left-0 right-0 mx-auto max-w-md flex text-white bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-600",
           onclick: move |_| menu_open.set(!menu_open()),
           
-          {
-            if menu_open() {
-              rsx! { Icon { icon: FaX, width: 20, height: 20 } }
-            } else {
-              rsx! { Icon { icon: FaBars, width: 20, height: 20 } }
+          div {
+            class: "p-4",
+            {
+              if menu_open() {
+                rsx! { Icon { icon: FaX, width: 20, height: 20 } }
+              } else {
+                rsx! { Icon { icon: FaBars, width: 20, height: 20 } }
+              }
             }
           }
         }
       }
       
       div {
-        class: "flex min-h-screen pt-16 lg:pt-0",
-        
         nav {
           class: tw_join!(
-            "fixed inset-y-0 left-0 z-40",
+            "fixed inset-y-0 left-0 z-50",
             "w-64 bg-gray-800",
             "transform transition-transform duration-300 ease-in-out",
-            "lg:static",
-            "lg:block",
+            "absolute md:relative",
             if !menu_open() { 
               "hidden lg:block"
             } else {
@@ -72,34 +77,36 @@ pub fn Layout(children: Element) -> Element {
             }
           ),
           NavigationMenu {
-            close_menu: menu_open.clone()
+            close_menu: menu_open
           }
-        }
+        }        
         
         main {
           class: tw_join!(
-            "flex-1 transition-all duration-300",
-            "px-4 py-4 sm:px-6 lg:px-8",
-            "lg:ml-64",
-            "w-full max-w-full overflow-x-hidden"
+            "flex flex-col transition-all duration-300",
+            "w-full max-w-full overflow-hidden",
+            "ml-0 md:ml-64",
+            "mt-16 lg:mt-0"
           ),
-          
+        
           if menu_open() {
             div {
-              class: "fixed inset-0 bg-black/50 z-30 lg:hidden transition-opacity duration-300",
+              class: "fixed inset-0 bg-black/50 z-30 md:hidden transition-opacity duration-300",
               onclick: move |_| menu_open.set(false)
             }
           }
-          
+        
           div {
-            class: "container mx-auto max-w-7xl px-0 sm:px-4",
+            class: "container mx-auto max-w-7xl px-0 sm:px-4 h-full",
             {content}
           }
         }
+        
       }
     }
   }
 }
+
 
 #[component]
 fn NavigationMenu(close_menu: Signal<bool>) -> Element {
@@ -107,8 +114,8 @@ fn NavigationMenu(close_menu: Signal<bool>) -> Element {
   
   rsx! {
     div {
-      class: "min-h-screen flex flex-col pt-16 lg:pt-4",
-      
+      class: "min-h-screen",
+
       div {
         class: "flex-1 px-4 py-2 space-y-1 overflow-y-auto",
         {Route::iter()
@@ -140,7 +147,7 @@ fn NavigationMenu(close_menu: Signal<bool>) -> Element {
 fn get_source_code(route: &Route) -> &'static str {
   match route {
     Route::HomePage {} => "",
-    Route::FormsDemo {} => include_str!("pages/forms.rs"),
+    Route::FormsDemo {} => include_str!("pages/form.rs"),
     Route::HooksDemo {} => include_str!("pages/hooks.rs"),
     Route::PlottersDemo {} => include_str!("pages/plotters.rs"),
     Route::CompleteQueryDemo {} => include_str!("pages/query.rs"),

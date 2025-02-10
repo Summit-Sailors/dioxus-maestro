@@ -27,14 +27,17 @@ async fn simulate_submission(delay_ms: u64) -> Result<(), String> {
 
 #[component]
 pub fn FormsDemo() -> Element {
-  let toast = use_toast();
+  let mut toast = use_toast();
   let mut is_async = use_signal(|| true);
 
-  let on_submit = move |result: FormResult<User>| {
-    to_owned![toast, is_async];
-    async move {
-      let (submitted_user, is_valid) = result;
-      
+  let is_submitting = use_signal(|| false);
+
+  let on_submit = move |(_event, (submitted_user, is_valid)): (FormEvent, FormResult<User>)| {
+    if is_submitting() {
+      return;
+    }
+  
+    spawn(async move {
       if !is_valid {
         toast.write().popup(
           ToastInfo::builder()
@@ -55,7 +58,7 @@ pub fn FormsDemo() -> Element {
                 "Form submitted successfully for user: {:?}",
                 submitted_user.username
               ))
-              .build()
+              .build(),
           );
         }
         Err(err) => {
@@ -66,7 +69,8 @@ pub fn FormsDemo() -> Element {
           );
         }
       }
-    }
+
+    });
   };
 
   let mode_button_base = tw_join!(

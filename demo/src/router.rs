@@ -2,7 +2,7 @@ use {
 	crate::{
 		layout::Layout,
     pages::{
-      forms::FormsDemo,
+      form::FormsDemo,
       home::HomePage,
       hooks::HooksDemo,
       plotters::PlottersDemo,

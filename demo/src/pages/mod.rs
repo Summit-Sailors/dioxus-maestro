@@ -1,4 +1,4 @@
-pub mod forms;
+pub mod form;
 pub mod home;
 pub mod hooks;
 pub mod plotters;
