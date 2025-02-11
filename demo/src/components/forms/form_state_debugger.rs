@@ -29,31 +29,32 @@ where
 
   rsx! {
     div {
-      class: "mt-8 p-4 bg-gray-100 rounded-lg",
+      class: "mt-8 p-6 bg-gray-900 text-white rounded-lg shadow-md",
       Button {
         button_type: ButtonType::Button,
-        class: "text-sm text-gray-600 hover:text-gray-800",
+        class: "text-sm font-medium text-gray-300 hover:text-gray-100 transition",
         on_click: move |_| show_debug.set(!show_debug()),
         if show_debug() { "Hide Form State" } else { "Show Form State" }
       }
-    if show_debug() {
+      if show_debug() {
         div {
-          class: "mt-4 space-y-2",
+          class: "mt-6 space-y-4",
+          
           // form status grid
           div {
-            class: "grid grid-cols-3 gap-4",
+            class: "grid grid-cols-2 md:grid-cols-3 gap-4",
             {[
               ("Is Valid", *form.is_valid.read(),
-                (|v: bool| v.then_some("text-green-600").unwrap_or("text-red-600")) as ClassFn),
+                (|v: bool| v.then_some("text-green-500").unwrap_or("text-red-500")) as ClassFn),
               ("Is Dirty", *form.is_dirty.read(),
-                (|_: bool| "") as ClassFn),
+                (|_: bool| "text-yellow-500") as ClassFn),
               ("Is Submitting", *form.is_submitting.read(),
-                (|_: bool| "") as ClassFn),
-              // any custom errors if present
+                (|_: bool| "text-blue-500") as ClassFn),
               ("Custom Errors", !form.custom_errors.read().is_empty(),
-                (|_: bool| "text-red-600") as ClassFn)
+                (|_: bool| "text-red-500") as ClassFn)
             ].iter().map(|(label, value, class_fn)| rsx! {
               div {
+                class: "p-3 bg-gray-800 rounded-lg",
                 span { class: "font-semibold", "{label}: " }
                 span {
                   class: tw_join!(class_fn(*value)),
@@ -62,23 +63,24 @@ where
               }
             })}
           }
+
           // field values
           div {
             class: "mt-4",
-            h3 { class: "font-semibold mb-2", "Field Values:" }
+            h3 { class: "font-semibold mb-3 text-gray-300", "Field Values:" }
             div {
               class: "space-y-2",
               {form.name_to_id_map.read().keys().map(|name| {
                 let value = form.get_field_json_value(name.clone());
                 rsx! {
                   div {
-                    class: "grid grid-cols-2",
+                    class: "grid grid-cols-2 p-2 bg-gray-800 rounded-lg",
                     span {
-                      class: "font-medium",
+                      class: "font-medium text-gray-400",
                       "{name}: "
                     }
                     span {
-                      class: "break-words",
+                      class: "break-words text-gray-300",
                       "{value}"
                     }
                   }
@@ -86,26 +88,29 @@ where
               })}
             }
           }
+
           // custom form errors section
           {(!form.custom_errors.read().is_empty()).then(|| rsx! {
             div {
-              class: "mt-4",
-              h3 { class: "font-semibold mb-2 text-red-600", "Form Errors:" }
+              class: "mt-4 p-4 bg-red-900/20 rounded-lg",
+              h3 { class: "font-semibold mb-2 text-red-400", "Form Errors:" }
               ul {
-                class: "list-disc list-inside space-y-1",
+                class: "list-disc list-inside space-y-1 text-red-300",
                 {form.custom_errors.read().iter().map(|error| rsx! {
-                  li { class: "text-red-600", "{error}" }
+                  li { "{error}" }
                 })}
               }
             }
           })}
+
           // complete form state
           div {
             class: "mt-4",
-            h3 { class: "font-semibold mb-2", "Complete Form State:" }
+            h3 { class: "font-semibold mb-3 text-gray-300", "Complete Form State:" }
             pre {
-              class: "p-4 bg-gray-800 text-white rounded overflow-auto max-h-96",
+              class: "p-4 bg-gray-800 text-gray-200 rounded-lg overflow-auto max-h-96",
               code {
+                class: "font-mono text-sm",
                 "{serde_json::to_string_pretty(&form.as_struct()).unwrap_or_else(|_| \"Serialization error\".to_string())}"
               }
             }

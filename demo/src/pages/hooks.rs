@@ -1,14 +1,18 @@
 use {
-  async_std::task::sleep, dioxus::prelude::*, maestro_hooks::{
+  async_std::task::sleep, 
+  dioxus::prelude::*, 
+  maestro_hooks::{
     clipboard::use_clipboard,
     explicit_memo::use_explicit_memo,
     pagination::use_pagination,
-  }, maestro_query::prelude::futures_util::FutureExt, std::time::Duration
+  }, 
+  maestro_query::prelude::futures_util::FutureExt, 
+  std::time::Duration
 };
 
 #[component]
 pub fn HooksDemo() -> Element {
-  let mut total_items = use_signal(|| 500);
+  let mut total_items = use_signal(|| 100);
   let clipboard = use_signal(|| use_clipboard());
 
   let expensive_computation = use_explicit_memo(
@@ -16,26 +20,21 @@ pub fn HooksDemo() -> Element {
     || {
       let future = async move {
         sleep(Duration::from_millis(100)).await;
-        42 // this would be the value returned by the future in a real world setting
+        42
       };
 
       let sum: i32 = (1..=total_items()).sum();
 
       let async_result = match future.now_or_never() {
-        Some(result) => result, // future has completed, use the result
-        None => {
-          // future hasn't completed yet.  to be handled gracefully.
-          // could return a placeholder value, or a message indicating
-          // that the computation is in progress.
-          // no blocking here!
-          0
-        }
-    };
+        Some(result) => result,
+        None => 0,
+      };
+
       format!("Sum of 1 to {}: {} and async result: {}", total_items(), sum, async_result)
     }
   );
 
-  let page_size = 100;
+  let page_size = 10;
   let (pagination, (mut next_idx, mut prev_idx, mut next_page, mut prev_page)) =
       use_pagination(use_memo(move || total_items()), page_size); 
 
@@ -46,16 +45,16 @@ pub fn HooksDemo() -> Element {
 
   rsx! {
     div {
-      class: "maestro-hooks-demo container mx-auto px-4 py-8 space-y-12",
+      class: "hooks-demo bg-[#1E1E1E] text-white p-6 rounded-lg shadow-lg space-y-8",
 
-      // clipboard demo section
+      // clipboard section
       section {
-        class: "clipboard-demo bg-gray-50 p-6 rounded-lg shadow-md",
+        class: "clipboard-demo bg-[#252526] p-4 rounded-lg shadow",
 
-        h2 { class: "text-xl font-bold mb-4", "Clipboard Hook Demo" }
+        h2 { class: "text-lg text-gray-800 font-bold mb-3", "Clipboard Hook Demo" }
         
         input {
-          class: "border rounded px-3 py-2 shadow-sm w-full focus:ring focus:ring-blue-200",
+          class: "border border-gray-500 text-gray-800 bg-[#3C3C3C] rounded px-3 py-2 shadow-sm w-full focus:ring focus:ring-blue-500",
           placeholder: "Type something to copy",
           value: "{clipboard_content}",
           oninput: move |e| clipboard_content.set(e.value().clone()),
@@ -75,7 +74,7 @@ pub fn HooksDemo() -> Element {
                 clipboard_content.set(String::new());
               });
             },
-            class: "rounded-md bg-blue-500 text-white py-2 px-4 hover:bg-blue-700",
+            class: "rounded bg-blue-600 text-white py-2 px-4 hover:bg-blue-700",
             "Copy to Clipboard"
           },
           button {
@@ -91,18 +90,18 @@ pub fn HooksDemo() -> Element {
                 }
               });
             },
-            class: "rounded-md bg-green-500 text-white py-2 px-4 hover:bg-green-700",
+            class: "rounded bg-green-500 text-white py-2 px-4 hover:bg-green-700",
             "Paste from Clipboard"
           }
         }
 
-        p { class: "mt-2 text-sm text-gray-500", "{copy_status}" }
+        p { class: "mt-2 text-sm text-gray-400", "{copy_status}" }
       }
 
-      // explicit memo demo section
+      // memo section
       section {
-        class: "memo-demo bg-gray-50 p-6 rounded-lg shadow-md",
-        h2 { class: "text-xl font-bold mb-4", "Explicit Memo Hook Demo" }
+        class: "memo-demo bg-[#252526] p-4 rounded-lg shadow",
+        h2 { class: "text-lg text-gray-800 font-bold mb-3", "Explicit Memo Hook Demo" }
         
         div {
           class: "flex space-x-4 mb-4",
@@ -111,7 +110,7 @@ pub fn HooksDemo() -> Element {
               let current = total_items();
               total_items.set(current + 10);
             },
-            class: "rounded-md bg-blue-500 text-white py-2 px-4 hover:bg-blue-700",
+            class: "rounded bg-blue-600 text-white py-2 px-4 hover:bg-blue-700",
             "Add 10 Items"
           }
           button {
@@ -119,25 +118,25 @@ pub fn HooksDemo() -> Element {
               let current = total_items();
               total_items.set((current - 10).max(1));
             },
-            class: "rounded-md bg-red-500 text-white py-2 px-4 hover:bg-red-700",
+            class: "rounded bg-red-500 text-white py-2 px-4 hover:bg-red-700",
             "Remove 10 Items"
           }
         }
 
         div {
-          class: "bg-white p-4 rounded-md shadow-inner",
+          class: "bg-[#3C3C3C] p-4 rounded-md shadow-inner text-gray-800",
           p { class: "font-medium", "Total Items: {total_items}" }
           p { class: "font-medium mt-2", "Memoized Result: {expensive_computation}" }
         }
       }
 
-      // pagination demo section
+      // pagination section
       section {
-        class: "pagination-demo bg-gray-50 p-6 rounded-lg shadow-md",
-        h2 { class: "text-xl font-bold mb-4", "Pagination Hook Demo" }
+        class: "pagination-demo bg-[#252526] p-4 rounded-lg shadow text-gray-800",
+        h2 { class: "text-lg font-bold mb-3", "Pagination Hook Demo" }
 
         div {
-          class: "pagination-info border-b border-gray-200 pb-4 mb-6",
+          class: "border-b border-gray-600 pb-4 mb-6",
           p { class: "mb-2", "Current Page: {*pagination.page.read() + 1}" }
           p { class: "mb-2", "Items per page: {*pagination.page_size.read()}" }
           p {
@@ -147,7 +146,7 @@ pub fn HooksDemo() -> Element {
         }
 
         div {
-          class: "items-container grid grid-cols-4 gap-4",
+          class: "grid grid-cols-4 gap-2",
           {
             let start_idx = *pagination.idx.read();
             let page_size = *pagination.page_size.read();
@@ -158,7 +157,7 @@ pub fn HooksDemo() -> Element {
               .map(|item| {
                 rsx! {
                   div {
-                    class: "item border rounded p-2 bg-white shadow-sm",
+                    class: "border rounded p-2 bg-[#3C3C3C] shadow-sm text-center text-gray-800",
                     key: "{item}",
                     "Item {item}"
                   }
@@ -168,29 +167,29 @@ pub fn HooksDemo() -> Element {
         }
 
         div {
-          class: "pagination-controls flex space-x-4 mt-6",
+          class: "flex space-x-2 mt-4 items-center",
           button {
             disabled: "{*pagination.prev_idx_disabled.read()}",
             onclick: move |_| prev_idx(),
-            class: "rounded-md bg-gray-300 text-gray-700 py-2 px-4 hover:bg-gray-400 disabled:opacity-50",
+            class: "rounded bg-gray-500 text-white py-2 px-4 hover:bg-gray-800 disabled:opacity-50",
             "Prev Item"
           }
           button {
             disabled: "{*pagination.prev_page_disabled.read()}",
             onclick: move |_| prev_page(),
-            class: "rounded-md bg-gray-300 text-gray-700 py-2 px-4 hover:bg-gray-400 disabled:opacity-50",
+            class: "rounded bg-gray-500 text-white py-2 px-4 hover:bg-gray-800 disabled:opacity-50",
             "Prev Page"
           }
           button {
             disabled: "{*pagination.next_page_disabled.read()}",
             onclick: move |_| next_page(),
-            class: "rounded-md bg-gray-300 text-gray-700 py-2 px-4 hover:bg-gray-400 disabled:opacity-50",
+            class: "rounded bg-gray-500 text-white py-2 px-4 hover:bg-gray-800 disabled:opacity-50",
             "Next Page"
           }
           button {
             disabled: "{*pagination.next_idx_disabled.read()}",
             onclick: move |_| next_idx(),
-            class: "rounded-md bg-gray-300 text-gray-700 py-2 px-4 hover:bg-gray-400 disabled:opacity-50",
+            class: "rounded bg-gray-500 text-white py-2 px-4 hover:bg-gray-800 disabled:opacity-50",
             "Next Item"
           }
         }

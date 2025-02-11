@@ -29,14 +29,13 @@ async fn simulate_submission(delay_ms: u64) -> Result<(), String> {
 pub fn FormsDemo() -> Element {
   let mut toast = use_toast();
   let mut is_async = use_signal(|| true);
-
   let is_submitting = use_signal(|| false);
 
   let on_submit = move |(_event, (submitted_user, is_valid)): (FormEvent, FormResult<User>)| {
     if is_submitting() {
       return;
     }
-  
+
     spawn(async move {
       if !is_valid {
         toast.write().popup(
@@ -69,7 +68,6 @@ pub fn FormsDemo() -> Element {
           );
         }
       }
-
     });
   };
 
@@ -79,30 +77,30 @@ pub fn FormsDemo() -> Element {
 
   let async_class = tw_join!(
     mode_button_base.clone(),
-    if is_async() { "bg-blue-500 text-white" } else { "bg-gray-200" }
+    if is_async() { "bg-blue-600 text-white shadow-md hover:shadow-lg hover:bg-blue-500" } else { "bg-gray-700 text-gray-300 hover:bg-gray-600" }
   );
 
   let sync_class = tw_join!(
     mode_button_base,
-    if !is_async() { "bg-blue-500 text-white" } else { "bg-gray-200" }
+    if !is_async() { "bg-blue-600 text-white shadow-md hover:shadow-lg hover:bg-blue-500" } else { "bg-gray-700 text-gray-300 hover:bg-gray-600" }
   );
 
   rsx! {
     div {
-      class: "max-w-4xl mx-auto p-6",
+      class: "max-w-4xl mx-auto p-6 bg-gray-900 text-gray-100 rounded-lg shadow-lg",
       div {
         class: "mb-8",
         h1 {
-          class: "text-3xl font-bold mb-2",
+          class: "text-gray-800 text-3xl font-bold mb-2",
           "Maestro Forms Demo"
         }
         p {
-          class: "text-gray-600",
+          class: "text-gray-500",
           "A comprehensive demonstration of form handling with simulation mode."
         }
 
         div {
-          class: "mt-4 space-x-2",
+          class: "mt-4 space-x-2 flex",
           button {
             class: "{async_class}",
             onclick: move |_| is_async.set(true),

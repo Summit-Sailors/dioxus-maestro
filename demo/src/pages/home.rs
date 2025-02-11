@@ -9,10 +9,10 @@ use {
 pub fn HomePage() -> Element {
   rsx! {
     div { class: "text-center py-16",
-      h1 { class: "text-5xl font-extrabold text-gray-900",
+      h1 { class: "text-3xl text-white font-extrabold",
         "Welcome to the Maestro Demo App"
       }
-      p { class: "mt-4 text-lg text-gray-600",
+      p { class: "mt-4 text-lg text-gray-500",
         "Explore the capabilities of our components and utilities."
       }
       div { class: "mt-8 grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",

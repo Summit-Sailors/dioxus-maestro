@@ -15,19 +15,19 @@ pub fn Layout(children: Element) -> Element {
   let toast = use_init_toast_ctx();
   let mut menu_open = use_signal(|| false);
   let current_route = use_route::<Route>();
-  
+
   let content = rsx! {
     match current_route {
       Route::HomePage {} => rsx!{ Outlet<Route> {} },
       _ => rsx! {
-        div {
-          class: "mt-8 items-stretch",
-          CodeEditor {
-            title: current_route.name(),
-            code: get_source_code(&current_route),
-            demo: rsx!{ Outlet<Route> {} },
+          div {
+            class: "mt-8 flex flex-1",
+            CodeEditor {
+              title: current_route.name(),
+              code: get_source_code(&current_route),
+              demo: rsx!{ Outlet<Route> {} },
+            }
           }
-        }
       }
     }
   };
@@ -41,7 +41,7 @@ pub fn Layout(children: Element) -> Element {
     ToastFrame { manager: toast }
     
     div {
-      class: "min-h-screen w-full bg-gray-50 flex flex-col relative",
+      class: "min-h-screen flex flex-col relative",
       
       div {
         class: "lg:hidden top-0 left-0 w-full h-24 bg-gray-900 z-40 mb-8",
@@ -64,44 +64,39 @@ pub fn Layout(children: Element) -> Element {
       }
       
       div {
+        class: "flex flex-1",
+        
+        // sidebar
         nav {
           class: tw_join!(
             "fixed inset-y-0 left-0 z-50",
             "w-64 bg-gray-800",
             "transform transition-transform duration-300 ease-in-out",
-            "absolute md:relative",
-            if !menu_open() { 
-              "hidden lg:block"
-            } else {
-              "block"
-            }
+            if !menu_open() { "hidden lg:block" } else { "block" }
           ),
-          NavigationMenu {
-            close_menu: menu_open
-          }
+          NavigationMenu { close_menu: menu_open }
         }        
         
+        // main Content
         main {
           class: tw_join!(
-            "flex flex-col transition-all duration-300",
+            "flex-1 flex flex-col transition-all duration-300",
             "w-full max-w-full overflow-hidden",
-            "ml-0 md:ml-64",
-            "mt-16 lg:mt-0"
+            "ml-0 md:ml-64"
           ),
-        
+          
           if menu_open() {
             div {
               class: "fixed inset-0 bg-black/50 z-30 md:hidden transition-opacity duration-300",
               onclick: move |_| menu_open.set(false)
             }
           }
-        
+          
           div {
-            class: "container mx-auto max-w-7xl px-0 sm:px-4 h-full",
+            class: "container mx-auto px-4 sm:px-4 h-full flex-1",
             {content}
           }
         }
-        
       }
     }
   }

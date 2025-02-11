@@ -75,30 +75,30 @@ pub fn RadioDemo() -> Element {
       }
 
       div { 
-        class: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6",
+        class: "grid grid-cols-1 lg:grid-cols-3 gap-3",
         
         div { 
-          class: "bg-white p-6 rounded-xl shadow-lg border border-gray-200",
+          class: "bg-white p-4 rounded-xl shadow-lg border border-gray-200",
           h2 { 
-            class: "text-xl font-semibold mb-4",
+            class: "text-xl text-gray-800 text-center font-semibold mb-4",
             "Counter Controls"
           }
           CounterControls {}
         }
 
         div { 
-          class: "bg-white p-6 rounded-xl shadow-lg border border-gray-200",
+          class: "bg-white p-4 rounded-xl shadow-lg border border-gray-200",
           h2 { 
-            class: "text-xl font-semibold mb-4",
+            class: "text-xl text-gray-800 text-center font-semibold mb-4",
             "Counter Display"
           }
           CounterDisplay {}
         }
 
         div { 
-          class: "lg:col-span-3 bg-white p-6 rounded-xl shadow-lg border border-gray-200",
+          class: "lg:col-span-3 bg-white p-4 rounded-xl shadow-lg border border-gray-200",
           h2 { 
-            class: "text-xl font-semibold mb-4",
+            class: "text-xl text-gray-800 text-center font-semibold mb-4",
             "Channel Monitor"
           }
           ChannelMonitor {}

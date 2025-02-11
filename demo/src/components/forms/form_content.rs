@@ -15,8 +15,8 @@ pub fn FormContent(props: InnerComponentProps<User>) -> Element {
   let roles = Role::VARIANTS.iter().map(|&s| s.to_string()).collect::<Vec<_>>();
 
   let input_class = tw_join!(
-    "w-full p-2 rounded-md border border-gray-300 shadow-sm",
-    "focus:ring-2 focus:ring-blue-400 focus:outline-none placeholder-opacity-50"
+    "w-full p-2 rounded-md border border-gray-700 bg-gray-800 text-gray-100",
+    "focus:ring-2 focus:ring-blue-400 focus:outline-none placeholder-gray-400"
   );
 
   rsx! {
@@ -41,7 +41,7 @@ pub fn FormContent(props: InnerComponentProps<User>) -> Element {
         field: props.form.get_form_field("email".to_string()),
         show_validation: true,
         required: Some(true),
-        help_text: Some("Enter a avlid email address".into()),
+        help_text: Some("Enter a valid email address".into()),
         TextFormInput::<User> {
           name: "email",
           placeholder: "Enter your email address",
@@ -74,7 +74,7 @@ pub fn FormContent(props: InnerComponentProps<User>) -> Element {
           name: "role",
           values: roles.clone(),
           labels: Some(roles),
-          class: "w-full p-2 rounded-md border border-gray-300 focus:ring focus:ring-blue-300 focus:outline-none",
+          class: "w-full p-2 rounded-md border border-gray-700 bg-gray-800 text-gray-100 focus:ring focus:ring-blue-400 focus:outline-none",
           disabled: *props.form.is_submitting.read()
         }
       }
@@ -87,9 +87,9 @@ pub fn FormContent(props: InnerComponentProps<User>) -> Element {
         class: tw_join!(
           "mt-4 py-2 rounded-md text-white font-semibold transition-all duration-200",
           if *props.form.is_submitting.read() {
-            "bg-gray-400 cursor-not-allowed opacity-70"
+            "bg-gray-500 cursor-not-allowed opacity-70"
           } else {
-            "bg-blue-500 hover:bg-blue-600 transform hover:scale-105"
+            "bg-blue-600 hover:bg-blue-500 hover:shadow-lg transform hover:scale-105"
           }
         ),
         if *props.form.is_submitting.read() {

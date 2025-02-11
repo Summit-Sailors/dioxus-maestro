@@ -1,8 +1,5 @@
 use {
-  async_std::task::sleep,
-  dioxus::prelude::*,
-  dioxus_free_icons::{icons::fa_solid_icons::{FaCompress, FaCopy, FaExpand}, Icon},
-  maestro_hooks::clipboard::use_clipboard, tailwind_fuse::tw_join,
+  async_std::task::sleep, dioxus::prelude::*, dioxus_free_icons::{icons::fa_solid_icons::{FaCopy, FaMaximize, FaMinimize}, Icon}, maestro_hooks::clipboard::use_clipboard, tailwind_fuse::tw_join
 };
 
 #[derive(Props, PartialEq, Clone)]
@@ -19,7 +16,7 @@ pub struct CodeEditorProps {
 
 #[component]
 pub fn CodeEditor(props: CodeEditorProps) -> Element {
-  let code = use_signal(|| props.code.clone());
+  let mut code = use_signal(|| props.code.clone());
   let mut is_expanded = use_signal(|| false);
   let clipboard = use_clipboard();
   let mut copy_status = use_signal(|| String::new());
@@ -42,20 +39,22 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
     });
   };
 
+  let handle_change = move |new_code: String| {
+    code.set(new_code); // code in editor replaced with the new code
+    // in case of any edits, replace the old code with the new code sample, run the new code and render results as the new component for the demo
+  };
+
   let toggle_expanded = move |_| {
     is_expanded.set(!is_expanded());
   };
-  
+
   rsx! {
     div {
-      class: tw_join!(
-        "p-2 bg-gray-800 rounded-lg",
-        "mt-4 sm:mt-8 mb-8",
-      ),
-    
+      class: "p-2 bg-gray-800 rounded-lg mt-4 sm:mt-8 mb-8 w-full",
+      
       // header section
       div {
-        class: "flex items-center justify-between text-white",
+        class: "flex items-center justify-between text-white sticky",
         h2 { class: "text-xl font-semibold", "{props.title}" }
         div {
           class: "flex space-x-2",
@@ -64,11 +63,7 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
             disabled: "{is_copying()}",
             onclick: handle_copy,
             title: "Copy Code",
-            Icon {
-              icon: FaCopy,
-              width: 20,
-              height: 20,
-            }
+            Icon { icon: FaCopy, width: 20, height: 20 }
             div {
               class: tw_join!("absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs py-1 px-2 rounded transition-opacity duration-300 {}", 
                 if copy_status().is_empty() { "opacity-0" } else { "opacity-100" }
@@ -82,9 +77,9 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
             title: if is_expanded() { "Collapse Code" } else { "Expand Code" },
             {
               if is_expanded() {
-                rsx! { Icon { icon: FaCompress, width: 20, height: 20 } }
+                rsx! { Icon { icon: FaMaximize, width: 20, height: 20 } }
               } else {
-                rsx! { Icon { icon: FaExpand, width: 20, height: 20 } }
+                rsx! { Icon { icon: FaMinimize, width: 20, height: 20 } }
               }
             }
           }
@@ -92,12 +87,9 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
       }    
 
       div {
-        class: tw_join!("grid gap-4 transition-all duration-500 ease-in-out", 
-          if is_expanded() { 
-            "lg:grid-cols-2 grid-cols-1"
-          } else { 
-            "grid-cols-1" 
-          }
+        class: tw_join!(
+          "grid gap-4 transition-all duration-500 ease-in-out", 
+          if is_expanded() { "lg:grid-cols-2 grid-cols-1" } else { "grid-cols-1" }
         ),
         
         // demo component section
@@ -108,21 +100,12 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
 
         // code section
         if is_expanded() {
-          h2 {  
-            class: "text-xl font-semibold items-stretch text-center",
-            "Source code"
-          }
+          h2 { class: "text-xl font-semibold text-center mt-4", "Source Code" }
           div {
-            class: "bg-gray-900 rounded-lg shadow-md border border-gray-700 overflow-hidden transition-all duration-500 ease-in-out p-4 mt-4 sm:mt-8",
+            class: "bg-gray-900 rounded-lg shadow-md border border-gray-700 overflow-hidden p-4",
             div {
-              class: "max-h-96 overflow-y-auto",
-              pre {
-                class: "text-gray-100 overflow-x-auto",
-                code {
-                  class: "language-{props.language} font-mono text-sm whitespace-pre",
-                  "{code}"
-                }
-              }
+              class: "text-white font-mono text-sm overflow-auto",
+              pre { "{props.code}" }
             }
           }
         }

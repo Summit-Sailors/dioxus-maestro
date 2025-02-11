@@ -35,9 +35,7 @@ pub fn CalendarDemo() -> Element {
   ]);
 
     rsx! {
-      div { 
-        class: "flex flex-col items-center justify-center space-y-10 max-w-full sm:max-w-5xl mx-auto py-12 px-4 sm:px-6 md:px-8 bg-gray-50 rounded-lg shadow-lg",
-        
+      div {
         h1 { 
           class: "text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mb-8 text-center", 
           "Maestro UI Calendar Demos" 
@@ -48,7 +46,7 @@ pub fn CalendarDemo() -> Element {
           description: "Fully configurable calendar with display and selection controls",
           
           div {
-            class: "flex flex-col items-center w-full",
+            class: "overflow-auto",
             Calendar {
               display_props: CalendarDisplayProps::builder()
                 .display_month(basic_display_month)
@@ -66,18 +64,18 @@ pub fn CalendarDemo() -> Element {
           }
       
           div {
-            class: "mt-4 flex flex-wrap justify-center space-x-3",
+            class: "p-2 space-y-2 space-x-1",
             Button {
               variant: ButtonVariant::Outline,
-              class: "px-4 py-2 border rounded-lg shadow-sm hover:shadow-md transition hover:bg-gray-200",
+              class: "px-4 py-2 border text-gray-500 rounded-lg shadow-sm hover:shadow-md transition hover:bg-gray-200",
               on_click: move |_| {
                 basic_display_month.set(basic_display_month().prev());
               },
-              "Previous Month"
+              "Prev Month"
             }
             Button {
               variant: ButtonVariant::Outline,
-              class: "px-4 py-2 border rounded-lg shadow-sm hover:shadow-md transition hover:bg-gray-200",
+              class: "px-4 py-2 border text-gray-500 rounded-lg shadow-sm hover:shadow-md transition hover:bg-gray-200",
               on_click: move |_| {
                 basic_display_month.set(basic_display_month().next());
               },
@@ -116,7 +114,7 @@ pub fn CalendarDemo() -> Element {
             }
             
             div { 
-              class: "mt-4 text-sm text-gray-600 text-center",
+              class: "mt-4 text-sm sm:text:xs text-gray-600 text-center",
               {format!("Allowed date range: {} to {}", 
                 min_date.format("%Y-%m-%d"), 
                 max_date.format("%Y-%m-%d"))}
@@ -146,9 +144,9 @@ pub fn CalendarDemo() -> Element {
               {events.read().iter().map(|event| {
                 rsx! {
                   div { 
-                    class: "flex flex-wrap items-center space-x-3 text-gray-800 justify-center",
+                    class: "flex flex-wrap items-center text-center space-x-2 text-gray-800 justify-center",
                     div { 
-                      class: "w-3 h-3 rounded-full", 
+                      class: "w-2 h-2 rounded-full", 
                       style: format!("background-color: {}", event.color.clone().unwrap_or_default())
                     }
                     span { 

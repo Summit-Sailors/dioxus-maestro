@@ -51,7 +51,7 @@ pub fn BasicQueryDemo() -> Element {
 
   rsx! {
     div { class: "container mx-auto p-4",
-      h2 { class: "text-2xl font-bold mb-4", "Users List" }
+      h2 { class: "text-2xl text-gray-800 font-bold mb-4", "Users List" }
 
       Button {
         class: "bg-blue-500 text-white px-4 py-2 rounded mb-4",
@@ -178,7 +178,7 @@ pub fn CacheDemo() -> Element {
 
   rsx! {
     div { class: "p-4 border rounded mt-4",
-      h3 { class: "text-xl font-bold mb-4", "Cache Demonstration" }
+      h3 { class: "text-xl text-gray-800 font-bold mb-4", "Cache Demonstration" }
       
       div { class: "mb-4",
         p {
@@ -384,7 +384,7 @@ pub fn ParallelQueriesDemo() -> Element {
 pub fn CompleteQueryDemo() -> Element {
   rsx! {
     div { 
-      class: "min-h-screen w-full flex flex-col items-center justify-start",
+      class: "min-h-screen w-full flex",
       
       div { 
         class: "w-full max-w-4xl px-4 py-8",
@@ -392,7 +392,7 @@ pub fn CompleteQueryDemo() -> Element {
         div { 
           class: "text-center mb-8",
           h1 { 
-            class: "text-3xl font-bold",
+            class: "text-3xl font-bold text-gray-800",
             "Maestro Query Demonstrations" 
           }
         }
@@ -402,7 +402,7 @@ pub fn CompleteQueryDemo() -> Element {
           
           // Users Demo
           div { 
-            class: "w-full",
+            class: "w-full items-stretch items-center",
             BasicQueryDemo {}
           }
           
