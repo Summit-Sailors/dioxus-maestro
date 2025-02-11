@@ -29,20 +29,23 @@ where
 
   rsx! {
     div {
-      class: "mt-8 p-6 bg-gray-900 text-white rounded-lg shadow-md",
-      Button {
-        button_type: ButtonType::Button,
-        class: "text-sm font-medium text-gray-300 hover:text-gray-100 transition",
-        on_click: move |_| show_debug.set(!show_debug()),
-        if show_debug() { "Hide Form State" } else { "Show Form State" }
+      class: "grid flex justify-center mb-8 p-2 bg-gray-900 text-white rounded-lg shadow-md",
+      div {
+        class: "grid flex justify-center text-gray-300 hover:text-gray-100 transition mb-8",
+        Button {
+          button_type: ButtonType::Button,
+          on_click: move |_| show_debug.set(!show_debug()),
+          if show_debug() { "Hide Form State" } else { "Show Form State" }
+        }
       }
+      
       if show_debug() {
         div {
           class: "mt-6 space-y-4",
           
           // form status grid
           div {
-            class: "grid grid-cols-2 md:grid-cols-3 gap-4",
+            class: "grid grid-cols-1 md:grid-cols-3 gap-4",
             {[
               ("Is Valid", *form.is_valid.read(),
                 (|v: bool| v.then_some("text-green-500").unwrap_or("text-red-500")) as ClassFn),
@@ -54,7 +57,7 @@ where
                 (|_: bool| "text-red-500") as ClassFn)
             ].iter().map(|(label, value, class_fn)| rsx! {
               div {
-                class: "p-3 bg-gray-800 rounded-lg",
+                class: "p-4 bg-gray-700 rounded-lg",
                 span { class: "font-semibold", "{label}: " }
                 span {
                   class: tw_join!(class_fn(*value)),
@@ -67,7 +70,7 @@ where
           // field values
           div {
             class: "mt-4",
-            h3 { class: "font-semibold mb-3 text-gray-300", "Field Values:" }
+            h3 { class: "font-semibold mb-3 text-gray-500", "Field Values:" }
             div {
               class: "space-y-2",
               {form.name_to_id_map.read().keys().map(|name| {
@@ -106,7 +109,7 @@ where
           // complete form state
           div {
             class: "mt-4",
-            h3 { class: "font-semibold mb-3 text-gray-300", "Complete Form State:" }
+            h3 { class: "font-semibold mb-3 text-gray-500", "Complete Form State:" }
             pre {
               class: "p-4 bg-gray-800 text-gray-200 rounded-lg overflow-auto max-h-96",
               code {

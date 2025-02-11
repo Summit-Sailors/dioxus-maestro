@@ -87,29 +87,29 @@ pub fn FormsDemo() -> Element {
 
   rsx! {
     div {
-      class: "max-w-4xl mx-auto p-6 bg-gray-900 text-gray-100 rounded-lg shadow-lg",
+      class: "max-w-4xl mx-auto p-6 bg-white text-gray-100 rounded-lg shadow-lg",
       div {
         class: "mb-8",
         h1 {
-          class: "text-gray-800 text-3xl font-bold mb-2",
+          class: "text-gray-800 text-center text-3xl font-bold mb-2",
           "Maestro Forms Demo"
         }
         p {
-          class: "text-gray-500",
+          class: "text-gray-500 text-center",
           "A comprehensive demonstration of form handling with simulation mode."
         }
 
         div {
-          class: "mt-4 space-x-2 flex",
+          class: "grid justify-center grid-cols-2 mt-4 space-x-2 flex",
           button {
             class: "{async_class}",
             onclick: move |_| is_async.set(true),
-            "Async Mode"
+            "Async"
           }
           button {
             class: "{sync_class}",
             onclick: move |_| is_async.set(false),
-            "Sync Mode"
+            "Sync"
           }
         }
       }

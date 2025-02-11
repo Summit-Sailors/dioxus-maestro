@@ -45,23 +45,23 @@ pub fn HooksDemo() -> Element {
 
   rsx! {
     div {
-      class: "hooks-demo bg-[#1E1E1E] text-white p-6 rounded-lg shadow-lg space-y-8",
+      class: "hooks-demo max-w-lg mx-auto bg-gray-200 p-6 rounded-lg shadow-lg space-y-6",
 
       // clipboard section
       section {
-        class: "clipboard-demo bg-[#252526] p-4 rounded-lg shadow",
+        class: "clipboard-demo bg-white p-6 rounded-lg shadow border border-gray-300",
 
-        h2 { class: "text-lg text-gray-800 font-bold mb-3", "Clipboard Hook Demo" }
+        h2 { class: "text-lg text-gray-800 text-center font-bold mb-4", "Clipboard Hook Demo" }
         
         input {
-          class: "border border-gray-500 text-gray-800 bg-[#3C3C3C] rounded px-3 py-2 shadow-sm w-full focus:ring focus:ring-blue-500",
+          class: "border border-gray-400 text-gray-800 w-full rounded px-3 py-2 shadow-sm focus:ring focus:ring-blue-500",
           placeholder: "Type something to copy",
           value: "{clipboard_content}",
           oninput: move |e| clipboard_content.set(e.value().clone()),
         },
 
         div {
-          class: "flex space-x-4 mt-4",
+          class: "flex space-x-4 mt-4 justify-center",
           button {
             onclick: move |_| {
               let content = clipboard_content();
@@ -75,7 +75,7 @@ pub fn HooksDemo() -> Element {
               });
             },
             class: "rounded bg-blue-600 text-white py-2 px-4 hover:bg-blue-700",
-            "Copy to Clipboard"
+            "Copy"
           },
           button {
             onclick: move |_| {
@@ -91,62 +91,56 @@ pub fn HooksDemo() -> Element {
               });
             },
             class: "rounded bg-green-500 text-white py-2 px-4 hover:bg-green-700",
-            "Paste from Clipboard"
+            "Paste"
           }
         }
 
-        p { class: "mt-2 text-sm text-gray-400", "{copy_status}" }
+        p { class: "mt-2 text-sm text-gray-500 text-center", "{copy_status}" }
       }
 
       // memo section
       section {
-        class: "memo-demo bg-[#252526] p-4 rounded-lg shadow",
-        h2 { class: "text-lg text-gray-800 font-bold mb-3", "Explicit Memo Hook Demo" }
+        class: "memo-demo bg-white p-6 rounded-lg shadow border border-gray-300",
+
+        h2 { class: "text-lg text-center text-gray-800 font-bold mb-4", "Explicit Memo Hook Demo" }
         
         div {
-          class: "flex space-x-4 mb-4",
+          class: "flex space-x-4 justify-center mb-8",
           button {
-            onclick: move |_| {
-              let current = total_items();
-              total_items.set(current + 10);
-            },
-            class: "rounded bg-blue-600 text-white py-2 px-4 hover:bg-blue-700",
-            "Add 10 Items"
+            onclick: move |_| total_items.set(total_items() + 10),
+            class: "rounded bg-blue-500 text-white py-2 px-4 hover:bg-blue-700",
+            "+10"
           }
           button {
-            onclick: move |_| {
-              let current = total_items();
-              total_items.set((current - 10).max(1));
-            },
+            onclick: move |_| total_items.set((total_items() - 10).max(1)),
             class: "rounded bg-red-500 text-white py-2 px-4 hover:bg-red-700",
-            "Remove 10 Items"
+            "-10"
           }
         }
 
         div {
-          class: "bg-[#3C3C3C] p-4 rounded-md shadow-inner text-gray-800",
-          p { class: "font-medium", "Total Items: {total_items}" }
-          p { class: "font-medium mt-2", "Memoized Result: {expensive_computation}" }
+          class: "bg-gray-800 p-2 rounded-md text-center shadow-inner",
+          p { class: "font-medium text-gray-300", "Total Items: " span { class: "text-yellow-500 font-bold", "{total_items}" } }
+          p { class: "font-medium text-gray-300 mt-2", "Memoized Result: " span { class: "text-yellow-500 font-bold", "{expensive_computation}" } }
         }
       }
 
       // pagination section
       section {
-        class: "pagination-demo bg-[#252526] p-4 rounded-lg shadow text-gray-800",
-        h2 { class: "text-lg font-bold mb-3", "Pagination Hook Demo" }
+        class: "pagination-demo bg-white p-6 rounded-lg shadow border border-gray-300",
+
+        h2 { class: "text-lg font-bold text-gray-800 text-center mb-4", "Pagination Hook Demo" }
 
         div {
-          class: "border-b border-gray-600 pb-4 mb-6",
-          p { class: "mb-2", "Current Page: {*pagination.page.read() + 1}" }
-          p { class: "mb-2", "Items per page: {*pagination.page_size.read()}" }
-          p {
-            "Total Pages: {((*total_items.read() as f64) / (*pagination.page_size.read() as f64)).ceil() as i32}"
-          }
-          p { "Current Index: {*pagination.idx.read()}" }
+          class: "border-b border-gray-500 text-center pb-4 mb-6",
+          p { class: "mb-2 text-gray-500", "Current Page: " span { class: "text-yellow-500 font-bold", "{*pagination.page.read() + 1}" } }
+          p { class: "mb-2 text-gray-500", "Items per page: " span { class: "text-yellow-500 font-bold", "{*pagination.page_size.read()}" } }
+          p { class: "text-gray-500", "Total Pages: " span { class: "text-yellow-500 font-bold", "{((*total_items.read() as f64) / (*pagination.page_size.read() as f64)).ceil() as i32}" } }
+          p { class: "text-gray-500", "Current Index: " span { class: "text-yellow-500 font-bold", "{*pagination.idx.read()}" } }
         }
 
         div {
-          class: "grid grid-cols-4 gap-2",
+          class: "grid grid-cols-3 gap-2",
           {
             let start_idx = *pagination.idx.read();
             let page_size = *pagination.page_size.read();
@@ -157,7 +151,7 @@ pub fn HooksDemo() -> Element {
               .map(|item| {
                 rsx! {
                   div {
-                    class: "border rounded p-2 bg-[#3C3C3C] shadow-sm text-center text-gray-800",
+                    class: "border rounded sm:col-span-2 p-2 bg-gray-700 shadow-sm text-center",
                     key: "{item}",
                     "Item {item}"
                   }
@@ -166,31 +160,33 @@ pub fn HooksDemo() -> Element {
           }
         }
 
+        hr { class:"border border-gray-700 mt-4 w-full", }
+
         div {
-          class: "flex space-x-2 mt-4 items-center",
+          class: "flex space-x-2 mt-4 justify-center",
           button {
             disabled: "{*pagination.prev_idx_disabled.read()}",
             onclick: move |_| prev_idx(),
             class: "rounded bg-gray-500 text-white py-2 px-4 hover:bg-gray-800 disabled:opacity-50",
-            "Prev Item"
+            "<"
           }
           button {
             disabled: "{*pagination.prev_page_disabled.read()}",
             onclick: move |_| prev_page(),
             class: "rounded bg-gray-500 text-white py-2 px-4 hover:bg-gray-800 disabled:opacity-50",
-            "Prev Page"
+            "<<"
           }
           button {
             disabled: "{*pagination.next_page_disabled.read()}",
             onclick: move |_| next_page(),
             class: "rounded bg-gray-500 text-white py-2 px-4 hover:bg-gray-800 disabled:opacity-50",
-            "Next Page"
+            ">>"
           }
           button {
             disabled: "{*pagination.next_idx_disabled.read()}",
             onclick: move |_| next_idx(),
             class: "rounded bg-gray-500 text-white py-2 px-4 hover:bg-gray-800 disabled:opacity-50",
-            "Next Item"
+            ">"
           }
         }
       }

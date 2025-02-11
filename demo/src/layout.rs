@@ -47,7 +47,7 @@ pub fn Layout(children: Element) -> Element {
         class: "lg:hidden top-0 left-0 w-full h-24 bg-gray-900 z-40 mb-8",
         
         button {
-          class: "absolute left-0 right-0 mx-auto max-w-md flex text-white bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-600",
+          class: "fixed left-0 right-0 mx-auto max-w-md flex text-white bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-600",
           onclick: move |_| menu_open.set(!menu_open()),
           
           div {

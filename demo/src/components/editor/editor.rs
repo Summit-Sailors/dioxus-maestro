@@ -1,5 +1,9 @@
 use {
-  async_std::task::sleep, dioxus::prelude::*, dioxus_free_icons::{icons::fa_solid_icons::{FaCopy, FaMaximize, FaMinimize}, Icon}, maestro_hooks::clipboard::use_clipboard, tailwind_fuse::tw_join
+  async_std::task::sleep, 
+  dioxus::prelude::*, 
+  dioxus_free_icons::{icons::fa_solid_icons::{FaCopy, FaMaximize, FaMinimize}, Icon}, 
+  maestro_hooks::clipboard::use_clipboard, 
+  tailwind_fuse::tw_join
 };
 
 #[derive(Props, PartialEq, Clone)]
@@ -50,11 +54,11 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
 
   rsx! {
     div {
-      class: "p-2 bg-gray-800 rounded-lg mt-4 sm:mt-8 mb-8 w-full",
-      
+      class: "h-screen p-2 bg-gray-800 rounded-lg mt-4 sm:mt-8 mb-8 w-full flex flex-col",
+
       // header section
       div {
-        class: "flex items-center justify-between text-white sticky",
+        class: "flex items-center justify-between text-white fixe top-0 z-10 bg-gray-800 p-2",
         h2 { class: "text-xl font-semibold", "{props.title}" }
         div {
           class: "flex space-x-2",
@@ -86,26 +90,28 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
         }
       }    
 
+      // scrollable container for demo and code
       div {
         class: tw_join!(
-          "grid gap-4 transition-all duration-500 ease-in-out", 
-          if is_expanded() { "lg:grid-cols-2 grid-cols-1" } else { "grid-cols-1" }
+          "grid grid-cols-1 overflow-auto transition-all duration-500 ease-in-out",
+          if is_expanded() { "md:grid-cols-2" } else { "grid-cols-1" }
         ),
-        
         // demo component section
         div {
-          class: "bg-gray-300 max-h-screen p-6 rounded-lg shadow-md border border-gray-200 mt-4",
+          class: "bg-gray-300 overflow-auto p-6 rounded-lg shadow-md border border-gray-200 mt-4",
           {props.demo}
         }
-
         // code section
         if is_expanded() {
-          h2 { class: "text-xl font-semibold text-center mt-4", "Source Code" }
           div {
-            class: "bg-gray-900 rounded-lg shadow-md border border-gray-700 overflow-hidden p-4",
+            class: "overflow-hidden",
+            h2 { class: "text-xl font-semibold text-center mt-4", "Source Code" }
             div {
-              class: "text-white font-mono text-sm overflow-auto",
-              pre { "{props.code}" }
+              class: "h-screen overflow-y-auto bg-gray-900 rounded-lg shadow-md border border-gray-700 overflow-hidden p-4",
+              div {
+                class: "text-white font-mono text-sm overflow-auto",
+                pre { "{props.code}" }
+              }
             }
           }
         }

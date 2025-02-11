@@ -5,11 +5,10 @@ use {
   }, async_std::sync::RwLock, dioxus::{fullstack::once_cell, prelude::*}, maestro_forms::fields::
     form::{
       Form, FormResult
-    }
-  , maestro_query::prelude::*, maestro_ui::button::
+    }, maestro_query::prelude::*, maestro_ui::button::
     Button, std::{
     collections::HashMap, fmt::Error, sync::Arc
-  }, validator::Validate
+  }, tailwind_fuse::tw_join, validator::Validate
 };
 
 // simulated backend storage
@@ -43,6 +42,7 @@ pub fn BasicQueryDemo() -> Element {
   let handle_delete = move |username: String| {
     delete_mutation.mutate(username);
     if delete_mutation.result().is_ok() {
+      println!("invalidating cache");
       query_client.invalidate_query(String::from("users"));
     }
   };
@@ -50,55 +50,62 @@ pub fn BasicQueryDemo() -> Element {
   let mut show_form = use_signal(|| false);
 
   rsx! {
-    div { class: "container mx-auto p-4",
-      h2 { class: "text-2xl text-gray-800 font-bold mb-4", "Users List" }
+    div { 
+      class: "border bg-white rounded shadow-md p-4",
+      h2 { class: "text-2xl text-gray-800 text-center font-bold mb-4", "Users List" }
 
-      Button {
-        class: "bg-blue-500 text-white px-4 py-2 rounded mb-4",
-        on_click: move |_| {
-          let current_show_form = show_form();
-          show_form.set(!current_show_form);
-        },
-        if show_form() { "Hide Form" } else { "Add User" }
+      div {
+        class: "grid grid-cols-6 flex justify-center mt-2",
+        Button {
+          class: "bg-blue-500 text-white rounded mb-4",
+          on_click: move |_| {
+            let current_show_form = show_form();
+            show_form.set(!current_show_form);
+          },
+          if show_form() { "Hide Form" } else { "Add User" }
+        }
       }
 
-      if show_form() {
-        {log::info!("Rendering form");}
-        OptimisticUserForm {
-          on_success: move |_| {
-            show_form.set(false);
-            query_client.invalidate_query(String::from("users"));
+      div {
+        if show_form() {
+          OptimisticUserForm {
+            on_success: move |_| {
+              show_form.set(false);
+              query_client.invalidate_query(String::from("users"));
+            }
           }
         }
       }
 
-      {match users_query.result().value() {
-        QueryResult::Loading(_) => rsx!{ div { class: "text-gray-500", "Loading users..." } },
-        QueryResult::Err(e) => rsx!{ div { class: "text-red-500", "Error: {e:?}" } },
-        QueryResult::Ok(users) => rsx!{
-          div { class: "grid gap-4",
-            {users.iter().map(|user| {
-              let user = user.clone();
-              rsx!(
-                div {
-                  key: "{user.username}",
-                  class: "border p-4 rounded shadow-md bg-white",
-                  p { class: "font-semibold", "Username: {user.username}" }
-                  p { "Email: {user.email}" }
-                  p { "Age: {user.age}" }
-                  p { "Role: {user.role}" }
-                  button {
-                    class: "mt-2",
-                    r#type: "button",
-                    onclick: move |_| handle_delete(user.username.clone()),
-                    "Delete User"
+      div {  
+        {match users_query.result().value() {
+          QueryResult::Loading(_) => rsx!{ div { class: "text-gray-500", "Loading users..." } },
+          QueryResult::Err(e) => rsx!{ div { class: "text-red-500", "Error: {e:?}" } },
+          QueryResult::Ok(users) => rsx!{
+            div { class: "grid gap-4 text-gray-800 bg-white",
+              {users.iter().map(|user| {
+                let user = user.clone();
+                rsx!(
+                  div {
+                    key: "{user.username}",
+                    class: "border p-4 rounded shadow-md-md bg-white",
+                    p { class: "font-semibold", "Username: {user.username}" }
+                    p { "Email: {user.email}" }
+                    p { "Age: {user.age}" }
+                    p { "Role: {user.role}" }
+                    button {
+                      class: "mt-2 bg-red-500 hover:bg-red-700 rounded border",
+                      r#type: "button",
+                      onclick: move |_| handle_delete(user.username.clone()),
+                      "Delete User"
+                    }
                   }
-                }
-              )
-            })}
+                )
+              })}
+            }
           }
-        }
-      }}
+        }}
+      } 
     }
   }
 }
@@ -177,11 +184,13 @@ pub fn CacheDemo() -> Element {
   };
 
   rsx! {
-    div { class: "p-4 border rounded mt-4",
-      h3 { class: "text-xl text-gray-800 font-bold mb-4", "Cache Demonstration" }
+    div { class: "grid flex justify-center p-4 border bg-white shadow-md rounded mt-4",
+      h3 { class: "text-xl text-gray-800 text-center font-bold mb-4", "Cache Demonstration" }
       
-      div { class: "mb-4",
+      div { 
+        class: "mb-4 text-center font-bold",
         p {
+          class: "text-gray-700",
           "Cache Status: ",
           if cached_query.result().is_fresh() {
             span { class: "text-green-500", "Fresh" }
@@ -189,7 +198,9 @@ pub fn CacheDemo() -> Element {
             span { class: "text-yellow-500", "Stale" }
           }
         }
-        p { "Query Status: ",
+        p {
+          class: "text-gray-700",
+          "Query Status: ",
           if cached_query.result().is_loading() {
             span { class: "text-blue-500", "Loading..." }
           } else {
@@ -198,11 +209,11 @@ pub fn CacheDemo() -> Element {
         }
       }
 
-      div { class: "mb-4",
+      div { class: "mb-4 text-gray-700 font-bold text-center",
         match cached_query.result().value() {
-          QueryResult::Loading(_) => rsx!{ "Fetching data..." },
-          QueryResult::Ok(data) => rsx!{ "Data: {data}" },
-          QueryResult::Err(e) => rsx!{ "Error: {e}" }
+          QueryResult::Loading(_) => rsx!{ span { class: "text-yellow-500", "Fetching data..." } },
+          QueryResult::Ok(data) => rsx!{ "Data:", span{ class: "text-green-500","{data}" }},
+          QueryResult::Err(e) => rsx!{ "Error:", span{ class: "text-red-500"," {e}" }}
         }
       }
 
@@ -241,34 +252,35 @@ pub fn SilentMutationDemo() -> Element {
   };
 
   rsx! {
-    div { class: "p-4 border rounded mt-4",
-      h3 { class: "text-xl font-bold mb-4", "Silent vs Normal Mutations" }
+    div { class: "grid flex justify-center grid-cols-1 text-center p-4 border bg-white rounded mt-4",
+      h3 { class: "text-xl text-gray-700 font-bold mb-4", "Silent vs Normal Mutations" }
       
-      p { class: "mb-4", "Counter: {counter}" }
+      p { class: "mb-4 text-gray-700 font-bold", "Counter:", span{ class: "text-yellow-500 font-bold", "{counter}" }}
       
       div { class: "space-x-2",
-          Button {
-            class: "bg-blue-500 text-white px-4 py-2 rounded",
-            on_click: handle_normal_mutation,
-            "Normal Mutation"
-          }
-          
-          Button {
-            class: "bg-green-500 text-white px-4 py-2 rounded",
-            on_click: handle_silent_mutation,
-            "Silent Mutation"
-          }
-      }
-
-      div { class: "mt-4",
-        "Mutation Status: ",
-        match *silent_mutation.result() {
-          MutationResult::Loading(_) => "Loading...",
-          MutationResult::Ok(_) => "Success",
-          MutationResult::Err(_) => "Error",
-          MutationResult::Pending => "Pending"
+        Button {
+          class: "bg-blue-500 text-white px-4 py-2 rounded",
+          on_click: handle_normal_mutation,
+          "Normal"
+        }
+        
+        Button {
+          class: "bg-green-500 text-white px-4 py-2 rounded",
+          on_click: handle_silent_mutation,
+          "Silent"
         }
       }
+
+      div { 
+        class: "mt-4 text-gray-700 font-semibold",
+        "Mutation Status: ",
+        match *silent_mutation.result() {
+          MutationResult::Loading(_) => rsx! { span { class: "text-yellow-500", "Loading..." } },  
+          MutationResult::Ok(_) => rsx! { span { class: "text-green-500", "Success" } },          
+          MutationResult::Err(_) => rsx! { span { class: "text-red-500", "Error" } },             
+          MutationResult::Pending => rsx! { span { class: "text-gray-500", "Pending" } }          
+        }
+      }    
     }
   }
 }
@@ -277,7 +289,7 @@ pub fn SilentMutationDemo() -> Element {
 #[component]
 pub fn ManualMutationDemo() -> Element {
   let mut status = use_signal(|| "Idle");
-  
+
   let manual_mutation = use_mutation(|value: String| async move {
     async_std::task::sleep(std::time::Duration::from_secs(1)).await;
     MutationResult::<std::string::String, Error>::Ok(value)
@@ -286,7 +298,7 @@ pub fn ManualMutationDemo() -> Element {
   let handle_manual_mutation = move |_| {
     let mutation = manual_mutation.clone();
     status.set("Starting...");
-    
+
     spawn(async move {
       status.set("Processing...");
       mutation.manual_mutate("Test".to_string()).await;
@@ -294,12 +306,22 @@ pub fn ManualMutationDemo() -> Element {
     });
   };
 
+  let status_class = move || {
+    match status() {
+      "Idle" => "text-gray-500",
+      "Starting..." => "text-blue-500",
+      "Processing..." => "text-yellow-500",
+      "Completed!" => "text-green-500",
+      _ => "text-gray-500",
+    }
+  };
+
   rsx! {
-    div { class: "p-4 border rounded mt-4",
-      h3 { class: "text-xl font-bold mb-4", "Manual Mutation Control" }
-      
-      p { class: "mb-4", "Status: {status}" }
-      
+    div { class: "grid flex justify-center bg-white p-4 border rounded mt-4",
+      h3 { class: "text-xl font-bold text-gray-700 text-center mb-4", "Manual Mutation Control" }
+
+      p { class: tw_join!("mb-4 text-center font-semibold", status_class()), "Status: {status}" }
+
       Button {
         class: "bg-blue-500 text-white px-4 py-2 rounded",
         on_click: handle_manual_mutation,
@@ -308,6 +330,7 @@ pub fn ManualMutationDemo() -> Element {
     }
   }
 }
+
 
 
 #[component]
@@ -335,45 +358,68 @@ pub fn ParallelQueriesDemo() -> Element {
   );
 
   rsx! {
-    div { class: "p-4 border rounded mt-4",
-      h3 { class: "text-xl font-bold mb-4", "Parallel Queries with Dependencies" }
-      
-      div { class: "grid grid-cols-2 gap-4",
-        div { class: "p-4 bg-gray-100 rounded",
-          h4 { class: "font-bold mb-2", "Departments" }
-          match departments_query.result().value() {
-            QueryResult::Loading(_) => rsx!{ "Loading departments..." },
-            QueryResult::Ok(deps) => rsx!{
-              ul {
-                {deps.iter().map(|dep| rsx!(
-                  li { key: "{dep}", "{dep}" }
-                ))}
+    div { class: "grid justify-center bg-white p-6 border rounded-lg shadow-md mt-6",
+      div { class: "w-full max-w-4xl",
+        h3 { 
+          class: "text-xl font-bold text-gray-800 text-center mb-6", 
+          "Parallel Queries with Dependencies" 
+        }
+        
+        div { 
+          class: "grid flex grid-cols-2 justify-center gap-6",
+            // departments Section
+            div { 
+              class: "p-5 bg-gray-200 border text-center border-gray-100 rounded-lg shadow-md",
+              h4 { class: "text-lg font-semibold text-gray-700 mb-3", "Departments" }
+              
+              match departments_query.result().value() {
+                QueryResult::Loading(_) => rsx!{ 
+                  p { class: "text-yellow-500 italic", "Loading departments..." } 
+                },
+                QueryResult::Ok(deps) => rsx!{
+                  ul { 
+                    class: "list-disc list-inside text-gray-600",
+                    {deps.iter().map(|dep| rsx!(
+                      li { key: "{dep}", class: "py-1", "{dep}" }
+                    ))}
+                  }
+                },
+                QueryResult::Err(_) => rsx!{ 
+                  p { class: "text-red-500 font-semibold", "Error loading departments" } 
+                }
               }
-            },
-            QueryResult::Err(_) => rsx!{ "Error loading departments" }
-          }
+            }
+
+            // employees Section
+            div { class: "p-5 bg-gray-200 border text-center border-gray-100 rounded-lg shadow-md",
+              h4 { class: "text-lg font-semibold text-gray-700 mb-3", "Employees" }
+              
+              match employees_query.result().value() {
+                QueryResult::Loading(_) => rsx!{ 
+                  p { class: "text-yellow-500 italic", "Loading employees..." } 
+                },
+                QueryResult::Ok(emps) => rsx!{
+                  ul { class: "list-disc list-inside text-gray-600",
+                    {emps.iter().map(|emp| rsx!(
+                      li { key: "{emp}", class: "py-1", "{emp}" }
+                    ))}
+                  }
+                },
+                QueryResult::Err(_) => rsx!{ 
+                  p { class: "text-red-500 font-semibold text-center", "Error loading employees" } 
+                }
+              }
+            }
         }
 
-        div { class: "p-4 bg-gray-100 rounded",
-          h4 { class: "font-bold mb-2", "Employees" }
-          match employees_query.result().value() {
-            QueryResult::Loading(_) => rsx!{ "Loading employees..." },
-            QueryResult::Ok(emps) => rsx!{
-              ul {
-                {emps.iter().map(|emp| rsx!(
-                  li { key: "{emp}", "{emp}" }
-                ))}
-              }
-            },
-            QueryResult::Err(_) => rsx!{ "Error loading employees" }
+        // refresh Button
+        div { class: "flex justify-center mt-6",
+          Button {
+            class: "bg-blue-600 hover:bg-blue-700 text-white font-semibold p-4 px-5 py-2 rounded-lg transition duration-200",
+            on_click: move |_| query_client.invalidate_query(String::from("departments")),
+            "Refresh Departments"
           }
         }
-      }
-
-      Button {
-        class: "mt-4 bg-blue-500 text-white px-4 py-2 rounded",
-        on_click: move |_| query_client.invalidate_query(String::from("departments")),
-        "Refresh Departments"
       }
     }
   }
@@ -384,47 +430,40 @@ pub fn ParallelQueriesDemo() -> Element {
 pub fn CompleteQueryDemo() -> Element {
   rsx! {
     div { 
-      class: "min-h-screen w-full flex",
-      
+      class: "min-h-screen w-full",
+
       div { 
-        class: "w-full max-w-4xl px-4 py-8",
+        class: "text-center mb-8",
+        h1 { 
+          class: "text-3xl font-bold text-center text-gray-800",
+          "Maestro Query Demonstrations" 
+        }
+      }
+
+      div {
+        class: "space-y-8",
         
-        div { 
-          class: "text-center mb-8",
-          h1 { 
-            class: "text-3xl font-bold text-gray-800",
-            "Maestro Query Demonstrations" 
-          }
+        div {
+          BasicQueryDemo {}
+        }
+        
+        div {
+          CacheDemo {}
+        }
+        
+        div {
+          SilentMutationDemo {}
+        }
+        
+        div {
+          ManualMutationDemo {}
         }
 
         div {
-          class: "space-y-8",
-          
-          // Users Demo
-          div { 
-            class: "w-full items-stretch items-center",
-            BasicQueryDemo {}
-          }
-          
-          // Cache Demo
-          div { 
-            class: "w-full",
-            CacheDemo {}
-          }
-          
-          // Silent Mutation Demo
-          div { 
-            class: "w-full",
-            SilentMutationDemo {}
-          }
-          
-          // Manual Mutation Demo
-          div { 
-            class: "w-full",
-            ManualMutationDemo {}
-          }
+          ParallelQueriesDemo {  }
         }
       }
+      
     }
   }
 }

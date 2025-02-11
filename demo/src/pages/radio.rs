@@ -60,7 +60,7 @@ pub fn RadioDemo() -> Element {
 
   rsx! {
     div { 
-      class: "max-w-6xl mx-auto p-6 space-y-8",
+      class: "grid flex justify-center grid-cols-1 p-6 space-y-8",
       
       div { 
         class: "text-center mb-8",
@@ -140,7 +140,7 @@ fn CounterControls() -> Element {
 
   rsx! {
     div { 
-      class: "flex flex-col sm:flex-row gap-2",
+      class: "grid flex grid-cols-1 space-y-2",
       button {
         class: "flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition",
         onclick: handle_increment,
@@ -189,7 +189,7 @@ fn CounterDisplay() -> Element {
 fn ChannelMonitor() -> Element {
   rsx! {
     div { 
-      class: "grid grid-cols-1 sm:grid-cols-3 gap-4",
+      class: "grid grid-cols-1 sm:grid-cols-3 text-center gap-4",
       ChannelCard {
         channel: CounterChannel::Increment,
         value: use_radio(CounterChannel::Increment).read().increment_count

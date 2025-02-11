@@ -89,7 +89,7 @@ pub fn CalendarDemo() -> Element {
           description: "Space-efficient calendar with button trigger",
           
           div {
-            class: "flex justify-center",
+            class: "grid justify-center",
             Calendar {
               display_props: CalendarDisplayProps::builder()
                 .is_full(false)

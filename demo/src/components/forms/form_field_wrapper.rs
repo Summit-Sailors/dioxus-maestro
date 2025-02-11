@@ -29,7 +29,7 @@ pub fn FormFieldWrapper(props: FormFieldWrapperProps) -> Element {
 
   rsx! {
     div {
-      class: "form-group",
+      class: "form-group grid",
       label {
         class: "{label_class}",
         "{props.label}"

@@ -15,7 +15,7 @@ pub fn FormContent(props: InnerComponentProps<User>) -> Element {
   let roles = Role::VARIANTS.iter().map(|&s| s.to_string()).collect::<Vec<_>>();
 
   let input_class = tw_join!(
-    "w-full p-2 rounded-md border border-gray-700 bg-gray-800 text-gray-100",
+    "w-full p-2 rounded-md border border-gray-500 text-gray-800",
     "focus:ring-2 focus:ring-blue-400 focus:outline-none placeholder-gray-400"
   );
 
@@ -74,36 +74,41 @@ pub fn FormContent(props: InnerComponentProps<User>) -> Element {
           name: "role",
           values: roles.clone(),
           labels: Some(roles),
-          class: "w-full p-2 rounded-md border border-gray-700 bg-gray-800 text-gray-100 focus:ring focus:ring-blue-400 focus:outline-none",
+          class: "w-full p-2 rounded-md border border-gray-700 text-gray-800 focus:ring focus:ring-blue-400 focus:outline-none",
           disabled: *props.form.is_submitting.read()
         }
       }
-      Button {
-        button_type: ButtonType::Submit,
-        disabled: *props.form.is_submitting.read(),
-        prevent_default: false,
-        size: ButtonSize::Default,
-        variant: ButtonVariant::Default,
-        class: tw_join!(
-          "mt-4 py-2 rounded-md text-white font-semibold transition-all duration-200",
-          if *props.form.is_submitting.read() {
-            "bg-gray-500 cursor-not-allowed opacity-70"
-          } else {
-            "bg-blue-600 hover:bg-blue-500 hover:shadow-lg transform hover:scale-105"
-          }
-        ),
-        if *props.form.is_submitting.read() {
-          div {
-            class: "flex items-center gap-2 justify-center",
-            div {
-              class: "animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"
+
+      div {
+        class: "grid grid-cols-6 flex justify-center mt-2",
+        Button {
+          button_type: ButtonType::Submit,
+          disabled: *props.form.is_submitting.read(),
+          prevent_default: false,
+          size: ButtonSize::Default,
+          variant: ButtonVariant::Default,
+          class: tw_join!(
+            "py-2 rounded-md text-white font-semibold transition-all duration-200",
+            if *props.form.is_submitting.read() {
+              "bg-gray-500 cursor-not-allowed opacity-70"
+            } else {
+              "bg-blue-600 hover:bg-blue-500 hover:shadow-lg transform hover:scale-105"
             }
-            "Processing..."
-          } 
-        } else {
-          "Submit"
+          ),
+          if *props.form.is_submitting.read() {
+            div {
+              class: "flex items-center gap-2 justify-center",
+              div {
+                class: "animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"
+              }
+              "Processing..."
+            } 
+          } else {
+            "Submit"
+          }
         }
       }
+      
       FormStateDebugger {
         form: props.form
       }

@@ -214,7 +214,7 @@ pub fn CalendarMaybeWrapper(CalendarMaybeWrapperProps { is_full, children, selec
 				}
 				div {
 					class: tw_join!(
-							"absolute top-10 mt-6 right-0 min-w-[448px]", if is_open() { "block" } else {
+							"absolute top-10 mt-6 min-w-[448px]", if is_open() { "block" } else {
 							"hidden" }
 					),
 					{children}
@@ -261,7 +261,7 @@ pub fn CalendarDayComponent(delta: u8, display_props: CalendarDisplayProps, sele
 			class: "h-10 w-10 rounded-full flex items-center justify-center text-sm text-gray-900 calendar-day relative",
 			class: if is_today { "bg-blue-500 text-white calendar-day__today" } else { "" },
 			class: if selected_date() == this_display_date { "bg-blue-200 calendar-day__selected" } else { "" },
-			class: if is_disabled { "text-gray-400 cursor-not-allowed calendar-day__disabled" } else { "" },
+			class: if is_disabled { "text-gray-500 cursor-not-allowed calendar-day__disabled" } else { "" },
 			class: if !is_today && selected_date() != this_display_date && !is_disabled { "hover:bg-gray-100" } else { "" },
 			"{delta}"
 			if !curr_date_events.is_empty() {
