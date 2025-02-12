@@ -189,7 +189,7 @@ fn CounterDisplay() -> Element {
 fn ChannelMonitor() -> Element {
   rsx! {
     div { 
-      class: "grid grid-cols-1 sm:grid-cols-3 text-center gap-4",
+      class: "grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 text-center gap-4",
       ChannelCard {
         channel: CounterChannel::Increment,
         value: use_radio(CounterChannel::Increment).read().increment_count

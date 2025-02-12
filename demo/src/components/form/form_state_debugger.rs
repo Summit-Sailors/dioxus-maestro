@@ -34,7 +34,7 @@ where
         class: "grid flex justify-center text-gray-300 hover:text-gray-100 transition mb-8",
         Button {
           button_type: ButtonType::Button,
-          on_click: move |_| show_debug.set(!show_debug()),
+          on_click: move |_| show_debug.toggle(),
           if show_debug() { "Hide Form State" } else { "Show Form State" }
         }
       }

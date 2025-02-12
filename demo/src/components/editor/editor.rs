@@ -20,7 +20,7 @@ pub struct CodeEditorProps {
 
 #[component]
 pub fn CodeEditor(props: CodeEditorProps) -> Element {
-  let mut code = use_signal(|| props.code.clone());
+  let code = use_signal(|| props.code.clone());
   let mut is_expanded = use_signal(|| false);
   let clipboard = use_clipboard();
   let mut copy_status = use_signal(|| String::new());
@@ -42,14 +42,9 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
       });
     });
   };
-
-  let handle_change = move |new_code: String| {
-    code.set(new_code); // code in editor replaced with the new code
-    // in case of any edits, replace the old code with the new code sample, run the new code and render results as the new component for the demo
-  };
-
+  
   let toggle_expanded = move |_| {
-    is_expanded.set(!is_expanded());
+    is_expanded.toggle();
   };
 
   rsx! {

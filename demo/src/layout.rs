@@ -48,7 +48,7 @@ pub fn Layout(children: Element) -> Element {
         
         button {
           class: "fixed left-0 right-0 mx-auto max-w-md flex text-white bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-600",
-          onclick: move |_| menu_open.set(!menu_open()),
+          onclick: move |_| menu_open.toggle(),
           
           div {
             class: "p-4",
@@ -88,7 +88,7 @@ pub fn Layout(children: Element) -> Element {
           if menu_open() {
             div {
               class: "fixed inset-0 bg-black/50 z-30 md:hidden transition-opacity duration-300",
-              onclick: move |_| menu_open.set(false)
+              onclick: move |_| menu_open.toggle()
             }
           }
           
@@ -128,7 +128,7 @@ fn NavigationMenu(close_menu: Signal<bool>) -> Element {
                     "text-gray-300 hover:text-white"
                   }
                 ),
-                onclick: move |_| close_menu.set(false),
+                onclick: move |_| close_menu.toggle(),
                 "{route.name()}"
               }
             }

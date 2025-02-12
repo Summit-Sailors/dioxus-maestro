@@ -1,5 +1,5 @@
 use {
-  crate::{components::forms::form_content::FormContent, 
+  crate::{components::form::form_content::FormContent, 
     models::user::{Role, User}}
   ,
   dioxus::prelude::*,
