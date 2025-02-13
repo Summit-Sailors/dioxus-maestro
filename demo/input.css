@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* base styles */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100 font-inter;
+}
+
+/* responsive container */
+.container {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+/* toast styles - simplified */
+.maestro-toast {
+  @apply transition-all duration-200 ease-in-out relative p-4 rounded-lg;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  width: max-content;
+  max-width: 90vw;
+}
+
+/* responsive toast containers */
+.toast-scope [id^="wrap-"] {
+  @apply flex flex-col gap-2 max-h-[calc(100vh-2rem)] overflow-y-auto w-max max-w-[384px] sm:max-w-[90vw];
+}
+
+/* media queries */
+@media (max-width: 640px) {
+  .toast-scope [id^="wrap-"] {
+    max-width: calc(100vw - 2rem);
+  }
+
+  .maestro-toast {
+    width: 100%;
+    max-width: 100%;
+  }
+}

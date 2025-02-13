@@ -68,3 +68,4 @@ pub fn use_clipboard() -> UseClipboard {
 	#[cfg(not(feature = "desktop"))]
 	UseClipboard {}
 }
+

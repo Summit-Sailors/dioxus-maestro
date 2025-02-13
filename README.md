@@ -1,10 +1,10 @@
-## Notes:
+## Notes
 
-### Structure:
+### Structure
 
 This repo contains crates which may be used in dioxus apps (client and server sides). `clients` help to establish connection with database and make operations, run background tasks etc. `frontend` contains crates for client side - there are reusable ui components (like inputs, buttons, forms, etc), hooks and tools for plotting the data.
 
-## Notes:
+## Notes
 
 1. `clients` : you may need to run some additional system dependencies such as:
 
