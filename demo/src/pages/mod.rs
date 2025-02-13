@@ -7,4 +7,3 @@ pub mod radio;
 pub mod toast;
 pub mod ui;
 pub mod calendar;
-pub mod extras;

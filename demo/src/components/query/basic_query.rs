@@ -55,7 +55,7 @@ pub fn BasicQueryDemo() -> Element {
       h2 { class: "text-2xl text-gray-800 text-center font-bold mb-4", "Users List" }
 
       div {
-        class: "grid grid-cols-6 flex justify-center mt-2",
+        class: "grid flex justify-center mt-2",
         Button {
           class: "bg-blue-500 text-white rounded mb-4",
           on_click: move |_| {
@@ -77,37 +77,52 @@ pub fn BasicQueryDemo() -> Element {
         }
       }
 
-      div {  
+      div {
+        class: "grid flex grid-cols-1 justify-center h-96 text-center gap-2 text-gray-800 bg-white", 
         {match users_query.result().value() {
-          QueryResult::Loading(_) => rsx!{ div { class: "text-gray-500", "Loading users..." } },
-          QueryResult::Err(e) => rsx!{ div { class: "text-red-500", "Error: {e:?}" } },
-          QueryResult::Ok(users) => rsx!{
-            div { class: "grid flex grid-cols-1 md:grid-cols-3 justify-center h-96 text-center gap-2 text-gray-800 bg-white",
-              {users.iter().map(|user| {
-                let user = user.clone();
-                rsx!(
-                  div {
-                    key: "{user.username}",
-                    class: "border bg-gray-200 p-4 rounded shadow-md bg-white",
-                    p { class: "font-semibold", "Username: {user.username}" }
-                    p { "Email: {user.email}" }
-                    p { "Age: {user.age}" }
-                    p { "Role: {user.role}" }
-                    Button {
-                      class: "mt-2 bg-red-500 hover:bg-red-700 rounded border",
-                      disabled: delete_mutation.result().is_loading(),
-                      variant: ButtonVariant::Destructive,
-                      button_type: ButtonType::Button,
-                      on_click: move |_| handle_delete(user.username.clone()),
-                      { if delete_mutation.result().is_loading() {"Delete..."} else {"Delete Unser"} }
-                    }
-                  }
-                )
-              })}
+          QueryResult::Loading(_) => rsx! { 
+            div { class: "text-gray-500", "Loading users..." } 
+          },
+          QueryResult::Err(e) => rsx! { 
+            div { class: "text-red-500", "Error: {e:?}" } 
+          },
+          QueryResult::Ok(users) => rsx! {
+            
+              {if users.is_empty() {
+                rsx! { 
+                  div { 
+                    "No users found."
+                  } 
+                }
+              } else {
+                rsx! {
+                  {users.iter().map(|user| {
+                    let user = user.clone();
+                    rsx!(
+                      div {
+                        key: "{user.username}",
+                        class: "border bg-gray-200 p-4 rounded shadow-md bg-white",
+                        p { class: "font-semibold", "Username: {user.username}" }
+                        p { "Email: {user.email}" }
+                        p { "Age: {user.age}" }
+                        p { "Role: {user.role}" }
+                        Button {
+                          class: "mt-2 bg-red-500 hover:bg-red-700 rounded border",
+                          disabled: delete_mutation.result().is_loading(),
+                          variant: ButtonVariant::Destructive,
+                          button_type: ButtonType::Button,
+                          on_click: move |_| handle_delete(user.username.clone()),
+                          { if delete_mutation.result().is_loading() {"Deleting..."} else {"Delete User"} }
+                        }
+                      }
+                    )
+                  })}
+                }
+              }}
             }
           }
-        }}
-      } 
+        }
+      }
     }
   }
 }
@@ -161,7 +176,7 @@ pub fn OptimisticUserForm(on_success: Option<EventHandler>) -> Element {
   rsx! {
     div {
       if !error_message().is_empty() {
-        div { class: "text-red-500 mb-4", "{error_message}" }
+        div { class: "text-red-500 text-center mb-4", "{error_message}" }
       }
       Form {
         initial_values: User::default(),

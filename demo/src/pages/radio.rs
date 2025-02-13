@@ -210,7 +210,7 @@ fn ChannelMonitor() -> Element {
 fn ChannelCard(channel: CounterChannel, value: i32) -> Element {
   rsx! {
     div { 
-      class: "p-6 bg-gray-50 rounded-lg border border-gray-300 shadow-md",
+      class: "p-4 bg-gray-50 rounded-lg border border-gray-300 shadow-md",
       div {
         class: "font-medium text-gray-700 mb-2 text-lg",
         "{channel} Channel"

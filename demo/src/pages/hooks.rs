@@ -1,13 +1,12 @@
 use {
-  async_std::task::sleep, 
-  dioxus::prelude::*, 
+  async_std::task::sleep,
+  dioxus::prelude::*,
   maestro_hooks::{
     clipboard::use_clipboard,
     explicit_memo::use_explicit_memo,
     pagination::use_pagination,
-  }, 
-  maestro_query::prelude::futures_util::FutureExt, 
-  std::time::Duration
+  },
+  std::time::Duration,
 };
 
 #[component]
@@ -15,28 +14,27 @@ pub fn HooksDemo() -> Element {
   let mut total_items = use_signal(|| 100);
   let clipboard = use_signal(|| use_clipboard());
 
+  let async_result = use_resource(move || async move {
+    sleep(Duration::from_millis(2000)).await;
+    Some(total_items())
+  });
+
   let expensive_computation = use_explicit_memo(
-    total_items(),
+    total_items(), // only depend on total_items (updates only to this signal will trigger a re-render where expensive_computation is being read)
     || {
-      let future = async move {
-        sleep(Duration::from_millis(100)).await;
-        42
-      };
-
       let sum: i32 = (1..=total_items()).sum();
-
-      let async_result = match future.now_or_never() {
-        Some(result) => result,
-        None => 0,
-      };
-
-      format!("Sum of 1 to {}: {} and async result: {}", total_items(), sum, async_result)
+      format!(
+        "Sum of 1 to {}: {} (Async result: {:?})", 
+        total_items(), 
+        sum,
+        async_result.value()
+      )
     }
   );
 
   let page_size = 10;
   let (pagination, (mut next_idx, mut prev_idx, mut next_page, mut prev_page)) =
-      use_pagination(use_memo(move || total_items()), page_size); 
+      use_pagination(use_memo(move || total_items()), page_size);
 
   let mut clipboard_content = use_signal(String::new);
   let mut copy_status = use_signal(|| String::new());
@@ -45,7 +43,7 @@ pub fn HooksDemo() -> Element {
 
   rsx! {
     div {
-      class: "hooks-demo max-w-lg mx-auto bg-gray-200 p-6 rounded-lg shadow-lg space-y-6",
+      class: "hooks-demo bg-gray-200 p-6 rounded-lg shadow-lg space-y-6",
 
       // clipboard section
       section {
@@ -98,7 +96,7 @@ pub fn HooksDemo() -> Element {
         p { class: "mt-2 text-sm text-gray-500 text-center", "{copy_status}" }
       }
 
-      // memo section
+      // memo section with loading state
       section {
         class: "memo-demo bg-white p-6 rounded-lg shadow border border-gray-300",
 
@@ -112,7 +110,7 @@ pub fn HooksDemo() -> Element {
             "+10"
           }
           button {
-            onclick: move |_| total_items.set((total_items() - 10).max(1)),
+            onclick: move |_| total_items.set((total_items() - 10).max(0)),
             class: "rounded bg-red-500 text-white py-2 px-4 hover:bg-red-700",
             "-10"
           }
@@ -120,8 +118,29 @@ pub fn HooksDemo() -> Element {
 
         div {
           class: "bg-gray-800 p-2 rounded-md text-center shadow-inner",
-          p { class: "font-medium text-gray-300", "Total Items: " span { class: "text-yellow-500 font-bold", "{total_items}" } }
-          p { class: "font-medium text-gray-300 mt-2", "Memoized Result: " span { class: "text-yellow-500 font-bold", "{expensive_computation}" } }
+          p { 
+            class: "font-medium text-gray-300", 
+            "Total Items: " 
+            span { class: "text-yellow-500 font-bold", "{total_items}" }
+          }
+          p { 
+            class: "font-medium text-gray-300 mt-2", 
+            match *async_result.value().read_unchecked() {
+              Some(_) => rsx!{ 
+                "Memoized Result: " 
+                span { 
+                  class: "text-yellow-500 font-bold", 
+                  "{expensive_computation}" 
+                }
+              },
+              None => rsx!{
+                span { 
+                  class: "text-blue-400 animate-pulse", 
+                  "Computing..." 
+                }
+              }
+            }
+          }
         }
       }
 
@@ -140,7 +159,7 @@ pub fn HooksDemo() -> Element {
         }
 
         div {
-          class: "grid grid-cols-3 gap-2",
+          class: "grid flex grid-cols-3",
           {
             let start_idx = *pagination.idx.read();
             let page_size = *pagination.page_size.read();
@@ -151,7 +170,7 @@ pub fn HooksDemo() -> Element {
               .map(|item| {
                 rsx! {
                   div {
-                    class: "border rounded sm:col-span-2 p-2 bg-gray-700 shadow-sm text-center",
+                    class: "border rounded-md p-2 bg-gray-700 shadow-sm text-center",
                     key: "{item}",
                     "Item {item}"
                   }
@@ -163,7 +182,7 @@ pub fn HooksDemo() -> Element {
         hr { class:"border border-gray-700 mt-4 w-full", }
 
         div {
-          class: "flex space-x-2 mt-4 justify-center",
+          class: "flex space-x-1 mt-4 justify-center",
           button {
             disabled: "{*pagination.prev_idx_disabled.read()}",
             onclick: move |_| prev_idx(),

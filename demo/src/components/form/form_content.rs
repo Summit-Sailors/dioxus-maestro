@@ -80,7 +80,7 @@ pub fn FormContent(props: InnerComponentProps<User>) -> Element {
       }
 
       div {
-        class: "grid grid-cols-6 flex justify-center mt-2",
+        class: "grid flex justify-center mt-2",
         Button {
           button_type: ButtonType::Submit,
           disabled: *props.form.is_submitting.read(),

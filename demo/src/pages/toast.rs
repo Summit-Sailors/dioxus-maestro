@@ -78,7 +78,7 @@ pub fn ToastDemo() -> Element {
 
   rsx! {
     div {
-      class: "grid flex justify-center bg-white rounded-lg shadow-md p-4 w-full",
+      class: "grid flex justify-center bg-white rounded-lg shadow-md p-2 w-full",
       h1 {
         class: "text-2xl text-gray-800 font-bold mb-6 text-center",
         "Toast Demo"
@@ -86,32 +86,32 @@ pub fn ToastDemo() -> Element {
       div {
         class: "grid grid-cols-1 md:grid-cols-2 sm:w-96 gap-4 mb-6",
         button {
-          class: "px-4 py-2 bg-green-500 text-white text-center rounded hover:bg-green-600",
+          class: "px-2 py-2 bg-green-500 text-white text-center rounded hover:bg-green-600",
           onclick: show_success,
           "Show Success Toast"
         }
         button {
-          class: "px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600",
+          class: "px-2 py-2 bg-red-500 text-white rounded hover:bg-red-600",
           onclick: show_error,
           "Show Error Toast"
         }
         button {
-          class: "px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600",
+          class: "px-2 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600",
           onclick: show_warning,
           "Show Warning Toast"
         }
         button {
-          class: "px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600",
+          class: "px-2 py-2 bg-blue-500 text-white rounded hover:bg-blue-600",
           onclick: show_info,
           "Show Info Toast"
         }
         button {
-          class: "px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600",
+          class: "px-2 py-2 bg-gray-500 text-white rounded hover:bg-gray-600",
           onclick: show_custom,
           "Show Custom Toast"
         }
         button {
-          class: "px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-800",
+          class: "px-2 py-2 bg-gray-700 text-white rounded hover:bg-gray-800",
           onclick: clear_all,
           "Clear All Toasts"
         }

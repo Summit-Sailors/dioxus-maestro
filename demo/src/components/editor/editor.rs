@@ -3,31 +3,35 @@ use {
   dioxus::prelude::*, 
   dioxus_free_icons::{icons::fa_solid_icons::{FaCopy, FaMaximize, FaMinimize}, Icon}, 
   maestro_hooks::clipboard::use_clipboard, 
+  std::collections::HashMap, 
   tailwind_fuse::tw_join
 };
 
 #[derive(Props, PartialEq, Clone)]
 pub struct CodeEditorProps {
-  #[props(into)]
-  code: String,
   #[props(default = "rust".to_string())]
   language: String,
   #[props(into, default = String::from("Example Code"))]
   title: String,
   #[props(into)]
   demo: Element,
+  code_map: HashMap<String, String>,
 }
 
 #[component]
 pub fn CodeEditor(props: CodeEditorProps) -> Element {
-  let code = use_signal(|| props.code.clone());
+  let code = use_signal(|| props.code_map.clone());
   let mut is_expanded = use_signal(|| false);
   let clipboard = use_clipboard();
   let mut copy_status = use_signal(|| String::new());
   let mut is_copying = use_signal(|| false);
 
+  // the currently selected code
+  let file_keys: Vec<String> = props.code_map.keys().cloned().collect();
+  let mut selected_file = use_signal(|| file_keys.first().unwrap_or(&"".to_string()).clone());
+
   let handle_copy = move |_| {
-    let content = code();
+    let content = code().get(&selected_file()).unwrap_or(&"".to_string()).clone();
     let mut clipboard = clipboard.clone();
     is_copying.set(true);
     spawn(async move {
@@ -47,13 +51,18 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
     is_expanded.toggle();
   };
 
+
+  let handle_file_selection = move |event: FormEvent| {
+    selected_file.set(event.value().clone())
+  };
+
   rsx! {
     div {
-      class: "h-screen p-2 bg-gray-800 rounded-lg mt-4 sm:mt-8 mb-8 w-full flex flex-col",
+      class: "h-screen p-2 bg-gray-800 rounded-lg w-full flex flex-col mb-8",
 
       // header section
       div {
-        class: "flex items-center justify-between text-white fixe top-0 z-10 bg-gray-800 p-2",
+        class: "flex items-center justify-between text-white top-0 z-10 bg-gray-800 p-2",
         h2 { class: "text-xl font-semibold", "{props.title}" }
         div {
           class: "flex space-x-2",
@@ -91,21 +100,60 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
           "grid grid-cols-1 overflow-auto transition-all duration-500 ease-in-out",
           if is_expanded() { "md:grid-cols-2" } else { "grid-cols-1" }
         ),
+    
         // demo component section
         div {
           class: "bg-gray-300 overflow-auto p-6 rounded-lg shadow-md border border-gray-200 mt-4",
           {props.demo}
         }
+    
         // code section
         if is_expanded() {
           div {
             class: "overflow-hidden",
             h2 { class: "text-xl font-semibold text-center mt-4", "Source Code" }
+
             div {
-              class: "h-screen overflow-y-auto bg-gray-900 rounded-lg shadow-md border border-gray-700 overflow-hidden p-4",
+              class: "flex justify-center my-3",
+              select {
+                class: "p-2 px-4 bg-gray-700 text-gray-300 rounded-lg border border-gray-600 
+                        hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 
+                        transition-all duration-200",
+                onchange: handle_file_selection,
+
+                {
+                  file_keys.iter().map(|file| rsx! {
+                    option {
+                      value: "{file}",
+                      selected: *file == selected_file(),
+                      class: "bg-gray-800 text-white text-center hover:bg-gray-700 px-2 py-1",
+                      "{file}"
+                    }
+                  })
+                }
+              }
+            }
+
+            div {
+              class: "relative h-full overflow-auto bg-gray-900 rounded-lg shadow-md border border-gray-700 p-4",
+              
               div {
-                class: "text-white font-mono text-sm overflow-auto",
-                pre { "{props.code}" }
+                class: "flex justify-between items-center bg-gray-800 text-gray-300 text-xs px-4 py-2 rounded-t-md",
+                span { class: "font-mono", "{selected_file()}" }
+                div {
+                  class: "flex gap-1",
+                  span { class: "w-3 h-3 bg-red-500 rounded-full" }
+                  span { class: "w-3 h-3 bg-yellow-500 rounded-full" }
+                  span { class: "w-3 h-3 bg-green-500 rounded-full" }
+                }
+              }
+
+              div {
+                class: "font-mono language-rust text-sm whitespace-pre overflow-auto p-4",
+                pre {
+                  class: "",
+                  "{props.code_map.get(&selected_file()).unwrap_or(&String::new())}"
+                }
               }
             }
           }
