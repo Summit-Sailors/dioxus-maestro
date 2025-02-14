@@ -5,7 +5,7 @@ use {
   validator::Validate
 };
 
-#[derive(EnumString, VariantNames, Debug, Serialize, Deserialize, Clone, PartialEq, Display)]
+#[derive(EnumString, VariantNames, Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Hash, Display)]
 #[serde(rename_all = "lowercase")]
 pub enum Role {
   #[strum(serialize = "admin")]

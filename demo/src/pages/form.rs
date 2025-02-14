@@ -3,8 +3,8 @@ use {
     models::user::{Role, User}}
   ,
   dioxus::prelude::*,
-  maestro_forms::fields::
-    form::{Form, FormResult}
+  maestro_forms::{fields::
+    form::{Form, FormResult}, use_formik::use_init_form_ctx}
   ,
   maestro_toast::{
     ctx::use_toast, toast_info::ToastInfo
@@ -29,12 +29,14 @@ async fn simulate_submission(delay_ms: u64) -> Result<(), String> {
 pub fn FormsDemo() -> Element {
   let mut toast = use_toast();
   let mut is_async = use_signal(|| true);
-  let is_submitting = use_signal(|| false);
 
-  let on_submit = move |(_event, (submitted_user, is_valid)): (FormEvent, FormResult<User>)| {
-    if is_submitting() {
-      return;
-    }
+  let initial_values = User {
+    role: Role::Admin,
+    ..User::default()
+  };
+  let form = use_init_form_ctx(initial_values);
+
+  let on_submit = move |(_event, (submitted_user, is_valid), complete_submission): (FormEvent, FormResult<User>, Box<dyn FnOnce()>)| {
 
     spawn(async move {
       if !is_valid {
@@ -68,6 +70,8 @@ pub fn FormsDemo() -> Element {
           );
         }
       }
+
+      complete_submission();
     });
   };
 
@@ -115,10 +119,7 @@ pub fn FormsDemo() -> Element {
       }
 
       Form {
-        initial_values: User {
-          role: Role::Admin,
-          ..User::default()
-        },
+        form: form,
         onsubmit: on_submit,
         auto_reset: true,
         inner: FormContent,

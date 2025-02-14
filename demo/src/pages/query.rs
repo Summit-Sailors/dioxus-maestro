@@ -1,11 +1,11 @@
 
 use {
   crate::components::query::{
-    basic_query::BasicQueryDemo, 
+    basic_query::QueryDemo, 
     batch::BatchOperationsDemo, 
     cache::CacheDemo, 
     mutation::{ManualMutationDemo, SilentMutationDemo}, 
-    parallel_query::ParallelQueriesDemo,
+    parallel_query::ParallelQueriesWrapper,
   }, 
   dioxus::prelude::*
 };
@@ -28,7 +28,7 @@ pub fn CompleteQueryDemo() -> Element {
         class: "space-y-8",
         
         div {
-          BasicQueryDemo {}
+          QueryDemo {}
         }
         
         div {
@@ -44,7 +44,7 @@ pub fn CompleteQueryDemo() -> Element {
         }
 
         div {
-          ParallelQueriesDemo {}
+          ParallelQueriesWrapper {}
         }
 
         div {

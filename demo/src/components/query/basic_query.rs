@@ -1,187 +1,203 @@
-
 use {
-  crate::{components::form::form_content::FormContent, models::user::User}, 
-  async_std::sync::RwLock, 
-  dioxus::{fullstack::once_cell, prelude::*}, 
-  maestro_forms::fields::form::{Form, FormResult},
+  crate::models::user::{Role, User}, 
+  async_std::task::sleep, 
+  dioxus::{fullstack::once_cell::sync::Lazy, prelude::*}, 
   maestro_query::prelude::*, 
-  maestro_ui::button::{Button, ButtonType, ButtonVariant}, 
-  std::{collections::HashMap, sync::Arc}, 
-  validator::Validate
+  maestro_toast::{ctx::use_toast, toast_code::EToastCode, toast_info::ToastInfo, toast_position::EToastPosition}, 
+  maestro_ui::button::Button, 
+  std::{collections::HashMap, fmt::Error, sync::{Arc, RwLock}, time::Duration}
 };
 
-// simulated backend storage
-pub static USERS: once_cell::sync::Lazy<Arc<RwLock<HashMap<String, User>>>> =
-  once_cell::sync::Lazy::new(|| Arc::new(RwLock::new(HashMap::new())));
+// mock backend store
+static USERS: Lazy<Arc<RwLock<HashMap<String, User>>>> = Lazy::new(|| {
+  let mut map = HashMap::new();
+  map.insert(
+    "admin".to_string(),
+    User {
+      username: "admin".to_string(),
+      email: "admin@example.com".to_string(),
+      age: 30,
+      bio: "this is the admin's bio".to_string(),
+      role: Role::Admin,
+    },
+  );
+  map.insert(
+    "mod1".to_string(),
+    User {
+      username: "mod1".to_string(),
+      email: "mod1@example.com".to_string(),
+      age: 25,
+      bio: "moderator number one".to_string(),
+      role: Role::Moderator,
+    },
+  );
+  map.insert(
+    "user1".to_string(),
+    User {
+      username: "user1".to_string(),
+      email: "user1@example.com".to_string(),
+      age: 22,
+      bio: "regular user here".to_string(),
+      role: Role::User,
+    },
+  );
+  Arc::new(RwLock::new(map))
+});
 
-#[derive(Debug, Clone, PartialEq)]
-pub enum CustomError {
-  NetworkError,
-  NotFound,
-  ValidationError(String),
-  DatabaseError(String),
-}
-
-#[component]
-pub fn BasicQueryDemo() -> Element {
-  let query_client: UseQueryClient<Vec<User>, CustomError, String> = use_init_query_client();
-
-  let users_query = use_get_query([String::from("users")], |_| async move {
-    let users = USERS.read().await;
-    QueryResult::Ok::<Vec<User>, CustomError>(users.values().cloned().collect::<Vec<User>>())
-  });
-
-  let delete_mutation = use_mutation(|username: String| async move {
-    let mut users = USERS.write().await;
-    match users.remove(&username) {
-      Some(_) => MutationResult::Ok::<(), CustomError>(()),
-      None => MutationResult::Err(CustomError::NotFound),
-    }
-  });
-
-  let handle_delete = move |username: String| {
-    delete_mutation.mutate(username);
-    if delete_mutation.result().is_ok() {
-      println!("invalidating cache");
-      query_client.invalidate_query(String::from("users"));
-    }
-  };
-
-  let mut show_form = use_signal(|| false);
-
-  rsx! {
-    div { 
-      class: "border bg-white rounded shadow-md p-4",
-      h2 { class: "text-2xl text-gray-800 text-center font-bold mb-4", "Users List" }
-
-      div {
-        class: "grid flex justify-center mt-2",
-        Button {
-          class: "bg-blue-500 text-white rounded mb-4",
-          on_click: move |_| {
-            let current_show_form = show_form();
-            show_form.set(!current_show_form);
-          },
-          if show_form() { "Hide Form" } else { "Add User" }
-        }
-      }
-
-      div {
-        if show_form() {
-          OptimisticUserForm {
-            on_success: move |_| {
-              show_form.set(false);
-              query_client.invalidate_query(String::from("users"));
-            }
-          }
-        }
-      }
-
-      div {
-        class: "grid flex grid-cols-1 justify-center h-96 text-center gap-2 text-gray-800 bg-white", 
-        {match users_query.result().value() {
-          QueryResult::Loading(_) => rsx! { 
-            div { class: "text-gray-500", "Loading users..." } 
-          },
-          QueryResult::Err(e) => rsx! { 
-            div { class: "text-red-500", "Error: {e:?}" } 
-          },
-          QueryResult::Ok(users) => rsx! {
-            
-              {if users.is_empty() {
-                rsx! { 
-                  div { 
-                    "No users found."
-                  } 
-                }
-              } else {
-                rsx! {
-                  {users.iter().map(|user| {
-                    let user = user.clone();
-                    rsx!(
-                      div {
-                        key: "{user.username}",
-                        class: "border bg-gray-200 p-4 rounded shadow-md bg-white",
-                        p { class: "font-semibold", "Username: {user.username}" }
-                        p { "Email: {user.email}" }
-                        p { "Age: {user.age}" }
-                        p { "Role: {user.role}" }
-                        Button {
-                          class: "mt-2 bg-red-500 hover:bg-red-700 rounded border",
-                          disabled: delete_mutation.result().is_loading(),
-                          variant: ButtonVariant::Destructive,
-                          button_type: ButtonType::Button,
-                          on_click: move |_| handle_delete(user.username.clone()),
-                          { if delete_mutation.result().is_loading() {"Deleting..."} else {"Delete User"} }
-                        }
-                      }
-                    )
-                  })}
-                }
-              }}
-            }
-          }
-        }
-      }
-    }
+// mock api functions
+async fn fetch_user(username: String) -> QueryResult<User, String> {
+  sleep(Duration::from_millis(500)).await; // network delay sim
+  
+  match USERS.read() {
+    Ok(users) => match users.get(&username) {
+      Some(user) => QueryResult::Ok(user.clone()),
+      None => QueryResult::Err("User not found".into()),
+    },
+    Err(_) => QueryResult::Err("Failed to read users".into()),
   }
 }
 
+async fn fetch_users_by_role(role: Role) -> QueryResult<Vec<User>, String> {
+  sleep(Duration::from_millis(500)).await;
+  
+  match USERS.read() {
+    Ok(users) => {
+      let filtered = users
+        .values()
+        .filter(|user| user.role == role)
+        .cloned()
+        .collect();
+      QueryResult::Ok(filtered)
+    },
+    Err(_) => QueryResult::Err("Failed to read users".into()),
+  }
+}
+
+async fn update_user(user: User) -> MutationResult<User, String> {
+  sleep(Duration::from_millis(500)).await;
+  
+  match USERS.write() {
+    Ok(mut users) => {
+      if let Some(existing) = users.get_mut(&user.username) {
+        *existing = user.clone();
+        MutationResult::Ok(user)
+      } else {
+        MutationResult::Err("User not found".into())
+      }
+    },
+    Err(_) => MutationResult::Err("Failed to update user".into()),
+  }
+}
 
 #[component]
-pub fn OptimisticUserForm(on_success: Option<EventHandler>) -> Element {
-  let query_client: UseQueryClient<Vec<User>, CustomError, String> = use_init_query_client();
-  let mut error_message = use_signal(|| String::new());
+pub fn QueryDemo() -> Element {
+  let mut toast = use_toast();
+  let query_client: UseQueryClient<Vec<User>, Error, String> = use_init_query_client();
   
-  let create_mutation = use_mutation(|new_user: User| async move {
-    let mut users = USERS.write().await;
-    
-    if let Err(e) = new_user.validate() {
-      return MutationResult::Err(CustomError::ValidationError(e.to_string()));
-    }
-
-    users.insert(new_user.username.clone(), new_user.clone());
-    MutationResult::Ok(new_user)
+  // demonstrate type-safe query registry and caching
+  let admin_query = use_get_query(["admin"], |keys| async move {
+    fetch_user(keys[0].to_string()).await
+  });
+  
+  // demonstrate multi-key query system and query freshness
+  let moderators = use_get_query([Role::Moderator], |_| async move {
+    fetch_users_by_role(Role::Moderator).await
+  });
+  
+  // demonstrate both manual and automatic mutations
+  let update_mutation = use_mutation(|user: User| async move {
+    update_user(user).await
   });
 
-  let handle_submit = move |(_event, (submitted_user, is_valid)): (FormEvent, FormResult<User>)| {
-    async move {
-      if !is_valid {
-        error_message.set("Form validation failed".to_string());
-        return;
-      }
-
-      create_mutation.mutate(submitted_user.clone());
-      
-      spawn(async move {
-        while create_mutation.result().is_loading() {
-          async_std::task::sleep(std::time::Duration::from_millis(50)).await;
-        }
+  let admin_query_clone = admin_query.clone();
+  
+  // demonstration of silent vs regular mutations
+  let mut handle_role_update = move |username: String, new_role: Role| {
+    let username_clone = username.clone();
+    // properly extract the User from QueryResult
+    match admin_query_clone.result().value() {
+      QueryResult::Ok(user) => {
+        let mut updated = user.clone();
+        updated.role = new_role;
         
-        if create_mutation.result().is_ok() {
-          query_client.invalidate_query(String::from("users"));
-          if let Some(handler) = on_success {
-            handler.call(());
-          }
-        } else {
-          // rollback
-          let mut users = USERS.write().await;
-          users.remove(&submitted_user.username);
-          log::error!("Mutation failed: {:?}", create_mutation.result());
-        }
-      });
+        // now we're passing a User directly
+        let _ = update_mutation.mutate_silent(updated);
+        
+        // invalidate queries after mutation
+        query_client.invalidate_queries(&[username, Role::Moderator.to_string()]);
+        
+        toast.write().popup(ToastInfo {
+          heading: Some("Role Updated".into()),
+          context: format!("Updated role for {}", username_clone),
+          icon: Some(EToastCode::Success),
+          position: EToastPosition::TopRight,
+          allow_toast_close: true,
+          hide_after: 5,
+        });
+      },
+      _ => {
+        toast.write().popup(ToastInfo {
+          heading: Some("Error".into()),
+          context: "Failed to update user role: User data not available".into(),
+          icon: Some(EToastCode::Error),
+          position: EToastPosition::BottomRight,
+          allow_toast_close: true,
+          hide_after: 8,
+        });
+      }
     }
   };
 
   rsx! {
-    div {
-      if !error_message().is_empty() {
-        div { class: "text-red-500 text-center mb-4", "{error_message}" }
+    div { class: "p-4 space-y-4",
+    h3 { class: "text-2xl text-gray-800 text-center font-bold mb-4", "Main Dioxus Query Demo" }
+      // demonstrate intelligent loading states
+      div { class: "space-y-2",
+        h2 { class: "text-xl font-bold", "Admin User" }
+        {match admin_query.result().value().to_owned() {
+          QueryResult::Loading(Some(prev)) => rsx! {
+            div { class: "opacity-50", // show previous data while loading
+              "Loading... Previous data:"
+              div { "Username: {prev.username}" }
+              div { "Role: {prev.role}" }
+            }
+          },
+          QueryResult::Loading(None) => rsx! { div { "Loading..." } },
+          QueryResult::Ok(user) => rsx! {
+            div {
+              div { "Username: {user.username}" }
+              div { "Role: {user.role}" }
+              Button {
+                class: "px-4 py-2 bg-blue-500 text-white rounded",
+                on_click: move |_| handle_role_update(user.username.clone(), Role::Moderator),
+                "Change to Moderator"
+              }
+            }
+          },
+          QueryResult::Err(err) => rsx! {
+            div { class: "text-red-500", "Error: {err}" }
+          }
+        }}
       }
-      Form {
-        initial_values: User::default(),
-        onsubmit: handle_submit,
-        inner: FormContent
+
+    // demonstrate multi-key query system
+    div { class: "space-y-2",
+      h2 { class: "text-xl font-bold", "Moderators" }
+      {match moderators.result().value() {
+        QueryResult::Loading(_) => rsx! { div { "Loading moderators..." } },
+        QueryResult::Ok(users) => rsx! {
+          div { class: "space-y-2",
+            {users.iter().map(|user| rsx! {
+              div { key: "{user.username}",
+                "Username: {user.username}"
+              }
+            })}
+          }
+        },
+        QueryResult::Err(err) => rsx! {
+          div { class: "text-red-500", "Error loading moderators: {err}" }
+        }
+      }}
       }
     }
   }

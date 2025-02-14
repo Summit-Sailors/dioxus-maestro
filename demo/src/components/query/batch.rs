@@ -1,5 +1,4 @@
 use {
-  crate::components::query::basic_query::CustomError,
   async_std::task::sleep,
   dioxus::prelude::*,
   maestro_query::prelude::*,
@@ -287,7 +286,7 @@ pub fn BatchOperationsDemo() -> Element {
   let batch_mutation = use_mutation(|operations: Vec<String>| async move {
     simulate_db_delay().await;
     if operations.is_empty() {
-      MutationResult::Err(CustomError::ValidationError("No operations provided".into()))
+      MutationResult::Err(Error)
     } else {
       MutationResult::Ok(operations.len())
     }
@@ -372,7 +371,7 @@ pub fn BatchOperationsDemo() -> Element {
       }
 
       div { 
-        class: "grid grid-cols-1 md:grid-cols-3 gap-4 mb-4",
+        class: "grid grid-cols-1 md:grid-cols-2 gap-4 mb-4",
         div { 
           class: "p-4 border rounded shadow-md",
           {render_query_state(users_query.result().value())}
