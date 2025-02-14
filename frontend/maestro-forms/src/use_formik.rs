@@ -58,8 +58,13 @@ where
             return;
         }
 
+		let result = self.as_validated_struct();
+
+		if !result.1 {
+			return;
+		}
+		
         self.is_submitting.set(true);
-        let result = self.as_validated_struct();
 
         let mut form = self.clone();
         let complete_submission = move || {
