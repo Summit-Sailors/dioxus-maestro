@@ -33,7 +33,7 @@ pub fn SilentMutationDemo() -> Element {
   };
 
   rsx! {
-    div { class: "grid flex justify-center grid-cols-1 text-center p-4 border bg-white rounded mt-4",
+    div { class: "grid flex justify-center grid-cols-1 text-center p-4 border bg-white rounded-lg shadow-lg mt-4",
       h3 { class: "text-xl text-gray-700 font-bold mb-4", "Silent vs Normal Mutations" }
       
       p { class: "mb-4 text-gray-700 font-bold", "Counter:", span{ class: "text-yellow-500 font-bold", "{counter}" }}
@@ -98,7 +98,7 @@ pub fn ManualMutationDemo() -> Element {
   };
 
   rsx! {
-    div { class: "grid flex justify-center bg-white p-4 border rounded mt-4",
+    div { class: "grid flex justify-center bg-white p-4 border shadow-lg rounded mt-4",
       h3 { class: "text-xl font-bold text-gray-700 text-center mb-4", "Manual Mutation Control" }
 
       p { class: tw_join!("mb-4 text-center font-semibold", status_class()), "Status: {status}" }

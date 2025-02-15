@@ -1,7 +1,7 @@
 
 use {
   crate::components::query::{
-    basic_query::QueryDemo, 
+    basic_query::QueryDemoWrapper, 
     batch::BatchOperationsDemo, 
     cache::CacheDemo, 
     mutation::{ManualMutationDemo, SilentMutationDemo}, 
@@ -28,7 +28,7 @@ pub fn CompleteQueryDemo() -> Element {
         class: "space-y-8",
         
         div {
-          QueryDemo {}
+          QueryDemoWrapper {}
         }
         
         div {

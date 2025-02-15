@@ -82,7 +82,7 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
           button {
             class: "p-2 rounded-full hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500",
             onclick: toggle_expanded,
-            title: if is_expanded() { "Collapse Code" } else { "Expand Code" },
+            title: if is_expanded() { "Collapse Code" } else { "View Code" },
             {
               if is_expanded() {
                 rsx! { Icon { icon: FaMaximize, width: 20, height: 20 } }

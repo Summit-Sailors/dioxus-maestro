@@ -17,17 +17,34 @@ pub fn Layout(children: Element) -> Element {
   let mut menu_open = use_signal(|| false);
   let current_route = use_route::<Route>();
 
+  let navigation_menu = rsx! {
+    // sidebar
+    nav {
+      class: tw_join!(
+        "p-2 z-50 shadow-lg rounded-lg bg-gray-800",
+        "transform transition-transform duration-300 ease-in-out",
+        if current_route.name() == "Home" { "hidden lg:hidden translate-x-0" } 
+        else if !menu_open() { "hidden lg:block" } else { "absolute top-0 right-0 block" }
+      ),
+      NavigationMenu { close_menu: menu_open }
+    }
+  };
+
   let content = rsx! {
     match current_route {
       Route::HomePage {} => rsx!{ Outlet<Route> {} },
       _ => rsx! {
           div {
-            class: "mt-8 flex flex-1",
+            class: tw_join!(
+              "mt-8 mr-4 flex flex-1 relative",
+            ),
             CodeEditor {
               title: current_route.name(),
               code_map: get_source_code(&current_route),
               demo: rsx!{ Outlet<Route> {} },
             }
+
+            {navigation_menu}
           }
       }
     }
@@ -45,13 +62,18 @@ pub fn Layout(children: Element) -> Element {
       class: "min-h-screen flex flex-col relative overflow-hidden",
 
       div {
-        class: "container flex mb-4 justify-center backdrop-blur-md",  
+        class: "fixed top-0 left-0 w-full bg-gray-900 z-50 mb-4 shadow-md hover:shadow-lg",  
         header {  
-          class: "flex fixed p-4 mt-0 text-white shadow-md z-50",
+          class: tw_join!(
+            "flex justify-center w-full text-white",
+            "p-1 sm:p-2",
+            "sm:text-xs md:text-base lg:text-lg"
+
+          ),
   
           h1 {  
             class: "text-lg font-semibold",
-            "Dioxus Maestro|"
+            "Dioxus Maestro| "
           }
   
           a {
@@ -61,8 +83,8 @@ pub fn Layout(children: Element) -> Element {
   
             Icon {
               icon: FiGithub,
-              width: 20,
-              height: 20,
+              width: 16,
+              height: 16,
             }
             span {  "View On GitHub"}
           }
@@ -70,10 +92,13 @@ pub fn Layout(children: Element) -> Element {
       }
       
       div {
-        class: "lg:hidden top-0 left-0 w-full h-24 bg-gray-900 z-40 mb-8",
+        class: "lg:hidden flex justify-center w-full mt-8",
         
         button {
-          class: "fixed left-0 right-0 mx-auto max-w-md flex text-white bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-600",
+          class: tw_join!(
+            "left-0 right-0 max-w-md flex text-white bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-600",
+            if current_route.name() == "Home" {"hidden"} else {"block"}
+          ),
           onclick: move |_| menu_open.toggle(),
           
           div {
@@ -91,18 +116,7 @@ pub fn Layout(children: Element) -> Element {
       
       div {
         class: "flex flex-1 items-stretch",
-    
-        // sidebar
-        nav {
-          class: tw_join!(
-            "w-64 mt-2 z-50 shadow-md rounded-lg bg-gray-800",
-            "transform transition-transform duration-300 ease-in-out",
-            if current_route.name() == "Home" { "hidden lg:hidden translate-x-0" } 
-            else if !menu_open() { "hidden lg:block" } else { "block" }
-          ),
-          NavigationMenu { close_menu: menu_open }
-        }        
-    
+
         // main Content
         main {
           class: tw_join!(
@@ -110,15 +124,8 @@ pub fn Layout(children: Element) -> Element {
             "w-full max-w-full overflow-hidden"
           ),
   
-          if menu_open() {
-            div {
-              class: "fixed inset-0 bg-black/50 z-30 md:hidden transition-opacity duration-300",
-              onclick: move |_| menu_open.toggle()
-            }
-          }
-  
           div {
-            class: "container mx-auto px-2 sm:px-2 h-full flex-1",
+            class: "sm:container sm:mx-auto h-full px-4 mt-4",
             {content}
           }
         }
@@ -145,7 +152,7 @@ fn NavigationMenu(close_menu: Signal<bool>) -> Element {
               Link {
                 to: route.clone(),
                 class: tw_join!(
-                  "block px-4 py-2 rounded-md transition-colors w-full text-left",
+                  "block px-4 py-2 rounded-md transition-colors w-full text-right",
                   "hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-600",
                   if is_current {
                     "bg-gray-700 text-white"
@@ -153,7 +160,7 @@ fn NavigationMenu(close_menu: Signal<bool>) -> Element {
                     "text-gray-300 hover:text-white"
                   }
                 ),
-                onclick: move |_| close_menu.toggle(),
+                onclick: move |_| close_menu.set(false),
                 "{route.name()}"
               }
             }

@@ -88,9 +88,8 @@ pub fn UIDemo() -> Element {
             on_click: move |_| handle_button_click("Link Button clicked!".to_string()), 
             "Link Button" 
           }
-          
           Button {
-            class: "bg-gray-300 w-64 flex items-center hover:bg-gray-600",
+            class: "px-6 py-3 bg-gray-300 hover:bg-gray-600",
             variant: ButtonVariant::Icon,
             size: ButtonSize::IconLg,
             button_type: ButtonType::Button,

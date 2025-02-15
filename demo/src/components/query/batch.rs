@@ -329,7 +329,7 @@ pub fn BatchOperationsDemo() -> Element {
       
       match *mutation.result() {
         MutationResult::Ok(_count) => {
-          status.set("Completed 2 tasks");
+          status.set("Completed 3 tasks");
           sleep(Duration::from_secs(2)).await;
           status.set("Idle");
         },
@@ -387,7 +387,7 @@ pub fn BatchOperationsDemo() -> Element {
       }
 
       div { 
-        class: "grid grid-cols-1 md:grid-cols-2 gap-2 justify-center",
+        class: "grid flex justify-center gap-4 mt-6",
         Button {
           class: "bg-blue-500 text-white rounded hover:bg-blue-600",
           on_click: handle_batch_invalidate,
