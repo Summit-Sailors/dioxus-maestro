@@ -1,6 +1,6 @@
-# Maestro Plotters
+# 🗺️ Maestro Plotters
 
-A powerful, flexible, and reactive charting library for Dioxus applications built on top of the robust plotters crate.
+A powerful, flexible, and reactive charting library for Dioxus applications built on top of the plotters crate.
 
 ## Features
 
@@ -74,11 +74,15 @@ fn AnalyticsDashboard() -> Element {
     .build();
 
   // Define chart data
-  let bar_data = use_memo(cx, || Some(vec![
-    ("Jan".to_string(), 100.0f32),
-    ("Feb".to_string(), 150.0f32),
-    // ... more data
-  ]));
+  let bar_data = Memo::new(move || {
+    use_explicit_memo((), || {
+      Some(vec![
+        ("Jan".to_string(), 100.0f32),
+        ("Feb".to_string(), 150.0f32),
+        ...
+      ])
+    })
+  });
 
   rsx! {
     div { class: "grid grid-cols-2 gap-8",
@@ -118,13 +122,22 @@ let pie_options = PieChartOptions::builder()
 #### Heat Map with Custom Labels
 
 ```rust
-let heatmap_data = use_memo(cx, || Some(vec![
-    vec![0.8, 0.2, 0.6, 0.4],
-    vec![0.3, 0.7, 0.5, 0.9],
-    // ... more data
-]));
-
-let heatmap_labels = use_memo(cx, || Some(vec!["Q1", "Q2", "Q3", "Q4"]));
+let heatmap_data = Memo::new(move || {
+    use_explicit_memo((), || {
+      Some(vec![
+        vec![0.8, 0.2, 0.6, 0.4],
+        vec![0.3, 0.7, 0.5, 0.9],
+        vec![0.5, 0.4, 0.8, 0.2],
+        vec![0.4, 0.6, 0.3, 0.7],
+      ])
+    })
+  });
+  
+  let heatmap_labels = Memo::new(move || {
+    use_explicit_memo((), || {
+      Some(vec!["Q1", "Q2", "Q3", "Q4"])
+    })
+  });
 
 use_heat_map(
     "heat-map".into(),
@@ -137,14 +150,21 @@ use_heat_map(
 #### Scatter Plot with Highlights
 
 ```rust
-let scatter_data = use_memo(cx, || Some(vec![
-    (1.2, 2.4), (2.3, 3.5), (3.1, 4.2),
-    // ... more data points
-]));
+let scatter_data = Memo::new(move || {
+    use_explicit_memo((), || {
+      Some(vec![
+        (1.2, 2.4), (2.3, 3.5), (3.1, 4.2), (4.2, 3.8),
+        (5.4, 5.2), (6.1, 5.8), (7.2, 6.4), (8.3, 7.1),
+        (9.1, 8.2), (10.2, 9.4), (11.3, 10.1), (12.4, 11.2)
+      ])
+    })
+  });
 
-let highlights = use_memo(cx, || Some(vec![
-    (4.2, 3.8), (8.3, 7.1)  // Key points to highlight
-]));
+  let scatter_highlights = Memo::new(move || {
+    use_explicit_memo((), || {
+      Some(vec![(4.2, 3.8), (8.3, 7.1), (12.4, 11.2)])
+    })
+  });
 
 use_scatter_plot_hook(
     "scatter-plot".into(),
@@ -175,10 +195,10 @@ rsx! {
 
 ### Data Reactivity
 
-All charts automatically update when their data changes, thanks to Dioxus's reactive system and our use of the `use_memo` hook:
+All charts automatically update when their data changes, thanks to Dioxus's reactive system and our use of the `Memo::new` hook:
 
 ```rust
-let dynamic_data = use_memo(cx, || {
+let dynamic_data = Memo::new(move || {
   use_explicit_memo((), || Some(vec![
     // Your data here
   ]))
@@ -201,7 +221,7 @@ let colors = vec![
 
 ## Best Practices
 
-1. **Memory Management**: Use `use_memo` for data that doesn't need frequent updates
+1. **Memory Management**: Use `Memo::new` for data that doesn't need frequent updates
 2. **Error Handling**: The integrated toast system will automatically handle and display errors
 3. **Responsive Design**: Use aspect-ratio containers and relative sizing
 4. **Performance**: Share ChartOptions instances when possible for multiple charts

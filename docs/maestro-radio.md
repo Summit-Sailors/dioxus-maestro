@@ -28,9 +28,9 @@ pub fn use_radio<Value, Channel>(channel: Channel) -> Radio<Value, Channel>
 
 ```rust
 pub trait RadioChannel<T>: 'static + PartialEq + Eq + Clone {
-    fn derive_channel(self, _radio: &T) -> Vec<Self> {
-        vec![self]
-    }
+  fn derive_channel(self, _radio: &T) -> Vec<Self> {
+    vec![self]
+  }
 }
 ```
 

@@ -60,7 +60,7 @@ pub fn RadioDemo() -> Element {
 
   rsx! {
     div { 
-      class: "grid flex justify-center grid-cols-1 p-6 space-y-8",
+      class: "grid flex justify-center grid-cols-1 p-4 space-y-8",
       
       div { 
         class: "text-center mb-8",
@@ -144,12 +144,12 @@ fn CounterControls() -> Element {
       button {
         class: "flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition",
         onclick: handle_increment,
-        "Increment"
+        "+"
       }
       button {
         class: "flex-1 px-4 py-2 bg-yellow-500 text-white rounded-lg shadow-md hover:bg-yellow-600 transition",
         onclick: handle_decrement,
-        "Decrement"
+        "-"
       }
       button {
         class: "flex-1 px-4 py-2 bg-red-500 text-white rounded-lg shadow-md hover:bg-red-600 transition",

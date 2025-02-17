@@ -45,6 +45,8 @@ pub fn UsersList() -> Element {
     async move {
       delete_mutation.mutate(username);
       query_client.invalidate_query(String::from("users"));
+      // or
+      query_client.invalidate_queries(["multiple", "query", "keys"])
     }
   };
 
@@ -95,6 +97,7 @@ match query.result().value() {
 #[component]
 pub fn UserForm(on_success: EventHandler) -> Element {
   let mut user = use_signal(|| User::default());
+  let form = use_init_form_ctx(initial_values);
   
   let create_mutation = use_mutation(|new_user: User| async move {
     // Validation support
@@ -107,15 +110,15 @@ pub fn UserForm(on_success: EventHandler) -> Element {
   });
 
   let handle_submit = move |event: FormEvent| {
-    event.prevent_default();
     create_mutation.mutate(user.read().clone());
   };
 
   rsx! {
-    form {
+    Form {
+      form: form // form context
       onsubmit: handle_submit,
       // Form fields...
-      button {
+      inner: button {
         r#type: "submit",
         disabled: create_mutation.result().is_loading(),
         {if create_mutation.result().is_loading() { 
@@ -136,6 +139,8 @@ pub fn UserForm(on_success: EventHandler) -> Element {
 let handle_update = move |data| {
   update_mutation.mutate(data);
   query_client.invalidate_query("cache_key");
+  // or
+  query_client.invalidate_queries(["multiple", "query", "keys"])
 };
 ```
 
@@ -166,9 +171,9 @@ match *mutation.result() {
 
 ```rust
 // Manual state management
-let users = use_state(Vec::new);
-let loading = use_state(false);
-let error = use_state(None);
+let users = use_signal(Vec::new);
+let loading = use_signal(false);
+let error = use_signal(None);
 
 use_effect(move || {
   loading.set(true);

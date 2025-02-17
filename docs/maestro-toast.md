@@ -85,7 +85,7 @@ toast.write().popup(info);
 
 ```toml
 [dependencies]
-dioxus-maestro = { version = "0.1.0", features = ["toast"] }
+dioxus-maestro = { version = "", features = ["toast"] }
 ```
 
 ## 🌟 Pro Tips

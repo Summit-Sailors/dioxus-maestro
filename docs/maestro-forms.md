@@ -31,9 +31,9 @@ struct UserForm {
 }
 
 Form {
-  initial_value: UserForm::default(),
-  onsubmit: handle_submit,
-  inner: form_content
+  form: form, // Form context
+  onsubmit: handle_submit, // Your onsubmit handler
+  inner: form_content // A function that returns the actual form
 }
 ```
 
@@ -41,11 +41,13 @@ Form {
 
 ```rust
 #[derive(Validate, Serialize, Deserialize)]
-pub struct User {
-  #[validate(length(min = 3, max = 20))]
+pub struct UserForm {
+  #[validate(length(min = 3))]
   username: String,
   #[validate(email)]
-  email: String
+  email: String,
+  #[validate(length(min = 3))]
+  role: String,
 }
 ```
 
@@ -66,7 +68,7 @@ TextFormInput::<User> {
 ```toml
 [dependencies]
 dioxus-maestro = ""
-validator = ""
+validator = "0.19"
 serde = { version = "", features = ["derive"] }
 ```
 
@@ -82,23 +84,35 @@ pub struct UserForm {
   username: String,
   #[validate(email)]
   email: String,
+  #[validate(length(min = 3))]
+  role: String,
 }
 ```
 
 3.Create your form:
 
 ```rust
-use maestro_forms::fields::form::Form;
+use maestro_forms::{ fields::form::Form, form::use_formik::use_init_form_ctx };
+
+let initial_values = User {
+    role: Role::Admin,
+    ..UserForm::default()
+  };
+  let form = use_init_form_ctx(initial_values);
 
 #[component]
 pub fn UserFormComponent() -> Element {
   rsx! {
     Form {
-      initial_value: UserForm::default(),
-      onsubmit: move |event: FormEvent| {
+      form: form,
+      onsubmit: move |(_event, (submitted_user, is_valid), complete_submission): (FormEvent, FormResult<User>, Box<dyn FnOnce()>)| {
         // Handle submission
+
+        // Call the complete_submission() method at the end
+        complete_submission();
       },
-      inner: form_content
+      auto_reset: true
+      inner: form_content // A function that returns the actual form component
     }
   }
 }
@@ -111,7 +125,8 @@ pub fn UserFormComponent() -> Element {
 Maestro Forms includes a built-in form state debugger that helps during development:
 
 ```rust
-FormStateDebugger { form: props.form }
+FormStateDebugger { form: props.form } 
+// View the demo directory for sample implementation of the FormStateDebugger
 ```
 
 ### Field Wrappers
@@ -119,9 +134,10 @@ FormStateDebugger { form: props.form }
 Create consistent field layouts with reusable wrappers:
 
 ```rust
+// Check the demo for details on how to implement a Form Field Wrapper
 FormFieldWrapper {
   label: "Username",
-  field: form.get_form_field("username"),
+  field: form.get_form_field("username"), // a form field from the form context
   children: // Your input component
 }
 ```

@@ -1,6 +1,6 @@
 # 🎭 Maestro-Hooks
 
-Enhanced hooks collection for Dioxus applications that provides superior type safety, cross-platform compatibility, and optimized performance.
+Enhanced hooks collection for Dioxus applications that provides type safety, cross-platform compatibility, and optimized performance.
 
 ## Features
 
@@ -53,11 +53,11 @@ let (pagination, (next_idx, prev_idx, next_page, prev_page)) = use_pagination(to
 
 ## Installation
 
-Add maestro-hooks to your `Cargo.toml`:
+Add dioxus-maestro to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-dioxus-maestro = { version = "0.1.0", features = ["desktop", "web"] }
+dioxus-maestro = { version = "", features = ["desktop", "web"] }
 ```
 
 ## Usage Examples

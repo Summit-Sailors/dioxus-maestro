@@ -2064,15 +2064,15 @@ body {
   }
 }
 
-@media (min-width: 768px) {
-  .md\:container {
+@media (min-width: 640px) {
+  .sm\:container {
     width: 100%;
     padding-right: 1rem;
     padding-left: 1rem;
   }
 
   @media (min-width: 640px) {
-    .md\:container {
+    .sm\:container {
       max-width: 640px;
       padding-right: 2rem;
       padding-left: 2rem;
@@ -2080,13 +2080,13 @@ body {
   }
 
   @media (min-width: 768px) {
-    .md\:container {
+    .sm\:container {
       max-width: 768px;
     }
   }
 
   @media (min-width: 1024px) {
-    .md\:container {
+    .sm\:container {
       max-width: 1024px;
       padding-right: 4rem;
       padding-left: 4rem;
@@ -2094,7 +2094,7 @@ body {
   }
 
   @media (min-width: 1280px) {
-    .md\:container {
+    .sm\:container {
       max-width: 1280px;
       padding-right: 5rem;
       padding-left: 5rem;
@@ -2102,7 +2102,7 @@ body {
   }
 
   @media (min-width: 1536px) {
-    .md\:container {
+    .sm\:container {
       max-width: 1536px;
       padding-right: 6rem;
       padding-left: 6rem;
@@ -2394,6 +2394,11 @@ body {
 }
 
 @media (min-width: 640px) {
+  .sm\:mx-auto {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
   .sm\:w-96 {
     width: 24rem;
   }
@@ -2422,11 +2427,6 @@ body {
 }
 
 @media (min-width: 768px) {
-  .md\:mx-auto {
-    margin-left: auto;
-    margin-right: auto;
-  }
-
   .md\:grid-cols-1 {
     grid-template-columns: repeat(1, minmax(0, 1fr));
   }

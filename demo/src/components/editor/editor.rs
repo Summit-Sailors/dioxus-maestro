@@ -1,10 +1,16 @@
 use {
-  async_std::task::sleep, 
-  dioxus::prelude::*, 
-  dioxus_free_icons::{icons::fa_solid_icons::{FaCopy, FaMaximize, FaMinimize}, Icon}, 
-  maestro_hooks::clipboard::use_clipboard, 
-  std::collections::HashMap, 
-  tailwind_fuse::tw_join
+  async_std::task::sleep,
+  dioxus::prelude::*,
+  dioxus_free_icons::{icons::fa_solid_icons::{FaCopy, FaMaximize, FaMinimize}, Icon},
+  maestro_hooks::clipboard::use_clipboard,
+  std::collections::HashMap,
+  tailwind_fuse::tw_join,
+
+  // for syntax highlighting
+  syntect::easy::HighlightLines,
+  syntect::highlighting::ThemeSet,
+  syntect::html::{styled_line_to_highlighted_html, IncludeBackground},
+  syntect::parsing::SyntaxSet,
 };
 
 #[derive(Props, PartialEq, Clone)]
@@ -51,10 +57,38 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
     is_expanded.toggle();
   };
 
-
   let handle_file_selection = move |event: FormEvent| {
     selected_file.set(event.value().clone())
   };
+
+  // syntax highlighting function
+  let highlight_code = move |code: &str, lang: &str| -> String {
+    // loading syntax set and theme set
+    let syntax_set = SyntaxSet::load_defaults_newlines();
+    let theme_set = ThemeSet::load_defaults();
+    
+    // determining the syntax to use
+    let syntax = syntax_set.find_syntax_by_token(lang)
+        .unwrap_or_else(|| syntax_set.find_syntax_by_extension("rs").unwrap());
+    
+    let theme = &theme_set.themes["base16-ocean.dark"];
+    
+    // highlight code
+    let mut highlighter = HighlightLines::new(syntax, theme);
+    let highlighted_html = code.lines()
+      .map(|line| {
+        let regions = highlighter.highlight_line(line, &syntax_set).unwrap();
+        styled_line_to_highlighted_html(&regions[..], IncludeBackground::Yes)
+          .unwrap_or_else(|_| line.to_string())
+      })
+      .collect::<Vec<String>>()
+      .join("\n");
+    
+    highlighted_html
+  };
+
+  let current_code = code().get(&selected_file()).unwrap_or(&String::new()).clone();
+  let highlighted_code = highlight_code(&current_code, &props.language);
 
   rsx! {
     div {
@@ -149,11 +183,9 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
               }
 
               div {
-                class: "font-mono language-rust text-sm whitespace-pre overflow-auto p-4",
-                pre {
-                  class: "",
-                  "{props.code_map.get(&selected_file()).unwrap_or(&String::new())}"
-                }
+                class: "font-mono text-sm whitespace-pre overflow-auto p-4",
+                // dangerous_inner_html to render the highlighted code
+                dangerous_inner_html: "{highlighted_code}"
               }
             }
           }

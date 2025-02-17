@@ -37,6 +37,7 @@ chrono = { workspace = true }
 instant = { version = "0.1.13", features = ["wasm-bindgen"] }
 js-sys = "0.3.77"
 tailwind_fuse = { version = "0.3.1", features = ["variant"] }
+syntect = { version = "5.2.0", default-features = false, features = ["default-fancy"]}
 plotters = { version = "0.3.7", default-features = false, features = [
   "all_elements",
   "all_series",

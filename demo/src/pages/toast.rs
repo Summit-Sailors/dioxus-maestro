@@ -78,7 +78,7 @@ pub fn ToastDemo() -> Element {
 
   rsx! {
     div {
-      class: "grid flex justify-center bg-white rounded-lg shadow-md p-2 w-full",
+      class: "grid flex justify-center bg-white rounded-lg shadow-md p-4 w-full",
       h1 {
         class: "text-2xl text-gray-800 font-bold mb-6 text-center",
         "Toast Demo"

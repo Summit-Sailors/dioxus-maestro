@@ -3,6 +3,22 @@
 # App (Project) Name
 name = "demo"
 
+# `build` & `serve` output path
+out_dir = "dist"
+
+# The static resource path
+asset_dir = "assets"
+
+[web.watcher]
+
+# When watcher is triggered, regenerate the `index.html`
+reload_html = true
+
+# Which files or dirs will be monitored
+watch_path = ["src", "assets"]
+
+index_on_404 = true
+
 [web.app]
 
 # HTML title tag content
@@ -12,7 +28,9 @@ title = "demo"
 [web.resource]
 
 # Additional CSS style files
-style = []
+style = [
+  "./assets/main.css",
+]
 
 # Additional JavaScript files
 script = []
@@ -22,3 +40,5 @@ script = []
 # Javascript code file
 # serve: [dev-server] only
 script = []
+
+[bundle]

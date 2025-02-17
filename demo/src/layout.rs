@@ -52,7 +52,6 @@ pub fn Layout(children: Element) -> Element {
 
   rsx! {
     head {
-      link { rel: "stylesheet", href: asset!("/assets/main.css") }
       link { rel: "icon", href: asset!("/assets/favicon.ico") }
     }
     
@@ -125,7 +124,7 @@ pub fn Layout(children: Element) -> Element {
           ),
   
           div {
-            class: "sm:container sm:mx-auto h-full px-4 mt-4",
+            class: "md:container md:mx-auto h-full px-4 mt-4",
             {content}
           }
         }
