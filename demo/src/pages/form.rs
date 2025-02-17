@@ -1,11 +1,7 @@
 use {
-  crate::{components::form::form_content::FormContent, 
-    models::user::{Role, User}}
-  ,
+  crate::{components::form::form_content::FormContent, models::user::{Role, User}},
   dioxus::prelude::*,
-  maestro_forms::{fields::
-    form::{Form, FormResult}, use_formik::use_init_form_ctx}
-  ,
+  maestro_forms::{fields::form::{Form, FormResult}, use_formik::use_init_form_ctx},
   maestro_toast::{
     ctx::use_toast, toast_info::ToastInfo
   },

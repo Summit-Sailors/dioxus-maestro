@@ -38,8 +38,8 @@ impl RadioChannel<CounterState> for CounterChannel {
 impl Display for CounterChannel {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     match self {
-      CounterChannel::Increment => write!(f, "Increment"),
-      CounterChannel::Decrement => write!(f, "Decrement"),
+      CounterChannel::Increment => write!(f, "+"),
+      CounterChannel::Decrement => write!(f, "-"),
       CounterChannel::Reset => write!(f, "Reset"),
       CounterChannel::All => write!(f, "All"),
     }
@@ -75,7 +75,7 @@ pub fn RadioDemo() -> Element {
       }
 
       div { 
-        class: "grid grid-cols-1 lg:grid-cols-3 gap-3",
+        class: "grid grid-cols-1 md:grid-cols-3 gap-3",
         
         div { 
           class: "bg-white p-4 rounded-xl shadow-lg border border-gray-200",
@@ -96,7 +96,7 @@ pub fn RadioDemo() -> Element {
         }
 
         div { 
-          class: "lg:col-span-3 bg-white p-4 rounded-xl shadow-lg border border-gray-200",
+          class: "lg:col-span-1 bg-white p-4 rounded-xl shadow-lg border border-gray-200",
           h2 { 
             class: "text-xl text-gray-800 text-center font-semibold mb-4",
             "Channel Monitor"
@@ -212,7 +212,7 @@ fn ChannelCard(channel: CounterChannel, value: i32) -> Element {
     div { 
       class: "p-4 bg-gray-50 rounded-lg border border-gray-300 shadow-md",
       div {
-        class: "font-medium text-gray-700 mb-2 text-lg",
+        class: "font-bold text-gray-700 mb-2 text-lg",
         "{channel} Channel"
       }
       div {

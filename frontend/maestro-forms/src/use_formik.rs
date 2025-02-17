@@ -54,9 +54,9 @@ where
 	}
 
 	pub fn submit(&mut self, event: FormEvent, handler: EventHandler<(FormEvent, FormResult<T>, Box<dyn FnOnce()>)>) {
-        if (self.is_submitting)() {
-            return;
-        }
+    if (self.is_submitting)() {
+      return;
+    }
 
 		let result = self.as_validated_struct();
 
@@ -64,18 +64,18 @@ where
 			return;
 		}
 		
-        self.is_submitting.set(true);
+    self.is_submitting.set(true);
 
-        let mut form = self.clone();
-        let complete_submission = move || {
-            form.is_submitting.toggle();
-            if result.1 && form.should_auto_reset {
-                form.reset_form();
-            }
-        };
+    let mut form = self.clone();
+    let complete_submission = move || {
+      form.is_submitting.toggle();
+      if result.1 && form.should_auto_reset {
+        form.reset_form();
+      }
+    };
 
-        handler.call((event, result.clone(), Box::new(complete_submission))).spawn();
-    }
+    handler.call((event, result.clone(), Box::new(complete_submission))).spawn();
+  }
 
 
   pub fn as_validated_struct(&mut self) -> FormResult<T> {

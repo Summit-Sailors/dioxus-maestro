@@ -5,8 +5,6 @@ use {
   maestro_hooks::clipboard::use_clipboard,
   std::collections::HashMap,
   tailwind_fuse::tw_join,
-
-  // for syntax highlighting
   syntect::easy::HighlightLines,
   syntect::highlighting::ThemeSet,
   syntect::html::{styled_line_to_highlighted_html, IncludeBackground},

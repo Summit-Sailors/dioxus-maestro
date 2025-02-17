@@ -203,7 +203,7 @@ pub fn CalendarMaybeWrapper(CalendarMaybeWrapperProps { is_full, children, selec
 		}
 	} else {
 		rsx! {
-			div { class: "relative w-fit",
+			div { class: "relative flex justify-center",
 				Button {
 					variant: crate::button::ButtonVariant::Outline,
 					class: "calendar-button",
@@ -214,9 +214,9 @@ pub fn CalendarMaybeWrapper(CalendarMaybeWrapperProps { is_full, children, selec
 				}
 				div {
 					class: tw_join!(
-							"absolute top-10 mt-6 min-w-[448px]", if is_open() { "block" } else {
-							"hidden" }
-					),
+            "absolute min-w-[448px] top-20 mt-6 z-50 bg-white shadow-lg rounded-lg border",
+            if is_open() { "block" } else { "hidden" }
+          ),
 					{children}
 				}
 			}
