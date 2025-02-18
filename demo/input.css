@@ -5,10 +5,12 @@
 /* base styles */
 html {
   scroll-behavior: smooth;
+  height: 100%;
+  min-height: 100vh;
 }
 
 body {
-  @apply bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100 font-inter;
+  @apply bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100 font-inter flex flex-col max-h-screen h-full [&>div]:h-full;
 }
 
 /* responsive container */
