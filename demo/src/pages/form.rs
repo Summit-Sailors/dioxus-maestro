@@ -21,6 +21,7 @@ async fn simulate_submission(delay_ms: u64) -> Result<(), String> {
   }
 }
 
+#[allow(non_snake_case)]
 #[component]
 pub fn FormsDemo() -> Element {
   let mut toast = use_toast();

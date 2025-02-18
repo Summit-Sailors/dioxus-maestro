@@ -76,7 +76,7 @@ pub fn Layout(children: Element) -> Element {
           }
   
           a {
-            href: "https://github.com/Summit-Sailors/dioxus-maestro/tree/maestro-demo/demo",
+            href: "https://github.com/Summit-Sailors/dioxus-maestro/tree/main/demo",
             target: "_blank",
             class: "flex items-center space-x-2 text-gray-300 hover:text-white transition",
   

@@ -1,6 +1,7 @@
 
 use {
   serde::{Deserialize, Serialize}, 
+  sqlx::prelude::FromRow, 
   strum_macros::{Display, EnumString, VariantNames}, 
   validator::Validate
 };
@@ -16,7 +17,7 @@ pub enum Role {
   Moderator,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Validate)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Validate, FromRow)]
 pub struct User {
   #[validate(length(min = 3, max = 20, message = "Username must be between 3 and 20 characters"))]
   pub username: String,
