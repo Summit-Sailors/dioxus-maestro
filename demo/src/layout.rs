@@ -72,9 +72,9 @@ pub fn Layout(children: Element) -> Element {
     div { class: "flex flex-col relative h-full max-h-screen",
       header {
         class: tw_join!(
-            "flex justify-between items-center w-full text-white gap-4",
-            "px-8 py-4 sticky top-0 left-0 w-full bg-gray-900 z-50 shadow-md hover:shadow-lg",
-            "sm:text-lg text-base"
+          "flex justify-between items-center w-full text-white gap-4",
+          "px-8 py-4 sticky top-0 left-0 w-full bg-gray-900 z-50 shadow-md hover:shadow-lg",
+          "sm:text-lg text-base"
         ),
 
         LogoLight { class: "w-24 sm:w-28 h-auto" }
