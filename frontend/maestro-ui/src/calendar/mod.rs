@@ -205,18 +205,16 @@ pub fn CalendarMaybeWrapper(CalendarMaybeWrapperProps { is_full, children, selec
 		rsx! {
 			div { class: "relative flex justify-center",
 				Button {
-					variant: crate::button::ButtonVariant::Outline,
 					class: "calendar-button",
-					on_click: move |_| is_open.toggle(),
-					stop_propagation: true,
+					onclick: move |_| is_open.toggle(),
 					Icon { class: "h-4 w-4", icon: LdCalendar }
 					{selected_date().format("%b %d, %y").to_string()}
 				}
 				div {
 					class: tw_join!(
-            "absolute min-w-[448px] top-20 mt-6 z-50 bg-white shadow-lg rounded-lg border",
-            if is_open() { "block" } else { "hidden" }
-          ),
+							"absolute min-w-[448px] top-20 mt-6 z-50 bg-white shadow-lg rounded-lg border",
+							if is_open() { "block" } else { "hidden" }
+					),
 					{children}
 				}
 			}

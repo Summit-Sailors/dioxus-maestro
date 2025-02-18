@@ -32,7 +32,7 @@ pub fn Radio(props: RadioProps) -> Element {
 					.clone().unwrap_or_default(), (props.disabled)
 					.then_some("pointer-events-none opacity-50 cursor-not-allowed")
 			),
-			label_text: props.label,
+			text: props.label,
 			input {
 				class: "absolute w-0 h-0 opacity-0 -z-20",
 				r#type: "radio",

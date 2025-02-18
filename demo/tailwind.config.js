@@ -24,6 +24,7 @@ module.exports = {
           DEFAULT: "#3b82f6",
           dark: "#2563eb",
         },
+        danger: "tomato",
       },
       screens: {
         sm: "640px",
