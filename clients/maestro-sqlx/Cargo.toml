@@ -11,7 +11,7 @@ repository = ""
 serde = { workspace = true }
 
 sqlx = { version = "0.8.3", features = ["postgres", "runtime-tokio"], optional = true }
-tokio = { version = "1.43.0", optional = true }
+tokio = { version = "1.43.0", features = ["full"], optional = true }
 
 [features]
 acreate = ["dep:sqlx"]

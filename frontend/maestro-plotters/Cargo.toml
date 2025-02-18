@@ -33,17 +33,15 @@ plotters = { version = "0.3.7", default-features = false, features = [
   "bitmap_gif",
   "chrono",
   "svg_backend",
-  # "ttf",
   "all_elements",
   "all_series",
   "colormaps",
   "deprecated_items",
   "full_palette",
   "image",
-] }
+] } 
 plotters-backend = { version = "0.3.7" }
 plotters-canvas = { version = "0.3.0" }
-
 
 tailwind_fuse = { workspace = true }
 

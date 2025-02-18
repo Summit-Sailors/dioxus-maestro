@@ -1,44 +1,55 @@
 use {
-	crate::use_formik::{use_init_form_ctx, Formik},
+	crate::use_formik::Formik,
 	dioxus::prelude::*,
 	serde::{Deserialize, Serialize},
 	validator::Validate,
 };
 
+pub type FormResult<T> = (T, bool);
+
 #[derive(Clone, PartialEq, Props)]
 pub struct FormProps<T>
 where
-	T: Validate + Clone + Serialize + PartialEq + 'static + for<'de> Deserialize<'de>,
+  T: Validate + Clone + Serialize + PartialEq + 'static + for<'de> Deserialize<'de>,
 {
-	inner: Component<InnerComponentProps<T>>,
-	pub initial_value: T,
-	#[props(optional)]
-	pub onsubmit: Option<EventHandler<(FormEvent, (T, bool))>>,
-	#[props(extends = GlobalAttributes, extends = form)]
-	pub attributes: Vec<Attribute>,
+  pub form: Formik<T>,
+  inner: Component<InnerComponentProps<T>>,
+  #[props(optional)]
+  pub onsubmit: Option<EventHandler<(FormEvent, FormResult<T>, Box<dyn FnOnce()>)>>,
+  #[props(optional)]
+  pub auto_reset: Option<bool>,
+  #[props(extends = GlobalAttributes, extends = form)]
+  pub attributes: Vec<Attribute>,
 }
 
 #[derive(Clone, PartialEq, Props)]
 pub struct InnerComponentProps<T>
 where
-	T: Validate + Clone + Serialize + PartialEq + 'static + for<'de> Deserialize<'de>,
+  T: Validate + Clone + Serialize + PartialEq + 'static + for<'de> Deserialize<'de>,
 {
-	pub form: Formik<T>,
+  pub form: Formik<T>,
 }
 
-// Added onsubmit. It returns an event, (T, bool), where T - form.as_struct(), bool - is form valid
-
-pub fn Form<T>(props: FormProps<T>) -> Element
+pub fn Form<T>(mut props: FormProps<T>) -> Element
 where
-	T: Validate + Clone + Serialize + PartialEq + 'static + for<'de> Deserialize<'de>,
+  T: Validate + Clone + Serialize + PartialEq + 'static + for<'de> Deserialize<'de>,
 {
-	let mut form = use_init_form_ctx::<T>(props.initial_value);
-	let InnerComponent = props.inner;
-	rsx! {
-    form {
-      onsubmit: move |e| props.onsubmit.unwrap_or_default().call((e, form.as_validated_struct())),
-      ..props.attributes,
-      InnerComponent { form }
+  let InnerComponent = props.inner;
+
+  props.form.should_auto_reset = props.auto_reset.unwrap_or(false);
+
+  let onsubmit = move |e: FormEvent| {
+    e.stop_propagation();
+    if let Some(submit_handler) = props.onsubmit {
+      props.form.submit(e, submit_handler);
     }
+  };
+
+  rsx! {
+    form {
+      onsubmit: onsubmit,
+      ..props.attributes,
+      InnerComponent { form: props.form }
+  }
   }
 }

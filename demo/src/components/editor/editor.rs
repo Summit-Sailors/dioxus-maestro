@@ -1,0 +1,194 @@
+use {
+  async_std::task::sleep,
+  dioxus::prelude::*,
+  dioxus_free_icons::{icons::fa_solid_icons::{FaCopy, FaMaximize, FaMinimize}, Icon},
+  maestro_hooks::clipboard::use_clipboard,
+  std::collections::HashMap,
+  tailwind_fuse::tw_join,
+  syntect::easy::HighlightLines,
+  syntect::highlighting::ThemeSet,
+  syntect::html::{styled_line_to_highlighted_html, IncludeBackground},
+  syntect::parsing::SyntaxSet,
+};
+
+#[derive(Props, PartialEq, Clone)]
+pub struct CodeEditorProps {
+  #[props(default = "rust".to_string())]
+  language: String,
+  #[props(into, default = String::from("Example Code"))]
+  title: String,
+  #[props(into)]
+  demo: Element,
+  code_map: HashMap<String, String>,
+}
+
+#[component]
+pub fn CodeEditor(props: CodeEditorProps) -> Element {
+  let code = use_signal(|| props.code_map.clone());
+  let mut is_expanded = use_signal(|| false);
+  let clipboard = use_clipboard();
+  let mut copy_status = use_signal(|| String::new());
+  let mut is_copying = use_signal(|| false);
+
+  // the currently selected code
+  let file_keys: Vec<String> = props.code_map.keys().cloned().collect();
+  let mut selected_file = use_signal(|| file_keys.first().unwrap_or(&"".to_string()).clone());
+
+  let handle_copy = move |_| {
+    let content = code().get(&selected_file()).unwrap_or(&"".to_string()).clone();
+    let mut clipboard = clipboard.clone();
+    is_copying.set(true);
+    spawn(async move {
+      match clipboard.set(content).await {
+        Ok(_) => copy_status.set("Copied!".to_string()),
+        Err(_) => copy_status.set("Failed to copy".to_string()),
+      }
+      is_copying.set(false);
+      spawn(async move {
+        sleep(std::time::Duration::from_secs(2)).await;
+        copy_status.set(String::new());
+      });
+    });
+  };
+  
+  let toggle_expanded = move |_| {
+    is_expanded.toggle();
+  };
+
+  let handle_file_selection = move |event: FormEvent| {
+    selected_file.set(event.value().clone())
+  };
+
+  // syntax highlighting function
+  let highlight_code = move |code: &str, lang: &str| -> String {
+    // loading syntax set and theme set
+    let syntax_set = SyntaxSet::load_defaults_newlines();
+    let theme_set = ThemeSet::load_defaults();
+    
+    // determining the syntax to use
+    let syntax = syntax_set.find_syntax_by_token(lang)
+        .unwrap_or_else(|| syntax_set.find_syntax_by_extension("rs").unwrap());
+    
+    let theme = &theme_set.themes["base16-ocean.dark"];
+    
+    // highlight code
+    let mut highlighter = HighlightLines::new(syntax, theme);
+    let highlighted_html = code.lines()
+      .map(|line| {
+        let regions = highlighter.highlight_line(line, &syntax_set).unwrap();
+        styled_line_to_highlighted_html(&regions[..], IncludeBackground::Yes)
+          .unwrap_or_else(|_| line.to_string())
+      })
+      .collect::<Vec<String>>()
+      .join("\n");
+    
+    highlighted_html
+  };
+
+  let current_code = code().get(&selected_file()).unwrap_or(&String::new()).clone();
+  let highlighted_code = highlight_code(&current_code, &props.language);
+
+  rsx! {
+    div {
+      class: "h-screen p-2 bg-gray-800 rounded-lg w-full flex flex-col mb-8",
+
+      // header section
+      div {
+        class: "flex items-center justify-between text-white top-0 z-10 bg-gray-800 p-2",
+        h2 { class: "text-xl font-semibold", "{props.title}" }
+        div {
+          class: "flex space-x-2",
+          button {
+            class: "p-2 rounded-full hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 relative",
+            disabled: "{is_copying()}",
+            onclick: handle_copy,
+            title: "Copy Code",
+            Icon { icon: FaCopy, width: 20, height: 20 }
+            div {
+              class: tw_join!("absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs py-1 px-2 rounded transition-opacity duration-300 {}", 
+                if copy_status().is_empty() { "opacity-0" } else { "opacity-100" }
+              ),
+              "{copy_status}"
+            }
+          }
+          button {
+            class: "p-2 rounded-full hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500",
+            onclick: toggle_expanded,
+            title: if is_expanded() { "Collapse Code" } else { "View Code" },
+            {
+              if is_expanded() {
+                rsx! { Icon { icon: FaMaximize, width: 20, height: 20 } }
+              } else {
+                rsx! { Icon { icon: FaMinimize, width: 20, height: 20 } }
+              }
+            }
+          }
+        }
+      }    
+
+      // scrollable container for demo and code
+      div {
+        class: tw_join!(
+          "grid grid-cols-1 overflow-auto transition-all duration-500 ease-in-out",
+          if is_expanded() { "md:grid-cols-2" } else { "grid-cols-1" }
+        ),
+    
+        // demo component section
+        div {
+          class: "bg-gray-300 overflow-auto p-6 rounded-lg shadow-md border border-gray-200 mt-4",
+          {props.demo}
+        }
+    
+        // code section
+        if is_expanded() {
+          div {
+            class: "overflow-hidden",
+            h2 { class: "text-xl font-semibold text-center mt-4", "Source Code" }
+
+            div {
+              class: "flex justify-center my-3",
+              select {
+                class: "p-2 px-4 bg-gray-700 text-gray-300 rounded-lg border border-gray-600 
+                        hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 
+                        transition-all duration-200",
+                onchange: handle_file_selection,
+
+                {
+                  file_keys.iter().map(|file| rsx! {
+                    option {
+                      value: "{file}",
+                      selected: *file == selected_file(),
+                      class: "bg-gray-800 text-white text-center hover:bg-gray-700 px-2 py-1",
+                      "{file}"
+                    }
+                  })
+                }
+              }
+            }
+
+            div {
+              class: "relative h-full overflow-auto bg-gray-900 rounded-lg shadow-md border border-gray-700 p-4",
+              
+              div {
+                class: "flex justify-between items-center bg-gray-800 text-gray-300 text-xs px-4 py-2 rounded-t-md",
+                span { class: "font-mono", "{selected_file()}" }
+                div {
+                  class: "flex gap-1",
+                  span { class: "w-3 h-3 bg-red-500 rounded-full" }
+                  span { class: "w-3 h-3 bg-yellow-500 rounded-full" }
+                  span { class: "w-3 h-3 bg-green-500 rounded-full" }
+                }
+              }
+
+              div {
+                class: "font-mono text-sm whitespace-pre overflow-auto p-4",
+                // dangerous_inner_html to render the highlighted code
+                dangerous_inner_html: "{highlighted_code}"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

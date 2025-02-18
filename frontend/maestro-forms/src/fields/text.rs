@@ -26,11 +26,12 @@ where
 	let mut field = use_formik_field::<TForm>(props.name.clone());
 
 	let mut debounced_input = use_debounce(Duration::from_millis(200), move |text_input: String| {
-		field.set_value(Value::String(text_input.clone()));
-		if let Some(handler) = &props.oninput {
-			handler.call(text_input);
-		}
-	});
+    field.clear_errors();
+    field.set_value(Value::String(text_input.clone()));
+    if let Some(handler) = &props.oninput {
+        handler.call(text_input);
+    }
+  });
 
 	rsx! {
 		input {
