@@ -44,36 +44,36 @@ pub fn Input(props: InputProps) -> Element {
 	let has_error = !props.error.is_empty();
 
 	rsx! {
-		div { class: tw_merge!("flex flex-col gap-2 w-full relative", "maestro-input__wrapper"),
-			div { class: "relative",
-				input {
-					class: tw_join!(class, (has_error).then_some("border-danger")),
-					style: props.style.unwrap_or_default(),
-					oninput: move |event| {
-							props.onchange.unwrap_or_default().call(event);
-					},
-					onfocus: move |event| {
-							props.onfocus.unwrap_or_default().call(event);
-					},
-					onblur: move |event| {
-							props.onblur.unwrap_or_default().call(event);
-					},
-					onkeypress: move |event| {
-							if event.data().code() == Code::Enter {
-									props.onenter.unwrap_or_default().call(event);
-							}
-					},
-					..props.attributes,
-				}
-				{props.children}
-			}
-			span {
-				class: tw_merge!(
-						"text-xs min-h-4 text-left", props.error_class.clone().unwrap_or_default(),
-						"maestro-input__error"
-				),
-				{props.error}
-			}
-		}
-	}
+    div { class: tw_merge!("flex flex-col gap-2 w-full relative", "maestro-input__wrapper"),
+      div { class: "relative",
+        input {
+          class: tw_join!(class, (has_error).then_some("border-danger")),
+          style: props.style.unwrap_or_default(),
+          oninput: move |event| {
+              props.onchange.unwrap_or_default().call(event);
+          },
+          onfocus: move |event| {
+              props.onfocus.unwrap_or_default().call(event);
+          },
+          onblur: move |event| {
+              props.onblur.unwrap_or_default().call(event);
+          },
+          onkeypress: move |event| {
+              if event.data().code() == Code::Enter {
+                  props.onenter.unwrap_or_default().call(event);
+              }
+          },
+          ..props.attributes,
+        }
+        {props.children}
+      }
+      span {
+        class: tw_merge!(
+            "text-xs min-h-4 text-left", props.error_class.clone().unwrap_or_default(),
+            "maestro-input__error"
+        ),
+        {props.error}
+      }
+    }
+  }
 }
