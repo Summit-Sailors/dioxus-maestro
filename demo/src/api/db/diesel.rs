@@ -53,9 +53,6 @@ fn DieselDemo() -> Element {
     let users = use_signal( || Vec<User>);
     let loading = use_signal( || true);
     let error = use_signal( || None::<String>);
-    let page = use_signal( || 1);
-    let page_size = use_signal( || 10);
-    let total_pages = use_signal( || 1);
 
     let page_size = 10;
     let (pagination, (mut next_idx, mut prev_idx, mut next_page, mut prev_page)) =
@@ -112,103 +109,103 @@ fn DieselDemo() -> Element {
             } else if let Some(err) = error.get() {
               div { class: "text-red-500", "Error: {err}" }
             } else {
-                div {
-                    h2 { class: "text-xl font-semibold mb-2", "Users (Page {page} of {total_pages})" }
-                    
-                    // user list
-                    ul {
-                        class: "list-none divide-y divide-gray-200",
-                        users.get().iter().map(|user| {
-                            rsx! {
-                                li {
-                                    key: "{user.username}",
-                                    class: "py-4",
-                                    div {
-                                      class: "flex justify-between",
-                                      div {
-                                        p { class: "font-medium", "{user.username}" }
-                                        p { class: "text-sm text-gray-600", "{user.email}" }
-                                      }
-                                      div {
-                                        span {
-                                          class: match user.role {
-                                            Role::Admin => "bg-red-100 text-red-800",
-                                            Role::Moderator => "bg-yellow-100 text-yellow-800",
-                                            Role::User => "bg-green-100 text-green-800",
-                                          },
-                                          class: "{class} px-2 py-1 text-xs font-semibold rounded-full",
-                                          "{user.role:?}"
-                                        }
-                                      }
-                                    }
-                                    p { class: "mt-1 text-sm", "{user.bio}" }
-                                    p { class: "mt-1 text-xs text-gray-500", "Age: {user.age}" }
-                                }
-                            }
-                        })
-                    }
-                    
-                    // pagination controls
-                    div {
-                      class: "flex justify-between items-center mt-4",
-                      button {
-                        class: "px-4 py-2 border rounded {if *page.get() == 1 { 'opacity-50 cursor-not-allowed' } else { 'hover:bg-gray-100' }}",
-                        disabled: *page.get() == 1,
-                        onclick: move |_| go_to_page(*page.get() - 1),
-                        "Previous"
-                      }
-                      
-                      div {
-                        class: "flex space-x-2",
-                        // first page
-                        if *page.get() > 3 {
-                          button {
-                            class: "w-10 h-10 rounded-full border flex items-center justify-center hover:bg-gray-100",
-                            onclick: move |_| go_to_page(1),
-                            "1"
+              div {
+                h2 { class: "text-xl font-semibold mb-2", "Users (Page {page} of {total_pages})" }
+                
+                // user list
+                ul {
+                  class: "list-none divide-y divide-gray-200",
+                  users.get().iter().map(|user| {
+                    rsx! {
+                      li {
+                        key: "{user.username}",
+                        class: "py-4",
+                        div {
+                          class: "flex justify-between",
+                          div {
+                            p { class: "font-medium", "{user.username}" }
+                            p { class: "text-sm text-gray-600", "{user.email}" }
                           }
-                        }
-                        
-                        // ellipsis if needed
-                        if *page.get() > 4 {
-                          span { class: "w-10 h-10 flex items-center justify-center", "..." }
-                        }
-                        
-                        // page numbers around current page
-                        ((*page.get() - 2).max(1)..=(*page.get() + 2).min(*total_pages.get())).map(|p| {
-                          rsx! {
-                            button {
-                              key: "{p}",
-                              class: "w-10 h-10 rounded-full border flex items-center justify-center {if p == *page.get() { 'bg-blue-500 text-white' } else { 'hover:bg-gray-100' }}",
-                              onclick: move |_| go_to_page(p),
-                              "{p}"
+                          div {
+                            span {
+                              class: match user.role {
+                                Role::Admin => "bg-red-100 text-red-800",
+                                Role::Moderator => "bg-yellow-100 text-yellow-800",
+                                Role::User => "bg-green-100 text-green-800",
+                              },
+                              class: "{class} px-2 py-1 text-xs font-semibold rounded-full",
+                              "{user.role:?}"
                             }
                           }
-                        })
-                        
-                        // ellipsis if needed
-                        if *page.get() < *total_pages.get() - 3 {
-                          span { class: "w-10 h-10 flex items-center justify-center", "..." }
                         }
-                        
-                        // last page
-                        if *page.get() < *total_pages.get() - 2 && *total_pages.get() > 3 {
-                          button {
-                            class: "w-10 h-10 rounded-full border flex items-center justify-center hover:bg-gray-100",
-                            onclick: move |_| go_to_page(*total_pages.get()),
-                            "{total_pages}"
-                          }
-                        }
-                      }
-                      
-                      button {
-                        class: "px-4 py-2 border rounded {if *page.get() == *total_pages.get() { 'opacity-50 cursor-not-allowed' } else { 'hover:bg-gray-100' }}",
-                        disabled: *page.get() == *total_pages.get(),
-                        onclick: move |_| go_to_page(*page.get() + 1),
-                        "Next"
+                        p { class: "mt-1 text-sm", "{user.bio}" }
+                        p { class: "mt-1 text-xs text-gray-500", "Age: {user.age}" }
                       }
                     }
+                  })
                 }
+                
+                // pagination controls
+                div {
+                  class: "flex justify-between items-center mt-4",
+                  button {
+                    class: "px-4 py-2 border rounded {if *page.get() == 1 { 'opacity-50 cursor-not-allowed' } else { 'hover:bg-gray-100' }}",
+                    disabled: *page.get() == 1,
+                    onclick: move |_| go_to_page(*page.get() - 1),
+                    "Previous"
+                  }
+                  
+                  div {
+                    class: "flex space-x-2",
+                    // first page
+                    if *page.get() > 3 {
+                      button {
+                        class: "w-10 h-10 rounded-full border flex items-center justify-center hover:bg-gray-100",
+                        onclick: move |_| go_to_page(1),
+                        "1"
+                      }
+                    }
+                    
+                    // ellipsis if needed
+                    if *page.get() > 4 {
+                      span { class: "w-10 h-10 flex items-center justify-center", "..." }
+                    }
+                    
+                    // page numbers around current page
+                    ((*page.get() - 2).max(1)..=(*page.get() + 2).min(*total_pages.get())).map(|p| {
+                      rsx! {
+                        button {
+                          key: "{p}",
+                          class: "w-10 h-10 rounded-full border flex items-center justify-center {if p == *page.get() { 'bg-blue-500 text-white' } else { 'hover:bg-gray-100' }}",
+                          onclick: move |_| go_to_page(p),
+                          "{p}"
+                        }
+                      }
+                    })
+                    
+                    // ellipsis if needed
+                    if *page.get() < *total_pages.get() - 3 {
+                      span { class: "w-10 h-10 flex items-center justify-center", "..." }
+                    }
+                    
+                    // last page
+                    if *page.get() < *total_pages.get() - 2 && *total_pages.get() > 3 {
+                      button {
+                        class: "w-10 h-10 rounded-full border flex items-center justify-center hover:bg-gray-100",
+                        onclick: move |_| go_to_page(*total_pages.get()),
+                        "{total_pages}"
+                      }
+                    }
+                  }
+                  
+                  button {
+                    class: "px-4 py-2 border rounded {if *page.get() == *total_pages.get() { 'opacity-50 cursor-not-allowed' } else { 'hover:bg-gray-100' }}",
+                    disabled: *page.get() == *total_pages.get(),
+                    onclick: move |_| go_to_page(*page.get() + 1),
+                    "Next"
+                  }
+                }
+              }
             }
         }
     }

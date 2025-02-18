@@ -63,7 +63,7 @@ fn SerpApiDemo() -> Element {
     });
   };
 
-  let on_submit = move |(evt, (), ): Event<FormEvent>| {
+  let on_submit = move |evt: Event<FormEvent>| {
     evt.prevent_default();
     to_owned![state, on_search];
     spawn(on_search(state.query.clone()));
@@ -98,31 +98,31 @@ fn SerpApiDemo() -> Element {
       } else if let Some(error) = &state.error {
         div { class: "bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded", "{error}" }
       } else if !state.results.is_empty() {
-          div {
-            h2 { class: "text-xl font-semibold mb-4", "Search Results" }
-            div { class: "space-y-4", 
-              {state.results.iter().enumerate().map(|(index, result)| {
-                rsx! {
-                  div {
-                    key: "{index}",
-                    class: "border p-4 rounded",
-                    h3 { class: "text-lg font-medium text-blue-600", 
-                      a {
-                        href: "{result.link}",
-                        target: "_blank",
-                        "{result.title}"
-                      }
+        div {
+          h2 { class: "text-xl font-semibold mb-4", "Search Results" }
+          div { class: "space-y-4", 
+            {state.results.iter().enumerate().map(|(index, result)| {
+              rsx! {
+                div {
+                  key: "{index}",
+                  class: "border p-4 rounded",
+                  h3 { class: "text-lg font-medium text-blue-600", 
+                    a {
+                      href: "{result.link}",
+                      target: "_blank",
+                      "{result.title}"
                     }
-                    p { class: "text-sm text-gray-600", "{result.displayed_link}" }
-                    if let Some(snippet) = &result.snippet {
-                      p { class: "mt-2", "{snippet}" }
-                    }
-                    p { class: "text-sm text-gray-500 mt-2", "Position: {result.position}" }
                   }
+                  p { class: "text-sm text-gray-600", "{result.displayed_link}" }
+                  if let Some(snippet) = &result.snippet {
+                    p { class: "mt-2", "{snippet}" }
+                  }
+                  p { class: "text-sm text-gray-500 mt-2", "Position: {result.position}" }
                 }
-              })}
-            }
+              }
+            })}
           }
+        }
       }
     }
   }
@@ -133,15 +133,15 @@ fn SerpApiDemo() -> Element {
 async fn search_google(query: String) -> Result<Vec<OrganicResult>, ServerFnError> {
   // the SerpAPI request with various parameters to showcase the flexibility
   let search_response = serpapi_request()
-      .q(query)                                  // search query
-      .engine(Engine::Google)                    // Google search engine
-      .search_type(SearchType::Regular)          // regular search (not images, news, etc.)
-      .tbs(Some(ETimeFrame::Year))               // results from the past year
-      .safe(Some(SafeSearch::Active))            // safe search enabled
-      .num(Some(10))                             // get 10 results
-      .call()                                    // execute the request
-      .await
-      .map_err(|e| ServerFnError::ServerError(format!("SerpAPI request failed: {}", e)))?;
+    .q(query)                                  // search query
+    .engine(Engine::Google)                    // Google search engine
+    .search_type(SearchType::Regular)          // regular search (not images, news, etc.)
+    .tbs(Some(ETimeFrame::Year))               // results from the past year
+    .safe(Some(SafeSearch::Active))            // safe search enabled
+    .num(Some(10))                             // get 10 results
+    .call()                                    // execute the request
+    .await
+    .map_err(|e| ServerFnError::ServerError(format!("SerpAPI request failed: {}", e)))?;
   
   Ok(search_response.organic_results)
 }
@@ -149,22 +149,22 @@ async fn search_google(query: String) -> Result<Vec<OrganicResult>, ServerFnErro
 // advanced search with additional parameters
 #[server]
 async fn advanced_search(
-    query: String,
-    search_type: SearchType,
-    time_frame: Option<ETimeFrame>,
-    location: Option<String>
+  query: String,
+  search_type: SearchType,
+  time_frame: Option<ETimeFrame>,
+  location: Option<String>
 ) -> Result<SearchResponse, ServerFnError> {
-    let search_response = serpapi_request()
-        .q(query)
-        .engine(Engine::Google)
-        .search_type(search_type)
-        .tbs(time_frame)
-        .location(location)
-        .call()
-        .await
-        .map_err(|e| ServerFnError::ServerError(format!("Advanced search failed: {}", e)))?;
-    
-    Ok(search_response)
+  let search_response = serpapi_request()
+    .q(query)
+    .engine(Engine::Google)
+    .search_type(search_type)
+    .tbs(time_frame)
+    .location(location)
+    .call()
+    .await
+    .map_err(|e| ServerFnError::ServerError(format!("Advanced search failed: {}", e)))?;
+  
+  Ok(search_response)
 }
 
 // how to use the Dioxus server function for fetching content from URLs
