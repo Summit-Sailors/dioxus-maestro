@@ -1,26 +1,24 @@
 use {
-	dioxus::prelude::*,
-	dioxus_free_icons::{
-		icons::io_icons::{IoCheckmarkOutline, IoChevronDownOutline},
-		icons::io_icons::{IoCheckmarkOutline, IoChevronDownOutline},
-		Icon,
-	},
-	tailwind_fuse::tw_join,
+  dioxus::prelude::*,
+  dioxus_free_icons::{
+      icons::io_icons::{IoCheckmarkOutline, IoChevronDownOutline},
+      Icon,
+  },
+  tailwind_fuse::tw_join,
 };
 
 #[derive(Clone, PartialEq)]
 pub struct SelectOption<T> {
-	pub label: String,
-	pub value: T,
+  pub label: String,
+  pub value: T,
 }
 
 #[derive(Props, Clone, PartialEq)]
 pub struct SelectProps<T>
 where
-	T: Clone + PartialEq + std::fmt::Display + 'static,
-	T: Clone + PartialEq + std::fmt::Display + 'static,
+  T: Clone + PartialEq + std::fmt::Display + 'static,
 {
-  pub values: Vec<T>,
+  pub options: Vec<SelectOption<T>>,
   pub current_value: Option<T>,
   pub multi: bool,
   pub callback: Option<EventHandler<T>>,
@@ -34,9 +32,11 @@ where
   pub label_class: Option<String>,
   pub icon_down: Option<Element>,
   pub icon_check: Option<Element>,
-  pub option_renderer: Option<fn(&T) -> Element>,
+  pub option_renderer: Option<fn(&SelectOption<T>) -> Element>,
   pub multi_current_values: Option<Vec<T>>,
 }
+
+// classes may be extended also by using "maestro-select__*" classname
 
 #[component]
 pub fn Select<T: Clone + PartialEq + std::fmt::Display + 'static>(props: SelectProps<T>) -> Element {
@@ -48,123 +48,145 @@ pub fn Select<T: Clone + PartialEq + std::fmt::Display + 'static>(props: SelectP
   let display_value = if props.multi {
     if selected_options().is_empty() {
       props.placeholder.clone().unwrap_or_default()
-    } else{
-      let items: Vec<String> = selected_options().iter().map(|item| {
-        item.to_string()
-      }).collect();
+    } else {
+      let items: Vec<String> = selected_options()
+        .iter()
+        .filter_map(|value| {
+          props.options
+            .iter()
+            .find(|opt| &opt.value == value)
+            .map(|opt| opt.label.clone())
+        })
+        .collect();
 
       let joined = items.join(", ");
 
       if joined.chars().count() > 50 {
-        // truncate too long strings and show count
-        format!("{} (+{} more)", joined.chars().take(47).collect::<String>(), selected_options().len())
+        format!("{} (+{} more)", 
+          joined.chars().take(47).collect::<String>(), 
+          selected_options().len()
+        )
       } else {
         joined
       }
     }
   } else {
-    props.current_value.clone().map(|arg0: T| ToString::to_string(&arg0))
+    props.current_value
+      .as_ref()
+      .and_then(|value| {
+        props.options
+          .iter()
+          .find(|opt| &opt.value == value)
+          .map(|opt| opt.label.clone())
+      })
       .unwrap_or_else(|| props.placeholder.clone().unwrap_or_default())
   };
 
-  let icon_down = props.icon_down.clone().unwrap_or_else(|| rsx!{ 
-    Icon { 
-      width: 16, 
-      height: 16, 
-      icon: IoChevronDownOutline,
-      class: tw_join!(
-        "absolute top-0 bottom-0 my-auto right-3 transition-all ease-linear fill-none",
-        (is_opened()).then_some("rotate-180")
-      )
-    } 
+  let icon_down = props.icon_down.clone().unwrap_or_else(|| {
+    rsx! {
+      Icon {
+        width: 16,
+        height: 16,
+        icon: IoChevronDownOutline,
+        class: tw_join!(
+          "absolute top-0 bottom-0 my-auto right-3 transition-all ease-linear fill-none",
+          (is_opened()).then_some("rotate-180")
+        )
+      }
+    }
   });
 
   rsx! {
     div {
       class: tw_join!("flex flex-col gap-2 w-full relative", props.container_class.clone().unwrap_or_default()),
       if let Some(label) = props.label.clone() {
-        span { class: tw_join!("text-gray-400", props.label_class.clone().unwrap_or_default()), {label} }
+        span {
+          class: tw_join!("text-gray-400", props.label_class.clone().unwrap_or_default()),
+          {label}
+        }
       }
       div {
+        class: tw_join!(
+          "relative w-full bg-gray-800 text-gray-100 border border-gray-500 rounded-md hover:border-indigo-300 transition-colors ease-linear cursor-pointer",
+          is_opened().then_some("ring-1 ring-indigo-500"),
+          props.button_class.clone().unwrap_or_default()
+        ),
+        tabindex: -1,
+        button {
+          class: "relative flex bg-gray-800 text-gray-100 py-2 px-3 w-full h-full rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500",
+          onfocusout: move |_| is_opened.set(false),
+          onmousedown: move |ev| {
+            ev.prevent_default();
+            ev.stop_propagation();
+            is_opened.toggle();
+          },
+          span { "{display_value}" }
+          {icon_down}
+        }
+        div {
           class: tw_join!(
-            "relative w-full bg-gray-800 text-gray-100 border border-gray-500 rounded-md hover:border-indigo-300 transition-colors ease-linear cursor-pointer",
-            is_opened().then_some("ring-1 ring-indigo-500"), 
-            props.button_class.clone().unwrap_or_default()
+            "absolute flex flex-col gap-1 bg-gray-800 text-gray-200 p-4 w-full left-0 right-0 top-[100%] mt-3 rounded-md border border-gray-700 max-h-48 overflow-y-auto",
+            if is_opened() { "flex z-40" } else { "hidden -z-40" },
+            props.dropdown_class.clone().unwrap_or_default()
           ),
-          tabindex: -1,
-          button {
-            class: "relative flex bg-gray-800 text-gray-100 py-2 px-3 w-full h-full rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500",
-            onfocusout: move |_| is_opened.set(false),
-            onmousedown: move |ev| {
-              ev.prevent_default();
-              ev.stop_propagation();
-              is_opened.toggle();
-            },
-            span { "{display_value}" }
-            {icon_down}
-          }
-          div {
-            class: tw_join!(
-              "absolute flex flex-col gap-1 bg-gray-800 text-gray-200 p-4 w-full left-0 right-0 top-[100%] mt-3 rounded-md border border-gray-700 max-h-48 overflow-y-auto",
-              if is_opened() { "flex z-40" } else { "hidden -z-40" },
-              props.dropdown_class.clone().unwrap_or_default()
-            ),
-            onclick: move |ev| {
-              ev.stop_propagation();
-            },
-            for value in props.values.clone() {
-                div {
-                  key: "{value}",
-                  id: "{value}",
-                  class: tw_join!(
-                    "flex w-full items-center py-2 hover:bg-gray-700 rounded px-3 cursor-pointer", 
-                    props.option_class.clone().unwrap_or_default()
-                  ),
-                  onclick: move |ev| {
-                    ev.stop_propagation();
-                    if props.multi {
-                      let mut current = selected_options().clone();
-                      if current.contains(&value) {
-                          current.retain(|x| x != &value);
-                      } else {
-                        current.push(value.clone());
-                      }
-                      selected_options.set(current.clone());
-                      if let Some(multi_cb) = props.multi_callback {
-                        multi_cb.call(current);
-                      }
+          onclick: move |ev| {
+            ev.stop_propagation();
+          },
+          for option in props.options.clone() {
+              div {
+                key: "{option.value}",
+                id: "{option.value}",
+                class: tw_join!(
+                  "flex w-full items-center py-2 hover:bg-gray-700 rounded px-3 cursor-pointer",
+                  props.option_class.clone().unwrap_or_default()
+                ),
+                onclick: move |ev| {
+                  ev.stop_propagation();
+                  if props.multi {
+                    let mut current = selected_options().clone();
+                    if current.contains(&option.value) {
+                      current.retain(|x| x != &option.value);
                     } else {
-                      is_opened.set(false);
-                      if let Some(callback) = props.callback {
-                        callback.call(value.clone());
-                      }
+                      current.push(option.value.clone());
                     }
-                  },
-                  {
-                    if let Some(renderer) = props.option_renderer {
-                      renderer(&value)
-                    } else {
-                      rsx! { "{value}" }
+                    selected_options.set(current.clone());
+                    if let Some(multi_cb) = props.multi_callback.clone() {
+                      multi_cb.call(current);
+                    }
+                  } else {
+                    is_opened.set(false);
+                    if let Some(callback) = props.callback.clone() {
+                      callback.call(option.value.clone());
                     }
                   }
-                  if props.icon_check.is_some() {
-                    {props.icon_check.clone().unwrap()}
+                },
+                {
+                  if let Some(renderer) = props.option_renderer {
+                    renderer(&option)
                   } else {
-                    Icon {
-                      icon: IoCheckmarkOutline,
-                      class: tw_join!(
-                        "fill-none ml-auto",
-                        if props.multi && selected_options().contains(&value) || !props.multi && props.current_value.as_ref() == Some(&value) {
-                          "opacity-100"
-                        } else {
-                          "opacity-0"
-                        }
-                      ),
-                    }
+                    rsx! { "{option.label}" }
                   }
                 }
-            }
+                if props.icon_check.is_some() {
+                  {props.icon_check.clone().unwrap()}
+                } else {
+                  Icon {
+                    icon: IoCheckmarkOutline,
+                    class: tw_join!(
+                      "fill-none ml-auto",
+                      if props.multi && selected_options().contains(&option.value)
+                        || !props.multi && props.current_value.as_ref() == Some(&option.value)
+                      {
+                        "opacity-100"
+                      } else {
+                        "opacity-0"
+                      }
+                    ),
+                  }
+                }
+              }
           }
+        }
       }
     }
   }
