@@ -9,7 +9,7 @@ use {
 		input::{Input, InputVariant},
 		label::Label,
 		radio::Radio,
-		select::Select,
+		select::{Select, SelectOption},
 		spinner::FreeIconSpinner,
 		textarea::Textarea,
 		toggle::{EToggleSwitchLabelPlacement, ToggleSwitch, ToggleSwitchLabelStatesProp},
@@ -161,7 +161,20 @@ pub fn UIDemo() -> Element {
 
 				div { class: "space-y-6",
 					Select {
-						values: vec!["Option 1".to_string(), "Option 2".to_string(), "Option 3".to_string()],
+						options: vec![
+								SelectOption {
+										label: "Option 1".to_string(),
+										value: "Option 1".to_string(),
+								},
+								SelectOption {
+										label: "Option 2".to_string(),
+										value: "Option 2".to_string(),
+								},
+								SelectOption {
+										label: "Option 3".to_string(),
+										value: "Option 3".to_string(),
+								},
+						],
 						current_value: Some(selected_option.read().to_string()),
 						multi: false,
 						callback: move |value| selected_option.set(value),
@@ -171,7 +184,20 @@ pub fn UIDemo() -> Element {
 					}
 
 					Select {
-						values: vec!["Item 1".to_string(), "Item 2".to_string(), "Item 3".to_string()],
+						options: vec![
+								SelectOption {
+										label: "Item 1".to_string(),
+										value: "Item 1".to_string(),
+								},
+								SelectOption {
+										label: "Item 2".to_string(),
+										value: "Item 2".to_string(),
+								},
+								SelectOption {
+										label: "Item 3".to_string(),
+										value: "Item 3".to_string(),
+								},
+						],
 						current_value: None,
 						multi: true,
 						callback: move |_| {},
