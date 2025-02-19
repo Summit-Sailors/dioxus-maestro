@@ -1,18 +1,24 @@
 use {
 	dioxus::prelude::*,
 	dioxus_free_icons::{
-		icons::io_icons::{IoCheckmarkOutline, IoChevronDownOutline, IoClose},
+		icons::io_icons::{IoCheckmarkOutline, IoChevronDownOutline},
 		Icon,
 	},
 	tailwind_fuse::tw_join,
 };
+
+#[derive(Clone, PartialEq)]
+pub struct SelectOption<T> {
+	pub label: String,
+	pub value: T,
+}
 
 #[derive(Props, Clone, PartialEq)]
 pub struct SelectProps<T>
 where
 	T: Clone + PartialEq + std::fmt::Display + 'static,
 {
-	pub values: ReadOnlySignal<Vec<T>>,
+	pub options: ReadOnlySignal<Vec<SelectOption<T>>>,
 	pub current_value: ReadOnlySignal<Option<T>>,
 	pub multi: bool,
 	pub callback: EventHandler<T>,
@@ -26,7 +32,7 @@ where
 	pub label_class: Option<String>,
 	pub icon_down: Option<Element>,
 	pub icon_check: Option<Element>,
-	pub option_renderer: Option<fn(&T) -> Element>,
+	pub option_renderer: Option<fn(&SelectOption<T>) -> Element>,
 }
 
 // classes may be extended also by using "maestro-select__*" classname
@@ -40,10 +46,18 @@ pub fn Select<T: Clone + PartialEq + std::fmt::Display + 'static>(props: SelectP
 		if selected_options().is_empty() {
 			props.placeholder.clone().unwrap_or_default()
 		} else {
-			selected_options().iter().map(ToString::to_string).collect::<Vec<_>>().join(", ")
+			props.options.read().iter().filter(|option| selected_options().contains(&option.value)).map(|option| option.label.clone()).collect::<Vec<_>>().join(", ")
 		}
+	} else if props.current_value.read().is_some() {
+		props
+			.options
+			.read()
+			.iter()
+			.find(|option| props.current_value.read().as_ref().unwrap() == &option.value)
+			.map(|x| x.label.clone())
+			.unwrap_or(props.placeholder.clone().unwrap_or_default())
 	} else {
-		props.current_value.read().as_ref().map(|val| ToString::to_string(&val)).unwrap_or_else(|| props.placeholder.clone().unwrap_or_default())
+		props.placeholder.clone().unwrap_or_default()
 	};
 
 	let icon_down = props.icon_down.clone().unwrap_or_else(|| {
@@ -106,9 +120,9 @@ pub fn Select<T: Clone + PartialEq + std::fmt::Display + 'static>(props: SelectP
 					onclick: move |ev| {
 							ev.stop_propagation();
 					},
-					for value in props.values.read().clone() {
+					for value in props.options.read().clone() {
 						div {
-							key: "{value}",
+							key: "{value.value}",
 							class: tw_join!(
 									"flex w-full items-center justify-between py-2 hover:bg-gray-700 rounded px-3 cursor-pointer maestro-select__option",
 									props.option_class.clone().unwrap_or_default()
@@ -117,16 +131,16 @@ pub fn Select<T: Clone + PartialEq + std::fmt::Display + 'static>(props: SelectP
 									ev.stop_propagation();
 									if props.multi {
 											let mut current = selected_options().clone();
-											if current.contains(&value) {
-													current.retain(|x| x != &value);
+											if current.contains(&value.value) {
+													current.retain(|x| x != &value.value);
 											} else {
-													current.push(value.clone());
+													current.push(value.value.clone());
 											}
 											selected_options.set(current);
 											props.multi_callback.call(selected_options().clone());
 									} else {
 											is_opened.set(false);
-											props.callback.call(value.clone());
+											props.callback.call(value.value.clone());
 									}
 							},
 							{
@@ -134,12 +148,12 @@ pub fn Select<T: Clone + PartialEq + std::fmt::Display + 'static>(props: SelectP
 											renderer(&value)
 									} else {
 											rsx! {
-											"{value}"
+											"{value.value}"
 											}
 									}
 							}
-							if props.multi && selected_options().contains(&value)
-									|| !props.multi && props.current_value.read().as_ref() == Some(&value)
+							if props.multi && selected_options().contains(&value.value)
+									|| !props.multi && props.current_value.read().as_ref() == Some(&value.value)
 							{
 								div { class: "ml-2", {icon_check.clone()} }
 							}
