@@ -1,7 +1,7 @@
 use {
 	dioxus::prelude::*,
 	dioxus_free_icons::{
-		icons::io_icons::{IoCheckmarkOutline, IoChevronDownOutline, IoClose},
+		icons::io_icons::{IoCheckmarkOutline, IoChevronDownOutline},
 		Icon,
 	},
 	tailwind_fuse::tw_join,
