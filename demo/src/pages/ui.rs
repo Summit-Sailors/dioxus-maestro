@@ -2,10 +2,11 @@ use {
 	crate::components::ui::component_section::ComponentSection,
 	dioxus::prelude::*,
 	dioxus_free_icons::{icons::fa_solid_icons::FaDiamond, Icon},
+	dioxus_logger::tracing::info,
 	maestro_toast::{ctx::use_toast, toast_info::ToastInfo, toast_position::EToastPosition},
 	maestro_ui::{
-		button::{Button, ButtonSize, ButtonType, ButtonVariant},
-		input::{Input, InputType, InputVariant},
+		button::{Button, ButtonSize, ButtonVariant},
+		input::{Input, InputVariant},
 		label::Label,
 		radio::Radio,
 		select::Select,
@@ -24,12 +25,12 @@ pub fn UIDemo() -> Element {
 	let mut text_area_value = use_signal(String::new);
 	let mut entered_text = use_signal(String::new);
 
-	let selected_value = use_signal(|| "option1".to_string());
+	let mut selected_value = use_signal(|| "option1".to_string());
 
-	let handle_radio_change = |value: String| {
-		let mut selected_value = selected_value.clone();
-		move |_| selected_value.set(value.clone())
-	};
+	// let handle_radio_change = move |value: String| {
+	// 	let mut selected_value = selected_value.clone();
+	// 	move |_| selected_value.set(value.clone())
+	// };
 
 	let mut toast = use_toast();
 
@@ -45,9 +46,23 @@ pub fn UIDemo() -> Element {
 		toast.write().popup(info);
 	};
 
+	let mut handle_textarea_onenter_click = move |_| {
+		let info = ToastInfo {
+			heading: Some("Shift + Enter".to_string()),
+			context: text_area_value(),
+			icon: None,
+			position: EToastPosition::TopRight,
+			allow_toast_close: true,
+			hide_after: 5,
+		};
+		toast.write().popup(info);
+	};
+
 	rsx! {
 		div { class: "max-w-4xl mx-auto py-8 px-4",
-			h1 { class: "text-3xl text-gray-800 dark:text-gray-100 text-center font-bold mb-8", "Maestro UI Components" }
+			h1 { class: "text-3xl text-gray-800 dark:text-gray-100 text-center font-bold mb-8",
+				"Maestro UI Components"
+			}
 
 			// buttons section
 			ComponentSection {
@@ -55,55 +70,44 @@ pub fn UIDemo() -> Element {
 				description: "Various button styles, sizes, and types with different variants",
 				div { class: "grid grid-cols-1 md:grid-cols-3 gap-6",
 					Button {
-						class: "px-4 py-2 rounded-lg font-medium transition-colors hover:bg-blue-700",
-						variant: ButtonVariant::Default,
-						button_type: ButtonType::Button,
-						on_click: move |_| handle_button_click("Default Button clicked!".to_string()),
+						class: "px-4 py-2 rounded-lg font-medium transition-colors text-white bg-blue-500 hover:bg-blue-700",
+						r#type: "button",
+						onclick: move |_| handle_button_click("Default Button clicked!".to_string()),
 						"Default Button"
 					}
 					Button {
-						class: "px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600",
-						variant: ButtonVariant::Destructive,
-						button_type: ButtonType::Button,
-						on_click: move |_| handle_button_click("Destructive Button clicked!".to_string()),
-						"Destructive Button"
-					}
-					Button {
-						class: "px-4 py-2 rounded-lg hover:bg-gray-100",
-						variant: ButtonVariant::Outline,
-						button_type: ButtonType::Reset,
-						on_click: move |_| handle_button_click("Outline Button clicked!".to_string()),
+						class: "px-4 py-2 rounded-lg border border-gray-900 text-gray-800 hover:bg-gray-100",
+						r#type: "reset",
+						onclick: move |_| handle_button_click("Outline Button clicked!".to_string()),
 						"Outline Button"
 					}
 					Button {
-						class: "px-2 py-1 rounded-md bg-gray-300 text-sm hover:bg-gray-400",
-						variant: ButtonVariant::Secondary,
+						class: "px-2 py-1 rounded-md bg-gray-300 text-gray-900 text-sm hover:bg-gray-400",
 						size: ButtonSize::Sm,
-						button_type: ButtonType::Submit,
-						on_click: move |_| handle_button_click("Small Submit Button clicked!".to_string()),
+						r#type: "submit",
+						onclick: move |_| handle_button_click("Small Submit Button clicked!".to_string()),
 						"Small Button"
 					}
 					Button {
 						class: "px-6 py-3 rounded-lg bg-transparent border border-gray-300 text-gray-600 hover:text-black",
-						variant: ButtonVariant::Ghost,
 						size: ButtonSize::Lg,
-						button_type: ButtonType::Button,
-						on_click: move |_| handle_button_click("Large Ghost Button clicked!".to_string()),
+						r#type: "button",
+						onclick: move |_| handle_button_click("Large Ghost Button clicked!".to_string()),
 						"Large Button"
 					}
 					Button {
 						class: "text-blue-500 hover:text-blue-700",
 						variant: ButtonVariant::Link,
-						button_type: ButtonType::Button,
-						on_click: move |_| handle_button_click("Link Button clicked!".to_string()),
+						r#type: "button",
+						onclick: move |_| handle_button_click("Link Button clicked!".to_string()),
 						"Link Button"
 					}
 					Button {
-						class: "px-6 py-3 bg-gray-300 hover:bg-gray-600",
+						class: "px-6 py-3 bg-gray-300 hover:bg-gray-600 text-gray-900",
 						variant: ButtonVariant::Icon,
 						size: ButtonSize::IconLg,
-						button_type: ButtonType::Button,
-						on_click: move |_| handle_button_click("Icon Button clicked!".to_string()),
+						r#type: "button",
+						onclick: move |_| handle_button_click("Icon Button clicked!".to_string()),
 						children: rsx! {
 							Icon {
 								title: "Icon Button",
@@ -111,7 +115,7 @@ pub fn UIDemo() -> Element {
 								width: 24,
 								height: 24,
 							}
-						}
+						},
 					}
 				}
 			}
@@ -121,32 +125,30 @@ pub fn UIDemo() -> Element {
 				title: "Input Fields",
 				description: "Text inputs with different variants and states",
 				div { class: "space-y-4",
-					Label {
-						label_text: "Default Input".to_string(),
+					Label { text: "Default Input".to_string(),
 						Input {
 							class: "border-gray-400 rounded-lg px-3 py-2 w-full focus:ring focus:ring-blue-100",
-							value: text_input.read().to_string(),
-							on_change: move |value| text_input.set(value),
-							placeholder: "Type something...".to_string(),
+							value: text_input(),
+							onchange: move |event: Event<FormData>| text_input.set(event.value()),
+							placeholder: "Type something...",
 						}
 					}
-					Label {
-						label_text: "Underlined Input".to_string(),
+					Label { text: "Underlined Input".to_string(),
 						Input {
 							class: "border-b border-gray-400 w-full focus:ring focus:ring-blue-300",
 							variant: InputVariant::Underlined,
-							value: text_input.read().to_string(),
-							on_change: move |value| text_input.set(value),
-							placeholder: Some("Type something...".to_string()),
+							value: text_input(),
+							onchange: move |event: Event<FormData>| text_input.set(event.value()),
+							placeholder: Some("Type something..."),
 						}
 					}
-					Label {
-						label_text: "Password Input".to_string(),
+					Label { text: "Password Input".to_string(),
 						Input {
 							class: "border-gray-400 rounded-lg px-3 py-2 w-full focus:ring focus:ring-red-300",
-							input_type: InputType::Password, value: text_input.read().to_string(),
-							on_change: move |value| text_input.set(value),
-							placeholder: "Enter password...".to_string(),
+							r#type: "password",
+							value: text_input.read().to_string(),
+							onchange: move |event: Event<FormData>| text_input.set(event.value()),
+							placeholder: "Enter password...",
 						}
 					}
 				}
@@ -187,41 +189,47 @@ pub fn UIDemo() -> Element {
 
 				div { class: "space-y-6",
 					div { class: "space-y-4",
-					ToggleSwitch {
-						state: toggle_state,
-						label_states: Some(ToggleSwitchLabelStatesProp {
-							on: "Enabled",
-							off: "Disabled"
-						}),
-						label_placement: Some(EToggleSwitchLabelPlacement::Right)
-					}
-				}
-				div { class: "space-y-6",
-					div { class: " items-center gap-2",
-					Radio {
-							label: "Option 1",
-							name: "group",
-							checked: selected_value() == "option1",
-							on_change: handle_radio_change("option1".to_string())
+						ToggleSwitch {
+							state: toggle_state,
+							label_states: Some(ToggleSwitchLabelStatesProp {
+									on: "Enabled",
+									off: "Disabled",
+							}),
+							label_placement: Some(EToggleSwitchLabelPlacement::Right),
 						}
 					}
-					div { class: "items-center gap-2",
-						Radio {
-							label: "Option 2",
-							name: "group",
-							checked: selected_value() == "option2",
-							on_change: handle_radio_change("option2".to_string())
+					div { class: "space-y-6",
+						div { class: " items-center gap-2",
+							Radio {
+								label: "Option 1",
+								name: "group",
+								value: "option1",
+								checked: selected_value() == "option1",
+								onchange: move |event: Event<FormData>| selected_value.set(event.value()),
+							}
 						}
-					}
-					div { class: "items-center gap-2",
-						Radio {
-							label: "Option 3 (Disabled)",
-							name: "group",
-							disabled: true,
-							checked: selected_value() == "option3",
-							on_change: handle_radio_change("option3".to_string())
+						div { class: "items-center gap-2",
+							Radio {
+								class: "border-blue-500 hover:border-blue-700",
+								checked_class: "!bg-blue-500 !border-blue-500 hover:!border-blue-700 hover:!bg-blue-700",
+								inner_class: "border-blue-500",
+								label: "Option 2",
+								name: "group",
+								value: "option2",
+								checked: selected_value() == "option2",
+								onchange: move |event: Event<FormData>| selected_value.set(event.value()),
+							}
 						}
-					}
+						div { class: "items-center gap-2",
+							Radio {
+								label: "Option 3 (Disabled)",
+								name: "group",
+								disabled: true,
+								value: "option3",
+								checked: selected_value() == "option3",
+								onchange: move |event: Event<FormData>| selected_value.set(event.value()),
+							}
+						}
 						p { class: "text-sm", "Selected Option: {selected_value}" }
 					}
 				}
@@ -234,36 +242,33 @@ pub fn UIDemo() -> Element {
 
 				div { class: "space-y-6",
 					// default Textarea
-					Label {
-						label_text: Some("Default Textarea".into()),
+					Label { text: Some("Default Textarea".into()),
 						Textarea {
-							value: text_area_value.read().to_string(),
-							on_change: move |value| text_area_value.set(value),
-							placeholder: Some("Enter text here...".into()),
-							class: "w-full p-4 rounded-lg border-gray-500 focus:outline-none focus:ring-2 focus:ring-primary"
+							value: text_area_value(),
+							onchange: move |event: Event<FormData>| text_area_value.set(event.value()),
+							placeholder: "Enter text here...",
+							class: "w-full p-4 rounded-lg border-gray-500 focus:outline-none focus:ring-2 focus:ring-primary",
 						}
 					}
 
 					// disabled Textarea
-					Label {
-						label_text: Some("Disabled Textarea".into()),
+					Label { text: Some("Disabled Textarea".into()),
 						Textarea {
 							value: "Disabled content".to_string(),
 							disabled: true,
-							placeholder: Some("Cannot edit this text...".into()),
-							class: "w-full p-4 border-gray-500 rounded-lg text-gray-500 cursor-not-allowed"
+							placeholder: "Cannot edit this text...",
+							class: "w-full p-4 border-gray-500 rounded-lg text-gray-500 cursor-not-allowed",
 						}
 					}
 
 					// textarea with on_enter functionality
-					Label {
-						label_text: Some("Textarea with Enter Handler".into()),
+					Label { text: Some("Textarea with Enter Handler".into()),
 						Textarea {
-							value: text_area_value.read().to_string(),
-							on_change: move |value| text_area_value.set(value),
-							on_enter: move |value| entered_text.set(value),
-							placeholder: Some("Type and press Shift+Enter...".into()),
-							class: "w-full p-4 border-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+							value: text_area_value(),
+							onchange: move |event: Event<FormData>| text_area_value.set(event.value()),
+							onenter: handle_textarea_onenter_click,
+							placeholder: "Type and press Shift+Enter...",
+							class: "w-full p-4 border-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary",
 						}
 					}
 					p { class: "text-sm text-gray-600 italic",
@@ -271,14 +276,13 @@ pub fn UIDemo() -> Element {
 					}
 
 					// textarea with custom styles
-					Label {
-						label_text: Some("Custom Styled Textarea".into()),
+					Label { text: Some("Custom Styled Textarea".into()),
 						Textarea {
-							value: text_area_value.read().to_string(),
-							on_change: move |value| text_area_value.set(value),
-							placeholder: Some("Styled input...".into()),
+							value: text_area_value(),
+							onchange: move |event: Event<FormData>| text_area_value.set(event.value()),
+							placeholder: "Styled input...",
 							class: "w-full p-4 border-2 border-dashed border-primary text-primary focus:outline-none focus:ring-2 focus:ring-primary",
-							style: "padding: 1rem; font-style: italic;"
+							style: "padding: 1rem; font-style: italic;",
 						}
 					}
 

@@ -1,5 +1,7 @@
-use dioxus::prelude::*;
-use dioxus_free_icons::{icons::fa_solid_icons::FaSpinner, Icon};
+use {
+	dioxus::prelude::*,
+	dioxus_free_icons::{icons::fa_solid_icons::FaSpinner, Icon},
+};
 
 #[component]
 pub fn FreeIconSpinner(size: u32) -> Element {

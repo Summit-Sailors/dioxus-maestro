@@ -2,7 +2,7 @@ use {crate::input::InputVariant, dioxus::prelude::*, tailwind_fuse::*};
 
 #[derive(TwClass)]
 #[tw(
-	class = "text-foreground ease-linear w-full bg-transparent border-input placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 focus-visible:border-b-primary disabled:cursor-not-allowed disabled:opacity-50 disabled:pointer-events-none transition-colors resize-none max-h-48 min-h-11 n-scrollbar"
+	class = "ease-linear w-full bg-transparent border-input placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 disabled:pointer-events-none transition-colors resize-none max-h-48 min-h-11 n-scrollbar"
 )]
 pub struct TextareaClass {
 	pub variant: InputVariant,
@@ -10,47 +10,60 @@ pub struct TextareaClass {
 
 #[derive(Clone, PartialEq, Props)]
 pub struct TextareaProps {
-	#[props(default = false)]
-	pub disabled: bool,
-	#[props(default = "".to_string())]
-	pub value: String,
-	pub on_change: Option<EventHandler<String>>,
-	pub on_enter: Option<EventHandler<String>>,
-	pub id: Option<String>,
-	pub class: Option<String>,
-	pub style: Option<String>,
-	pub placeholder: Option<String>,
-	#[props(default = None)]
-	pub children: Element,
 	#[props(default = InputVariant::Default)]
 	pub variant: InputVariant,
+	pub onchange: Option<EventHandler<Event<FormData>>>,
+	pub onenter: Option<EventHandler<Event<KeyboardData>>>,
+	pub onfocus: Option<EventHandler<Event<FocusData>>>,
+	pub onblur: Option<EventHandler<Event<FocusData>>>,
+	pub class: Option<String>,
+	#[props(default = "".to_string())]
+	pub error: String,
+	pub error_class: Option<String>,
+	pub style: Option<String>,
+	#[props(default = None)]
+	pub children: Element,
+	#[props(extends = GlobalAttributes, extends = textarea)]
+	pub attributes: Vec<Attribute>,
 }
+
+// classes may be extended also by using "maestro-textarea__*" classname
 
 #[component]
 pub fn Textarea(props: TextareaProps) -> Element {
-	let class = TextareaClass { variant: props.variant }.with_class(props.class.unwrap_or_default());
-	let mut local_value = use_signal(|| props.value.to_owned());
+	let class = TextareaClass { variant: props.variant }.with_class(tw_merge!(props.class.clone().unwrap_or_default(), "maestro-textarea__textarea"));
 
 	rsx! {
-		div { class: "w-full relative",
-			textarea {
-				id: props.id.unwrap_or_default(),
-				class,
-				style: props.style.unwrap_or_default(),
-				disabled: props.disabled,
-				value: props.value,
-				placeholder: props.placeholder.unwrap_or_default(),
-				oninput: move |event| {
-						local_value.set(event.value());
-						props.on_change.unwrap_or_default().call(local_value.read().to_string());
-				},
-				onkeypress: move |event| {
-						if event.data().code() == Code::Enter && event.data().modifiers().shift() {
-								props.on_enter.unwrap_or_default().call(local_value.read().to_string());
-						}
-				},
+		div { class: tw_merge!("flex flex-col gap-2 w-full relative", "maestro-textarea__wrapper"),
+			div { class: "w-full relative",
+				textarea {
+					class,
+					style: props.style.unwrap_or_default(),
+					oninput: move |event| {
+							props.onchange.unwrap_or_default().call(event);
+					},
+					onfocus: move |event| {
+							props.onfocus.unwrap_or_default().call(event);
+					},
+					onblur: move |event| {
+							props.onblur.unwrap_or_default().call(event);
+					},
+					onkeypress: move |event| {
+							if event.data().code() == Code::Enter {
+									props.onenter.unwrap_or_default().call(event);
+							}
+					},
+					..props.attributes,
+				}
+				{props.children}
 			}
-			{props.children}
+			span {
+				class: tw_merge!(
+						"text-xs min-h-4 text-left", props.error_class.clone().unwrap_or_default(),
+						"maestro-textarea__error"
+				),
+				{props.error}
+			}
 		}
 	}
 }

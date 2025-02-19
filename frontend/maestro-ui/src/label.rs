@@ -7,24 +7,22 @@ pub struct LabelClass {}
 #[derive(Clone, PartialEq, Props)]
 pub struct LabelProps {
 	#[props(default = false)]
-	pub id: Option<String>,
 	pub class: Option<String>,
 	pub style: Option<String>,
-	pub label_text: Option<String>,
+	pub text: Option<String>,
 	pub children: Element,
 }
 
+// classes may be extended also by using "maestro-label" classname
+
 #[component]
 pub fn Label(props: LabelProps) -> Element {
-	let class = LabelClass {}.with_class(props.class.unwrap_or_default());
+	let class = LabelClass {}.with_class(tw_merge!(props.class.clone().unwrap_or_default(), "maestro_label"));
 
 	rsx! {
-		label {
-			id: props.id.unwrap_or_default(),
-			class,
-			style: props.style.unwrap_or_default(),
+		label { class, style: props.style.unwrap_or_default(),
 			{
-					match props.label_text {
+					match props.text {
 							Some(val) => rsx! {
 								span { {val} }
 							},
