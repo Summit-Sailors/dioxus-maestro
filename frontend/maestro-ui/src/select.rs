@@ -2,10 +2,17 @@ use {
 	dioxus::prelude::*,
 	dioxus_free_icons::{
 		icons::io_icons::{IoCheckmarkOutline, IoChevronDownOutline},
+		icons::io_icons::{IoCheckmarkOutline, IoChevronDownOutline},
 		Icon,
 	},
 	tailwind_fuse::tw_join,
 };
+
+#[derive(Clone, PartialEq)]
+pub struct SelectOption<T> {
+	pub label: String,
+	pub value: T,
+}
 
 #[derive(Props, Clone, PartialEq)]
 pub struct SelectProps<T>
