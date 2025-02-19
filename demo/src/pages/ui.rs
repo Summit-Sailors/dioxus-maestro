@@ -46,7 +46,23 @@ pub fn UIDemo() -> Element {
 		toast.write().popup(info);
 	};
 
+	let mut handle_textarea_onenter_click = move |_| {
+		let info = ToastInfo {
+			heading: Some("Shift + Enter".to_string()),
+			context: text_area_value(),
+			icon: None,
+			position: EToastPosition::TopRight,
+			allow_toast_close: true,
+			hide_after: 5,
+		};
+		toast.write().popup(info);
+	};
+
+<<<<<<< HEAD
 	let handle_textarea_onenter_click = move |_| {
+=======
+	let mut handle_textarea_onenter_click = move |_| {
+>>>>>>> 4f9930106fc8f767459921600ee856cbe3476fb4
 		let info = ToastInfo {
 			heading: Some("Shift + Enter".to_string()),
 			context: text_area_value(),

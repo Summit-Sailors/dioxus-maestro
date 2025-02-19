@@ -11,6 +11,7 @@ use {
 pub struct SelectProps<T>
 where
 	T: Clone + PartialEq + std::fmt::Display + 'static,
+	T: Clone + PartialEq + std::fmt::Display + 'static,
 {
   pub values: Vec<T>,
   pub current_value: Option<T>,
