@@ -74,12 +74,12 @@ async fn update_user(user: User) -> MutationResult<User, String> {
 #[component]
 pub fn QueryDemoWrapper() -> Element {
 	rsx! {
-    // provider for single user queries
-    SingleUserQueryProvider {
-      // provider for user list queries (moderators)
-      UserListQueryProvider { QueryDemo {} }
-    }
-  }
+		// provider for single user queries
+		SingleUserQueryProvider {
+			// provider for user list queries (moderators)
+			UserListQueryProvider { QueryDemo {} }
+		}
+	}
 }
 
 // provider for single user queries
@@ -88,8 +88,8 @@ fn SingleUserQueryProvider(children: Element) -> Element {
 	let _query_client: UseQueryClient<User, String, String> = use_init_query_client();
 
 	rsx! {
-    {children}
-  }
+		{children}
+	}
 }
 
 // provider for user list queries
@@ -98,8 +98,8 @@ fn UserListQueryProvider(children: Element) -> Element {
 	let _query_client: UseQueryClient<Vec<User>, String, Role> = use_init_query_client();
 
 	rsx! {
-    {children}
-  }
+		{children}
+	}
 }
 
 #[component]
@@ -165,75 +165,75 @@ pub fn QueryDemo() -> Element {
 	};
 
 	rsx! {
-    div { class: "flex justify-center items-center rounded-lg shadow-lg bg-gray-100 dark:bg-gray-800 py-4",
-      div { class: "flex flex-col items-center bg-white rounded-lg shadow-lg w-full p-4 max-w-lg",
+		div { class: "flex justify-center items-center rounded-lg shadow-lg bg-gray-100 dark:bg-gray-800 py-4",
+			div { class: "flex flex-col items-center bg-white rounded-lg shadow-lg w-full p-4 max-w-lg",
 
-        h3 { class: "text-2xl text-gray-800 text-center font-bold mb-4",
-          "Main Dioxus Query Demo"
-        }
+				h3 { class: "text-2xl text-gray-800 text-center font-bold mb-4",
+					"Main Dioxus Query Demo"
+				}
 
-        div { class: "w-full text-center text-gray-700 p-4",
-          h2 { class: "text-xl font-bold", "Admin User:" }
+				div { class: "w-full text-center text-gray-700 p-4",
+					h2 { class: "text-xl font-bold", "Admin User:" }
 
-          {
-              match admin_query.result().value().to_owned() {
-                  QueryResult::Loading(Some(prev)) => rsx! {
-                    div { class: "opacity-50",
-                      "Loading... Previous data:"
-                      div { "Username: {prev.username}" }
-                      div { "Role: {prev.role}" }
-                    }
-                  },
-                  QueryResult::Loading(None) => rsx! {
-                    div { class: "text-gray-500", "Loading..." }
-                  },
-                  QueryResult::Ok(user) => rsx! {
-                    div {
-                      div { "Username: {user.username}" }
-                      div { "Role: {user.role}" }
-                      Button {
-                        class: tw_join!(
-                            "bg-blue-500 text-white px-4 py-2 rounded mt-2", if user.role == Role::Admin {
-                            "bg-red-500 text-white" } else { "bg-blue-500 text-white" }
-                        ),
-                        on_click: move |_| handle_role_update.clone()(user.username.clone(), user.clone().role),
-                        if is_loading() {
-                          "Updating..."
-                        } else {
-                          "Toggle Admin Role"
-                        }
-                      }
-                    }
-                  },
-                  QueryResult::Err(err) => rsx! {
-                    div { class: "text-red-500", "Error: {err}" }
-                  },
-              }
-          }
-        }
+					{
+							match admin_query.result().value().to_owned() {
+									QueryResult::Loading(Some(prev)) => rsx! {
+										div { class: "opacity-50",
+											"Loading... Previous data:"
+											div { "Username: {prev.username}" }
+											div { "Role: {prev.role}" }
+										}
+									},
+									QueryResult::Loading(None) => rsx! {
+										div { class: "text-gray-500", "Loading..." }
+									},
+									QueryResult::Ok(user) => rsx! {
+										div {
+											div { "Username: {user.username}" }
+											div { "Role: {user.role}" }
+											Button {
+												class: tw_join!(
+														"bg-blue-500 text-white px-4 py-2 rounded mt-2", if user.role == Role::Admin {
+														"bg-red-500 text-white" } else { "bg-blue-500 text-white" }
+												),
+												onclick: move |_| handle_role_update.clone()(user.username.clone(), user.clone().role),
+												if is_loading() {
+													"Updating..."
+												} else {
+													"Toggle Admin Role"
+												}
+											}
+										}
+									},
+									QueryResult::Err(err) => rsx! {
+										div { class: "text-red-500", "Error: {err}" }
+									},
+							}
+					}
+				}
 
-        div { class: "w-full text-center mt-4 p-4",
-          h2 { class: "text-xl font-bold text-gray-700", "Moderators:" }
+				div { class: "w-full text-center mt-4 p-4",
+					h2 { class: "text-xl font-bold text-gray-700", "Moderators:" }
 
-          {
-              match moderators.result().value() {
-                  QueryResult::Loading(_) => rsx! {
-                    div { class: "text-gray-500", "Loading moderators..." }
-                  },
-                  QueryResult::Ok(users) => rsx! {
-                    div { class: "space-y-2",
-                      {users.iter().map(|user| rsx! {
-                        div { class: "text-gray-700 font-medium", key: "{user.username}", "Username: {user.username}" }
-                      })}
-                    }
-                  },
-                  QueryResult::Err(err) => rsx! {
-                    div { class: "text-red-500", "Error loading moderators: {err}" }
-                  },
-              }
-          }
-        }
-      }
-    }
-  }
+					{
+							match moderators.result().value() {
+									QueryResult::Loading(_) => rsx! {
+										div { class: "text-gray-500", "Loading moderators..." }
+									},
+									QueryResult::Ok(users) => rsx! {
+										div { class: "space-y-2",
+											{users.iter().map(|user| rsx! {
+												div { class: "text-gray-700 font-medium", key: "{user.username}", "Username: {user.username}" }
+											})}
+										}
+									},
+									QueryResult::Err(err) => rsx! {
+										div { class: "text-red-500", "Error loading moderators: {err}" }
+									},
+							}
+					}
+				}
+			}
+		}
+	}
 }

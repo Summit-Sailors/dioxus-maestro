@@ -1,13 +1,16 @@
 use {
-  dioxus::prelude::*,
-  dioxus_free_icons::{icons::io_icons::{IoCheckmarkOutline, IoChevronDownOutline}, Icon},
-  tailwind_fuse::tw_join
+	dioxus::prelude::*,
+	dioxus_free_icons::{
+		icons::io_icons::{IoCheckmarkOutline, IoChevronDownOutline, IoClose},
+		Icon,
+	},
+	tailwind_fuse::tw_join,
 };
 
 #[derive(Props, Clone, PartialEq)]
 pub struct SelectProps<T>
 where
-  T: Clone + PartialEq + std::fmt::Display + 'static,
+	T: Clone + PartialEq + std::fmt::Display + 'static,
 {
   pub values: Vec<T>,
   pub current_value: Option<T>,
