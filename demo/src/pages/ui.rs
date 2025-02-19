@@ -23,7 +23,7 @@ pub fn UIDemo() -> Element {
 	let toggle_state = use_signal(|| false);
 	let mut text_input = use_signal(String::new);
 	let mut text_area_value = use_signal(String::new);
-	let mut entered_text = use_signal(String::new);
+	let entered_text = use_signal(String::new);
 
 	let mut selected_value = use_signal(|| "option1".to_string());
 
@@ -46,7 +46,7 @@ pub fn UIDemo() -> Element {
 		toast.write().popup(info);
 	};
 
-	let mut handle_textarea_onenter_click = move |_| {
+	let handle_textarea_onenter_click = move |_| {
 		let info = ToastInfo {
 			heading: Some("Shift + Enter".to_string()),
 			context: text_area_value(),

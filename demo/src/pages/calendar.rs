@@ -3,7 +3,7 @@ use {
 	chrono::{Datelike, Local, NaiveDate},
 	dioxus::prelude::*,
 	maestro_ui::{
-		button::{Button, ButtonVariant},
+		button::Button,
 		calendar::{Calendar, CalendarDisplayProps, CalendarSelectProps, Event},
 	},
 };
