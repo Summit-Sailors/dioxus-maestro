@@ -55,9 +55,11 @@ pub struct ButtonProps {
 	pub attributes: Vec<Attribute>,
 }
 
+// class may be extended also by using "maestro-button" classname
+
 #[component]
 pub fn Button(props: ButtonProps) -> Element {
-	let class = ButtonClass { variant: props.variant, size: props.size }.with_class(props.class.unwrap_or_default());
+	let class = ButtonClass { variant: props.variant, size: props.size }.with_class(tw_merge!(props.class.clone().unwrap_or_default(), "maestro-button"));
 
 	rsx! {
 		button {

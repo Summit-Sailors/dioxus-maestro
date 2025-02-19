@@ -25,12 +25,12 @@ pub fn UIDemo() -> Element {
 	let mut text_area_value = use_signal(String::new);
 	let mut entered_text = use_signal(String::new);
 
-	let selected_value = use_signal(|| "option1".to_string());
+	let mut selected_value = use_signal(|| "option1".to_string());
 
-	let handle_radio_change = |value: String| {
-		let mut selected_value = selected_value.clone();
-		move |_| selected_value.set(value.clone())
-	};
+	// let handle_radio_change = move |value: String| {
+	// 	let mut selected_value = selected_value.clone();
+	// 	move |_| selected_value.set(value.clone())
+	// };
 
 	let mut toast = use_toast();
 
@@ -38,6 +38,18 @@ pub fn UIDemo() -> Element {
 		let info = ToastInfo {
 			heading: Some("Button Click Handler".to_string()),
 			context: button_message,
+			icon: None,
+			position: EToastPosition::TopRight,
+			allow_toast_close: true,
+			hide_after: 5,
+		};
+		toast.write().popup(info);
+	};
+
+	let mut handle_textarea_onenter_click = move |_| {
+		let info = ToastInfo {
+			heading: Some("Shift + Enter".to_string()),
+			context: text_area_value(),
 			icon: None,
 			position: EToastPosition::TopRight,
 			allow_toast_close: true,
@@ -191,16 +203,21 @@ pub fn UIDemo() -> Element {
 							Radio {
 								label: "Option 1",
 								name: "group",
+								value: "option1",
 								checked: selected_value() == "option1",
-								on_change: handle_radio_change("option1".to_string()),
+								onchange: move |event: Event<FormData>| selected_value.set(event.value()),
 							}
 						}
 						div { class: "items-center gap-2",
 							Radio {
+								class: "border-blue-500 hover:border-blue-700",
+								checked_class: "!bg-blue-500 !border-blue-500 hover:!border-blue-700 hover:!bg-blue-700",
+								inner_class: "border-blue-500",
 								label: "Option 2",
 								name: "group",
+								value: "option2",
 								checked: selected_value() == "option2",
-								on_change: handle_radio_change("option2".to_string()),
+								onchange: move |event: Event<FormData>| selected_value.set(event.value()),
 							}
 						}
 						div { class: "items-center gap-2",
@@ -208,8 +225,9 @@ pub fn UIDemo() -> Element {
 								label: "Option 3 (Disabled)",
 								name: "group",
 								disabled: true,
+								value: "option3",
 								checked: selected_value() == "option3",
-								on_change: handle_radio_change("option3".to_string()),
+								onchange: move |event: Event<FormData>| selected_value.set(event.value()),
 							}
 						}
 						p { class: "text-sm", "Selected Option: {selected_value}" }
@@ -226,9 +244,9 @@ pub fn UIDemo() -> Element {
 					// default Textarea
 					Label { text: Some("Default Textarea".into()),
 						Textarea {
-							value: text_area_value.read().to_string(),
-							on_change: move |value| text_area_value.set(value),
-							placeholder: Some("Enter text here...".into()),
+							value: text_area_value(),
+							onchange: move |event: Event<FormData>| text_area_value.set(event.value()),
+							placeholder: "Enter text here...",
 							class: "w-full p-4 rounded-lg border-gray-500 focus:outline-none focus:ring-2 focus:ring-primary",
 						}
 					}
@@ -238,7 +256,7 @@ pub fn UIDemo() -> Element {
 						Textarea {
 							value: "Disabled content".to_string(),
 							disabled: true,
-							placeholder: Some("Cannot edit this text...".into()),
+							placeholder: "Cannot edit this text...",
 							class: "w-full p-4 border-gray-500 rounded-lg text-gray-500 cursor-not-allowed",
 						}
 					}
@@ -246,10 +264,10 @@ pub fn UIDemo() -> Element {
 					// textarea with on_enter functionality
 					Label { text: Some("Textarea with Enter Handler".into()),
 						Textarea {
-							value: text_area_value.read().to_string(),
-							on_change: move |value| text_area_value.set(value),
-							on_enter: move |value| entered_text.set(value),
-							placeholder: Some("Type and press Shift+Enter...".into()),
+							value: text_area_value(),
+							onchange: move |event: Event<FormData>| text_area_value.set(event.value()),
+							onenter: handle_textarea_onenter_click,
+							placeholder: "Type and press Shift+Enter...",
 							class: "w-full p-4 border-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary",
 						}
 					}
@@ -260,9 +278,9 @@ pub fn UIDemo() -> Element {
 					// textarea with custom styles
 					Label { text: Some("Custom Styled Textarea".into()),
 						Textarea {
-							value: text_area_value.read().to_string(),
-							on_change: move |value| text_area_value.set(value),
-							placeholder: Some("Styled input...".into()),
+							value: text_area_value(),
+							onchange: move |event: Event<FormData>| text_area_value.set(event.value()),
+							placeholder: "Styled input...",
 							class: "w-full p-4 border-2 border-dashed border-primary text-primary focus:outline-none focus:ring-2 focus:ring-primary",
 							style: "padding: 1rem; font-style: italic;",
 						}

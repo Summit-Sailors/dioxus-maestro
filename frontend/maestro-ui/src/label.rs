@@ -13,9 +13,11 @@ pub struct LabelProps {
 	pub children: Element,
 }
 
+// classes may be extended also by using "maestro-label" classname
+
 #[component]
 pub fn Label(props: LabelProps) -> Element {
-	let class = LabelClass {}.with_class(props.class.unwrap_or_default());
+	let class = LabelClass {}.with_class(tw_merge!(props.class.clone().unwrap_or_default(), "maestro_label"));
 
 	rsx! {
 		label { class, style: props.style.unwrap_or_default(),

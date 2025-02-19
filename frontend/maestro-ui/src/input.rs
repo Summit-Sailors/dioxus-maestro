@@ -35,14 +35,16 @@ pub struct InputProps {
 	pub attributes: Vec<Attribute>,
 }
 
+// classes may be extended also by using "maestro-input__*" classname
+
 #[component]
 pub fn Input(props: InputProps) -> Element {
-	let class = InputClass { variant: props.variant }.with_class(props.class.unwrap_or_default());
+	let class = InputClass { variant: props.variant }.with_class(tw_merge!(props.class.clone().unwrap_or_default(), "maestro-input__input"));
 
 	let has_error = !props.error.is_empty();
 
 	rsx! {
-		div { class: "flex flex-col gap-2 w-full relative",
+		div { class: tw_merge!("flex flex-col gap-2 w-full relative", "maestro-input__wrapper"),
 			div { class: "relative",
 				input {
 					class: tw_join!(class, (has_error).then_some("border-danger")),
@@ -67,7 +69,8 @@ pub fn Input(props: InputProps) -> Element {
 			}
 			span {
 				class: tw_merge!(
-						"text-xs min-h-4 text-left", props.error_class.clone().unwrap_or_default()
+						"text-xs min-h-4 text-left", props.error_class.clone().unwrap_or_default(),
+						"maestro-input__error"
 				),
 				{props.error}
 			}
