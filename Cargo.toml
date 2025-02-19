@@ -40,12 +40,13 @@ inherits = "dev"
 
 [workspace.dependencies]
 
-
+# frontend
 maestro-forms = { path = "frontend/maestro-forms" }
 maestro-hooks = { path = "frontend/maestro-hooks" }
 maestro-query = { path = "frontend/maestro-query" }
 maestro-toast = { path = "frontend/maestro-toast" }
 maestro-ui = { path = "frontend/maestro-ui" }
+
 
 anyhow = "1.0.95"
 bon = "3.3.2"

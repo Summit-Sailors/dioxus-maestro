@@ -58,7 +58,6 @@ dioxus-free-icons.workspace = true
 dotenvy = { git = "https://github.com/allan2/dotenvy.git", features = ["macros"] }
 
 [features]
-default = ["web"]
 desktop = ["apalis", "dioxus/desktop"]
 mobile = ["apalis", "dioxus/mobile"]
 server = ["dep:apalis-core", "dep:maestro-diesel", "dep:maestro-sqlx", "dioxus/server"]

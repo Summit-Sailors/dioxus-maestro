@@ -1,4 +1,3 @@
-
 use {
   dioxus::prelude::*,
   dioxus_free_icons::{icons::io_icons::{IoCheckmarkOutline, IoChevronDownOutline}, Icon},
@@ -13,8 +12,8 @@ where
   pub values: Vec<T>,
   pub current_value: Option<T>,
   pub multi: bool,
-  pub callback: EventHandler<T>,
-  pub multi_callback: EventHandler<Vec<T>>,
+  pub callback: Option<EventHandler<T>>,
+  pub multi_callback: Option<EventHandler<Vec<T>>>,
   pub label: Option<String>,
   pub placeholder: Option<String>,
   pub option_class: Option<String>,
@@ -25,26 +24,49 @@ where
   pub icon_down: Option<Element>,
   pub icon_check: Option<Element>,
   pub option_renderer: Option<fn(&T) -> Element>,
+  pub multi_current_values: Option<Vec<T>>,
 }
-
 
 #[component]
 pub fn Select<T: Clone + PartialEq + std::fmt::Display + 'static>(props: SelectProps<T>) -> Element {
   let mut is_opened = use_signal(|| false);
-  let mut selected_options = use_signal(|| Vec::<T>::new());
+  let mut selected_options = use_signal(|| {
+    props.multi_current_values.clone().unwrap_or_default()
+  });
 
   let display_value = if props.multi {
     if selected_options().is_empty() {
       props.placeholder.clone().unwrap_or_default()
-    } else {
-      selected_options().iter().map(ToString::to_string).collect::<Vec<_>>().join(", ")
+    } else{
+      let items: Vec<String> = selected_options().iter().map(|item| {
+        item.to_string()
+      }).collect();
+
+      let joined = items.join(", ");
+
+      if joined.chars().count() > 50 {
+        // truncate too long strings and show count
+        format!("{} (+{} more)", joined.chars().take(47).collect::<String>(), selected_options().len())
+      } else {
+        joined
+      }
     }
   } else {
-    props.current_value.clone().map(|arg0: T| ToString::to_string(&arg0)).unwrap_or_else(|| props.placeholder.clone().unwrap_or_default())
+    props.current_value.clone().map(|arg0: T| ToString::to_string(&arg0))
+      .unwrap_or_else(|| props.placeholder.clone().unwrap_or_default())
   };
 
-  let icon_down = props.icon_down.clone().unwrap_or_else(|| rsx!{ Icon { width: 16, height: 16, icon: IoChevronDownOutline } });
-  let icon_check = props.icon_check.clone().unwrap_or_else(|| rsx!{ Icon { width: 16, height: 16, icon: IoCheckmarkOutline } });
+  let icon_down = props.icon_down.clone().unwrap_or_else(|| rsx!{ 
+    Icon { 
+      width: 16, 
+      height: 16, 
+      icon: IoChevronDownOutline,
+      class: tw_join!(
+        "absolute top-0 bottom-0 my-auto right-3 transition-all ease-linear fill-none",
+        (is_opened()).then_some("rotate-180")
+      )
+    } 
+  });
 
   rsx! {
     div {
@@ -53,63 +75,85 @@ pub fn Select<T: Clone + PartialEq + std::fmt::Display + 'static>(props: SelectP
         span { class: tw_join!("text-gray-400", props.label_class.clone().unwrap_or_default()), {label} }
       }
       div {
-        class: tw_join!(
-          "relative w-full bg-gray-800 text-gray-100 border border-gray-500 rounded-md hover:border-indigo-300 transition-colors ease-linear cursor-pointer",
-          is_opened().then_some("ring-1 ring-indigo-500"), props.button_class.clone().unwrap_or_default()
-        ),
-        onclick: move |ev| {
-          ev.prevent_default();
-          is_opened.toggle();
-        },
-        div {
-          class: "flex items-center justify-between py-2 px-3 w-full rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500 overflow-hidden whitespace-nowrap text-ellipsis",
-          span { "{display_value}" }
-          div { class: "ml-2", {icon_down} }
-        }
-        div {
           class: tw_join!(
-            "absolute flex flex-col gap-1 bg-gray-800 text-gray-200 p-4 w-full left-0 right-0 top-[100%] mt-3 rounded-md border border-gray-700 max-h-48 overflow-y-auto",
-            if is_opened() { "flex z-40" } else { "hidden -z-40" }, props.dropdown_class.clone().unwrap_or_default()
+            "relative w-full bg-gray-800 text-gray-100 border border-gray-500 rounded-md hover:border-indigo-300 transition-colors ease-linear cursor-pointer",
+            is_opened().then_some("ring-1 ring-indigo-500"), 
+            props.button_class.clone().unwrap_or_default()
           ),
-          onclick: move |ev| {
-            ev.stop_propagation();
-          },
-          for value in props.values.clone() {
-            div {
-              key: "{value}",
-              class: tw_join!("flex w-full items-center justify-between py-2 hover:bg-gray-700 rounded px-3 cursor-pointer", props.option_class.clone().unwrap_or_default()),
-              onclick: move |ev| {
-                ev.stop_propagation();
-                if props.multi {
-                  let mut current = selected_options().clone();
-                  if current.contains(&value) {
-                    current.retain(|x| x != &value);
-                  } else {
-                    current.push(value.clone());
-                  }
-                  selected_options.set(current);
-                  props.multi_callback.call(selected_options().clone());
-                } else {
-                  is_opened.set(false);
-                  props.callback.call(value.clone());
-                }
-              },
-              {
-                if let Some(renderer) = props.option_renderer {
-                  renderer(&value)
-                } else {
-                  rsx! { "{value}" }
-                }
-              }
-              if props.multi && selected_options().contains(&value) || !props.multi && props.current_value.as_ref() == Some(&value) {
+          tabindex: -1,
+          button {
+            class: "relative flex bg-gray-800 text-gray-100 py-2 px-3 w-full h-full rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500",
+            onfocusout: move |_| is_opened.set(false),
+            onmousedown: move |ev| {
+              ev.prevent_default();
+              ev.stop_propagation();
+              is_opened.toggle();
+            },
+            span { "{display_value}" }
+            {icon_down}
+          }
+          div {
+            class: tw_join!(
+              "absolute flex flex-col gap-1 bg-gray-800 text-gray-200 p-4 w-full left-0 right-0 top-[100%] mt-3 rounded-md border border-gray-700 max-h-48 overflow-y-auto",
+              if is_opened() { "flex z-40" } else { "hidden -z-40" },
+              props.dropdown_class.clone().unwrap_or_default()
+            ),
+            onclick: move |ev| {
+              ev.stop_propagation();
+            },
+            for value in props.values.clone() {
                 div {
-                  class: "ml-2",
-                  {icon_check.clone()}
+                  key: "{value}",
+                  id: "{value}",
+                  class: tw_join!(
+                    "flex w-full items-center py-2 hover:bg-gray-700 rounded px-3 cursor-pointer", 
+                    props.option_class.clone().unwrap_or_default()
+                  ),
+                  onclick: move |ev| {
+                    ev.stop_propagation();
+                    if props.multi {
+                      let mut current = selected_options().clone();
+                      if current.contains(&value) {
+                          current.retain(|x| x != &value);
+                      } else {
+                        current.push(value.clone());
+                      }
+                      selected_options.set(current.clone());
+                      if let Some(multi_cb) = props.multi_callback {
+                        multi_cb.call(current);
+                      }
+                    } else {
+                      is_opened.set(false);
+                      if let Some(callback) = props.callback {
+                        callback.call(value.clone());
+                      }
+                    }
+                  },
+                  {
+                    if let Some(renderer) = props.option_renderer {
+                      renderer(&value)
+                    } else {
+                      rsx! { "{value}" }
+                    }
+                  }
+                  if props.icon_check.is_some() {
+                    {props.icon_check.clone().unwrap()}
+                  } else {
+                    Icon {
+                      icon: IoCheckmarkOutline,
+                      class: tw_join!(
+                        "fill-none ml-auto",
+                        if props.multi && selected_options().contains(&value) || !props.multi && props.current_value.as_ref() == Some(&value) {
+                          "opacity-100"
+                        } else {
+                          "opacity-0"
+                        }
+                      ),
+                    }
+                  }
                 }
-              }
             }
           }
-        }
       }
     }
   }
