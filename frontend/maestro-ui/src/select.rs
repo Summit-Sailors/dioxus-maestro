@@ -112,6 +112,7 @@ pub fn Select<T: Clone + PartialEq + std::fmt::Display + 'static>(props: SelectP
 							is_opened.toggle();
 							props.toggle_open_callback.unwrap_or_default().call(ev)
 					},
+					r#type: "button",
 					span { "{display_value}" }
 					{icon_down}
 				}
