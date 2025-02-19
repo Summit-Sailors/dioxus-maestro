@@ -30,6 +30,32 @@ pub struct CalendarDisplayProps {
 	events: Signal<Vec<Event>>,
 	#[builder(default = true)]
 	is_full: bool,
+	#[builder(default = "")]
+	wrapper_class: &'static str,
+	#[builder(default = "")]
+	container_class: &'static str,
+	#[builder(default = "")]
+	header_class: &'static str,
+	#[builder(default = "")]
+	month_toggle_button_class: &'static str,
+	#[builder(default = "")]
+	body_class: &'static str,
+	#[builder(default = "")]
+	grid_class: &'static str,
+	#[builder(default = "")]
+	days_class: &'static str,
+	#[builder(default = "")]
+	day_class: &'static str,
+	#[builder(default = "")]
+	day_today_class: &'static str,
+	#[builder(default = "")]
+	day_disabled_class: &'static str,
+	#[builder(default = "")]
+	day_selected_class: &'static str,
+	#[builder(default = "")]
+	hover_day_class: &'static str,
+	#[builder(default = "")]
+	events_class: &'static str,
 }
 
 impl Clone for CalendarDisplayProps {
@@ -78,9 +104,23 @@ impl Copy for CalendarStateProps {}
 
 pub fn use_calendar() {}
 
+// To do: make custom classes &'static str
+
 #[component]
 pub fn Calendar(display_props: CalendarDisplayProps, select_props: CalendarSelectProps) -> Element {
-	let CalendarDisplayProps { mut display_month, mut display_year, is_full, .. } = display_props;
+	let CalendarDisplayProps {
+		mut display_month,
+		mut display_year,
+		is_full,
+		wrapper_class,
+		container_class,
+		header_class,
+		month_toggle_button_class,
+		body_class,
+		grid_class,
+		days_class,
+		..
+	} = display_props;
 	let CalendarSelectProps { selected_day, selected_month, selected_year, .. } = select_props;
 
 	let hover_date = use_signal(|| None::<NaiveDate>);
@@ -92,17 +132,25 @@ pub fn Calendar(display_props: CalendarDisplayProps, select_props: CalendarSelec
 	let days_in_month = display_month().num_days(display_year());
 
 	rsx! {
-		CalendarMaybeWrapper { is_full, selected_date,
-			div { class: "w-full max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden calendar",
-				div { class: "px-4 py-2 bg-gray-50 flex items-center justify-between calendar-header",
+		CalendarMaybeWrapper { is_full, selected_date, wrapper_class,
+			div {
+				class: tw_merge!(
+						"w-full max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden maestro-calendar-container",
+						container_class
+				),
+				div {
+					class: tw_merge!(
+							"px-4 py-2 bg-gray-50 flex items-center justify-between maestro-calendar-header",
+							header_class
+					),
 					div {
 						button {
 							onclick: move |_| display_year -= 1,
-							class: "p-1 rounded-full hover:bg-gray-200 mr-1",
-							Icon {
-								class: "h-6 w-6 text-gray-600",
-								icon: LdChevronsLeft,
-							}
+							class: tw_merge!(
+									"p-1 rounded-full hover:bg-gray-200 mr-1 text-gray-600",
+									month_toggle_button_class
+							),
+							Icon { class: "h-6 w-6", icon: LdChevronsLeft }
 						}
 						button {
 							onclick: move |_| {
@@ -114,11 +162,11 @@ pub fn Calendar(display_props: CalendarDisplayProps, select_props: CalendarSelec
 											display_year += 1;
 									}
 							},
-							class: "p-1 rounded-full hover:bg-gray-200",
-							Icon {
-								class: "h-6 w-6 text-gray-600",
-								icon: LdChevronLeft,
-							}
+							class: tw_merge!(
+									"p-1 rounded-full hover:bg-gray-200 mr-1 text-gray-600",
+									month_toggle_button_class
+							),
+							Icon { class: "h-6 w-6", icon: LdChevronLeft }
 						}
 					}
 					h2 { class: "text-lg font-semibold text-gray-800",
@@ -135,36 +183,36 @@ pub fn Calendar(display_props: CalendarDisplayProps, select_props: CalendarSelec
 											display_year += 1;
 									}
 							},
-							class: "p-1 rounded-full hover:bg-gray-200",
-							Icon {
-								class: "h-6 w-6 text-gray-600",
-								icon: LdChevronRight,
-							}
+							class: tw_merge!(
+									"p-1 rounded-full hover:bg-gray-200 mr-1 text-gray-600",
+									month_toggle_button_class
+							),
+							Icon { class: "h-6 w-6", icon: LdChevronRight }
 						}
 						button {
 							onclick: move |_| display_year += 1,
-							class: "p-1 rounded-full hover:bg-gray-200 ml-1",
-							Icon {
-								class: "h-6 w-6 text-gray-600",
-								icon: LdChevronsRight,
-							}
+							class: tw_merge!(
+									"p-1 rounded-full hover:bg-gray-200 mr-1 text-gray-600",
+									month_toggle_button_class
+							),
+							Icon { class: "h-6 w-6", icon: LdChevronsRight }
 						}
 					}
 				}
-				div { class: "p-4 calendar-body",
-					div { class: "grid grid-cols-7 gap-2 mb-2 calendar-days",
+				div { class: tw_merge!("p-4 maestro-calendar-body", body_class),
+					div { class: tw_merge!("grid grid-cols-7 gap-2 mb-2 maestro-calendar-days", days_class),
 						for day in ECalendarDay::iter() {
 							div { class: "text-center text-sm font-medium text-gray-600",
 								"{day}"
 							}
 						}
 					}
-					div { class: "grid grid-cols-7 gap-2 calendar-grid",
+					div { class: tw_merge!("grid grid-cols-7 gap-2 maestro-calendar-grid", grid_class),
 						if empty_cells < 6 {
 							for _ in 0..=empty_cells {
 								div {
-									class: "h-10 w-10 rounded-full flex items-center justify-center text-sm text-gray-900 calendar-day",
-									class: "text-gray-400 cursor-not-allowed calendar-day__disabled",
+									class: "h-10 w-10 rounded-full flex items-center justify-center text-sm text-gray-900 maestro-calendar-day",
+									class: "text-gray-400 cursor-not-allowed maestro-calendar-day__disabled",
 								}
 							}
 						}
@@ -193,9 +241,10 @@ pub struct CalendarMaybeWrapperProps {
 	is_full: bool,
 	selected_date: Memo<NaiveDate>,
 	children: Element,
+	wrapper_class: &'static str,
 }
 
-pub fn CalendarMaybeWrapper(CalendarMaybeWrapperProps { is_full, children, selected_date }: CalendarMaybeWrapperProps) -> Element {
+pub fn CalendarMaybeWrapper(CalendarMaybeWrapperProps { is_full, children, selected_date, wrapper_class }: CalendarMaybeWrapperProps) -> Element {
 	let mut is_open = use_signal(|| false);
 	if is_full {
 		rsx! {
@@ -203,16 +252,16 @@ pub fn CalendarMaybeWrapper(CalendarMaybeWrapperProps { is_full, children, selec
 		}
 	} else {
 		rsx! {
-			div { class: "relative flex justify-center",
+			div { class: tw_merge!("relative flex justify-center maestro-calendar-wrapper", wrapper_class),
 				Button {
-					class: "calendar-button",
+					class: "maestro-calendar-button",
 					onclick: move |_| is_open.toggle(),
 					Icon { class: "h-4 w-4", icon: LdCalendar }
 					{selected_date().format("%b %d, %y").to_string()}
 				}
 				div {
 					class: tw_join!(
-							"absolute min-w-[448px] top-20 mt-6 z-50 bg-white shadow-lg rounded-lg border",
+							"absolute min-w-[448px] top-20 mt-6 z-50 bg-white shadow-lg rounded-lg border maestro-calendar-wrapper-container",
 							if is_open() { "block" } else { "hidden" }
 					),
 					{children}
@@ -224,7 +273,18 @@ pub fn CalendarMaybeWrapper(CalendarMaybeWrapperProps { is_full, children, selec
 
 #[component]
 pub fn CalendarDayComponent(delta: u8, display_props: CalendarDisplayProps, select_props: CalendarSelectProps, state_props: CalendarStateProps) -> Element {
-	let CalendarDisplayProps { display_month, display_year, events, .. } = display_props;
+	let CalendarDisplayProps {
+		display_month,
+		display_year,
+		events,
+		day_class,
+		day_selected_class,
+		day_today_class,
+		day_disabled_class,
+		hover_day_class,
+		events_class,
+		..
+	} = display_props;
 	let CalendarSelectProps { max_date, min_date, mut selected_day, mut selected_month, mut selected_year } = select_props;
 	let CalendarStateProps { mut hover_date, .. } = state_props;
 	let selected_date = use_memo(move || NaiveDate::from_ymd_opt(selected_year(), selected_month() as u32, selected_day() as u32).unwrap());
@@ -233,8 +293,10 @@ pub fn CalendarDayComponent(delta: u8, display_props: CalendarDisplayProps, sele
 	if this_display_date.is_none() {
 		return rsx! {
 			div {
-				class: "h-10 w-10 rounded-full flex items-center justify-center text-sm text-gray-900 calendar-day",
-				class: "text-gray-400 cursor-not-allowed calendar-day__disabled",
+				class: tw_merge!(
+						"h-10 w-10 rounded-full flex items-center justify-center text-sm text-gray-900 maestro-calendar-day",
+						day_class
+				),
 				""
 			}
 		};
@@ -256,14 +318,24 @@ pub fn CalendarDayComponent(delta: u8, display_props: CalendarDisplayProps, sele
 			onmouseenter: move |_| hover_date.set(Some(this_display_date)),
 			onmouseleave: move |_| hover_date.set(None),
 			disabled: is_disabled,
-			class: "h-10 w-10 rounded-full flex items-center justify-center text-sm text-gray-900 calendar-day relative",
-			class: if is_today { "bg-blue-500 text-white calendar-day__today" } else { "" },
-			class: if selected_date() == this_display_date { "bg-blue-200 calendar-day__selected" } else { "" },
-			class: if is_disabled { "text-gray-500 cursor-not-allowed calendar-day__disabled" } else { "" },
-			class: if !is_today && selected_date() != this_display_date && !is_disabled { "hover:bg-gray-100" } else { "" },
+			class: tw_merge!(
+					"h-10 w-10 rounded-full flex items-center justify-center text-sm text-gray-900 maestro-calendar-day relative",
+					day_class, is_today
+					.then_some(tw_merge!("bg-blue-500 text-white maestro-calendar-day__today",
+					day_today_class)), (selected_date() == this_display_date)
+					.then_some(tw_merge!("bg-blue-200 maestro-calendar-day__selected",
+					day_selected_class)), is_disabled
+					.then_some(tw_merge!("text-gray-500 cursor-not-allowed maestro-calendar-day__disabled",
+					day_disabled_class)), (! is_today && selected_date() != this_display_date && !
+					is_disabled).then_some(tw_merge!("hover:bg-gray-100", hover_day_class))
+			),
 			"{delta}"
 			if !curr_date_events.is_empty() {
-				span { class: "absolute -bottom-0.5 left-0 right-0 mx-auto flex gap-0.5 items-center w-fit",
+				span {
+					class: tw_merge!(
+							"absolute -bottom-0.5 left-0 right-0 mx-auto flex gap-0.5 items-center w-fit maestro-calendar-events",
+							events_class
+					),
 					for e in curr_date_events {
 						span {
 							class: "flex w-1 h-1 rounded-full",

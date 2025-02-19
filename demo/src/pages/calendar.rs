@@ -82,7 +82,9 @@ pub fn CalendarDemo() -> Element {
 
 				div { class: "grid justify-center",
 					Calendar {
-						display_props: CalendarDisplayProps::builder().is_full(false).build(),
+						display_props: CalendarDisplayProps::builder()
+								.is_full(false)
+								.build(),
 						select_props: CalendarSelectProps::builder().build(),
 					}
 				}
