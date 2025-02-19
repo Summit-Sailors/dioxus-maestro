@@ -34,8 +34,8 @@ where
 	pub icon_check: Option<Element>,
 	pub option_renderer: Option<fn(&SelectOption<T>) -> Element>,
 	pub multi_current_values: Option<Vec<T>>,
-	pub toggle_open_callback: Option<EventHandler<Event<FocusData>>>,
-	pub toggle_close_callback: Option<EventHandler<Event<MouseData>>>,
+	pub toggle_open_callback: Option<EventHandler<Event<MouseData>>>,
+	pub toggle_close_callback: Option<EventHandler<Event<FocusData>>>,
 }
 
 // classes may be extended also by using "maestro-select__*" classname
