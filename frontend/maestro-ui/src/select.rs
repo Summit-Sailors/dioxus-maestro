@@ -96,8 +96,7 @@ pub fn Select<T: Clone + PartialEq + std::fmt::Display + 'static>(props: SelectP
 			div {
 				class: tw_join!(
 						"relative w-full bg-gray-800 text-gray-100 border border-gray-500 rounded-md hover:border-indigo-300 transition-colors ease-linear cursor-pointer",
-						is_opened().then_some("ring-1 ring-indigo-500"), props.button_class.clone()
-						.unwrap_or_default()
+						props.button_class.clone().unwrap_or_default()
 				),
 				tabindex: -1,
 				button {
