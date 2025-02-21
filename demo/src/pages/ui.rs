@@ -181,6 +181,9 @@ pub fn UIDemo() -> Element {
 						multi_callback: move |_| {},
 						label: Some("Single Select".into()),
 						placeholder: Some("Select an option".into()),
+						option_class: "hover:bg-gray-300",
+						label_class: "text-gray-700",
+						button_class: "bg-gray-50 text-gray-700"
 					}
 
 					Select {
@@ -204,6 +207,9 @@ pub fn UIDemo() -> Element {
 						multi_callback: move |value| selected_options.set(value),
 						label: Some("Multi Select".into()),
 						placeholder: Some("Select items...".into()),
+						option_class: "hover:bg-gray-300",
+						label_class: "text-gray-700",
+						button_class: "bg-gray-50 text-gray-700"
 					}
 				}
 			}

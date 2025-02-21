@@ -4,7 +4,7 @@ use {
 		icons::io_icons::{IoCheckmarkOutline, IoChevronDownOutline},
 		Icon,
 	},
-	tailwind_fuse::tw_join,
+	tailwind_fuse::*,
 };
 
 #[derive(Clone, PartialEq)]
@@ -29,6 +29,7 @@ where
 	pub dropdown_class: Option<String>,
 	pub container_class: Option<String>,
 	pub button_class: Option<String>,
+	pub button_wrapper_class: Option<String>,
 	pub label_class: Option<String>,
 	pub icon_down: Option<Element>,
 	pub icon_check: Option<Element>,
@@ -38,7 +39,7 @@ where
 	pub toggle_close_callback: Option<EventHandler<Event<FocusData>>>,
 }
 
-// classes may be extended also by using "maestro-select__*" classname
+// classes may be extended also by using "maestro-select-*_*" classname
 
 #[component]
 pub fn Select<T: Clone + PartialEq + std::fmt::Display + 'static>(props: SelectProps<T>) -> Element {
@@ -84,23 +85,26 @@ pub fn Select<T: Clone + PartialEq + std::fmt::Display + 'static>(props: SelectP
 
 	rsx! {
     div {
-      class: tw_join!(
-          "flex flex-col gap-2 w-full relative", props.container_class.clone()
+      class: tw_merge!(
+          "flex flex-col gap-2 w-full relative ", props.container_class.clone()
           .unwrap_or_default()
       ),
       if let Some(label) = props.label.clone() {
-        span { class: tw_join!("text-gray-400", props.label_class.clone().unwrap_or_default()),
+        span { class: tw_merge!("text-gray-400", props.label_class.clone().unwrap_or_default()),
           {label}
         }
       }
       div {
-        class: tw_join!(
-            "relative w-full bg-gray-800 text-gray-100 border border-gray-500 rounded-md hover:border-indigo-300 transition-colors ease-linear cursor-pointer",
-            props.button_class.clone().unwrap_or_default()
+        class: tw_merge!(
+            "relative w-full border border-gray-500 rounded-md transition-colors ease-linear cursor-pointer maestro-select-button__wrapper",
+            props.button_wrapper_class.clone().unwrap_or_default()
         ),
         tabindex: -1,
         button {
-          class: "relative flex bg-gray-800 text-gray-100 py-2 px-3 w-full h-full rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500",
+          class: tw_merge!(
+              "text-gray-500 relative flex py-2 px-3 w-full h-full rounded-md focus:outline-none maestro-select-button",
+              props.button_class.clone().unwrap_or_default()
+          ),
           onfocusout: move |ev| {
               is_opened.set(false);
               props.toggle_close_callback.unwrap_or_default().call(ev);
@@ -117,7 +121,7 @@ pub fn Select<T: Clone + PartialEq + std::fmt::Display + 'static>(props: SelectP
         }
         div {
           class: tw_join!(
-              "absolute flex flex-col gap-1 bg-gray-800 text-gray-200 p-4 w-full left-0 right-0 top-[100%] mt-3 rounded-md border border-gray-700 max-h-48 overflow-y-auto",
+              "absolute flex flex-col gap-1 p-4 w-full left-0 right-0 top-[100%] mt-3 rounded-md max-h-48 overflow-y-auto bg-gray-100 border maestro-select-dropdown",
               if is_opened() { "flex z-40" } else { "hidden -z-40" }, props.dropdown_class
               .clone().unwrap_or_default()
           ),
@@ -129,7 +133,7 @@ pub fn Select<T: Clone + PartialEq + std::fmt::Display + 'static>(props: SelectP
               key: "{option.value}",
               id: "{option.value}",
               class: tw_join!(
-                  "flex w-full items-center py-2 hover:bg-gray-700 rounded px-3 cursor-pointer",
+                  "flex w-full items-center py-2 rounded px-3 cursor-pointer maestro-select-option",
                   props.option_class.clone().unwrap_or_default()
               ),
               onclick: move |ev| {
