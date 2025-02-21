@@ -17,6 +17,8 @@ pub struct TextAreaProps {
 	pub oninput: Option<EventHandler<Value>>,
 	#[props(optional)]
 	pub onblur: Option<EventHandler<FocusEvent>>,
+	#[props(optional)]
+	pub onfocus: Option<EventHandler<FocusEvent>>,
 	#[props(extends = GlobalAttributes, extends = textarea)]
 	pub attributes: Vec<Attribute>,
 }
@@ -50,6 +52,11 @@ where
 							handler.call(evt);
 					}
 			},
+			onfocus: move |evt| {
+				if let Some(handler) = &props.onfocus {
+						handler.call(evt);
+				}
+		},
 			..props.attributes,
 		}
 	}
