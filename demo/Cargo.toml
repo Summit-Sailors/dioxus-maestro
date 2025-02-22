@@ -39,10 +39,13 @@ js-sys = "0.3.77"
 tailwind_fuse = { version = "0.3.1", features = ["variant"] }
 syntect = { version = "5.2.0", default-features = false, features = ["default-fancy"]}
 anyhow = "1.0.95"
+
 sqlx = { version = "0.8", features = [ "runtime-async-std", "tls-native-tls" ] }
 diesel = { version = "2.2.7", features = ["postgres"] }
 diesel-async = { version = "0.5.2", features = ["postgres"] }
-tokio = { version = "1.43.0", features = ["full"] }
+tokio = { version = "1.43.0", features = ["full"], optional = true }
+tokio-retry = "0.3.0"
+
 plotters = { version = "0.3.7", default-features = false, features = [
   "all_elements",
   "all_series",
@@ -63,8 +66,7 @@ dioxus-free-icons.workspace = true
 dotenvy = { git = "https://github.com/allan2/dotenvy.git", features = ["macros"] }
 
 [features]
-default = ["web"]
 desktop = ["apalis", "dioxus/desktop"]
 mobile = ["apalis", "dioxus/mobile"]
-server = ["dep:apalis-core", "dep:maestro-diesel", "dep:maestro-sqlx", "dep:maestro-serpapi", "dioxus/server",]
+server = ["dep:apalis-core", "dep:maestro-diesel", "dep:maestro-sqlx", "dep:maestro-serpapi", "dep:tokio", "dioxus/server",]
 web = ["dioxus/web", "server"]

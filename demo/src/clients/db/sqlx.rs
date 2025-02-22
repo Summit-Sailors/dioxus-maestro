@@ -97,7 +97,7 @@ fn SqlxDemo() -> Element {
     let error = use_signal(|| None::<String>);
 
     // users onmount - shows both sync and async methods
-    use_effect(cx, (), |_| {
+    use_effect(|_| {
       to_owned![users, loading, error];
       async move {
         // 1. using async pool creation

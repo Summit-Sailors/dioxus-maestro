@@ -33,8 +33,8 @@ pub fn HooksDemo() -> Element {
   );
 
   let page_size = 10;
-  let (pagination, (mut next_idx, mut prev_idx, mut next_page, mut prev_page)) =
-      use_pagination(use_memo(move || total_items()), page_size);
+    let (pagination, (mut next_idx, mut prev_idx, mut next_page, mut prev_page, mut set_page_size)) =
+        use_pagination(use_memo(move || total_items()), page_size);
 
   let mut clipboard_content = use_signal(String::new);
   let mut copy_status = use_signal(|| String::new());
@@ -159,6 +159,39 @@ pub fn HooksDemo() -> Element {
         }
 
         div {
+          class: "bg-gray-100 p-2 rounded mb-4 text-center",
+          class: if *pagination.touched.read() { "text-green-600" } else { "text-gray-500" },
+          "Pagination Status: " 
+          span { 
+            class: "font-medium",
+            if *pagination.touched.read() { "Active" } else { "Untouched" }
+          }
+        }
+
+        div {
+          class: "text-center mb-4 text-gray-700 font-medium",
+          "{*pagination.counter_label.read()}"
+        }
+
+        div {
+          class: "flex justify-center text-gray-800 items-center gap-4 mb-4",
+          "Items per page: "
+          select {
+            class: "border border-gray-800 rounded p-1",
+            value: "{*pagination.page_size.read()}",
+            onchange: move |e| {
+              if let Ok(size) = e.value().parse::<i32>() {
+                set_page_size(size);
+              }
+            },
+            option { value: "5", "5" }
+            option { value: "10", "10" }
+            option { value: "15", "15" }
+            option { value: "20", "20" }
+          }
+        }
+
+        div {
           class: "grid flex grid-cols-3",
           {
             let start_idx = *pagination.idx.read();
@@ -182,30 +215,30 @@ pub fn HooksDemo() -> Element {
         hr { class:"border border-gray-700 mt-4 w-full", }
 
         div {
-          class: "flex space-x-1 mt-4 justify-center",
+          class: "flex space-x-4 mt-6 justify-center",
           button {
-            disabled: "{*pagination.prev_idx_disabled.read()}",
-            onclick: move |_| prev_idx(),
-            class: "rounded bg-gray-500 text-white py-2 px-4 hover:bg-gray-800 disabled:opacity-50",
-            "<"
+              disabled: "{*pagination.prev_idx_disabled.read()}",
+              onclick: move |_| prev_idx(),
+              class: "rounded bg-gray-500 text-white py-2 px-4 hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed",
+              "<"
           }
           button {
-            disabled: "{*pagination.prev_page_disabled.read()}",
-            onclick: move |_| prev_page(),
-            class: "rounded bg-gray-500 text-white py-2 px-4 hover:bg-gray-800 disabled:opacity-50",
-            "<<"
+              disabled: "{*pagination.prev_page_disabled.read()}",
+              onclick: move |_| prev_page(),
+              class: "rounded bg-gray-500 text-white py-2 px-4 hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed",
+              "<<"
           }
           button {
-            disabled: "{*pagination.next_page_disabled.read()}",
-            onclick: move |_| next_page(),
-            class: "rounded bg-gray-500 text-white py-2 px-4 hover:bg-gray-800 disabled:opacity-50",
-            ">>"
+              disabled: "{*pagination.next_page_disabled.read()}",
+              onclick: move |_| next_page(),
+              class: "rounded bg-gray-500 text-white py-2 px-4 hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed",
+              ">>"
           }
           button {
-            disabled: "{*pagination.next_idx_disabled.read()}",
-            onclick: move |_| next_idx(),
-            class: "rounded bg-gray-500 text-white py-2 px-4 hover:bg-gray-800 disabled:opacity-50",
-            ">"
+              disabled: "{*pagination.next_idx_disabled.read()}",
+              onclick: move |_| next_idx(),
+              class: "rounded bg-gray-500 text-white py-2 px-4 hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed",
+              ">"
           }
         }
       }

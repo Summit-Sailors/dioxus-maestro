@@ -20,8 +20,8 @@ pub fn MultiSelect<T: std::clone::Clone + std::cmp::PartialEq + std::fmt::Displa
 			}
 			div {
 				class: tw_join!(
-						"relative w-full bg-gray-800 text-gray-100 border border-gray-500 rounded-md hover:border-indigo-300 transition-colors ease-linear",
-						is_opened().then_some("ring-1 ring-indigo-500")
+          "relative w-full bg-gray-800 text-gray-100 border border-gray-500 rounded-md hover:border-indigo-300 transition-colors ease-linear",
+          is_opened().then_some("ring-1 ring-indigo-500")
 				),
 				tabindex: -1,
 				button {
