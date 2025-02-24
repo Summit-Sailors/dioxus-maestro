@@ -92,97 +92,100 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
 	let highlighted_code = highlight_code(&current_code, &props.language);
 
 	rsx! {
-		div { class: "p-2 bg-gray-800 rounded-lg w-full flex flex-col",
+    div { class: "p-2 bg-gray-800 rounded-lg w-full flex flex-col",
 
-			// header section
-			div { class: "flex items-center justify-between text-white top-0 z-10 bg-gray-800 p-2",
-				h2 { class: "text-xl font-semibold", "{props.title}" }
-				div { class: "flex space-x-2",
-					button {
-						class: "p-2 rounded-full hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 relative",
-						disabled: "{is_copying()}",
-						onclick: handle_copy,
-						title: "Copy Code",
-						Icon { icon: FaCopy, width: 20, height: 20 }
-						div {
-							class: tw_join!(
-									"absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs py-1 px-2 rounded transition-opacity duration-300 {}",
-									if copy_status().is_empty() { "opacity-0" } else { "opacity-100" }
-							),
-							"{copy_status}"
-						}
-					}
-					button {
-						class: "p-2 rounded-full hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500",
-						onclick: toggle_expanded,
-						title: if is_expanded() { "Collapse Code" } else { "View Code" },
-						{
-								if is_expanded() {
-										rsx! {
-											Icon { icon: FaMaximize, width: 20, height: 20 }
-										}
-								} else {
-										rsx! {
-											Icon { icon: FaMinimize, width: 20, height: 20 }
-										}
-								}
-						}
-					}
-				}
-			}
+      // header section
+      div { class: "flex items-center justify-between text-white top-0 z-10 bg-gray-800 p-2",
+        h2 { class: "text-xl font-semibold", "{props.title}" }
+        div { class: "flex space-x-2",
+          button {
+            class: "p-2 rounded-full hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 relative",
+            disabled: "{is_copying()}",
+            onclick: handle_copy,
+            title: "Copy Code",
+            Icon { icon: FaCopy, width: 20, height: 20 }
+            div {
+              class: tw_join!(
+                  "absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs py-1 px-2 rounded transition-opacity duration-300 {}",
+                  if copy_status().is_empty() { "opacity-0" } else { "opacity-100" }
+              ),
+              "{copy_status}"
+            }
+          }
+          button {
+            class: "p-2 rounded-full hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500",
+            onclick: toggle_expanded,
+            title: if is_expanded() { "Collapse Code" } else { "View Code" },
+            {
+                if is_expanded() {
+                    rsx! {
+                      Icon { icon: FaMaximize, width: 20, height: 20 }
+                    }
+                } else {
+                    rsx! {
+                      Icon { icon: FaMinimize, width: 20, height: 20 }
+                    }
+                }
+            }
+          }
+        }
+      }
 
-			// scrollable container for demo and code
-			div {
-				class: tw_join!(
-						"grid grid-cols-1 transition-all duration-500 ease-in-out lg:overflow-hidden", if
-						is_expanded() { "lg:grid-cols-2" } else { "grid-cols-1" }
-				),
+      // scrollable container for demo and code
+      div {
+        class: tw_join!(
+            "grid grid-cols-1 transition-all duration-500 ease-in-out lg:overflow-hidden", if
+            is_expanded() { "lg:grid-cols-2" } else { "grid-cols-1" }
+        ),
 
-				// demo component section
-				div { class: "bg-gray-300 overflow-hidden dark:bg-gray-700 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-500 mt-4 flex-1",
-					div { class: "w-full h-full overflow-auto", {props.demo} }
-				}
+        // demo component section
+        div { class: "bg-gray-300 overflow-hidden dark:bg-gray-700 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-500 mt-4 flex-1",
+          div { class: "w-full h-full overflow-auto", {props.demo} }
+        }
 
-				// code section
-				if is_expanded() {
-					div { class: "overflow-hidden rounded-lg bg-gray-900 px-6 flex-1 mt-4 flex flex-col",
-						h2 { class: "text-xl font-semibold text-center text-white mt-4",
-							"Source Code"
-						}
+        // code section
+        if is_expanded() {
+          div { class: "overflow-hidden rounded-lg bg-gray-900 px-6 flex-1 mt-4 flex flex-col",
+            h2 { class: "text-xl font-semibold text-center text-white mt-4",
+              "Source Code"
+            }
 
-						div { class: "flex justify-center my-3",
+            div { class: "flex justify-center my-3",
 
-							Select {
-								options: file_keys,
-								current_value: Some(selected_file.read().to_string()),
-								multi: false,
-								callback: move |value| selected_file.set(value),
-								multi_callback: move |_| {},
-								label: Some("Single Select".into()),
-								placeholder: Some("Select an option".into()),
-							}
-						}
+              Select {
+                options: file_keys,
+                current_value: Some(selected_file.read().to_string()),
+                multi: false,
+                callback: move |value| selected_file.set(value),
+                multi_callback: move |_| {},
+                label: Some("Single Select".into()),
+                placeholder: Some("Select an option".into()),
+                button_class: "text-gray-200 bg-gray-800",
+                dropdown_class: "text-gray-200 !bg-gray-800 border-gray-700",
+                option_class: "hover:bg-gray-700 text-gray-200",
+              }
+            }
 
-						div { class: "relative flex-1 bg-gray-900 rounded-lg shadow-md border border-gray-700 p-4 h-full overflow-auto",
+            div { class: "relative flex-1 bg-gray-900 rounded-lg shadow-md border border-gray-700 p-4 h-full overflow-auto",
 
-							div { class: "flex justify-between items-center bg-gray-800 text-gray-300 text-xs px-4 py-2 rounded-t-md",
-								span { class: "font-mono", "{selected_file()}" }
-								div { class: "flex gap-1",
-									span { class: "w-3 h-3 bg-red-500 rounded-full" }
-									span { class: "w-3 h-3 bg-yellow-500 rounded-full" }
-									span { class: "w-3 h-3 bg-green-500 rounded-full" }
-								}
-							}
+              div { class: "flex justify-between items-center bg-gray-800 text-gray-300 text-xs px-4 py-2 rounded-t-md",
+                span { class: "font-mono", "{selected_file()}" }
+                div { class: "flex gap-1",
+                  span { class: "w-3 h-3 bg-red-500 rounded-full" }
+                  span { class: "w-3 h-3 bg-yellow-500 rounded-full" }
+                  span { class: "w-3 h-3 bg-green-500 rounded-full" }
+                }
+              }
 
-							div {
-								class: "font-mono text-sm whitespace-pre p-4",
-								// dangerous_inner_html to render the highlighted code
-								dangerous_inner_html: "{highlighted_code}",
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+              div {
+                class: "font-mono text-sm whitespace-pre p-4",
+                // dangerous_inner_html to render the highlighted code
+                dangerous_inner_html: "{highlighted_code}",
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }

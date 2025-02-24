@@ -1,11 +1,11 @@
 use {
-	super::use_form_field::FormField, 
-  crate::fields::form::FormResult, 
-  dioxus::{dioxus_core::SpawnIfAsync, prelude::*}, 
-  serde::{Deserialize, Serialize}, 
-  serde_json::{Map, Value}, 
-  std::collections::HashMap, 
-  validator::Validate
+	super::use_form_field::FormField,
+	crate::fields::form::FormResult,
+	dioxus::{dioxus_core::SpawnIfAsync, prelude::*},
+	serde::{Deserialize, Serialize},
+	serde_json::{Map, Value},
+	std::collections::HashMap,
+	validator::Validate,
 };
 
 #[derive(Debug, PartialEq)]
@@ -20,8 +20,8 @@ where
 	pub is_submitting: Signal<bool>,
 	pub is_valid: Signal<bool>,
 	pub is_dirty: Signal<bool>,
-  pub should_auto_reset: bool,
-  pub custom_errors: Signal<Vec<String>>,
+	pub should_auto_reset: bool,
+	pub custom_errors: Signal<Vec<String>>,
 }
 
 impl<T> Formik<T>
@@ -48,72 +48,64 @@ where
 			is_submitting: Signal::new(false),
 			is_valid: Signal::new(true),
 			is_dirty: Signal::new(false),
-      should_auto_reset: false,
-      custom_errors: Signal::new(Vec::new()),
+			should_auto_reset: false,
+			custom_errors: Signal::new(Vec::new()),
 		}
 	}
 
 	pub fn submit(&mut self, event: FormEvent, handler: EventHandler<(FormEvent, FormResult<T>, Box<dyn FnOnce()>)>) {
-    if (self.is_submitting)() {
-      return;
-    }
+		if (self.is_submitting)() {
+			return;
+		}
 
 		let result = self.as_validated_struct();
 
-		if !result.1 {
-			return;
+		self.is_submitting.set(true);
+
+		let mut form = self.clone();
+		let complete_submission = move || {
+			form.is_submitting.toggle();
+			if result.1 && form.should_auto_reset {
+				form.reset_form();
+			}
+		};
+
+		handler.call((event, result.clone(), Box::new(complete_submission))).spawn();
+	}
+
+	pub fn as_validated_struct(&mut self) -> FormResult<T> {
+		self.clear_all_errors();
+		let form_struct = self.as_struct();
+
+		// run built-in validation
+		let is_valid = match form_struct.validate() {
+			Ok(()) => true,
+			Err(errors) => {
+				for (field_name, field_errors) in errors.field_errors() {
+					for field_error in field_errors {
+						self.push_field_error(field_name.to_string(), field_error.message.as_deref().unwrap_or("Invalid field").to_owned());
+					}
+				}
+				false
+			},
+		};
+
+		self.is_valid.set(is_valid);
+		(form_struct, is_valid)
+	}
+
+	pub fn clear_all_errors(&mut self) {
+		for field in self.form_fields.write().iter_mut() {
+			field.clear_errors();
 		}
-		
-    self.is_submitting.set(true);
+		self.custom_errors.clear();
+		self.is_valid.set(true);
+	}
 
-    let mut form = self.clone();
-    let complete_submission = move || {
-      form.is_submitting.toggle();
-      if result.1 && form.should_auto_reset {
-        form.reset_form();
-      }
-    };
-
-    handler.call((event, result.clone(), Box::new(complete_submission))).spawn();
-  }
-
-
-  pub fn as_validated_struct(&mut self) -> FormResult<T> {
-    self.clear_all_errors();
-    let form_struct = self.as_struct();
-    
-    // run built-in validation
-    let is_valid = match form_struct.validate() {
-      Ok(()) => true,
-      Err(errors) => {
-        for (field_name, field_errors) in errors.field_errors() {
-          for field_error in field_errors {
-            self.push_field_error(
-              field_name.to_string(), 
-              field_error.message.as_deref().unwrap_or("Invalid field").to_owned()
-            );
-          }
-        }
-        false
-      }
-    };
-
-    self.is_valid.set(is_valid);
-    (form_struct, is_valid)
-  }
-
-  pub fn clear_all_errors(&mut self) {
-    for field in self.form_fields.write().iter_mut() {
-      field.clear_errors();
-    }
-    self.custom_errors.clear();
-    self.is_valid.set(true);
-  }
-
-  pub fn add_form_error(&mut self, error: String) {
-    self.custom_errors.push(error);
-    self.is_valid.set(false);
-  }
+	pub fn add_form_error(&mut self, error: String) {
+		self.custom_errors.push(error);
+		self.is_valid.set(false);
+	}
 
 	pub fn reset_form(&mut self) {
 		for field in self.form_fields.write().iter_mut() {

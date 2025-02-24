@@ -41,14 +41,20 @@ pub fn ToastFrame(mut manager: Signal<ToastManager>) -> Element {
 					"bg-[#8a6d3b] text-[#fcf8e3] border-[#faebcc] maestro-toast__warning",
 					"bg-[#faebcc]",
 				),
-				EToastCode::Error =>
-					(rsx! {
+				EToastCode::Error => (
+					rsx! {
             Icon { width: 16, height: 16, icon: BsXCircleFill }
-          }, "bg-[#a94442] text-[#f2dede] border-[#ebccd1] maestro-toast__error", "bg-[#ebccd1]"),
-				EToastCode::Info =>
-					(rsx! {
+          },
+					"bg-[#a94442] text-[#f2dede] border-[#ebccd1] maestro-toast__error",
+					"bg-[#ebccd1]",
+				),
+				EToastCode::Info => (
+					rsx! {
             Icon { width: 16, height: 16, icon: BsInfoCircleFill }
-          }, "bg-[#31708f] text-[#d9edf7] border-[#bce8f1] maestro-toast__info", "bg-[#bce8f1]"),
+          },
+					"bg-[#31708f] text-[#d9edf7] border-[#bce8f1] maestro-toast__info",
+					"bg-[#bce8f1]",
+				),
 			}
 		} else {
 			(rsx! {}, "bg-gray-700 text-white maestro-toast__default", "bg-gray-500")
@@ -75,7 +81,7 @@ pub fn ToastFrame(mut manager: Signal<ToastManager>) -> Element {
           }
           if item.info.allow_toast_close {
             div {
-              class: "flex-shrink-0 text-sm cursor-pointer ml-2 hover:opacity-80",
+              class: "flex-shrink-0 text-sm cursor-pointer ml-auto hover:opacity-80",
               onclick: move |_| {
                   manager.write().list.remove(&current_id);
               },
