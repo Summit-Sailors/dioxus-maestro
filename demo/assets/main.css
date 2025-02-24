@@ -1274,10 +1274,6 @@ video {
   overflow-y: auto;
 }
 
-.text-ellipsis {
-  text-overflow: ellipsis;
-}
-
 .whitespace-normal {
   white-space: normal;
 }
@@ -2222,21 +2218,6 @@ body>div {
 .hover\:\!border-blue-700:hover {
   --tw-border-opacity: 1 !important;
   border-color: rgb(29 78 216 / var(--tw-border-opacity, 1)) !important;
-}
-
-.hover\:border-blue-700:hover {
-  --tw-border-opacity: 1;
-  border-color: rgb(29 78 216 / var(--tw-border-opacity, 1));
-}
-
-.hover\:border-indigo-300:hover {
-  --tw-border-opacity: 1;
-  border-color: rgb(165 180 252 / var(--tw-border-opacity, 1));
-}
-
-.hover\:\!bg-blue-700:hover {
-  --tw-bg-opacity: 1 !important;
-  background-color: rgb(29 78 216 / var(--tw-bg-opacity, 1)) !important;
 }
 
 .hover\:border-blue-700:hover {
