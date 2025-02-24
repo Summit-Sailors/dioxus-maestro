@@ -128,60 +128,61 @@ pub fn Select<T: Clone + PartialEq + std::fmt::Display + 'static>(props: SelectP
 					onclick: move |ev| {
 							ev.stop_propagation();
 					},
-					for option in props.options.clone() {
-						div {
-							key: "{option.value}",
-							id: "{option.value}",
-							class: tw_join!(
-									"flex w-full items-center py-2 rounded px-3 cursor-pointer maestro-select-option",
-									props.option_class.clone().unwrap_or_default()
-							),
-							onclick: move |ev| {
-									ev.stop_propagation();
-									if props.multi {
-											let mut current = selected_options().clone();
-											if current.contains(&option.value) {
-													current.retain(|x| x != &option.value);
-											} else {
-													current.push(option.value.clone());
-											}
-											selected_options.set(current.clone());
-											if let Some(multi_cb) = props.multi_callback {
-													multi_cb.call(current);
-											}
-									} else {
-											selected_options.set(vec![option.value.clone()]);
-											is_opened.set(false);
-											if let Some(callback) = props.callback {
-													callback.call(option.value.clone());
-											}
-									}
-									props.toggle_open_callback.unwrap_or_default().call(ev);
-							},
-							{
-									if let Some(renderer) = props.option_renderer {
-											renderer(&option)
-									} else {
-											rsx! {
-											"{option.label}"
-											}
-									}
-							}
-							if props.icon_check.is_some() {
-								{props.icon_check.clone().unwrap()}
-							} else {
-								Icon {
-									icon: IoCheckmarkOutline,
-									class: tw_join!(
-											"fill-none ml-auto", if props.multi && selected_options().contains(& option
-											.value) || ! props.multi && props.current_value.as_ref() == Some(& option.value)
-											{ "opacity-100" } else { "opacity-0" }
-									),
-								}
-							}
-						}
-					}
-				}
+					{
+            props.options.iter().map(|option| {
+              let option_clone = option.clone();
+              rsx! {
+                div {
+                  key: "{option.value}",
+                  id: "{option.value}",
+                  class: tw_join!(
+                    "flex w-full items-center py-2 hover:bg-gray-700 rounded px-3 cursor-pointer",
+                    props.option_class.clone().unwrap_or_default()
+                  ),
+                  onclick: move |ev| {
+                    ev.stop_propagation();
+                    if props.multi {
+                      let mut current = selected_options().clone();
+                      if current.contains(&option_clone.value) {
+                        current.retain(|x| x != &option_clone.value);
+                      } else {
+                        current.push(option_clone.value.clone());
+                      }
+                      selected_options.set(current.clone());
+                      if let Some(multi_cb) = props.multi_callback.clone() {
+                        multi_cb.call(current);
+                      }
+                    } else {
+                      is_opened.set(false);
+                      if let Some(callback) = props.callback.clone() {
+                        callback.call(option_clone.value.clone());
+                      }
+                    }
+                  },
+                  {
+                    if let Some(renderer) = props.option_renderer {
+                      renderer(&option)
+                    } else {
+                      rsx! { "{option.label}" }
+                    }
+                  }
+                  if props.icon_check.is_some() {
+                    {props.icon_check.clone().unwrap()}
+                  } else {
+                    Icon {
+                      icon: IoCheckmarkOutline,
+                      class: tw_join!(
+                          "fill-none ml-auto", if props.multi && selected_options().contains(& option
+                          .value) || ! props.multi && props.current_value.as_ref() == Some(& option.value)
+                          { "opacity-100" } else { "opacity-0" }
+                      ),
+                    }
+                  }
+                }
+              }
+            })
+          }
+        }
 			}
 		}
 	}
