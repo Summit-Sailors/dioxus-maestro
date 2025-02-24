@@ -71,117 +71,118 @@ pub fn Select<T: Clone + PartialEq + std::fmt::Display + 'static>(props: SelectP
 
 	let icon_down = props.icon_down.clone().unwrap_or_else(|| {
 		rsx! {
-      Icon {
-        width: 16,
-        height: 16,
-        icon: IoChevronDownOutline,
-        class: tw_join!(
-            "absolute top-0 bottom-0 my-auto right-3 transition-all ease-linear fill-none",
-            (is_opened()).then_some("rotate-180")
-        ),
-      }
-    }
+			Icon {
+				width: 16,
+				height: 16,
+				icon: IoChevronDownOutline,
+				class: tw_join!(
+						"absolute top-0 bottom-0 my-auto right-3 transition-all ease-linear fill-none",
+						(is_opened()).then_some("rotate-180")
+				),
+			}
+		}
 	});
 
 	rsx! {
-    div {
-      class: tw_merge!(
-          "flex flex-col gap-2 w-full relative ", props.container_class.clone()
-          .unwrap_or_default()
-      ),
-      if let Some(label) = props.label.clone() {
-        span { class: tw_merge!("text-gray-400", props.label_class.clone().unwrap_or_default()),
-          {label}
-        }
-      }
-      div {
-        class: tw_merge!(
-            "relative w-full border border-gray-500 rounded-md transition-colors ease-linear cursor-pointer maestro-select-button__wrapper",
-            props.button_wrapper_class.clone().unwrap_or_default()
-        ),
-        tabindex: -1,
-        button {
-          class: tw_merge!(
-              "text-gray-500 relative flex py-2 px-3 w-full h-full rounded-md focus:outline-none maestro-select-button",
-              props.button_class.clone().unwrap_or_default()
-          ),
-          onfocusout: move |ev| {
-              is_opened.set(false);
-              props.toggle_close_callback.unwrap_or_default().call(ev);
-          },
-          onmousedown: move |ev| {
-              ev.prevent_default();
-              ev.stop_propagation();
-              is_opened.toggle();
-              props.toggle_open_callback.unwrap_or_default().call(ev)
-          },
-          r#type: "button",
-          span { "{display_value}" }
-          {icon_down}
-        }
-        div {
-          class: tw_join!(
-              "absolute flex flex-col gap-1 p-4 w-full left-0 right-0 top-[100%] mt-3 rounded-md max-h-48 overflow-y-auto bg-gray-100 border maestro-select-dropdown",
-              if is_opened() { "flex z-40" } else { "hidden -z-40" }, props.dropdown_class
-              .clone().unwrap_or_default()
-          ),
-          onclick: move |ev| {
-              ev.stop_propagation();
-          },
-          for option in props.options.clone() {
-            div {
-              key: "{option.value}",
-              id: "{option.value}",
-              class: tw_join!(
-                  "flex w-full items-center py-2 rounded px-3 cursor-pointer maestro-select-option",
-                  props.option_class.clone().unwrap_or_default()
-              ),
-              onclick: move |ev| {
-                  ev.stop_propagation();
-                  if props.multi {
-                      let mut current = selected_options().clone();
-                      if current.contains(&option.value) {
-                          current.retain(|x| x != &option.value);
-                      } else {
-                          current.push(option.value.clone());
-                      }
-                      selected_options.set(current.clone());
-                      if let Some(multi_cb) = props.multi_callback.clone() {
-                          multi_cb.call(current);
-                      }
-                  } else {
-                      is_opened.set(false);
-                      props.toggle_open_callback.unwrap_or_default().call(ev);
-                      if let Some(callback) = props.callback.clone() {
-                          callback.call(option.value.clone());
-                      }
-                  }
-              },
-              {
-                  if let Some(renderer) = props.option_renderer {
-                      renderer(&option)
-                  } else {
-                      rsx! {
-                      "{option.label}"
-                      }
-                  }
-              }
-              if props.icon_check.is_some() {
-                {props.icon_check.clone().unwrap()}
-              } else {
-                Icon {
-                  icon: IoCheckmarkOutline,
-                  class: tw_join!(
-                      "fill-none ml-auto", if props.multi && selected_options().contains(& option
-                      .value) || ! props.multi && props.current_value.as_ref() == Some(& option.value)
-                      { "opacity-100" } else { "opacity-0" }
-                  ),
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+		div {
+			class: tw_merge!(
+					"flex flex-col gap-2 w-full relative ", props.container_class.clone()
+					.unwrap_or_default()
+			),
+			if let Some(label) = props.label.clone() {
+				span { class: tw_merge!("text-gray-400", props.label_class.clone().unwrap_or_default()),
+					{label}
+				}
+			}
+			div {
+				class: tw_merge!(
+						"relative w-full border border-gray-500 rounded-md transition-colors ease-linear cursor-pointer maestro-select-button__wrapper",
+						props.button_wrapper_class.clone().unwrap_or_default()
+				),
+				tabindex: -1,
+				button {
+					class: tw_merge!(
+							"text-gray-500 relative flex py-2 px-3 w-full h-full rounded-md focus:outline-none maestro-select-button",
+							props.button_class.clone().unwrap_or_default()
+					),
+					onfocusout: move |ev| {
+							is_opened.set(false);
+							props.toggle_close_callback.unwrap_or_default().call(ev);
+					},
+					onmousedown: move |ev| {
+							ev.prevent_default();
+							ev.stop_propagation();
+							is_opened.toggle();
+							props.toggle_open_callback.unwrap_or_default().call(ev)
+					},
+					r#type: "button",
+					span { "{display_value}" }
+					{icon_down}
+				}
+				div {
+					class: tw_join!(
+							"absolute flex flex-col gap-1 p-4 w-full left-0 right-0 top-[100%] mt-3 rounded-md max-h-48 overflow-y-auto bg-gray-100 border maestro-select-dropdown",
+							if is_opened() { "flex z-40" } else { "hidden -z-40" }, props.dropdown_class
+							.clone().unwrap_or_default()
+					),
+					onclick: move |ev| {
+							ev.stop_propagation();
+					},
+					for option in props.options.clone() {
+						div {
+							key: "{option.value}",
+							id: "{option.value}",
+							class: tw_join!(
+									"flex w-full items-center py-2 rounded px-3 cursor-pointer maestro-select-option",
+									props.option_class.clone().unwrap_or_default()
+							),
+							onclick: move |ev| {
+									ev.stop_propagation();
+									if props.multi {
+											let mut current = selected_options().clone();
+											if current.contains(&option.value) {
+													current.retain(|x| x != &option.value);
+											} else {
+													current.push(option.value.clone());
+											}
+											selected_options.set(current.clone());
+											if let Some(multi_cb) = props.multi_callback {
+													multi_cb.call(current);
+											}
+									} else {
+											selected_options.set(vec![option.value.clone()]);
+											is_opened.set(false);
+											if let Some(callback) = props.callback {
+													callback.call(option.value.clone());
+											}
+									}
+									props.toggle_open_callback.unwrap_or_default().call(ev);
+							},
+							{
+									if let Some(renderer) = props.option_renderer {
+											renderer(&option)
+									} else {
+											rsx! {
+											"{option.label}"
+											}
+									}
+							}
+							if props.icon_check.is_some() {
+								{props.icon_check.clone().unwrap()}
+							} else {
+								Icon {
+									icon: IoCheckmarkOutline,
+									class: tw_join!(
+											"fill-none ml-auto", if props.multi && selected_options().contains(& option
+											.value) || ! props.multi && props.current_value.as_ref() == Some(& option.value)
+											{ "opacity-100" } else { "opacity-0" }
+									),
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }
