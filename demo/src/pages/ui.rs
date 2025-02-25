@@ -1,5 +1,5 @@
 use {
-	crate::components::ui::component_section::ComponentSection,
+	crate::components::ui::{component_section::ComponentSection, features::Features},
 	dioxus::prelude::*,
 	dioxus_free_icons::{icons::fa_solid_icons::FaDiamond, Icon},
 	dioxus_logger::tracing::info,
@@ -59,100 +59,120 @@ pub fn UIDemo() -> Element {
 	};
 
 	rsx! {
-		div { class: "max-w-4xl mx-auto py-8 px-4",
-			h1 { class: "text-3xl text-gray-800 dark:text-gray-100 text-center font-bold mb-8",
-				"Maestro UI Components"
-			}
+		div { class: "mx-auto py-8 px-4 bg-gray-900",
+    div { class: "mb-8",
+      h1 { class: "text-gray-100 text-center text-3xl font-bold mb-2", "Maestro UI" }
+      p { class: "text-gray-300 text-center",
+        "Maestro UI is a comprehensive, type-safe, and highly customizable UI component library for Dioxus, designed to provide developers with powerful, flexible, and elegant UI building blocks."
+      }
+    }
+
+    div {
+      class: "flex space-x-2",  
+      Features {
+        title: "UI".to_string(),
+        features: vec![
+          "Type Safety: Leverages Rust's type system".to_string(),
+          "Reactive Design: Built for Dioxus's reactive paradigm".to_string(),
+          "Flexible Styling: Tailwind CSS integration".to_string(),
+          "Comprehensive Components: Wide range of UI elements".to_string(),
+          "Performance: Efficient and lightweight".to_string()
+        ]
+      }
+    }
 
 			// buttons section
 			ComponentSection {
-				title: "Buttons",
-				description: "Various button styles, sizes, and types with different variants",
-				div { class: "grid grid-cols-1 md:grid-cols-3 gap-6",
-					Button {
-						class: "px-4 py-2 rounded-lg font-medium transition-colors text-white bg-blue-500 hover:bg-blue-700",
-						r#type: "button",
-						onclick: move |_| handle_button_click("Default Button clicked!".to_string()),
-						"Default Button"
-					}
-					Button {
-						class: "px-4 py-2 rounded-lg border border-gray-900 text-gray-800 hover:bg-gray-100",
-						r#type: "reset",
-						onclick: move |_| handle_button_click("Outline Button clicked!".to_string()),
-						"Outline Button"
-					}
-					Button {
-						class: "px-2 py-1 rounded-md bg-gray-300 text-gray-900 text-sm hover:bg-gray-400",
-						size: ButtonSize::Sm,
-						r#type: "submit",
-						onclick: move |_| handle_button_click("Small Submit Button clicked!".to_string()),
-						"Small Button"
-					}
-					Button {
-						class: "px-6 py-3 rounded-lg bg-transparent border border-gray-300 text-gray-600 hover:text-black",
-						size: ButtonSize::Lg,
-						r#type: "button",
-						onclick: move |_| handle_button_click("Large Ghost Button clicked!".to_string()),
-						"Large Button"
-					}
-					Button {
-						class: "text-blue-500 hover:text-blue-700",
-						variant: ButtonVariant::Link,
-						r#type: "button",
-						onclick: move |_| handle_button_click("Link Button clicked!".to_string()),
-						"Link Button"
-					}
-					Button {
-						class: "px-6 py-3 bg-gray-300 hover:bg-gray-600 text-gray-900",
-						variant: ButtonVariant::Icon,
-						size: ButtonSize::IconLg,
-						r#type: "button",
-						onclick: move |_| handle_button_click("Icon Button clicked!".to_string()),
-						children: rsx! {
-							Icon {
-								title: "Icon Button",
-								icon: FaDiamond,
-								width: 24,
-								height: 24,
-							}
-						},
-					}
-				}
-			}
+        title: "Buttons",
+        description: "Various button styles, sizes, and types with different variants",
+        div { class: "grid grid-cols-1 md:grid-cols-3 gap-6",
+          Button {
+            class: "px-4 py-2 rounded-lg font-medium transition-colors text-white bg-blue-500 hover:bg-blue-700 focus:ring focus:ring-blue-300",
+            r#type: "button",
+            onclick: move |_| handle_button_click("Default Button clicked!".to_string()),
+            "Default Button"
+          }
+          Button {
+            class: "px-4 py-2 rounded-lg border border-gray-600 text-gray-300 hover:bg-gray-700 focus:ring focus:ring-gray-500",
+            r#type: "reset",
+            onclick: move |_| handle_button_click("Outline Button clicked!".to_string()),
+            "Outline Button"
+          }
+          Button {
+            class: "px-2 py-1 rounded-md bg-gray-700 text-gray-200 text-sm hover:bg-gray-600 focus:ring focus:ring-gray-500",
+            size: ButtonSize::Sm,
+            r#type: "submit",
+            onclick: move |_| handle_button_click("Small Submit Button clicked!".to_string()),
+            "Small Button"
+          }
+          Button {
+            class: "px-6 py-3 rounded-lg bg-transparent border border-gray-500 text-gray-300 hover:text-white focus:ring focus:ring-gray-500",
+            size: ButtonSize::Lg,
+            r#type: "button",
+            onclick: move |_| handle_button_click("Large Ghost Button clicked!".to_string()),
+            "Large Button"
+          }
+          Button {
+            class: "text-blue-400 hover:text-blue-300 focus:underline",
+            variant: ButtonVariant::Link,
+            r#type: "button",
+            onclick: move |_| handle_button_click("Link Button clicked!".to_string()),
+            "Link Button"
+          }
+          Button {
+            class: "px-6 py-3 bg-gray-700 hover:bg-gray-600 text-gray-300 focus:ring focus:ring-gray-500",
+            variant: ButtonVariant::Icon,
+            size: ButtonSize::IconLg,
+            r#type: "button",
+            onclick: move |_| handle_button_click("Icon Button clicked!".to_string()),
+            children: rsx! {
+              Icon {
+                title: "Icon Button",
+                icon: FaDiamond,
+                width: 24,
+                height: 24,
+                class: "fill-current"
+              }
+            },
+          }
+        }
+      }
+      
 
 			// input fields section
 			ComponentSection {
-				title: "Input Fields",
-				description: "Text inputs with different variants and states",
-				div { class: "space-y-4",
-					Label { text: "Default Input".to_string(),
-						Input {
-							class: "border-gray-400 rounded-lg px-3 py-2 w-full focus:ring focus:ring-blue-100",
-							value: text_input(),
-							onchange: move |event: Event<FormData>| text_input.set(event.value()),
-							placeholder: "Type something...",
-						}
-					}
-					Label { text: "Underlined Input".to_string(),
-						Input {
-							class: "border-b border-gray-400 w-full focus:ring focus:ring-blue-300",
-							variant: InputVariant::Underlined,
-							value: text_input(),
-							onchange: move |event: Event<FormData>| text_input.set(event.value()),
-							placeholder: Some("Type something..."),
-						}
-					}
-					Label { text: "Password Input".to_string(),
-						Input {
-							class: "border-gray-400 rounded-lg px-3 py-2 w-full focus:ring focus:ring-red-300",
-							r#type: "password",
-							value: text_input.read().to_string(),
-							onchange: move |event: Event<FormData>| text_input.set(event.value()),
-							placeholder: "Enter password...",
-						}
-					}
-				}
-			}
+        title: "Input Fields",
+        description: "Text inputs with different variants and states",
+        div { class: "space-y-4",
+          Label { text: "Default Input".to_string(),
+            Input {
+              class: "bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 w-full text-gray-100 focus:ring focus:ring-blue-500 focus:outline-none",
+              value: text_input(),
+              onchange: move |event: Event<FormData>| text_input.set(event.value()),
+              placeholder: "Type something...",
+            }
+          }
+          Label { text: "Underlined Input".to_string(),
+            Input {
+              class: "bg-gray-800 border-b border-gray-700 w-full text-gray-100 focus:ring focus:ring-blue-500 focus:outline-none",
+              variant: InputVariant::Underlined,
+              value: text_input(),
+              onchange: move |event: Event<FormData>| text_input.set(event.value()),
+              placeholder: Some("Type something..."),
+            }
+          }
+          Label { text: "Password Input".to_string(),
+            Input {
+              class: "bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 w-full text-gray-100 focus:ring focus:ring-red-500 focus:outline-none",
+              r#type: "password",
+              value: text_input.read().to_string(),
+              onchange: move |event: Event<FormData>| text_input.set(event.value()),
+              placeholder: "Enter password...",
+            }
+          }
+        }
+      }
+      
 
 			// select and multiselect section
 			ComponentSection {
@@ -162,18 +182,18 @@ pub fn UIDemo() -> Element {
 				div { class: "space-y-6",
 					Select {
 						options: vec![
-								SelectOption {
-										label: "Option 1".to_string(),
-										value: "Option 1".to_string(),
-								},
-								SelectOption {
-										label: "Option 2".to_string(),
-										value: "Option 2".to_string(),
-								},
-								SelectOption {
-										label: "Option 3".to_string(),
-										value: "Option 3".to_string(),
-								},
+              SelectOption {
+                label: "Option 1".to_string(),
+                value: "Option 1".to_string(),
+              },
+              SelectOption {
+                label: "Option 2".to_string(),
+                value: "Option 2".to_string(),
+              },
+              SelectOption {
+                label: "Option 3".to_string(),
+                value: "Option 3".to_string(),
+              },
 						],
 						current_value: Some(selected_option.read().to_string()),
 						multi: false,
@@ -182,24 +202,24 @@ pub fn UIDemo() -> Element {
 						label: Some("Single Select".into()),
 						placeholder: Some("Select an option".into()),
 						option_class: "hover:bg-gray-300",
-						label_class: "text-gray-700",
-						button_class: "bg-gray-50 text-gray-700"
+						label_class: "text-gray-500",
+						button_class: "bg-gray-50 text-gray-500"
 					}
 
 					Select {
 						options: vec![
-								SelectOption {
-										label: "Item 1".to_string(),
-										value: "Item 1".to_string(),
-								},
-								SelectOption {
-										label: "Item 2".to_string(),
-										value: "Item 2".to_string(),
-								},
-								SelectOption {
-										label: "Item 3".to_string(),
-										value: "Item 3".to_string(),
-								},
+              SelectOption {
+                label: "Item 1".to_string(),
+                value: "Item 1".to_string(),
+              },
+              SelectOption {
+                label: "Item 2".to_string(),
+                value: "Item 2".to_string(),
+              },
+              SelectOption {
+                label: "Item 3".to_string(),
+                value: "Item 3".to_string(),
+              },
 						],
 						current_value: None,
 						multi: true,

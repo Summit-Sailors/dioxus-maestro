@@ -61,8 +61,6 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
 		is_expanded.toggle();
 	};
 
-	let handle_file_selection = move |event: FormEvent| selected_file.set(event.value().clone());
-
 	// syntax highlighting function
 	let highlight_code = move |code: &str, lang: &str| -> String {
 		// loading syntax set and theme set
@@ -92,50 +90,49 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
 	let highlighted_code = highlight_code(&current_code, &props.language);
 
 	rsx! {
-    div { class: "p-2 bg-gray-800 rounded-lg w-full flex flex-col",
-
-      // header section
-      div { class: "flex items-center justify-between text-white top-0 z-10 bg-gray-800 p-2",
-        h2 { class: "text-xl font-semibold", "{props.title}" }
-        div { class: "flex space-x-2",
-          button {
-            class: "p-2 rounded-full hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 relative",
-            disabled: "{is_copying()}",
-            onclick: handle_copy,
-            title: "Copy Code",
-            Icon { icon: FaCopy, width: 20, height: 20 }
-            div {
-              class: tw_join!(
-                  "absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs py-1 px-2 rounded transition-opacity duration-300 {}",
-                  if copy_status().is_empty() { "opacity-0" } else { "opacity-100" }
-              ),
-              "{copy_status}"
-            }
+    // header section
+    div { class: "text-white z-10 bg-gray-900 border-r-4 border-blue-500 p-2",
+      div { class: "flex space-x-2",
+        button {
+          class: "p-2 rounded-full hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 relative",
+          disabled: "{is_copying()}",
+          onclick: handle_copy,
+          title: "Copy Code",
+          Icon { icon: FaCopy, width: 20, height: 20 }
+          div {
+            class: tw_join!(
+              "absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs py-1 px-2 rounded transition-opacity duration-300 {}",
+              if copy_status().is_empty() { "opacity-0" } else { "opacity-100" }
+            ),
+            "{copy_status}"
           }
-          button {
-            class: "p-2 rounded-full hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500",
-            onclick: toggle_expanded,
-            title: if is_expanded() { "Collapse Code" } else { "View Code" },
-            {
-                if is_expanded() {
-                    rsx! {
-                      Icon { icon: FaMaximize, width: 20, height: 20 }
-                    }
-                } else {
-                    rsx! {
-                      Icon { icon: FaMinimize, width: 20, height: 20 }
-                    }
-                }
+        }
+        button {
+          class: "p-2 rounded-full hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500",
+          onclick: toggle_expanded,
+          title: if is_expanded() { "Collapse Code" } else { "View Code" },
+          {
+            if is_expanded() {
+              rsx! {
+                Icon { icon: FaMaximize, width: 20, height: 20 }
+              }
+            } else {
+              rsx! {
+                Icon { icon: FaMinimize, width: 20, height: 20 }
+              }
             }
           }
         }
       }
-
+    }
+    
+    div { 
+      class: "p-2 bg-gray-800 w-full flex flex-col",
       // scrollable container for demo and code
       div {
         class: tw_join!(
-            "grid grid-cols-1 transition-all duration-500 ease-in-out lg:overflow-hidden", if
-            is_expanded() { "lg:grid-cols-2" } else { "grid-cols-1" }
+          "grid grid-cols-1 transition-all duration-500 ease-in-out lg:overflow-hidden", 
+          if is_expanded() { "lg:grid-cols-2" } else { "grid-cols-1" }
         ),
 
         // demo component section
@@ -158,7 +155,6 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
                 multi: false,
                 callback: move |value| selected_file.set(value),
                 multi_callback: move |_| {},
-                label: Some("Single Select".into()),
                 placeholder: Some("Select an option".into()),
                 button_class: "text-gray-200 bg-gray-800",
                 dropdown_class: "text-gray-200 !bg-gray-800 border-gray-700",

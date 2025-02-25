@@ -172,9 +172,9 @@ pub fn Select<T: Clone + PartialEq + std::fmt::Display + 'static>(props: SelectP
                     Icon {
                       icon: IoCheckmarkOutline,
                       class: tw_join!(
-                          "fill-none ml-auto", if props.multi && selected_options().contains(& option
-                          .value) || ! props.multi && props.current_value.as_ref() == Some(& option.value)
-                          { "opacity-100" } else { "opacity-0" }
+                        "fill-none ml-auto", if props.multi && selected_options().contains(& option
+                        .value) || ! props.multi && props.current_value.as_ref() == Some(& option.value)
+                        { "opacity-100" } else { "opacity-0" }
                       ),
                     }
                   }

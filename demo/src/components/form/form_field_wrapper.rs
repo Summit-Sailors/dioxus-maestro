@@ -24,7 +24,7 @@ pub fn FormFieldWrapper(props: FormFieldWrapperProps) -> Element {
   
   let label_class = tw_join!(
     "block text-sm font-medium mb-1",
-    if has_error { "text-red-600" } else { "text-gray-700" }
+    if has_error { "text-red-500" } else { "text-gray-200" }
   );
 
   rsx! {
@@ -41,17 +41,17 @@ pub fn FormFieldWrapper(props: FormFieldWrapperProps) -> Element {
         }
       }
       div {
-        class: "relative",
+        class: "relative bg-gray-900",
         {props.children}
         if let Some(help_text) = &props.help_text {
           p {
-            class: "mt-1 text-sm text-gray-500",
+            class: "mt-1 text-sm text-gray-400",
             "{help_text}"
           }
         }
         {(has_error).then(|| rsx! {
           div {
-            class: "text-red-600 text-sm mt-1",
+            class: "text-red-500 text-sm mt-1",
             "{props.field.errors.read().join(\", \")}"
           }
         })}
@@ -59,9 +59,9 @@ pub fn FormFieldWrapper(props: FormFieldWrapperProps) -> Element {
           div {
             class: "absolute top-2.5 right-2",
             if has_error {
-              i { class: "fas fa-exclamation-circle text-red-600" }
+              i { class: "fas fa-exclamation-circle text-red-500" }
             } else {
-              i { class: "fas fa-check-circle text-green-600" }
+              i { class: "fas fa-check-circle text-green-500" }
             }
           }
         })}
