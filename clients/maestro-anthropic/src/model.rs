@@ -3,6 +3,8 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize, strum_macros::EnumIter)]
 #[serde(rename_all = "snake_case")]
 pub enum Model {
+	#[serde(rename = "claude-3-7-sonnet-20250219")]
+	Sonnet37,
 	#[serde(rename = "claude-3-5-sonnet-latest")]
 	Sonnet35,
 	/// 2024-06-20
