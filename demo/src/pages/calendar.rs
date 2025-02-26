@@ -47,6 +47,8 @@ pub fn CalendarDemo() -> Element {
 								.display_month(basic_display_month)
 								.display_year(basic_display_year)
 								.is_full(true)
+								.day_today_class("bg-gray-600 text-gray-100")
+								.day_selected_class("bg-gray-900 text-gray-100")
 								.build(),
 						select_props: CalendarSelectProps::builder()
 								.selected_day(basic_selected_day)
@@ -82,9 +84,7 @@ pub fn CalendarDemo() -> Element {
 
 				div { class: "grid justify-center",
 					Calendar {
-						display_props: CalendarDisplayProps::builder()
-								.is_full(false)
-								.build(),
+						display_props: CalendarDisplayProps::builder().is_full(false).build(),
 						select_props: CalendarSelectProps::builder().build(),
 					}
 				}
@@ -102,6 +102,7 @@ pub fn CalendarDemo() -> Element {
 								.max_date(use_signal(|| Some(max_date)))
 								.build(),
 					}
+
 
 					div { class: "mt-4 text-sm sm:text:xs text-gray-600 text-center",
 						{

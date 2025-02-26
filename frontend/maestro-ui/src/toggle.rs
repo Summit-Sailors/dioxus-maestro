@@ -34,12 +34,18 @@ pub struct ToggleSwitchProps {
 	state: Signal<bool>,
 	label_states: Option<ToggleSwitchLabelStatesProp>,
 	label_placement: Option<EToggleSwitchLabelPlacement>,
-	class: Option<String>,
-	label_class: Option<String>,
-	toggled_class: Option<String>,
-	default_class: Option<String>,
-	toggled_translate_class: Option<String>,
-	default_translate_class: Option<String>,
+	#[props(default = String::new())]
+	class: String,
+	#[props(default = String::new())]
+	label_class: String,
+	#[props(default = String::new())]
+	toggled_class: String,
+	#[props(default = String::new())]
+	default_class: String,
+	#[props(default = String::new())]
+	toggled_translate_class: String,
+	#[props(default = String::new())]
+	default_translate_class: String,
 }
 
 #[component]
@@ -53,22 +59,22 @@ pub fn ToggleSwitch(props: ToggleSwitchProps) -> Element {
 							rsx! {
 								if EToggleSwitchLabelPlacement::Left == label_placement {
 									span {
-										class: tw_merge!("text-lg text-gray-500", props.label_class.clone().unwrap_or_default()),
+										class: tw_merge!("text-lg text-gray-500", & props.label_class),
 										aria_label: label,
 										{label}
 									}
 								}
 								RawToggleSwitch {
 									state: props.state,
-									class: props.class.clone().unwrap_or_default(),
-									toggled_class: props.toggled_class.clone().unwrap_or_default(),
-									default_class: props.default_class.clone().unwrap_or_default(),
-									toggled_translate_class: props.toggled_translate_class.clone().unwrap_or_default(),
-									default_translate_class: props.default_translate_class.clone().unwrap_or_default(),
+									class: props.class.clone(),
+									toggled_class: props.toggled_class.clone(),
+									default_class: props.default_class.clone(),
+									toggled_translate_class: props.toggled_translate_class.clone(),
+									default_translate_class: props.default_translate_class.clone(),
 								}
 								if EToggleSwitchLabelPlacement::Right == label_placement {
 									span {
-										class: tw_merge!("text-lg text-gray-500", props.label_class.clone().unwrap_or_default()),
+										class: tw_merge!("text-lg text-gray-500", & props.label_class),
 										aria_label: label,
 										{label}
 									}
@@ -78,11 +84,11 @@ pub fn ToggleSwitch(props: ToggleSwitchProps) -> Element {
 					None => rsx! {
 						RawToggleSwitch {
 							state: props.state,
-							class: props.class.clone().unwrap_or_default(),
-							toggled_class: props.toggled_class.clone().unwrap_or_default(),
-							default_class: props.default_class.clone().unwrap_or_default(),
-							toggled_translate_class: props.toggled_translate_class.clone().unwrap_or_default(),
-							default_translate_class: props.default_translate_class.clone().unwrap_or_default(),
+							class: props.class.clone(),
+							toggled_class: props.toggled_class.clone(),
+							default_class: props.default_class.clone(),
+							toggled_translate_class: props.toggled_translate_class.clone(),
+							default_translate_class: props.default_translate_class.clone(),
 						}
 					},
 			}

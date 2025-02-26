@@ -6,6 +6,7 @@ use {
 		icons::ld_icons::{LdCalendar, LdChevronLeft, LdChevronRight, LdChevronsLeft, LdChevronsRight},
 		Icon,
 	},
+	dioxus_logger::tracing::info,
 	enums::{e_month::ECalendarMonth, e_week_day::ECalendarDay},
 	strum::IntoEnumIterator,
 	tailwind_fuse::*,
@@ -104,7 +105,7 @@ impl Copy for CalendarStateProps {}
 
 pub fn use_calendar() {}
 
-// To do: make custom classes &'static str
+// To do: make custom classes String
 
 #[component]
 pub fn Calendar(display_props: CalendarDisplayProps, select_props: CalendarSelectProps) -> Element {
@@ -260,7 +261,7 @@ pub fn CalendarMaybeWrapper(CalendarMaybeWrapperProps { is_full, children, selec
 					{selected_date().format("%b %d, %y").to_string()}
 				}
 				div {
-					class: tw_join!(
+					class: tw_merge!(
 							"absolute min-w-[448px] top-20 mt-6 z-50 bg-white shadow-lg rounded-lg border maestro-calendar-wrapper-container",
 							if is_open() { "block" } else { "hidden" }
 					),
@@ -285,6 +286,7 @@ pub fn CalendarDayComponent(delta: u8, display_props: CalendarDisplayProps, sele
 		events_class,
 		..
 	} = display_props;
+
 	let CalendarSelectProps { max_date, min_date, mut selected_day, mut selected_month, mut selected_year } = select_props;
 	let CalendarStateProps { mut hover_date, .. } = state_props;
 	let selected_date = use_memo(move || NaiveDate::from_ymd_opt(selected_year(), selected_month() as u32, selected_day() as u32).unwrap());
@@ -308,6 +310,7 @@ pub fn CalendarDayComponent(delta: u8, display_props: CalendarDisplayProps, sele
 	let date_smaller_than_min = min_date().map(|min_date| min_date > this_display_date).unwrap_or(false);
 	let date_bigger_than_max = max_date().map(|max_date| max_date < this_display_date).unwrap_or(false);
 	let is_disabled = date_smaller_than_min || date_bigger_than_max;
+
 	rsx! {
 		button {
 			onclick: move |_| {
@@ -318,12 +321,13 @@ pub fn CalendarDayComponent(delta: u8, display_props: CalendarDisplayProps, sele
 			onmouseenter: move |_| hover_date.set(Some(this_display_date)),
 			onmouseleave: move |_| hover_date.set(None),
 			disabled: is_disabled,
+			key: delta,
 			class: tw_merge!(
 					"h-10 w-10 rounded-full flex items-center justify-center text-sm text-gray-900 maestro-calendar-day relative",
 					day_class, is_today
-					.then_some(tw_merge!("bg-blue-500 text-white maestro-calendar-day__today",
+					.then_some(tw_merge!("bg-blue-500 text-white maestro-calendar-day__today", &
 					day_today_class)), (selected_date() == this_display_date)
-					.then_some(tw_merge!("bg-blue-200 maestro-calendar-day__selected",
+					.then_some(tw_merge!("bg-blue-200 maestro-calendar-day__selected", &
 					day_selected_class)), is_disabled
 					.then_some(tw_merge!("text-gray-500 cursor-not-allowed maestro-calendar-day__disabled",
 					day_disabled_class)), (! is_today && selected_date() != this_display_date && !
