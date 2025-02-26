@@ -2,7 +2,7 @@ use {dioxus::prelude::*, tailwind_fuse::*};
 
 #[derive(TwClass)]
 #[tw(
-	class = "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
+	class = "inline-flex px-3 py-4 items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors ring-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
 )]
 pub struct ButtonClass {
 	pub variant: ButtonVariant,
@@ -11,14 +11,16 @@ pub struct ButtonClass {
 
 #[derive(PartialEq, TwVariant)]
 pub enum ButtonVariant {
-	#[tw(default, class = "")]
+	#[tw(default, class = "bg-blue-500 text-white hover:bg-blue-700")]
 	Default,
-	#[tw(class = "text-primary-foreground underline-offset-4 hover:underline")]
+	#[tw(class = "bg-transparent border border-gray-700")]
+	Outline,
+	#[tw(class = "hover:bg-gray-300")]
+	Ghost,
+	#[tw(class = "text-blue-600 underline-offset-4 hover:underline")]
 	Link,
-	#[tw(class = "w-fit h-fit !p-0 text-primary-foreground hover:text-primary-foreground/90")]
+	#[tw(class = "w-fit h-fit !p-0 text-gray-700")]
 	Icon,
-	#[tw(class = "w-fit h-fit !p-0 border bg-transparent")]
-	Rounded,
 }
 
 #[derive(PartialEq, TwVariant)]
@@ -48,7 +50,8 @@ pub struct ButtonProps {
 	#[props(default = ButtonSize::Default)]
 	pub size: ButtonSize,
 	pub onclick: Option<EventHandler<Event<MouseData>>>,
-	pub class: Option<String>,
+	#[props(default = String::new())]
+	pub class: String,
 	pub style: Option<String>,
 	pub children: Element,
 	#[props(extends = GlobalAttributes, extends = button)]
@@ -59,7 +62,7 @@ pub struct ButtonProps {
 
 #[component]
 pub fn Button(props: ButtonProps) -> Element {
-	let class = ButtonClass { variant: props.variant, size: props.size }.with_class(tw_merge!(props.class.clone().unwrap_or_default(), "maestro-button"));
+	let class = ButtonClass { variant: props.variant, size: props.size }.with_class(tw_merge!(props.class.clone(), "maestro-button"));
 
 	rsx! {
 		button {
