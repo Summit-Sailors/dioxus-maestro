@@ -6,8 +6,8 @@ pub struct LabelClass {}
 
 #[derive(Clone, PartialEq, Props)]
 pub struct LabelProps {
-	#[props(default = false)]
-	pub class: Option<String>,
+	#[props(default = String::new())]
+	pub class: String,
 	pub style: Option<String>,
 	pub text: Option<String>,
 	pub children: Element,
@@ -17,7 +17,7 @@ pub struct LabelProps {
 
 #[component]
 pub fn Label(props: LabelProps) -> Element {
-	let class = LabelClass {}.with_class(tw_merge!(props.class.clone().unwrap_or_default(), "maestro_label"));
+	let class = LabelClass {}.with_class(tw_merge!(&props.class, "maestro_label"));
 
 	rsx! {
 		label { class, style: props.style.unwrap_or_default(),

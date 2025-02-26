@@ -17,17 +17,17 @@ pub struct UsePagination {
 impl Clone for UsePagination {
 	fn clone(&self) -> Self {
 		Self {
-			idx: self.idx.clone(),
-			page: self.page.clone(),
-			page_size: self.page_size.clone(),
-			total: self.total.clone(),
-			counter_label: self.counter_label.clone(),
-			next_idx_disabled: self.next_idx_disabled.clone(),
-			prev_idx_disabled: self.prev_idx_disabled.clone(),
-			next_page_disabled: self.next_page_disabled.clone(),
-			prev_page_disabled: self.prev_page_disabled.clone(),
-			touched: self.touched.clone(),
-			items_in_current_page: self.items_in_current_page.clone(),
+			idx: self.idx,
+			page: self.page,
+			page_size: self.page_size,
+			total: self.total,
+			counter_label: self.counter_label,
+			next_idx_disabled: self.next_idx_disabled,
+			prev_idx_disabled: self.prev_idx_disabled,
+			next_page_disabled: self.next_page_disabled,
+			prev_page_disabled: self.prev_page_disabled,
+			touched: self.touched,
+			items_in_current_page: self.items_in_current_page,
 		}
 	}
 }

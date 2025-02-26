@@ -1,9 +1,18 @@
 use {
+	crate::{
+		button::{Button, ButtonSize, ButtonVariant},
+		input::{Input, InputVariant},
+	},
 	dioxus::prelude::*,
 	dioxus_free_icons::{
-		icons::io_icons::{IoCheckmarkOutline, IoChevronDownOutline},
+		icons::{
+			bs_icons::BsSearch,
+			io_icons::{IoCheckmarkOutline, IoChevronDownOutline},
+			ld_icons::LdX,
+		},
 		Icon,
 	},
+	std::cmp::Ordering,
 	tailwind_fuse::*,
 };
 
@@ -19,24 +28,38 @@ where
 	T: Clone + PartialEq + std::fmt::Display + 'static,
 {
 	pub options: Vec<SelectOption<T>>,
+	#[props(default = None)]
 	pub current_value: Option<T>,
-	pub multi: bool,
-	pub callback: Option<EventHandler<T>>,
-	pub multi_callback: Option<EventHandler<Vec<T>>>,
-	pub label: Option<String>,
-	pub placeholder: Option<String>,
-	pub option_class: Option<String>,
-	pub dropdown_class: Option<String>,
-	pub container_class: Option<String>,
-	pub button_class: Option<String>,
-	pub button_wrapper_class: Option<String>,
-	pub label_class: Option<String>,
+	pub onchange: Option<EventHandler<T>>,
+	#[props(default = String::new())]
+	pub label: String,
+	#[props(default = String::new())]
+	pub placeholder: String,
+	#[props(default = String::new())]
+	pub option_class: String,
+	#[props(default = String::new())]
+	pub dropdown_class: String,
+	#[props(default = String::new())]
+	pub container_class: String,
+	#[props(default = String::new())]
+	pub button_class: String,
+	#[props(default = String::new())]
+	pub button_wrapper_class: String,
+	#[props(default = String::new())]
+	pub label_class: String,
+	#[props(default = String::new())]
+	pub search_input_container_class: String,
+	#[props(default = String::new())]
+	pub search_clear_class: String,
+	#[props(default = String::new())]
+	pub search_input_class: String,
 	pub icon_down: Option<Element>,
 	pub icon_check: Option<Element>,
 	pub option_renderer: Option<fn(&SelectOption<T>) -> Element>,
-	pub multi_current_values: Option<Vec<T>>,
-	pub toggle_open_callback: Option<EventHandler<Event<MouseData>>>,
-	pub toggle_close_callback: Option<EventHandler<Event<FocusData>>>,
+	pub onopen: Option<EventHandler<Option<Event<MouseData>>>>,
+	pub onclose: Option<EventHandler<Option<Event<FocusData>>>>,
+	#[props(default = false)]
+	pub is_searchable: bool,
 }
 
 // classes may be extended also by using "maestro-select-*_*" classname
@@ -44,30 +67,29 @@ where
 #[component]
 pub fn Select<T: Clone + PartialEq + std::fmt::Display + 'static>(props: SelectProps<T>) -> Element {
 	let mut is_opened = use_signal(|| false);
-	let mut selected_options = use_signal(|| props.multi_current_values.clone().unwrap_or_default());
+	let mut search_input = use_signal(String::new);
+	let SelectProps { options, current_value, placeholder, .. } = props;
 
-	let display_value = if props.multi {
-		if selected_options().is_empty() {
-			props.placeholder.clone().unwrap_or_default()
-		} else {
-			let items: Vec<String> =
-				selected_options().iter().filter_map(|value| props.options.iter().find(|opt| &opt.value == value).map(|opt| opt.label.clone())).collect();
-
-			let joined = items.join(", ");
-
-			if joined.chars().count() > 50 {
-				format!("{} (+{} more)", joined.chars().take(47).collect::<String>(), selected_options().len())
+	let display_value =
+		current_value.as_ref().and_then(|value| options.iter().find(|opt| &opt.value == value).map(|opt| opt.label.clone())).unwrap_or_else(|| placeholder.clone());
+	let display_options = use_memo(use_reactive!(|(current_value)| {
+		let mut options =
+			options.clone().into_iter().filter(|option| option.label.to_lowercase().contains(&search_input().to_lowercase())).collect::<Vec<SelectOption<T>>>();
+		options.sort_by(|a, b| {
+			if let Some(current_value) = &current_value {
+				if &a.value == current_value {
+					Ordering::Less
+				} else if &b.value == current_value {
+					Ordering::Greater
+				} else {
+					Ordering::Equal
+				}
 			} else {
-				joined
+				Ordering::Equal
 			}
-		}
-	} else {
-		props
-			.current_value
-			.as_ref()
-			.and_then(|value| props.options.iter().find(|opt| &opt.value == value).map(|opt| opt.label.clone()))
-			.unwrap_or_else(|| props.placeholder.clone().unwrap_or_default())
-	};
+		});
+		options
+	}));
 
 	let icon_down = props.icon_down.clone().unwrap_or_else(|| {
 		rsx! {
@@ -75,7 +97,7 @@ pub fn Select<T: Clone + PartialEq + std::fmt::Display + 'static>(props: SelectP
 				width: 16,
 				height: 16,
 				icon: IoChevronDownOutline,
-				class: tw_join!(
+				class: tw_merge!(
 						"absolute top-0 bottom-0 my-auto right-3 transition-all ease-linear fill-none",
 						(is_opened()).then_some("rotate-180")
 				),
@@ -84,105 +106,125 @@ pub fn Select<T: Clone + PartialEq + std::fmt::Display + 'static>(props: SelectP
 	});
 
 	rsx! {
-		div {
-			class: tw_merge!(
-					"flex flex-col gap-2 w-full relative ", props.container_class.clone()
-					.unwrap_or_default()
-			),
-			if let Some(label) = props.label.clone() {
-				span { class: tw_merge!("text-gray-400", props.label_class.clone().unwrap_or_default()),
-					{label}
-				}
+		div { class: tw_merge!("flex flex-col gap-2 w-full relative min-h-12", & props.container_class),
+			if !props.label.is_empty() {
+				span { class: tw_merge!("text-gray-400", & props.label_class), {props.label} }
 			}
 			div {
 				class: tw_merge!(
-						"relative w-full border border-gray-500 rounded-md transition-colors ease-linear cursor-pointer maestro-select-button__wrapper",
-						props.button_wrapper_class.clone().unwrap_or_default()
+						"relative w-full cursor-pointer  maestro-select-button__wrapper", & props
+						.button_wrapper_class
 				),
-				tabindex: -1,
 				button {
 					class: tw_merge!(
-							"text-gray-500 relative flex py-2 px-3 w-full h-full rounded-md focus:outline-none maestro-select-button",
-							props.button_class.clone().unwrap_or_default()
+							"min-h-12 flex items-center border border-gray-500 rounded-md transition-colors ease-linear text-gray-800 relative flex py-2 px-3 w-full h-full focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-700 focus-visible:ring-offset-white maestro-select-button",
+							& props.button_class
 					),
 					onfocusout: move |ev| {
 							is_opened.set(false);
-							props.toggle_close_callback.unwrap_or_default().call(ev);
+							search_input.set(String::new());
+							props.onclose.unwrap_or_default().call(Some(ev));
 					},
 					onmousedown: move |ev| {
 							ev.prevent_default();
 							ev.stop_propagation();
 							is_opened.toggle();
-							props.toggle_open_callback.unwrap_or_default().call(ev)
+							props.onopen.unwrap_or_default().call(Some(ev))
 					},
 					r#type: "button",
-					span { "{display_value}" }
+					span { class: "line-clamp-1 pr-2 text-left", "{display_value}" }
 					{icon_down}
 				}
 				div {
-					class: tw_join!(
+					class: tw_merge!(
 							"absolute flex flex-col gap-1 p-4 w-full left-0 right-0 top-[100%] mt-3 rounded-md max-h-48 overflow-y-auto bg-gray-100 border maestro-select-dropdown",
-							if is_opened() { "flex z-40" } else { "hidden -z-40" }, props.dropdown_class
-							.clone().unwrap_or_default()
+							if is_opened() { "flex z-40" } else { "hidden -z-40" }, & props.dropdown_class
 					),
 					onclick: move |ev| {
 							ev.stop_propagation();
 					},
+					if props.is_searchable {
+						div {
+							class: tw_merge!(
+									"relative px-3 text-gray-500 maestro-select-search_container", & props
+									.search_input_container_class
+							),
+							Icon {
+								width: 16,
+								icon: BsSearch,
+								class: "absolute top-2.5 left-3",
+							}
+							Input {
+								r#type: "text",
+								variant: InputVariant::Underlined,
+								value: search_input(),
+								class: tw_merge!(
+										"px-7 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-none focus-visible:ring-offset-0 maestro-select-search_input",
+										& props.search_input_class
+								),
+								onchange: move |event: Event<FormData>| search_input.set(event.value()),
+							}
+							Button {
+								variant: ButtonVariant::Icon,
+								r#type: "button",
+								size: ButtonSize::IconSm,
+								class: tw_merge!(
+										"h-fit w-fit absolute top-2.5 right-3 text-gray-500 hover:text-gray-700 focus-visible:text-gray-700 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-none focus-visible:ring-offset-0 maestro-select-search_clear",
+										& props.search_clear_class
+								),
+								onclick: move |event: Event<MouseData>| {
+										event.stop_propagation();
+										search_input.set(String::new());
+								},
+								Icon { width: 16, icon: LdX }
+							}
+						}
+					}
 					{
-            props.options.iter().map(|option| {
-              let option_clone = option.clone();
-              rsx! {
-                div {
-                  key: "{option.value}",
-                  id: "{option.value}",
-                  class: tw_join!(
-                    "flex w-full items-center py-2 hover:bg-gray-700 rounded px-3 cursor-pointer",
-                    props.option_class.clone().unwrap_or_default()
-                  ),
-                  onclick: move |ev| {
-                    ev.stop_propagation();
-                    if props.multi {
-                      let mut current = selected_options().clone();
-                      if current.contains(&option_clone.value) {
-                        current.retain(|x| x != &option_clone.value);
-                      } else {
-                        current.push(option_clone.value.clone());
-                      }
-                      selected_options.set(current.clone());
-                      if let Some(multi_cb) = props.multi_callback.clone() {
-                        multi_cb.call(current);
-                      }
-                    } else {
-                      is_opened.set(false);
-                      if let Some(callback) = props.callback.clone() {
-                        callback.call(option_clone.value.clone());
-                      }
-                    }
-                  },
-                  {
-                    if let Some(renderer) = props.option_renderer {
-                      renderer(&option)
-                    } else {
-                      rsx! { "{option.label}" }
-                    }
-                  }
-                  if props.icon_check.is_some() {
-                    {props.icon_check.clone().unwrap()}
-                  } else {
-                    Icon {
-                      icon: IoCheckmarkOutline,
-                      class: tw_join!(
-                        "fill-none ml-auto", if props.multi && selected_options().contains(& option
-                        .value) || ! props.multi && props.current_value.as_ref() == Some(& option.value)
-                        { "opacity-100" } else { "opacity-0" }
-                      ),
-                    }
-                  }
-                }
-              }
-            })
-          }
-        }
+							display_options()
+									.iter()
+									.map(|option| {
+											let option_clone = option.clone();
+											rsx! {
+												div {
+													key: "{option.value}",
+													id: "{option.value}",
+													class: tw_merge!(
+															"flex w-full items-center py-2 hover:bg-gray-300 rounded px-3 cursor-pointer", &
+															props.option_class
+													),
+													onclick: move |ev| {
+															ev.stop_propagation();
+															is_opened.set(false);
+															props.onclose.unwrap_or_default().call(None);
+															search_input.set(String::new());
+															props.onchange.unwrap_or_default().call(option_clone.value.clone());
+													},
+													{
+															if let Some(renderer) = props.option_renderer {
+																	renderer(option)
+															} else {
+																	rsx! {
+																	"{option.label}"
+																	}
+															}
+													}
+													if props.icon_check.is_some() {
+														{props.icon_check.clone().unwrap()}
+													} else {
+														Icon {
+															icon: IoCheckmarkOutline,
+															class: tw_merge!(
+																	"fill-none ml-auto", if current_value.as_ref() == Some(& option.value) {
+																	"opacity-100" } else { "opacity-0" }
+															),
+														}
+													}
+												}
+											}
+									})
+					}
+				}
 			}
 		}
 	}

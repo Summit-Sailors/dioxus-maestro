@@ -68,14 +68,12 @@ pub fn CalendarDemo() -> Element {
           class: "overflow-auto",
 					Calendar {
 						display_props: CalendarDisplayProps::builder()
-              .display_month(basic_display_month)
-              .display_year(basic_display_year)
-              .header_class("bg-gray-800 text-gray-200")
-              .body_class("bg-gray-900 text-gray-200")
-              .wrapper_class("border border-red-500")
-              .container_class("text-gray-800 border border-red-500")
-              .is_full(true)
-              .build(),
+								.display_month(basic_display_month)
+								.display_year(basic_display_year)
+								.is_full(true)
+								.day_today_class("bg-gray-600 text-gray-100")
+								.day_selected_class("bg-gray-900 text-gray-100")
+								.build(),
 						select_props: CalendarSelectProps::builder()
               .selected_day(basic_selected_day)
               .selected_month(basic_selected_month)
@@ -110,9 +108,7 @@ pub fn CalendarDemo() -> Element {
 
 				div { class: "grid justify-center text-gray-200",
 					Calendar {
-						display_props: CalendarDisplayProps::builder()
-              .is_full(false)
-              .build(),
+						display_props: CalendarDisplayProps::builder().is_full(false).build(),
 						select_props: CalendarSelectProps::builder().build(),
 					}
 				}
@@ -131,7 +127,8 @@ pub fn CalendarDemo() -> Element {
               .build(),
 					}
 
-					div { class: "mt-4 text-sm sm:text:xs text-gray-200 text-center",
+
+					div { class: "mt-4 text-sm sm:text:xs text-gray-600 text-center",
 						{
               format!(
                 "Allowed date range: {} to {}",
