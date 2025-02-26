@@ -33,9 +33,10 @@ pub fn SilentMutationDemo() -> Element {
 	};
 
 	rsx! {
-		div { class: "grid flex justify-center grid-cols-1 text-center p-4 border bg-white rounded-lg shadow-lg mt-4",
-			h3 { class: "text-xl text-gray-700 font-bold mb-4", "Silent vs Normal Mutations" }
-			p { class: "mb-4 text-gray-700 font-bold",
+		div { 
+      class: "grid flex justify-center grid-cols-1 text-center p-4 border border-gray-700 bg-gray-900 rounded-lg shadow-lg mt-4",
+			h3 { class: "text-xl text-gray-100 font-bold mb-4", "Silent vs. Normal Mutations" }
+			p { class: "mb-4 text-gray-200 font-bold",
 				"Counter:"
 				span { class: "text-yellow-500 font-bold", "{counter}" }
 			}
@@ -52,21 +53,21 @@ pub fn SilentMutationDemo() -> Element {
 				}
 			}
 
-			div { class: "mt-4 text-gray-700 font-semibold",
+			div { class: "mt-4 text-gray-200 font-semibold",
 				"Mutation Status: "
 				match *silent_mutation.result() {
-						MutationResult::Loading(_) => rsx! {
-							span { class: "text-yellow-500", "Loading..." }
-						},
-						MutationResult::Ok(_) => rsx! {
-							span { class: "text-green-500", "Success" }
-						},
-						MutationResult::Err(_) => rsx! {
-							span { class: "text-red-500", "Error" }
-						},
-						MutationResult::Pending => rsx! {
-							span { class: "text-gray-500", "Pending" }
-						},
+          MutationResult::Loading(_) => rsx! {
+            span { class: "text-yellow-500", "Loading..." }
+          },
+          MutationResult::Ok(_) => rsx! {
+            span { class: "text-green-500", "Success" }
+          },
+          MutationResult::Err(_) => rsx! {
+            span { class: "text-red-500", "Error" }
+          },
+          MutationResult::Pending => rsx! {
+            span { class: "text-gray-500", "Pending" }
+          },
 				}
 			}
 		}
@@ -102,8 +103,9 @@ pub fn ManualMutationDemo() -> Element {
 	};
 
 	rsx! {
-		div { class: "grid flex justify-center bg-white p-4 border shadow-lg rounded mt-4",
-			h3 { class: "text-xl font-bold text-gray-700 text-center mb-4", "Manual Mutation Control" }
+		div { 
+      class: "grid flex justify-center bg-gray-900 p-4 border border-gray-700 shadow-lg rounded mt-4",
+			h3 { class: "text-xl font-bold text-gray-200 text-center mb-4", "Manual Mutation Control" }
 
 			p { class: tw_join!("mb-4 text-center font-semibold", status_class()),
 				"Status: {status}"

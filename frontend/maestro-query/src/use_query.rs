@@ -72,11 +72,12 @@ impl<T, E, K: Eq + Hash> Drop for UseQueryCleaner<T, E, K> {
 				Err(e) => panic!("Unexpected error: {e}"),
 				Ok(v) => v,
 			};
-			let query_listeners = queries_registry.get_mut(&self.registry_entry).unwrap();
-			query_listeners.listeners.remove(&self.scope_id);
-			if query_listeners.listeners.is_empty() {
-				queries_registry.remove(&self.registry_entry);
-			}
+			if let Some(query_listeners) = queries_registry.get_mut(&self.registry_entry) {
+        query_listeners.listeners.remove(&self.scope_id);
+        if query_listeners.listeners.is_empty() {
+          queries_registry.remove(&self.registry_entry);
+        }
+      }
 		});
 	}
 }

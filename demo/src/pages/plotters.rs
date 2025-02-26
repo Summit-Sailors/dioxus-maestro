@@ -1,7 +1,5 @@
 use {
-  dioxus::prelude::*,
-  maestro_hooks::explicit_memo::use_explicit_memo,
-  maestro_plotters::{
+  crate::components::ui::features::Features, dioxus::prelude::*, maestro_hooks::explicit_memo::use_explicit_memo, maestro_plotters::{
     bar_chart::use_bar_chart, 
     candle_stick::use_candle_stick_hook, 
     chart_options::ChartOptions, 
@@ -12,8 +10,7 @@ use {
     }, 
     radar::use_radar, 
     scatter_plot::use_scatter_plot_hook
-  },
-  plotters::style::RGBColor
+  }, plotters::style::RGBColor
 };
 
 #[component]
@@ -185,202 +182,226 @@ pub fn PlottersDemo() -> Element {
     })
   });
 
-    rsx! {
-      div { 
-        class: "container mx-auto p-8 bg-gray-100",
-        h1 { 
-          class: "text-4xl font-bold mb-8 text-gray-900 text-center",
-          "Analytics Dashboard"
+  rsx! {
+    div { 
+      class: "container mx-auto p-6 bg-gray-900 rounded-lg",
+      div { class: "mb-8",
+        h1 { class: "text-gray-100 text-center text-3xl font-bold mb-2", "Maestro Plotters" }
+        p { class: "text-gray-300 text-center",
+          "A powerful, flexible, and reactive charting library for Dioxus applications built on top of the plotters crate."
         }
+      }
+
+      div {
+        class: "flex space-x-2",  
+        Features {
+          title: "Form".to_string(),
+          features: vec![
+            "Superior Type Safety: Leverages Rust's type system for chart configurations and data validation".to_string(),
+            "Enhanced Error Handling: Built-in integration with maestro-toast for graceful error handling".to_string(),
+            "Reactive Architecture: Uses Dioxus hooks for automatic updates and efficient rendering".to_string(),
+            "Unified Configuration: Consistent API across all chart types through the ChartOptions system".to_string(),
+            "Canvas Integration: Direct canvas backend integration for optimal performance".to_string(),
+            "Memory Management: Use Memo::new for data that doesn't need frequent updates".to_string(),
+            "Performance: Share ChartOptions instances when possible for multiple charts".to_string(),
+          ]
+        }
+      }
+
+      h1 { 
+        class: "text-4xl font-bold mb-8 text-gray-400 text-center",
+        "Analytics Dashboard"
+      }
+
+      div { 
+          class: "grid grid-cols-1 md:grid-cols-2 gap-8",
+          // bar chart section
+          div { 
+            class: "bg-gray-800 text-center rounded-lg shadow-lg p-6 border border-gray-700 hover:shadow-xl transition-shadow",
+            h3 { 
+              class: "text-2xl font-bold mb-4 text-gray-200",
+              "Monthly Revenue Performance"
+            }
+            p {
+              class: "text-gray-400 mb-4",
+              "Year-to-date revenue breakdown by month"
+            }
+            div {
+              class: "aspect-square",
+              canvas { 
+                id: "bar-chart",
+                width: "500",
+                height: "500",
+                class: "w-full h-full"
+              }
+              {use_bar_chart("bar-chart".into(), bar_data, chart_options.clone())}
+            }
+          }
+
+          // line chart section
+          div { 
+            class: "bg-gray-800 text-center rounded-lg shadow-lg p-6 border border-gray-700 hover:shadow-xl transition-shadow",
+            h3 { 
+              class: "text-2xl font-bold mb-4 text-gray-200",
+              "Performance Trend Analysis"
+            }
+            p {
+              class: "text-gray-400 mb-4",
+              "Comparative analysis with previous year and targets"
+            }
+            div {
+              class: "aspect-square",
+              canvas { 
+                id: "line-chart",
+                width: "500",
+                height: "500",
+                class: "w-full h-full"
+              }
+              {use_line_map("line-chart".into(), line_data, chart_options.clone())}
+            }
+          }
+
+          // pie chart section
+          div { 
+            class: "bg-gray-800 text-center rounded-lg shadow-lg p-6 border border-gray-700 hover:shadow-xl transition-shadow",
+            h3 { 
+              class: "text-2xl font-bold mb-4 text-gray-200",
+              "Product Revenue Distribution"
+            }
+            p {
+              class: "text-gray-400 mb-4",
+              "Revenue breakdown by product category"
+            }
+            div {
+              class: "aspect-square",
+              canvas { 
+                id: "pie-chart",
+                width: "500",
+                height: "500",
+                class: "w-full h-full"
+              }
+              {use_pie_chart("pie-chart".into(), pie_sizes, pie_colors.clone(), pie_labels, pie_options.clone())}
+            }
+          }
+
+          // radar chart section
+          div { 
+            class: "bg-gray-800 text-center rounded-lg shadow-lg p-6 border border-gray-700 hover:shadow-xl transition-shadow",
+            h3 { 
+              class: "text-2xl font-bold mb-4 text-gray-200",
+              "Performance Metrics Overview"
+            }
+            p {
+              class: "text-gray-400 mb-4",
+              "Multi-dimensional performance analysis"
+            }
+            div {
+              class: "aspect-square",
+              canvas { 
+                id: "radar-chart",
+                width: "500",
+                height: "500",
+                class: "w-full h-full"
+              }
+              {use_radar("radar-chart".into(), radar_data, chart_options.clone())}
+            }
+          }
+
+          // scatter plot section
+          div { 
+            class: "bg-gray-800 text-center rounded-lg shadow-lg p-6 border border-gray-700 hover:shadow-xl transition-shadow",
+            h3 { 
+              class: "text-2xl font-bold mb-4 text-gray-200",
+              "Growth Correlation Analysis"
+            }
+            p {
+              class: "text-gray-400 mb-4",
+              "Revenue vs Customer Acquisition with key highlights"
+            }
+            div {
+              class: "aspect-square",
+              canvas { 
+                id: "scatter-plot",
+                width: "500",
+                height: "500",
+                class: "w-full h-full"
+              }
+              {use_scatter_plot_hook(
+                "scatter-plot".into(),
+                scatter_data,
+                scatter_highlights,
+                ChartOptions::builder()
+                  .title("Growth Metrics Correlation".into())
+                  .x_label("Revenue Growth (%)".into())
+                  .y_label("Customer Growth (%)".into())
+                  .build()
+              )}
+            }
+        }
+
+        // candlestick chart section
         div { 
-            class: "grid grid-cols-1 md:grid-cols-2 gap-8",
-            // bar chart section
-            div { 
-              class: "bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow",
-              h3 { 
-                class: "text-2xl font-bold mb-4 text-gray-800",
-                "Monthly Revenue Performance"
-              }
-              p {
-                class: "text-gray-600 mb-4",
-                "Year-to-date revenue breakdown by month"
-              }
-              div {
-                class: "aspect-square",
-                canvas { 
-                  id: "bar-chart",
-                  width: "500",
-                  height: "500",
-                  class: "w-full h-full"
-                }
-                {use_bar_chart("bar-chart".into(), bar_data, chart_options.clone())}
-              }
-            }
-
-            // line chart section
-            div { 
-              class: "bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow",
-              h3 { 
-                class: "text-2xl font-bold mb-4 text-gray-800",
-                "Performance Trend Analysis"
-              }
-              p {
-                class: "text-gray-600 mb-4",
-                "Comparative analysis with previous year and targets"
-              }
-              div {
-                class: "aspect-square",
-                canvas { 
-                  id: "line-chart",
-                  width: "500",
-                  height: "500",
-                  class: "w-full h-full"
-                }
-                {use_line_map("line-chart".into(), line_data, chart_options.clone())}
-              }
-            }
-
-            // pie chart section
-            div { 
-              class: "bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow",
-              h3 { 
-                class: "text-2xl font-bold mb-4 text-gray-800",
-                "Product Revenue Distribution"
-              }
-              p {
-                class: "text-gray-600 mb-4",
-                "Revenue breakdown by product category"
-              }
-              div {
-                class: "aspect-square",
-                canvas { 
-                  id: "pie-chart",
-                  width: "500",
-                  height: "500",
-                  class: "w-full h-full"
-                }
-                {use_pie_chart("pie-chart".into(), pie_sizes, pie_colors.clone(), pie_labels, pie_options.clone())}
-              }
-            }
-
-            // radar chart section
-            div { 
-              class: "bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow",
-              h3 { 
-                class: "text-2xl font-bold mb-4 text-gray-800",
-                "Performance Metrics Overview"
-              }
-              p {
-                class: "text-gray-600 mb-4",
-                "Multi-dimensional performance analysis"
-              }
-              div {
-                class: "aspect-square",
-                canvas { 
-                  id: "radar-chart",
-                  width: "500",
-                  height: "500",
-                  class: "w-full h-full"
-                }
-                {use_radar("radar-chart".into(), radar_data, chart_options.clone())}
-              }
-            }
-
-            // scatter plot section
-            div { 
-              class: "bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow",
-              h3 { 
-                class: "text-2xl font-bold mb-4 text-gray-800",
-                "Growth Correlation Analysis"
-              }
-              p {
-                class: "text-gray-600 mb-4",
-                "Revenue vs Customer Acquisition with key highlights"
-              }
-              div {
-                class: "aspect-square",
-                canvas { 
-                  id: "scatter-plot",
-                  width: "500",
-                  height: "500",
-                  class: "w-full h-full"
-                }
-                {use_scatter_plot_hook(
-                  "scatter-plot".into(),
-                  scatter_data,
-                  scatter_highlights,
-                  ChartOptions::builder()
-                    .title("Growth Metrics Correlation".into())
-                    .x_label("Revenue Growth (%)".into())
-                    .y_label("Customer Growth (%)".into())
-                    .build()
-                )}
-              }
+          class: "bg-gray-800 text-center rounded-lg shadow-lg p-6 border border-gray-700 hover:shadow-xl transition-shadow",
+          h3 { 
+            class: "text-2xl font-bold mb-4 text-gray-200",
+            "Stock Price Movement"
           }
-
-          // candlestick chart section
-          div { 
-            class: "bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow",
-            h3 { 
-              class: "text-2xl font-bold mb-4 text-gray-800",
-              "Stock Price Movement"
-            }
-            p {
-              class: "text-gray-600 mb-4",
-              "Daily price movements with trading ranges"
-            }
-            div {
-              class: "aspect-square",
-              canvas { 
-                id: "candlestick-chart",
-                width: "500",
-                height: "500",
-                class: "w-full h-full"
-              }
-              {use_candle_stick_hook(
-                "candlestick-chart".into(),
-                candlestick_data,
-                ChartOptions::builder()
-                  .title("Stock Price Analysis".into())
-                  .x_label("Trading Day".into())
-                  .y_label("Price ($)".into())
-                  .build()
-              )}
-            }
+          p {
+            class: "text-gray-400 mb-4",
+            "Daily price movements with trading ranges"
           }
+          div {
+            class: "aspect-square",
+            canvas { 
+              id: "candlestick-chart",
+              width: "500",
+              height: "500",
+              class: "w-full h-full"
+            }
+            {use_candle_stick_hook(
+              "candlestick-chart".into(),
+              candlestick_data,
+              ChartOptions::builder()
+                .title("Stock Price Analysis".into())
+                .x_label("Trading Day".into())
+                .y_label("Price ($)".into())
+                .build()
+            )}
+          }
+        }
 
-          // Heatmap section
-          div { 
-            class: "bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow",
-            h3 { 
-              class: "text-2xl font-bold mb-4 text-gray-800",
-              "Performance Heat Map"
+        // Heatmap section
+        div { 
+          class: "bg-gray-800 text-center rounded-lg shadow-lg p-6 border border-gray-700 hover:shadow-xl transition-shadow",
+          h3 { 
+            class: "text-2xl font-bold mb-4 text-gray-200",
+            "Performance Heat Map"
+          }
+          p {
+            class: "text-gray-400 mb-4",
+            "Quarterly performance intensity analysis"
+          }
+          div {
+            class: "aspect-square",
+            canvas { 
+              id: "heat-map",
+              width: "500",
+              height: "500",
+              class: "w-full h-full"
             }
-            p {
-              class: "text-gray-600 mb-4",
-              "Quarterly performance intensity analysis"
-            }
-            div {
-              class: "aspect-square",
-              canvas { 
-                id: "heat-map",
-                width: "500",
-                height: "500",
-                class: "w-full h-full"
-              }
-              {use_heat_map(
-                "heat-map".into(),
-                heatmap_data,
-                heatmap_labels,
-                ChartOptions::builder()
-                  .title("Quarterly Performance Matrix".into())
-                  .x_label("Period".into())
-                  .y_label("Metrics".into())
-                  .build()
-              )}
-            }
+            {use_heat_map(
+              "heat-map".into(),
+              heatmap_data,
+              heatmap_labels,
+              ChartOptions::builder()
+                .title("Quarterly Performance Matrix".into())
+                .x_label("Period".into())
+                .y_label("Metrics".into())
+                .build()
+            )}
           }
         }
       }
     }
+  }
 }

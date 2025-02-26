@@ -1,7 +1,7 @@
 use {
 	crate::components::ui::{component_section::ComponentSection, features::Features},
 	dioxus::prelude::*,
-	dioxus_free_icons::{icons::fa_solid_icons::FaDiamond, Icon},
+	dioxus_free_icons::{icons::fa_solid_icons::FaCopy, Icon},
 	dioxus_logger::tracing::info,
 	maestro_toast::{ctx::use_toast, toast_info::ToastInfo, toast_position::EToastPosition},
 	maestro_ui::{
@@ -59,7 +59,7 @@ pub fn UIDemo() -> Element {
 	};
 
 	rsx! {
-		div { class: "mx-auto py-8 px-4 bg-gray-900",
+		div { class: "mx-auto py-8 px-4 bg-gray-900 rounded-lg shadow-lg",
     div { class: "mb-8",
       h1 { class: "text-gray-100 text-center text-3xl font-bold mb-2", "Maestro UI" }
       p { class: "text-gray-300 text-center",
@@ -85,50 +85,52 @@ pub fn UIDemo() -> Element {
 			ComponentSection {
         title: "Buttons",
         description: "Various button styles, sizes, and types with different variants",
-        div { class: "grid grid-cols-1 md:grid-cols-3 gap-6",
+        div { 
+          class: "grid grid-cols-1 md:grid-cols-3 gap-3",
           Button {
             class: "px-4 py-2 rounded-lg font-medium transition-colors text-white bg-blue-500 hover:bg-blue-700 focus:ring focus:ring-blue-300",
             r#type: "button",
             onclick: move |_| handle_button_click("Default Button clicked!".to_string()),
-            "Default Button"
+            "Default"
           }
           Button {
             class: "px-4 py-2 rounded-lg border border-gray-600 text-gray-300 hover:bg-gray-700 focus:ring focus:ring-gray-500",
             r#type: "reset",
             onclick: move |_| handle_button_click("Outline Button clicked!".to_string()),
-            "Outline Button"
+            "Outline"
           }
           Button {
             class: "px-2 py-1 rounded-md bg-gray-700 text-gray-200 text-sm hover:bg-gray-600 focus:ring focus:ring-gray-500",
             size: ButtonSize::Sm,
             r#type: "submit",
             onclick: move |_| handle_button_click("Small Submit Button clicked!".to_string()),
-            "Small Button"
+            "Small"
           }
           Button {
             class: "px-6 py-3 rounded-lg bg-transparent border border-gray-500 text-gray-300 hover:text-white focus:ring focus:ring-gray-500",
             size: ButtonSize::Lg,
             r#type: "button",
             onclick: move |_| handle_button_click("Large Ghost Button clicked!".to_string()),
-            "Large Button"
+            "Large"
           }
           Button {
             class: "text-blue-400 hover:text-blue-300 focus:underline",
             variant: ButtonVariant::Link,
             r#type: "button",
             onclick: move |_| handle_button_click("Link Button clicked!".to_string()),
-            "Link Button"
+            "Link"
           }
           Button {
             class: "px-6 py-3 bg-gray-700 hover:bg-gray-600 text-gray-300 focus:ring focus:ring-gray-500",
             variant: ButtonVariant::Icon,
             size: ButtonSize::IconLg,
+            title: "Copy",
             r#type: "button",
             onclick: move |_| handle_button_click("Icon Button clicked!".to_string()),
             children: rsx! {
               Icon {
-                title: "Icon Button",
-                icon: FaDiamond,
+                title: "Icon",
+                icon: FaCopy,
                 width: 24,
                 height: 24,
                 class: "fill-current"
@@ -143,8 +145,11 @@ pub fn UIDemo() -> Element {
 			ComponentSection {
         title: "Input Fields",
         description: "Text inputs with different variants and states",
-        div { class: "space-y-4",
-          Label { text: "Default Input".to_string(),
+        div { 
+          class: "space-y-4",
+          Label {
+            class:"text-gray-200",
+            text: "Default Input:".to_string(),
             Input {
               class: "bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 w-full text-gray-100 focus:ring focus:ring-blue-500 focus:outline-none",
               value: text_input(),
@@ -152,16 +157,20 @@ pub fn UIDemo() -> Element {
               placeholder: "Type something...",
             }
           }
-          Label { text: "Underlined Input".to_string(),
+          Label {
+            class:"text-gray-200", 
+            text: "Underlined Input:".to_string(),
             Input {
-              class: "bg-gray-800 border-b border-gray-700 w-full text-gray-100 focus:ring focus:ring-blue-500 focus:outline-none",
+              class: "bg-gray-800 p-4 w-full text-gray-100 focus:ring focus:ring-blue-500 focus:outline-none",
               variant: InputVariant::Underlined,
               value: text_input(),
               onchange: move |event: Event<FormData>| text_input.set(event.value()),
               placeholder: Some("Type something..."),
             }
           }
-          Label { text: "Password Input".to_string(),
+          Label {
+            class:"text-gray-200",
+            text: "Password Input:".to_string(),
             Input {
               class: "bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 w-full text-gray-100 focus:ring focus:ring-red-500 focus:outline-none",
               r#type: "password",
@@ -199,11 +208,12 @@ pub fn UIDemo() -> Element {
 						multi: false,
 						callback: move |value| selected_option.set(value),
 						multi_callback: move |_| {},
-						label: Some("Single Select".into()),
+						label: Some("Single Select:".into()),
 						placeholder: Some("Select an option".into()),
-						option_class: "hover:bg-gray-300",
-						label_class: "text-gray-500",
-						button_class: "bg-gray-50 text-gray-500"
+            dropdown_class: "bg-gray-900 border border-gray-700",
+						option_class: "hover:bg-gray-500 bg-gray-800 text-gray-100",
+						label_class: "text-gray-200",
+						button_class: "bg-gray-900 text-gray-200"
 					}
 
 					Select {
@@ -225,11 +235,12 @@ pub fn UIDemo() -> Element {
 						multi: true,
 						callback: move |_| {},
 						multi_callback: move |value| selected_options.set(value),
-						label: Some("Multi Select".into()),
+						label: Some("Multi Select:".into()),
 						placeholder: Some("Select items...".into()),
-						option_class: "hover:bg-gray-300",
-						label_class: "text-gray-700",
-						button_class: "bg-gray-50 text-gray-700"
+						dropdown_class: "bg-gray-900 border border-gray-700",
+						option_class: "hover:bg-gray-500 bg-gray-800 text-gray-100",
+						label_class: "text-gray-200",
+						button_class: "bg-gray-900 text-gray-200"
 					}
 				}
 			}
@@ -250,9 +261,14 @@ pub fn UIDemo() -> Element {
 							label_placement: Some(EToggleSwitchLabelPlacement::Right),
 						}
 					}
-					div { class: "space-y-6",
-						div { class: " items-center gap-2",
+					div { 
+            class: "flex justify-center grid space-y-6",
+						div { 
+              class: "items-center gap-2 text-gray-300",
 							Radio {
+                class: "border-blue-500 hover:border-blue-700",
+								checked_class: "!bg-blue-500 !border-blue-500 hover:!border-blue-700 hover:!bg-blue-700",
+								inner_class: "border-blue-500",
 								label: "Option 1",
 								name: "group",
 								value: "option1",
@@ -260,7 +276,8 @@ pub fn UIDemo() -> Element {
 								onchange: move |event: Event<FormData>| selected_value.set(event.value()),
 							}
 						}
-						div { class: "items-center gap-2",
+						div { 
+              class: "items-center gap-2 text-gray-300",
 							Radio {
 								class: "border-blue-500 hover:border-blue-700",
 								checked_class: "!bg-blue-500 !border-blue-500 hover:!border-blue-700 hover:!bg-blue-700",
@@ -272,7 +289,8 @@ pub fn UIDemo() -> Element {
 								onchange: move |event: Event<FormData>| selected_value.set(event.value()),
 							}
 						}
-						div { class: "items-center gap-2",
+						div { 
+              class: "items-center gap-2 text-gray-300",
 							Radio {
 								label: "Option 3 (Disabled)",
 								name: "group",
@@ -282,7 +300,7 @@ pub fn UIDemo() -> Element {
 								onchange: move |event: Event<FormData>| selected_value.set(event.value()),
 							}
 						}
-						p { class: "text-sm", "Selected Option: {selected_value}" }
+						p { class: "text-sm text-gray-300", "Selected Option: {selected_value}" }
 					}
 				}
 			}
@@ -294,7 +312,9 @@ pub fn UIDemo() -> Element {
 
 				div { class: "space-y-6",
 					// default Textarea
-					Label { text: Some("Default Textarea".into()),
+					Label {
+            class:"text-gray-200",
+            text: Some("Default Textarea".into()),
 						Textarea {
 							value: text_area_value(),
 							onchange: move |event: Event<FormData>| text_area_value.set(event.value()),
@@ -304,7 +324,9 @@ pub fn UIDemo() -> Element {
 					}
 
 					// disabled Textarea
-					Label { text: Some("Disabled Textarea".into()),
+					Label { 
+            class:"text-gray-200",
+            text: Some("Disabled Textarea".into()),
 						Textarea {
 							value: "Disabled content".to_string(),
 							disabled: true,
@@ -314,7 +336,9 @@ pub fn UIDemo() -> Element {
 					}
 
 					// textarea with on_enter functionality
-					Label { text: Some("Textarea with Enter Handler".into()),
+					Label {
+            class:"text-gray-200",
+            text: Some("Textarea with Enter Handler".into()),
 						Textarea {
 							value: text_area_value(),
 							onchange: move |event: Event<FormData>| text_area_value.set(event.value()),
@@ -323,12 +347,14 @@ pub fn UIDemo() -> Element {
 							class: "w-full p-4 border-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary",
 						}
 					}
-					p { class: "text-sm text-gray-600 italic",
+					p { class: "text-sm text-gray-400 italic",
 						"Last entered text: {entered_text.read()}"
 					}
 
 					// textarea with custom styles
-					Label { text: Some("Custom Styled Textarea".into()),
+					Label {
+            class:"text-gray-200",
+            text: Some("Custom Styled Textarea".into()),
 						Textarea {
 							value: text_area_value(),
 							onchange: move |event: Event<FormData>| text_area_value.set(event.value()),
@@ -339,9 +365,10 @@ pub fn UIDemo() -> Element {
 					}
 
 					// loading Spinner
-					div { class: "flex justify-center items-center gap-4 mt-4 mb-8",
+					div { 
+            class: "flex justify-center items-center text-gray-200 gap-4 mt-4 mb-8",
 						FreeIconSpinner { size: 32 }
-						span { class: "text-sm text-center text-gray-600", "Loading..." }
+						span { class: "text-sm text-center text-gray-300", "Loading..." }
 					}
 				}
 			}

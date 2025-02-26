@@ -1,6 +1,11 @@
 use {
   crate::components::ui::features::Features, async_std::task::sleep, 
-  dioxus::prelude::*, dioxus_free_icons::{ Icon, icons::fa_solid_icons::{ FaCopy, FaPaste } },
+  dioxus::prelude::*, 
+  dioxus_free_icons::{ 
+    icons::{fa_solid_icons::{ FaCopy, FaPaste }, 
+    ld_icons::{LdChevronLeft, LdChevronRight, LdChevronsLeft, LdChevronsRight}}, 
+    Icon 
+  },
   maestro_hooks::{
     clipboard::use_clipboard,
     explicit_memo::use_explicit_memo,
@@ -337,25 +342,25 @@ pub fn HooksDemo() -> Element {
                 disabled: "{*pagination.prev_idx_disabled.read()}",
                 onclick: move |_| prev_idx(),
                 class: "rounded bg-gray-500 text-white py-2 px-4 hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed",
-                "<"
+                Icon { class: "h-6 w-6", icon: LdChevronLeft }
               }
               button {
                 disabled: "{*pagination.prev_page_disabled.read()}",
                 onclick: move |_| prev_page(),
                 class: "rounded bg-gray-500 text-white py-2 px-4 hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed",
-                "<<"
+                Icon { class: "h-6 w-6", icon: LdChevronsLeft }
               }
               button {
                 disabled: "{*pagination.next_page_disabled.read()}",
                 onclick: move |_| next_page(),
                 class: "rounded bg-gray-500 text-white py-2 px-4 hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed",
-                ">>"
+                Icon { class: "h-6 w-6", icon: LdChevronsRight }
               }
               button {
                 disabled: "{*pagination.next_idx_disabled.read()}",
                 onclick: move |_| next_idx(),
                 class: "rounded bg-gray-500 text-white py-2 px-4 hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed",
-                ">"
+                Icon { class: "h-6 w-6", icon: LdChevronRight }
               }
             }
           }

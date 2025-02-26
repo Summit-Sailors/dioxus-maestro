@@ -70,6 +70,10 @@ pub fn CalendarDemo() -> Element {
 						display_props: CalendarDisplayProps::builder()
               .display_month(basic_display_month)
               .display_year(basic_display_year)
+              .header_class("bg-gray-800 text-gray-200")
+              .body_class("bg-gray-900 text-gray-200")
+              .wrapper_class("border border-red-500")
+              .container_class("text-gray-800 border border-red-500")
               .is_full(true)
               .build(),
 						select_props: CalendarSelectProps::builder()
@@ -84,16 +88,16 @@ pub fn CalendarDemo() -> Element {
 
 				div { class: "p-2 space-y-2 space-x-1",
 					Button {
-						class: "px-4 py-2 border text-gray-400 border-gray-800 rounded-lg shadow-sm hover:shadow-md transition",
+						class: "px-4 py-2 border border-gray-200 text-gray-400 border-gray-800 rounded-lg shadow-sm hover:shadow-md transition",
 						onclick: move |_| {
-								basic_display_month.set(basic_display_month().prev());
+							basic_display_month.set(basic_display_month().prev());
 						},
 						"Prev Month"
 					}
 					Button {
 						class: "px-4 py-2 border text-gray-400 border-gray-800 rounded-lg shadow-sm hover:shadow-md transition",
 						onclick: move |_| {
-								basic_display_month.set(basic_display_month().next());
+							basic_display_month.set(basic_display_month().next());
 						},
 						"Next Month"
 					}
@@ -107,8 +111,8 @@ pub fn CalendarDemo() -> Element {
 				div { class: "grid justify-center text-gray-200",
 					Calendar {
 						display_props: CalendarDisplayProps::builder()
-								.is_full(false)
-								.build(),
+              .is_full(false)
+              .build(),
 						select_props: CalendarSelectProps::builder().build(),
 					}
 				}
@@ -122,17 +126,17 @@ pub fn CalendarDemo() -> Element {
 					Calendar {
 						display_props: CalendarDisplayProps::builder().build(),
 						select_props: CalendarSelectProps::builder()
-								.min_date(use_signal(|| Some(min_date)))
-								.max_date(use_signal(|| Some(max_date)))
-								.build(),
+              .min_date(use_signal(|| Some(min_date)))
+              .max_date(use_signal(|| Some(max_date)))
+              .build(),
 					}
 
 					div { class: "mt-4 text-sm sm:text:xs text-gray-200 text-center",
 						{
               format!(
-                  "Allowed date range: {} to {}",
-                  min_date.format("%Y-%m-%d"),
-                  max_date.format("%Y-%m-%d"),
+                "Allowed date range: {} to {}",
+                min_date.format("%Y-%m-%d"),
+                max_date.format("%Y-%m-%d"),
               )
 						}
 					}
