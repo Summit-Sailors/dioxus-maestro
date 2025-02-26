@@ -1,7 +1,6 @@
 use {
 	crate::use_formik::Formik,
 	dioxus::prelude::*,
-	dioxus_logger::tracing::info,
 	serde::{Deserialize, Serialize},
 	validator::Validate,
 };

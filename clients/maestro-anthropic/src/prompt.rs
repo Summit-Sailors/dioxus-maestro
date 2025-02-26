@@ -10,7 +10,7 @@ pub struct Prompt {
 	pub stream: bool,
 
 	pub messages: Vec<ChatMessage>,
-	#[builder(default = Model::Sonnet35)]
+	#[builder(default = Model::Sonnet37)]
 	pub model: Model,
 	#[builder(default = NonZeroU16::new(8192).unwrap())]
 	pub max_tokens: NonZeroU16,

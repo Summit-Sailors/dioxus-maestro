@@ -149,19 +149,19 @@ pub fn Select<T: Clone + PartialEq + std::fmt::Display + 'static>(props: SelectP
                         current.push(option_clone.value.clone());
                       }
                       selected_options.set(current.clone());
-                      if let Some(multi_cb) = props.multi_callback.clone() {
+                      if let Some(multi_cb) = props.multi_callback {
                         multi_cb.call(current);
                       }
                     } else {
                       is_opened.set(false);
-                      if let Some(callback) = props.callback.clone() {
+                      if let Some(callback) = props.callback {
                         callback.call(option_clone.value.clone());
                       }
                     }
                   },
                   {
                     if let Some(renderer) = props.option_renderer {
-                      renderer(&option)
+                      renderer(option)
                     } else {
                       rsx! { "{option.label}" }
                     }
