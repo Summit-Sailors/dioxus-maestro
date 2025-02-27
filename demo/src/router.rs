@@ -10,7 +10,7 @@ use {
       radio::RadioDemo,
       toast::ToastDemo,
       ui::UIDemo,
-      calendar::CalendarDemo
+      calendar::CalendarDemo,
     }
 	},
 	dioxus::prelude::*,
@@ -37,7 +37,7 @@ pub enum Route {
 	#[route("/ui")]
 	UIDemo {},
 	#[route("/calendar")]
-	CalendarDemo {}
+	CalendarDemo {},
 }
 
 impl Route {
@@ -51,7 +51,7 @@ impl Route {
 			Route::RadioDemo {} => "Radio",
 			Route::ToastDemo {} => "Toast",
 			Route::UIDemo {} => "UI",
-      Route::CalendarDemo {} => "Calendar"
+      Route::CalendarDemo {} => "Calendar",
 		}
 	}
 
@@ -65,7 +65,7 @@ impl Route {
 			Route::RadioDemo {} => " A state management utility for Dioxus that takes reactive state to the next level with its innovative channel-based approach. ",
 			Route::ToastDemo {} => "A powerful, flexible, and intuitive toast notification system designed specifically for Dioxus applications. ",
 			Route::UIDemo {} => "A comprehensive, type-safe, and highly customizable UI component library for Dioxus, designed to provide developers with powerful, flexible, and elegant UI building blocks.",
-      Route::CalendarDemo {} => "A  highly customizable UI calendar and date picker utility."
+      Route::CalendarDemo {} => "A  highly customizable UI calendar and date picker utility.",
 		}
   }
 }

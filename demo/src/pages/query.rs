@@ -24,7 +24,7 @@ pub fn CompleteQueryDemo() -> Element {
 
 	rsx! {
     div { 
-      class: "w-full bg-gray-900 p-6 rounded-lg shadow-lg",
+      class: "w-full bg-gray-900 p-4 rounded-lg shadow-lg",
 
       div { class: "mb-8",
         h1 { class: "text-gray-100 text-center text-3xl font-bold mb-2", "Maestro Query" }

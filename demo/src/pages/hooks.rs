@@ -56,7 +56,7 @@ pub fn HooksDemo() -> Element {
 
   rsx! {
     div {
-      class: "hooks-demo bg-gray-900 p-6 rounded-lg shadow-lg space-y-6",
+      class: "hooks-demo bg-gray-900 p-4 rounded-lg shadow-lg space-y-6",
 
       div { class: "mb-8",
         h1 { class: "text-gray-100 text-center text-3xl font-bold mb-2", "Maestro Hooks" }

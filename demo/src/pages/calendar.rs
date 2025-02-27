@@ -33,7 +33,7 @@ pub fn CalendarDemo() -> Element {
 
 	rsx! {
 		div {
-      class: "p-6 text-gray-100 bg-gray-900 rounded-lg shadow-lg",
+      class: "p-4 text-gray-100 bg-gray-900 rounded-lg shadow-lg",
 			div { 
         class: "mb-8",
 				h1 { class: "text-gray-100 text-center text-3xl font-bold mb-2", "Maestro Calendar" }
@@ -68,12 +68,20 @@ pub fn CalendarDemo() -> Element {
           class: "overflow-auto",
 					Calendar {
 						display_props: CalendarDisplayProps::builder()
-								.display_month(basic_display_month)
-								.display_year(basic_display_year)
-								.is_full(true)
-								.day_today_class("bg-gray-600 text-gray-100")
-								.day_selected_class("bg-gray-900 text-gray-100")
-								.build(),
+              .display_month(basic_display_month)
+              .display_year(basic_display_year)
+              .is_full(true)
+              .container_class("bg-gray-900 border border-gray-700 shadow-xl")
+              .header_class("bg-gray-800 border-b border-gray-700 text-gray-200")
+              .footer_class("bg-gray-800 border-t border-gray-700 text-gray-200")
+              .month_toggle_button_class("hover:bg-gray-700 text-gray-300")
+              .body_class("bg-gray-900")
+              .day_class("text-gray-300 hover:bg-gray-600")
+              .day_today_class("bg-blue-500 text-white")
+              .day_disabled_class("text-gray-600 hover:bg-transparent")
+              .day_selected_class("bg-gray-500 text-white")
+              .hover_day_class("hover:bg-gray-700")
+              .build(),
 						select_props: CalendarSelectProps::builder()
               .selected_day(basic_selected_day)
               .selected_month(basic_selected_month)
@@ -86,14 +94,14 @@ pub fn CalendarDemo() -> Element {
 
 				div { class: "p-2 space-y-2 space-x-1",
 					Button {
-						class: "px-4 py-2 border border-gray-200 text-gray-400 border-gray-800 rounded-lg shadow-sm hover:shadow-md transition",
+						class: "px-4 py-2 border border-gray-200 text-gray-200 border-gray-800 rounded-lg shadow-sm hover:shadow-md transition",
 						onclick: move |_| {
 							basic_display_month.set(basic_display_month().prev());
 						},
 						"Prev Month"
 					}
 					Button {
-						class: "px-4 py-2 border text-gray-400 border-gray-800 rounded-lg shadow-sm hover:shadow-md transition",
+						class: "px-4 py-2 border text-gray-200 border-gray-800 rounded-lg shadow-sm hover:shadow-md transition",
 						onclick: move |_| {
 							basic_display_month.set(basic_display_month().next());
 						},
@@ -108,7 +116,18 @@ pub fn CalendarDemo() -> Element {
 
 				div { class: "grid justify-center text-gray-200",
 					Calendar {
-						display_props: CalendarDisplayProps::builder().is_full(false).build(),
+						display_props: CalendarDisplayProps::builder()
+              .header_class("bg-gray-800 border-b border-gray-700 text-gray-200")
+              .footer_class("bg-gray-800 border-t border-gray-700 text-gray-200")
+              .month_toggle_button_class("hover:bg-gray-700 text-gray-300")
+              .body_class("bg-gray-900")
+              .day_class("text-gray-300 hover:bg-gray-800")
+              .day_today_class("bg-blue-500 text-white")
+              .day_disabled_class("text-gray-600 hover:bg-transparent")
+              .day_selected_class("bg-gray-500 text-white")
+              .hover_day_class("hover:bg-gray-700")
+              .is_full(false)
+              .build(),
 						select_props: CalendarSelectProps::builder().build(),
 					}
 				}
@@ -120,7 +139,17 @@ pub fn CalendarDemo() -> Element {
 
 				div { class: "flex flex-col items-center",
 					Calendar {
-						display_props: CalendarDisplayProps::builder().build(),
+						display_props: CalendarDisplayProps::builder()
+              .header_class("bg-gray-800 border-b border-gray-700 text-gray-200")
+              .footer_class("bg-gray-800 border-t border-gray-700 text-gray-200")
+              .month_toggle_button_class("hover:bg-gray-700 text-gray-300")
+              .body_class("bg-gray-900")
+              .day_class("text-gray-300 hover:bg-gray-800")
+              .day_today_class("bg-blue-600 text-white")
+              .day_disabled_class("text-gray-600 hover:bg-transparent")
+              .day_selected_class("bg-gray-500 text-white")
+              .hover_day_class("hover:bg-gray-700")
+              .build(),
 						select_props: CalendarSelectProps::builder()
               .min_date(use_signal(|| Some(min_date)))
               .max_date(use_signal(|| Some(max_date)))
@@ -128,7 +157,7 @@ pub fn CalendarDemo() -> Element {
 					}
 
 
-					div { class: "mt-4 text-sm sm:text:xs text-gray-600 text-center",
+					div { class: "mt-4 text-sm sm:text:xs text-gray-400 text-center",
 						{
               format!(
                 "Allowed date range: {} to {}",
@@ -146,7 +175,19 @@ pub fn CalendarDemo() -> Element {
 
 				div { class: "flex flex-col items-center w-full",
 					Calendar {
-						display_props: CalendarDisplayProps::builder().events(events).build(),
+						display_props: CalendarDisplayProps::builder()
+              .header_class("bg-gray-800 border-b border-gray-700 text-gray-200")
+              .footer_class("bg-gray-800 border-t border-gray-700 text-gray-200")
+              .month_toggle_button_class("hover:bg-gray-700 text-gray-300")
+              .body_class("bg-gray-900")
+              .day_class("text-gray-300 hover:bg-gray-800")
+              .day_today_class("bg-blue-500 text-white")
+              .day_disabled_class("text-gray-600 hover:bg-transparent")
+              .day_selected_class("bg-gray-500 text-white")
+              .hover_day_class("hover:bg-gray-700")
+              .events_class("bg-opacity-80")
+              .events(events)
+              .build(),
 						select_props: CalendarSelectProps::builder().build(),
 					}
 

@@ -52,9 +52,9 @@ pub fn RadioDemo() -> Element {
 
 	rsx! {
     div { 
-      class: "grid flex justify-center grid-cols-1 p-4 space-y-8 bg-gray-900 rounded-lg p-6",
+      class: "grid flex justify-center grid-cols-1 p-4 space-y-6 bg-gray-900 rounded-lg",
 
-    div { class: "mb-8",
+    div { class: "mb-4",
       h1 { class: "text-gray-100 text-center text-3xl font-bold mb-2", "Maestro Radio" }
       p { class: "text-gray-300 text-center",
         "Maestro Radio is a state management utility for Dioxus that takes reactive state to the next level with its innovative channel-based approach. Unlike traditional state management solutions, 

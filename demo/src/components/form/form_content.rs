@@ -15,7 +15,7 @@ pub fn FormContent(props: InnerComponentProps<User>) -> Element {
 	let roles = Role::VARIANTS.iter().map(|&s| s.to_string()).collect::<Vec<_>>();
 
 	let input_class =
-		tw_join!("w-full p-2 rounded-md border border-gray-500 bg-gray-900 text-gray-50", "focus:ring-2 focus:ring-blue-500 focus:outline-none placeholder-gray-100");
+		tw_join!("w-full p-2 rounded-md border border-gray-500 bg-gray-900 text-gray-50", "focus:ring-2 focus:ring-blue-500 focus:outline-none placeholder-gray-500");
 
 	rsx! {
 		div { class: "space-y-6",

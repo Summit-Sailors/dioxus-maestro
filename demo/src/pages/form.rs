@@ -53,7 +53,7 @@ pub fn FormsDemo() -> Element {
 	};
 
 	rsx! {
-		div { class: "p-6 text-gray-100 bg-gray-900 rounded-lg shadow-lg",
+		div { class: "p-4 text-gray-100 bg-gray-900 rounded-lg shadow-lg",
 			div { class: "mb-8",
 				h1 { class: "text-gray-100 text-center text-3xl font-bold mb-2", "Maestro Form" }
 				p { class: "text-gray-300 text-center",

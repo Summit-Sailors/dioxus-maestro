@@ -184,7 +184,7 @@ pub fn PlottersDemo() -> Element {
 
   rsx! {
     div { 
-      class: "container mx-auto p-6 bg-gray-900 rounded-lg",
+      class: "container mx-auto p-4 bg-gray-900 rounded-lg",
       div { class: "mb-8",
         h1 { class: "text-gray-100 text-center text-3xl font-bold mb-2", "Maestro Plotters" }
         p { class: "text-gray-300 text-center",
