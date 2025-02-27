@@ -22,7 +22,7 @@ pub struct SelectOption<T> {
 	pub value: T,
 }
 
-#[derive(Props, Clone, PartialEq)]
+#[derive(Clone, PartialEq, Props)]
 pub struct SelectProps<T>
 where
 	T: Clone + PartialEq + std::fmt::Display + 'static,

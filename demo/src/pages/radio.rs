@@ -4,7 +4,7 @@ use {
 	std::fmt::Display,
 };
 
-#[derive(Clone, Debug)]
+#[derive(Debug, Clone)]
 struct CounterState {
 	pub count: i32,
 	pub last_update: String,
@@ -14,7 +14,7 @@ struct CounterState {
 	pub reset_count: i32,
 }
 
-#[derive(PartialEq, Eq, Clone)]
+#[derive(Clone, PartialEq, Eq)]
 pub enum CounterChannel {
 	Increment,
 	Decrement,

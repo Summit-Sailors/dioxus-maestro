@@ -5,7 +5,7 @@ use {
   validator::Validate
 };
 
-#[derive(EnumString, VariantNames, Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Hash, Display)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, Display, EnumString, VariantNames)]
 #[serde(rename_all = "lowercase")]
 pub enum Role {
   #[strum(serialize = "admin")]
@@ -16,7 +16,7 @@ pub enum Role {
   Moderator,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Validate)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
 pub struct User {
   #[validate(length(min = 3, max = 20, message = "Username must be between 3 and 20 characters"))]
   pub username: String,
