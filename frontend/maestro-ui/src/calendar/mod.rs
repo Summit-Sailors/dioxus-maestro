@@ -6,7 +6,6 @@ use {
 		icons::ld_icons::{LdCalendar, LdChevronLeft, LdChevronRight, LdChevronsLeft, LdChevronsRight},
 		Icon,
 	},
-	dioxus_logger::tracing::info,
 	enums::{e_month::ECalendarMonth, e_week_day::ECalendarDay},
 	strum::IntoEnumIterator,
 	tailwind_fuse::*,

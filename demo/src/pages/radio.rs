@@ -52,7 +52,7 @@ pub fn RadioDemo() -> Element {
 
 	rsx! {
     div { 
-      class: "grid flex justify-center grid-cols-1 p-4 space-y-6 bg-gray-900 rounded-lg",
+      class: "grid justify-center grid-cols-1 p-4 space-y-6 bg-gray-900 rounded-lg",
 
     div { class: "mb-4",
       h1 { class: "text-gray-100 text-center text-3xl font-bold mb-2", "Maestro Radio" }
@@ -135,7 +135,7 @@ fn CounterControls() -> Element {
 	};
 
 	rsx! {
-    div { class: "grid flex grid-cols-1 space-y-2 rounded-lg",
+    div { class: "grid grid-cols-1 space-y-2 rounded-lg",
       button {
         class: "flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition",
         onclick: handle_increment,
