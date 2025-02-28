@@ -7,7 +7,7 @@ use {
 	tailwind_fuse::tw_join,
 };
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 struct Department {
 	id: String,
 	name: String,
@@ -15,7 +15,7 @@ struct Department {
 	location: String,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 struct Employee {
 	id: String,
 	name: String,

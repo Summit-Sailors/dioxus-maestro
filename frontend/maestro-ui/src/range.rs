@@ -1,6 +1,6 @@
 use {dioxus::prelude::*, tailwind_fuse::*};
 
-#[derive(Clone, PartialEq, Props, Debug)]
+#[derive(Debug, Clone, PartialEq, Props)]
 pub struct RangeProps {
 	pub oninput: Option<EventHandler<Event<FormData>>>,
 	pub onfocus: Option<EventHandler<Event<FocusData>>>,
