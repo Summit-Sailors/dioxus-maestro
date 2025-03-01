@@ -1,8 +1,8 @@
 use {
-	crate::components::ui::features::Features, 
-  dioxus::prelude::*, 
-  maestro_radio::use_radio::{use_init_radio_station, use_radio, RadioChannel, RadioStation}, 
-  std::fmt::Display
+	crate::components::ui::features::Features,
+	dioxus::prelude::*,
+	maestro_radio::use_radio::{use_init_radio_station, use_radio, RadioChannel, RadioStation},
+	std::fmt::Display,
 };
 
 #[derive(Clone, Debug)]
@@ -51,57 +51,58 @@ pub fn RadioDemo() -> Element {
 	provide_context(station);
 
 	rsx! {
-    div { 
-      class: "grid justify-center grid-cols-1 p-4 space-y-6 bg-gray-900 rounded-lg",
+		div { class: "grid justify-center grid-cols-1 p-4 space-y-6 bg-gray-900 rounded-lg",
 
-    div { class: "mb-4",
-      h1 { class: "text-gray-100 text-center text-3xl font-bold mb-2", "Maestro Radio" }
-      p { class: "text-gray-300 text-center",
-        "Maestro Radio is a state management utility for Dioxus that takes reactive state to the next level with its innovative channel-based approach. Unlike traditional state management solutions, 
-        Maestro Radio provides a flexible, granular, and type-safe mechanism for managing complex application states."
-      }
-    }
+			div { class: "mb-4",
+				h1 { class: "text-gray-100 text-center text-3xl font-bold mb-2", "Maestro Radio" }
+				p { class: "text-gray-300 text-center",
+					"Maestro Radio is a state management utility for Dioxus that takes reactive state to the next level with its innovative channel-based approach. Unlike traditional state management solutions,
+				Maestro Radio provides a flexible, granular, and type-safe mechanism for managing complex application states."
+				}
+			}
 
-    div {
-      class: "flex space-x-2",  
-      Features {
-        title: "Form".to_string(),
-        features: vec![
-          "Granular Control: Define custom channels for different types of state updates".to_string(),
-          "Targeted Notifications: Precisely control which components get updated".to_string(),
-          "Flexible Derivation: Easily create derived channels with custom logic".to_string(),
-          "Automatic scope-based subscriptions".to_string(),
-          "Lightweight and zero-overhead design".to_string(),
-          "Seamless integration with Dioxus component lifecycle".to_string(),
-        ]
-      }
-    }
+			div { class: "flex space-x-2",
+				Features {
+					title: "Radio".to_string(),
+					features: vec![
+							"Granular Control: Define custom channels for different types of state updates"
+									.to_string(),
+							"Targeted Notifications: Precisely control which components get updated"
+									.to_string(),
+							"Flexible Derivation: Easily create derived channels with custom logic"
+									.to_string(),
+							"Automatic scope-based subscriptions".to_string(),
+							"Lightweight and zero-overhead design".to_string(),
+							"Seamless integration with Dioxus component lifecycle".to_string(),
+					],
+				}
+			}
 
-      div { class: "grid grid-cols-1 md:grid-cols-3 gap-3",
+			div { class: "grid grid-cols-1 md:grid-cols-3 gap-3",
 
-        div { class: "bg-gray-900 p-4 rounded-xl shadow-lg border border-gray-700",
-          h2 { class: "text-xl text-gray-100 text-center font-semibold mb-4",
-            "Counter Controls"
-          }
-          CounterControls {}
-        }
+				div { class: "bg-gray-900 p-4 rounded-xl shadow-lg border border-gray-700",
+					h2 { class: "text-xl text-gray-100 text-center font-semibold mb-4",
+						"Counter Controls"
+					}
+					CounterControls {}
+				}
 
-        div { class: "bg-gray-900 p-4 rounded-xl shadow-lg border border-gray-700",
-          h2 { class: "text-xl text-gray-100 text-center font-semibold mb-4",
-            "Counter Display"
-          }
-          CounterDisplay {}
-        }
+				div { class: "bg-gray-900 p-4 rounded-xl shadow-lg border border-gray-700",
+					h2 { class: "text-xl text-gray-100 text-center font-semibold mb-4",
+						"Counter Display"
+					}
+					CounterDisplay {}
+				}
 
-        div { class: "lg:col-span-1 bg-gray-900 p-4 rounded-xl shadow-lg border border-gray-700",
-          h2 { class: "text-xl text-gray-100 text-center font-semibold mb-4",
-            "Channel Monitor"
-          }
-          ChannelMonitor {}
-        }
-      }
-    }
-  }
+				div { class: "lg:col-span-1 bg-gray-900 p-4 rounded-xl shadow-lg border border-gray-700",
+					h2 { class: "text-xl text-gray-100 text-center font-semibold mb-4",
+						"Channel Monitor"
+					}
+					ChannelMonitor {}
+				}
+			}
+		}
+	}
 }
 
 #[component]
@@ -135,24 +136,24 @@ fn CounterControls() -> Element {
 	};
 
 	rsx! {
-    div { class: "grid grid-cols-1 space-y-2 rounded-lg",
-      button {
-        class: "flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition",
-        onclick: handle_increment,
-        "+"
-      }
-      button {
-        class: "flex-1 px-4 py-2 bg-yellow-500 text-white rounded-lg shadow-md hover:bg-yellow-600 transition",
-        onclick: handle_decrement,
-        "-"
-      }
-      button {
-        class: "flex-1 px-4 py-2 bg-red-500 text-white rounded-lg shadow-md hover:bg-red-600 transition",
-        onclick: handle_reset,
-        "Reset"
-      }
-    }
-  }
+		div { class: "grid grid-cols-1 space-y-2 rounded-lg",
+			button {
+				class: "flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition",
+				onclick: handle_increment,
+				"+"
+			}
+			button {
+				class: "flex-1 px-4 py-2 bg-yellow-500 text-white rounded-lg shadow-md hover:bg-yellow-600 transition",
+				onclick: handle_decrement,
+				"-"
+			}
+			button {
+				class: "flex-1 px-4 py-2 bg-red-500 text-white rounded-lg shadow-md hover:bg-red-600 transition",
+				onclick: handle_reset,
+				"Reset"
+			}
+		}
+	}
 }
 
 #[component]
@@ -166,39 +167,39 @@ fn CounterDisplay() -> Element {
 	let state = increment_radio.read();
 
 	rsx! {
-    div { class: "space-y-4 text-center bg-gray-800 border border-gray-700 rounded-lg p-2",
-      div { class: "text-5xl font-bold text-gray-200", "{state.count}" }
-      div { class: "text-sm text-gray-400", "Last update: {state.last_update}" }
-    }
-  }
+		div { class: "space-y-4 text-center bg-gray-800 border border-gray-700 rounded-lg p-2",
+			div { class: "text-5xl font-bold text-gray-200", "{state.count}" }
+			div { class: "text-sm text-gray-400", "Last update: {state.last_update}" }
+		}
+	}
 }
 
 #[component]
 fn ChannelMonitor() -> Element {
 	rsx! {
-    div { class: "grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 text-center gap-4",
-      ChannelCard {
-        channel: CounterChannel::Increment,
-        value: use_radio(CounterChannel::Increment).read().increment_count,
-      }
-      ChannelCard {
-        channel: CounterChannel::Decrement,
-        value: use_radio(CounterChannel::Decrement).read().decrement_count,
-      }
-      ChannelCard {
-        channel: CounterChannel::Reset,
-        value: use_radio(CounterChannel::Reset).read().reset_count,
-      }
-    }
-  }
+		div { class: "grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 text-center gap-4",
+			ChannelCard {
+				channel: CounterChannel::Increment,
+				value: use_radio(CounterChannel::Increment).read().increment_count,
+			}
+			ChannelCard {
+				channel: CounterChannel::Decrement,
+				value: use_radio(CounterChannel::Decrement).read().decrement_count,
+			}
+			ChannelCard {
+				channel: CounterChannel::Reset,
+				value: use_radio(CounterChannel::Reset).read().reset_count,
+			}
+		}
+	}
 }
 
 #[component]
 fn ChannelCard(channel: CounterChannel, value: i32) -> Element {
 	rsx! {
-    div { class: "p-4 bg-gray-800 rounded-lg border border-gray-700 shadow-md",
-      div { class: "font-bold text-gray-200 mb-2 text-lg", "{channel} Channel" }
-      div { class: "text-3xl font-bold text-gray-200", "{value}" }
-    }
-  }
+		div { class: "p-4 bg-gray-800 rounded-lg border border-gray-700 shadow-md",
+			div { class: "font-bold text-gray-200 mb-2 text-lg", "{channel} Channel" }
+			div { class: "text-3xl font-bold text-gray-200", "{value}" }
+		}
+	}
 }

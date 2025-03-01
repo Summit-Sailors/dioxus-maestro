@@ -935,8 +935,8 @@ video {
   height: 100%;
 }
 
-.h-screen {
-  height: 100vh;
+.max-h-0 {
+  max-height: 0px;
 }
 
 .max-h-48 {
@@ -949,6 +949,10 @@ video {
 
 .max-h-\[inherit\] {
   max-height: inherit;
+}
+
+.max-h-full {
+  max-height: 100%;
 }
 
 .min-h-11 {
@@ -993,10 +997,6 @@ video {
 
 .w-4 {
   width: 1rem;
-}
-
-.w-4\/5 {
-  width: 80%;
 }
 
 .w-5 {
@@ -1102,6 +1102,16 @@ video {
 
 .rotate-180 {
   --tw-rotate: 180deg;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.scale-y-0 {
+  --tw-scale-y: 0;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.scale-y-100 {
+  --tw-scale-y: 1;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
@@ -1416,11 +1426,6 @@ video {
   border-color: rgb(107 114 128 / var(--tw-border-opacity, 1));
 }
 
-.border-gray-600 {
-  --tw-border-opacity: 1;
-  border-color: rgb(75 85 99 / var(--tw-border-opacity, 1));
-}
-
 .border-gray-700 {
   --tw-border-opacity: 1;
   border-color: rgb(55 65 81 / var(--tw-border-opacity, 1));
@@ -1532,11 +1537,6 @@ video {
 .bg-gray-300 {
   --tw-bg-opacity: 1;
   background-color: rgb(209 213 219 / var(--tw-bg-opacity, 1));
-}
-
-.bg-gray-400 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(156 163 175 / var(--tw-bg-opacity, 1));
 }
 
 .bg-gray-50 {
@@ -2494,9 +2494,9 @@ body>div {
   color: rgb(17 24 39 / var(--tw-text-opacity, 1));
 }
 
-.dark\:border-gray-500:is(.dark *) {
+.dark\:border-gray-800:is(.dark *) {
   --tw-border-opacity: 1;
-  border-color: rgb(107 114 128 / var(--tw-border-opacity, 1));
+  border-color: rgb(31 41 55 / var(--tw-border-opacity, 1));
 }
 
 .dark\:bg-gray-700:is(.dark *) {
@@ -2576,6 +2576,14 @@ body>div {
 }
 
 @media (min-width: 768px) {
+  .md\:h-screen {
+    height: 100vh;
+  }
+
+  .md\:w-4\/5 {
+    width: 80%;
+  }
+
   .md\:grid-cols-1 {
     grid-template-columns: repeat(1, minmax(0, 1fr));
   }

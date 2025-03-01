@@ -165,96 +165,93 @@ pub fn QueryDemo() -> Element {
 	};
 
 	rsx! {
-    div { 
-      class: "flex justify-center items-center rounded-lg shadow-lg bg-gray-900 py-4",
-      div { 
-        class: "flex flex-col items-center bg-gray-900 rounded-lg shadow-lg w-full p-4 max-w-lg",
+		div { class: "flex justify-center items-center rounded-lg shadow-lg bg-gray-900 py-4",
+			div { class: "flex flex-col items-center bg-gray-900 rounded-lg shadow-lg w-full p-4 max-w-lg",
 
-        h3 { class: "text-2xl text-gray-100 text-center font-bold mb-4",
-          "Default Query"
-        }
+				h3 { class: "text-2xl text-gray-100 text-center font-bold mb-4", "Default Query" }
 
-        div { class: "w-full text-center text-gray-200 p-4",
-          h2 { class: "text-xl font-bold mb-2", "Admin User:" }
+				div { class: "w-full text-center text-gray-200 p-4",
+					h2 { class: "text-xl font-bold mb-2", "Admin User:" }
 
-          {
-            match admin_query.result().value().to_owned() {
-              QueryResult::Loading(Some(prev)) => rsx! {
-                div { class: "opacity-50",
-                  "Loading... Previous data:"
-                  table { class: "w-full border border-gray-700 rounded-lg",
-                    tr { class: "bg-gray-800 text-gray-100",
-                      th { class: "p-2", "Username" }
-                      th { class: "p-2", "Role" }
-                    }
-                    tr {
-                      td { class: "p-2 border border-gray-700", "{prev.username}" }
-                      td { class: "p-2 border border-gray-700", "{prev.role}" }
-                    }
-                  }
-                }
-              },
-              QueryResult::Loading(None) => rsx! {
-                div { class: "text-gray-500", "Loading Admin..." }
-              },
-              QueryResult::Ok(user) => rsx! {
-                table { 
-                  class: "w-full border border-gray-700 rounded-lg",
-                  tr { class: "bg-gray-800 text-gray-100",
-                    th { class: "p-2 text-gray-400", "Username" }
-                    th { class: "p-2 text-gray-400", "Role" }
-                  }
-                  tr {
-                    td { class: "p-2 border border-gray-700", "{user.username}" }
-                    td { class: "p-2 border border-gray-700", "{user.role}" }
-                  }
-                }
-                Button {
-                  class: tw_join!(
-                    "bg-blue-500 text-white px-4 py-2 rounded mt-4", "bg-blue-500 text-white"
-                  ),
-                  onclick: move |_| handle_role_update.clone()(user.username.clone(), user.clone().role),
-                  if is_loading() {
-                    "Updating..."
-                  } else {
-                    "Toggle Admin Role"
-                  }
-                }
-              },
-              QueryResult::Err(err) => rsx! {
-                div { class: "text-red-500", "Error: {err}" }
-              },
-            }
-          }
-        }
+					{
+							match admin_query.result().value().to_owned() {
+									QueryResult::Loading(Some(prev)) => rsx! {
+										div { class: "opacity-50",
+											"Loading... Previous data:"
+											table { class: "w-full border border-gray-700 rounded-lg",
+												tr { class: "bg-gray-800 text-gray-100",
+													th { class: "p-2", "Username" }
+													th { class: "p-2", "Role" }
+												}
+												tr {
+													td { class: "p-2 border border-gray-700", "{prev.username}" }
+													td { class: "p-2 border border-gray-700", "{prev.role}" }
+												}
+											}
+										}
+									},
+									QueryResult::Loading(None) => rsx! {
+										div { class: "text-gray-500", "Loading Admin..." }
+									},
+									QueryResult::Ok(user) => rsx! {
+										table { class: "w-full border border-gray-700 rounded-lg",
+											tr { class: "bg-gray-800 text-gray-100",
+												th { class: "p-2 text-gray-400", "Username" }
+												th { class: "p-2 text-gray-400", "Role" }
+											}
+											tr {
+												td { class: "p-2 border border-gray-700", "{user.username}" }
+												td { class: "p-2 border border-gray-700", "{user.role}" }
+											}
+										}
+										Button {
+											class: tw_join!("bg-blue-500 text-white px-4 py-2 rounded mt-4", "bg-blue-500 text-white"),
+											onclick: move |_| handle_role_update.clone()(user.username.clone(), user.clone().role),
+											if is_loading() {
+												"Updating..."
+											} else {
+												"Toggle Admin Role"
+											}
+										}
+									},
+									QueryResult::Err(err) => rsx! {
+										div { class: "text-red-500", "Error: {err}" }
+									},
+							}
+					}
+				}
 
-        div { class: "w-full text-center mt-2 p-4",
-          h2 { class: "text-xl font-bold text-gray-200 mb-2", "Moderators:" }
+				div { class: "w-full text-center mt-2 p-4",
+					h2 { class: "text-xl font-bold text-gray-200 mb-2", "Moderators:" }
 
-          {
-            match moderators.result().value() {
-              QueryResult::Loading(_) => rsx! {
-                div { class: "text-gray-500", "Loading moderators..." }
-              },
-              QueryResult::Ok(users) => rsx! {
-                table { class: "w-full border border-gray-700 rounded-lg",
-                  tr { class: "bg-gray-800 text-gray-100",
-                    th { class: "p-2 text-gray-400", "Username" }
-                  }
-                  {users.iter().map(|user| rsx! {
-                    tr {
-                      td { class: "p-2 border border-gray-700", key: "{user.username}", "{user.username}" }
-                    }
-                  })}
-                }
-              },
-              QueryResult::Err(err) => rsx! {
-                div { class: "text-red-500", "Error loading moderators: {err}" }
-              },
-            }
-          }
-        }
-      }
-    }
-  }
+					{
+							match moderators.result().value() {
+									QueryResult::Loading(_) => rsx! {
+										div { class: "text-gray-500", "Loading moderators..." }
+									},
+									QueryResult::Ok(users) => rsx! {
+										table { class: "w-full border border-gray-700 rounded-lg",
+											tr { class: "bg-gray-800 text-gray-100",
+												th { class: "p-2 text-gray-400", "Username" }
+											}
+											{users.iter().map(|user| rsx! {
+												tr {
+													td {
+														class: "p-2 border border-gray-700 text-gray-200",
+														key: "{user.username}",
+														"{user.username}"
+													}
+												}
+											})}
+										}
+									},
+									QueryResult::Err(err) => rsx! {
+										div { class: "text-red-500", "Error loading moderators: {err}" }
+									},
+							}
+					}
+				}
+			}
+		}
+	}
 }
