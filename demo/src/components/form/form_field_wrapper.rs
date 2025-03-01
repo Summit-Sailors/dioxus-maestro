@@ -4,7 +4,7 @@ use {
   tailwind_fuse::tw_join,
 };
 
-#[derive(Props, PartialEq, Clone)]
+#[derive(Clone, PartialEq, Props)]
 pub struct FormFieldWrapperProps {
   pub label: &'static str,
   pub field: FormField,

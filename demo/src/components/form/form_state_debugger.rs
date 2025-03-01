@@ -7,7 +7,7 @@ use {
 	validator::Validate,
 };
 
-#[derive(Props, PartialEq, Clone)]
+#[derive(Clone, PartialEq, Props)]
 pub struct FormStateDebuggerProps<T>
 where
 	T: Validate + Clone + Serialize + PartialEq + 'static + for<'de> Deserialize<'de>,

@@ -17,7 +17,7 @@ use {
 	tailwind_fuse::tw_join,
 };
 
-#[derive(Props, PartialEq, Clone)]
+#[derive(Clone, PartialEq, Props)]
 pub struct CodeEditorProps {
 	#[props(default = "rust".to_string())]
 	language: String,

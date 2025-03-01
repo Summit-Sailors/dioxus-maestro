@@ -14,7 +14,7 @@ trait DisplayData: Serialize + PartialEq + for<'de> Deserialize<'de> {
 	fn get_metadata(&self) -> Vec<(String, String)>;
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 struct User {
 	id: String,
 	name: String,
@@ -36,7 +36,7 @@ impl DisplayData for User {
 	}
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 struct Post {
 	id: String,
 	title: String,
@@ -60,7 +60,7 @@ impl DisplayData for Post {
 	}
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 struct Comment {
 	id: String,
 	post_id: String,

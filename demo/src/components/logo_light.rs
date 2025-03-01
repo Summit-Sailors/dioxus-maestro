@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-#[derive(Props, Clone, PartialEq)]
+#[derive(Clone, PartialEq, Props)]
 pub struct LogoLightProps {
 	pub class: Option<String>,
 }

@@ -13,9 +13,9 @@ serde_json = { workspace = true }
 strum = { workspace = true }
 strum_macros = { workspace = true }
 
+dioxus = { version = "0.6.3", features = ["fullstack"], optional = true }
 reqwest = { version = "0.12.12", features = ["json", "multipart"], optional = true }
-dioxus = { version = "0.6.1", features = ["fullstack"], optional = true }
 
 [features]
 dioxus = []
-server = ["reqwest", "dioxus?/server"]
+server = ["dioxus?/server", "reqwest"]

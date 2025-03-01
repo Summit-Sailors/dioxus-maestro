@@ -17,7 +17,7 @@ use {
 	tailwind_fuse::*,
 };
 
-#[derive(Props, Clone, PartialEq)]
+#[derive(Clone, PartialEq, Props)]
 pub struct MultiSelectProps<T>
 where
 	T: Clone + PartialEq + std::fmt::Display + 'static,
