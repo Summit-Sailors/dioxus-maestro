@@ -11,7 +11,6 @@ use {
 		},
 		Icon,
 	},
-	dioxus_logger::tracing::info,
 	maestro_toast::{init::use_init_toast_ctx, toast_frame_component::ToastFrame},
 	std::collections::HashMap,
 	strum::IntoEnumIterator,
@@ -24,108 +23,127 @@ pub fn Layout(children: Element) -> Element {
 	let mut menu_open = use_signal(|| false);
 	let current_route = use_route::<Route>();
 
+	let backdrop = rsx! {
+		div {
+			class: tw_join!(
+					"fixed inset-0 bg-black/30 backdrop-blur-sm z-40 transition-all duration-300", if
+					menu_open() { "opacity-100" } else { "opacity-0 pointer-events-none" }
+			),
+			onclick: move |_| menu_open.set(false),
+		}
+	};
+
 	let navigation_menu = rsx! {
-    // sidebar
-    nav {
-      // class: "min-w-40",
-      class: tw_join!(
-          "py-2 z-50 shadow-lg rounded-lg bg-gray-800 min-w-40",
-          "transform transition-transform duration-300 ease-in-out", if current_route
-          .name() == "Home" { "hidden lg:hidden translate-x-0" } else if ! menu_open() {
-          "hidden xl:block" } else { "absolute top-0 right-0 left-0 block" }
-      ),
-      NavigationMenu { close_menu: menu_open }
-    }
-  };
+		// sidebar
+		nav {
+			// class: "min-w-40",
+			class: tw_join!(
+					"py-2 z-50 shadow-lg rounded-lg bg-gray-800 min-w-40",
+					"transform transition-transform duration-300 ease-in-out", if current_route
+					.name() == "Home" { "hidden lg:hidden translate-x-0" } else if ! menu_open() {
+					"hidden xl:block" } else {
+					"right-0 block w-64 absolute min-h-screen rounded-md z-50" }
+			),
+			NavigationMenu { close_menu: menu_open }
+		}
+	};
+
+	let menu_toggle_button = rsx! {
+		button {
+			class: tw_join!(
+					"xl:hidden flex items-center justify-center text-white bg-gray-800 p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-600",
+					if current_route.name() == "Home" { "hidden" } else { "block" }
+			),
+			onclick: move |_| menu_open.toggle(),
+			{
+					if menu_open() {
+							rsx! {
+								Icon { icon: FaX, width: 20, height: 20 }
+							}
+					} else {
+							rsx! {
+								Icon { icon: FaBars, width: 20, height: 20 }
+							}
+					}
+			}
+		}
+	};
 
 	let content = rsx! {
-    match current_route {
-        Route::HomePage {} => rsx! {
-          Outlet::<Route> {}
-        },
-        _ => rsx! {
-          div {
-            class: tw_join!(
-                "my-8 mr-4 flex gap-[1px] flex-1 h-full max-h-[inherit] relative lg:overflow-hidden",
-            ),
-            CodeEditor {
-              title: current_route.name(),
-              code_map: get_source_code(&current_route),
-              demo: rsx! {
-                Outlet::<Route> {}
-              },
-            }
-          
-            {navigation_menu}
-          }
-        },
-    }
-  };
+		match current_route {
+				Route::HomePage {} => rsx! {
+					Outlet::<Route> {}
+				},
+				_ => rsx! {
+					div {
+						class: tw_join!(
+								"my-8 mr-4 flex gap-[1px] flex-1 h-full max-h-[inherit] relative lg:overflow-hidden",
+						),
+						CodeEditor {
+							title: current_route.name(),
+							code_map: get_source_code(&current_route),
+							demo: rsx! {
+								Outlet::<Route> {}
+							},
+							menu_toggle: menu_toggle_button,
+							backdrop,
+						}
+						{navigation_menu}
+					}
+				},
+		}
+	};
 
 	rsx! {
-    head {
-      document::Link { rel: "icon", href: asset!("/assets/favicon.ico") }
-    }
+		head {
+			document::Link { rel: "icon", href: asset!("/assets/favicon.ico") }
+		}
 
-    ToastFrame { manager: toast }
+		ToastFrame { manager: toast }
 
-    div { class: "flex flex-col relative h-full max-h-screen",
-      header {
-        class: tw_join!(
-          "flex justify-between items-center w-full text-white gap-4",
-          "px-8 py-4 sticky top-0 left-0 w-full bg-gray-900 z-50 shadow-md hover:shadow-lg",
-          "sm:text-lg text-base"
-        ),
+		div {
+			id: "maestro-demo",
+			class: "dark bg-gray-900 flex flex-col relative md:h-screen min-h-screen",
 
-        LogoLight { class: "w-24 sm:w-28 h-auto" }
+			header {
+				id: "maestro-demo-header",
+				class: tw_join!(
+						"flex justify-between items-center w-full text-white gap-4",
+						"px-8 py-4 sticky top-0 left-0 w-full bg-gray-900 z-50 shadow-md hover:shadow-lg",
+						"sm:text-lg text-base"
+				),
 
-        h1 { class: "sm:text-lg text-base font-semibold", "Dioxus Maestro" }
+				LogoLight { class: "w-12 sm:w-28 h-auto" }
 
-        a {
-          href: "https://github.com/Summit-Sailors/dioxus-maestro/tree/maestro-demo/demo",
-          target: "_blank",
-          class: "flex items-center space-x-2 text-gray-300 hover:text-white transition",
+				h1 { class: "sm:text-lg text-base font-semibold", "Dioxus Maestro" }
 
-          Icon { icon: FiGithub, width: 16, height: 16 }
-          span { "View On GitHub" }
-        }
-      }
+				a {
+					href: "https://github.com/Summit-Sailors/dioxus-maestro/tree/maestro-demo/demo",
+					target: "_blank",
+					class: "flex items-center space-x-2 text-gray-300 hover:text-white transition",
 
-      div { class: "xl:hidden flex justify-center w-full mt-8",
+					Icon {
+						icon: FiGithub,
+						width: 16,
+						height: 16,
+						class: "sm:w-16 sm:h-16 w-8 h-8",
+					}
 
-        button {
-          class: tw_join!(
-              "left-0 right-0 max-w-md flex text-white bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-600",
-              if current_route.name() == "Home" { "hidden" } else { "block" }
-          ),
-          onclick: move |_| menu_open.toggle(),
+					span { class: "hidden sm:block", "View On GitHub" }
+				}
+			}
 
-          div { class: "p-4",
-            {
-                if menu_open() {
-                    rsx! {
-                      Icon { icon: FaX, width: 20, height: 20 }
-                    }
-                } else {
-                    rsx! {
-                      Icon { icon: FaBars, width: 20, height: 20 }
-                    }
-                }
-            }
-          }
-        }
-      }
-
-      // main Content
-      main {
-        class: tw_join!(
-            "flex-1 flex flex-col transition-all duration-300 max-h-[inherit]",
-            "w-full max-w-full md:container md:mx-auto flex-1 max-h-[inherit] px-4 lg:overflow-hidden"
-        ),
-        {content}
-      }
-    }
-  }
+			// main Content
+			main {
+				id: "maestro-demo-main",
+				class: tw_join!(
+						"flex-1 flex flex-col transition-all duration-300 max-h-[inherit]",
+						"w-full px-4 lg:overflow-hidden"
+				),
+				{content}
+			}
+		}
+	}
 }
 
 #[component]
@@ -133,30 +151,30 @@ fn NavigationMenu(close_menu: Signal<bool>) -> Element {
 	let current_route = use_route::<Route>();
 
 	rsx! {
-    div { class: "h-full w-full",
+		div { id: "maestro-demo-nav", class: "h-full w-full",
 
-      div { class: "px-4 w-full",
-        {
-            Route::iter()
-                .map(|route| {
-                    let is_current = route == current_route;
-                    rsx! {
-                      Link {
-                        to: route.clone(),
-                        class: tw_join!(
-                            "block px-4 py-2 rounded-md transition-colors w-full text-center",
-                            "hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-600", if
-                            is_current { "bg-gray-700 text-white" } else { "text-gray-300 hover:text-white" }
-                        ),
-                        onclick: move |_| close_menu.set(false),
-                        "{route.name()}"
-                      }
-                    }
-                })
-        }
-      }
-    }
-  }
+			div { class: "px-4 w-full",
+				{
+						Route::iter()
+								.map(|route| {
+										let is_current = route == current_route;
+										rsx! {
+											Link {
+												to: route.clone(),
+												class: tw_join!(
+														"block px-4 py-2 rounded-md transition-colors w-full text-center",
+														"hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-600", if
+														is_current { "bg-gray-700 text-white" } else { "text-gray-300 hover:text-white" }
+												),
+												onclick: move |_| close_menu.set(false),
+												"{route.name()}"
+											}
+										}
+								})
+				}
+			}
+		}
+	}
 }
 
 // include code and it's deps/utilities

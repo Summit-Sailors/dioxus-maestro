@@ -1,13 +1,16 @@
-use {crate::label::Label, dioxus::prelude::*, tailwind_fuse::*};
+use {
+	crate::label::Label,
+	dioxus::prelude::*,
+	dioxus_free_icons::{icons::io_icons::IoCheckmarkOutline, Icon},
+	tailwind_fuse::*,
+};
 
 #[derive(TwClass)]
-#[tw(
-	class = "flex items-center justify-center w-6 h-6 transition-all ease-linear border border-gray-700 rounded-full bg-transparent shrink-0 ring-offset-white ring-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-)]
-pub struct RadioClass {}
+#[tw(class = "flex items-center justify-center w-6 h-6 transition-all ease-linear border border-gray-700 rounded bg-transparent shrink-0")]
+pub struct CheckboxClass {}
 
 #[derive(Clone, PartialEq, Props)]
-pub struct RadioProps {
+pub struct CheckboxProps {
 	#[props(default = false)]
 	pub disabled: bool,
 	#[props(default = false)]
@@ -27,34 +30,37 @@ pub struct RadioProps {
 	pub attributes: Vec<Attribute>,
 }
 
-// classes may be extended also by using "maestro-radio__*" classname
+// classes may be extended also by using "maestro-checkbox__*" classname
 
 #[component]
-pub fn Radio(props: RadioProps) -> Element {
-	let class = RadioClass {}.with_class(tw_merge!(&props.class, "maestro-radio__radio"));
+pub fn Checkbox(props: CheckboxProps) -> Element {
+	let class = CheckboxClass {}.with_class(tw_merge!(&props.class, "maestro-checkbox__checkbox"));
 
 	rsx! {
 		Label {
 			class: tw_merge!(
 					"flex-row-reverse items-center relative cursor-pointer group", & props
-					.label_class, "maestro-radio__label", (props.disabled)
+					.label_class, "maestro-checkbox__label", (props.disabled)
 					.then_some("pointer-events-none opacity-50 cursor-not-allowed")
 			),
 			text: props.label,
 			input {
 				class: "absolute w-0 h-0 opacity-0 -z-20",
-				r#type: "radio",
+				r#type: "checkbox",
 				checked: props.checked,
 				onchange: move |event| props.onchange.unwrap_or_default().call(event),
 				..props.attributes,
 			}
-			div { class, tabindex: 0,
-				div {
+			div { class,
+				Icon {
+					width: 8,
+					height: 8,
+					icon: IoCheckmarkOutline {},
 					class: tw_merge!(
-							"w-2 h-2 rounded-full transition-all ease-linear border border-gray-700", & props
+							"fill-none w-2 h-2 transition-all ease-linear text-gray-700 shrink-0", & props
 							.inner_class, if props.checked {
-							format!("opacity-100 border border-gray-700 bg-gray-700 group-hover:bg-gray-900 group-hover:border-gray-900 {} {}",
-							& props.checked_class, "maestro-radio__checked") } else { "opacity-0".into() }
+							format!("opacity-100 group-hover:text-gray-900 {} {}", & props.checked_class,
+							"maestro-checkbox__checked") } else { "opacity-0".into() }
 					),
 				}
 			}

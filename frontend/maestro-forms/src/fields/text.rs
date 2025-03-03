@@ -15,6 +15,8 @@ pub struct InputProps {
 	pub oninput: Option<EventHandler<String>>,
 	#[props(optional)]
 	pub onblur: Option<EventHandler<FocusEvent>>,
+	#[props(optional)]
+	pub onfocus: Option<EventHandler<FocusEvent>>,
 	#[props(extends = GlobalAttributes, extends = input)]
 	pub attributes: Vec<Attribute>,
 }
@@ -26,16 +28,15 @@ where
 	let mut field = use_formik_field::<TForm>(props.name.clone());
 
 	let mut debounced_input = use_debounce(Duration::from_millis(200), move |text_input: String| {
-    field.clear_errors();
-    field.set_value(Value::String(text_input.clone()));
-    if let Some(handler) = &props.oninput {
-        handler.call(text_input);
-    }
-  });
+		field.clear_errors();
+		field.set_value(Value::String(text_input.clone()));
+		if let Some(handler) = &props.oninput {
+			handler.call(text_input);
+		}
+	});
 
 	rsx! {
 		input {
-			r#type: "text",
 			name: "{props.name}",
 			value: "{field.get_value::<String>()}",
 			oninput: move |evt| {
@@ -47,6 +48,11 @@ where
 							handler.call(evt);
 					}
 			},
+			onfocus: move |evt| {
+				if let Some(handler) = &props.onfocus {
+						handler.call(evt);
+				}
+		},
 			..props.attributes,
 		}
 	}

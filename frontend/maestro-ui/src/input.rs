@@ -2,7 +2,7 @@ use {dioxus::prelude::*, tailwind_fuse::*};
 
 #[derive(TwClass)]
 #[tw(
-	class = "text-foreground flex h-10 w-full border-input bg-transparent py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0  disabled:cursor-not-allowed disabled:opacity-50"
+	class = "flex h-10 w-full bg-transparent py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 border-gray-700 ring-offset-white ring-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2  disabled:cursor-not-allowed disabled:opacity-50"
 )]
 pub struct InputClass {
 	pub variant: InputVariant,
@@ -10,87 +10,63 @@ pub struct InputClass {
 
 #[derive(PartialEq, TwVariant)]
 pub enum InputVariant {
-	#[tw(default, class = "border rounded-md px-3 focus-visible:border-primary")]
+	#[tw(default, class = "border rounded-md px-3")]
 	Default,
-	#[tw(class = "border-b focus-visible:border-b-primary")]
+	#[tw(class = "border-b pt-2 pb-1")]
 	Underlined,
-}
-
-#[derive(Clone, Copy, PartialEq)]
-pub enum InputType {
-	Text,
-	Search,
-	Password,
-	Email,
-}
-
-impl InputType {
-	fn as_str(&self) -> &'static str {
-		match self {
-			InputType::Text => "text",
-			InputType::Search => "search",
-			InputType::Password => "password",
-			InputType::Email => "email",
-		}
-	}
 }
 
 #[derive(Clone, PartialEq, Props)]
 pub struct InputProps {
-	#[props(default = false)]
-	pub disabled: bool,
-	#[props(default = InputType::Text)]
-	pub input_type: InputType,
-	#[props(default = "".to_string())]
-	pub value: String,
 	#[props(default = InputVariant::Default)]
 	pub variant: InputVariant,
-	pub on_change: Option<EventHandler<String>>,
-	pub on_enter: Option<EventHandler<String>>,
-	pub id: Option<String>,
-	pub class: Option<String>,
+	pub onchange: Option<EventHandler<Event<FormData>>>,
+	pub onenter: Option<EventHandler<Event<KeyboardData>>>,
+	pub onfocus: Option<EventHandler<Event<FocusData>>>,
+	pub onblur: Option<EventHandler<Event<FocusData>>>,
+	#[props(default = String::new())]
+	pub class: String,
+	#[props(default = String::new())]
+	pub wrapper_class: String,
 	pub style: Option<String>,
-	pub placeholder: Option<String>,
-	#[props(default = "".to_string())]
-	pub error: String,
 	#[props(default = None)]
 	pub children: Element,
+	#[props(extends = GlobalAttributes, extends = input)]
+	pub attributes: Vec<Attribute>,
 }
+
+// classes may be extended also by using "maestro-input__*" classname
 
 #[component]
 pub fn Input(props: InputProps) -> Element {
-	let class = InputClass { variant: props.variant }.with_class(props.class.unwrap_or_default());
-
-	let has_error = !props.error.is_empty();
-
-	let mut local_value = use_signal(|| props.value.to_owned());
+	let class = InputClass { variant: props.variant }.with_class(tw_merge!(&props.class, "maestro-input__input"));
 
 	rsx! {
-		div { class: "flex flex-col gap-2 w-full relative",
-			div { class: "relative",
-				input {
-					id: props.id.unwrap_or_default(),
-					class: tw_join!(class, (has_error).then_some("border-danger")),
-					r#type: props.input_type.as_str(),
-					style: props.style.unwrap_or_default(),
-					disabled: props.disabled,
-					value: props.value,
-					placeholder: props.placeholder.unwrap_or_default(),
-					oninput: move |event| {
-							local_value.set(event.value());
-							props.on_change.unwrap_or_default().call(local_value.read().to_string());
-					},
-					onkeypress: move |event| {
-							if event.data().code() == Code::Enter {
-									props.on_enter.unwrap_or_default().call(local_value.read().to_string());
-							}
-					},
-				}
-				{props.children}
+		div {
+			class: tw_merge!(
+					"w-full relative", & props.wrapper_class,
+					"maestro-input__wrapper"
+			),
+			input {
+				class,
+				style: props.style.unwrap_or_default(),
+				oninput: move |event| {
+						props.onchange.unwrap_or_default().call(event);
+				},
+				onfocus: move |event| {
+						props.onfocus.unwrap_or_default().call(event);
+				},
+				onblur: move |event| {
+						props.onblur.unwrap_or_default().call(event);
+				},
+				onkeypress: move |event| {
+						if event.data().code() == Code::Enter {
+								props.onenter.unwrap_or_default().call(event);
+						}
+				},
+				..props.attributes,
 			}
-			if has_error {
-				span { class: "text-xs text-destructive", {props.error} }
-			}
+			{props.children}
 		}
 	}
 }

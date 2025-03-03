@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   mode: "all",
+  darkMode: "class",
   content: [
     "./src/**/*.{rs,html,css,tsx}",
     "./dist/**/*.html",
@@ -24,6 +25,7 @@ module.exports = {
           DEFAULT: "#3b82f6",
           dark: "#2563eb",
         },
+        danger: "tomato",
       },
       screens: {
         sm: "640px",

@@ -12,10 +12,10 @@ bon = { workspace = true }
 serde = { workspace = true }
 validator = { workspace = true }
 
-diesel = { version = "2.2.6", features = ["chrono", "postgres", "serde_json", "uuid"], optional = true }
+diesel = { version = "2.2.7", features = ["chrono", "postgres", "serde_json", "uuid"], optional = true }
 diesel-async = { version = "0.5.2", features = ["deadpool", "pool", "postgres"], optional = true }
 
-dioxus = { version = "0.6.1", features = ["fullstack"], optional = true }
+dioxus = { version = "0.6.3", features = ["fullstack"], optional = true }
 
 
 [features]
