@@ -101,9 +101,12 @@ pub fn Layout(children: Element) -> Element {
 
 		ToastFrame { manager: toast }
 
-		div { class: "dark bg-gray-900 flex flex-col relative md:h-screen min-h-screen",
+		div {
+			id: "maestro-demo",
+			class: "dark bg-gray-900 flex flex-col relative md:h-screen min-h-screen",
 
 			header {
+				id: "maestro-demo-header",
 				class: tw_join!(
 						"flex justify-between items-center w-full text-white gap-4",
 						"px-8 py-4 sticky top-0 left-0 w-full bg-gray-900 z-50 shadow-md hover:shadow-lg",
@@ -132,6 +135,7 @@ pub fn Layout(children: Element) -> Element {
 
 			// main Content
 			main {
+				id: "maestro-demo-main",
 				class: tw_join!(
 						"flex-1 flex flex-col transition-all duration-300 max-h-[inherit]",
 						"w-full px-4 lg:overflow-hidden"
@@ -147,7 +151,7 @@ fn NavigationMenu(close_menu: Signal<bool>) -> Element {
 	let current_route = use_route::<Route>();
 
 	rsx! {
-		div { class: "h-full w-full",
+		div { id: "maestro-demo-nav", class: "h-full w-full",
 
 			div { class: "px-4 w-full",
 				{

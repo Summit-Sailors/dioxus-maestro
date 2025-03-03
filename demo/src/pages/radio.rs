@@ -51,9 +51,11 @@ pub fn RadioDemo() -> Element {
 	provide_context(station);
 
 	rsx! {
-		div { class: "grid justify-center grid-cols-1 p-4 space-y-6 bg-gray-900 rounded-lg",
+		div {
+			id: "maestro-radio",
+			class: "grid justify-center grid-cols-1 p-4 space-y-6 bg-gray-900 rounded-lg",
 
-			div { class: "mb-4",
+			div { id: "maestro-radio-header", class: "mb-4",
 				h1 { class: "text-gray-100 text-center text-3xl font-bold mb-2", "Maestro Radio" }
 				p { class: "text-gray-300 text-center",
 					"Maestro Radio is a state management utility for Dioxus that takes reactive state to the next level with its innovative channel-based approach. Unlike traditional state management solutions,
@@ -61,7 +63,7 @@ pub fn RadioDemo() -> Element {
 				}
 			}
 
-			div { class: "flex space-x-2",
+			div { id: "maestro-radio-features", class: "flex space-x-2",
 				Features {
 					title: "Radio".to_string(),
 					features: vec![
@@ -78,23 +80,31 @@ pub fn RadioDemo() -> Element {
 				}
 			}
 
-			div { class: "grid grid-cols-1 md:grid-cols-3 gap-3",
+			div {
+				id: "maestro-radio-main",
+				class: "grid grid-cols-1 md:grid-cols-3 gap-3",
 
-				div { class: "bg-gray-900 p-4 rounded-xl shadow-lg border border-gray-700",
+				div {
+					id: "maestro-radio-controls",
+					class: "bg-gray-900 p-4 rounded-xl shadow-lg border border-gray-700",
 					h2 { class: "text-xl text-gray-100 text-center font-semibold mb-4",
 						"Counter Controls"
 					}
 					CounterControls {}
 				}
 
-				div { class: "bg-gray-900 p-4 rounded-xl shadow-lg border border-gray-700",
+				div {
+					id: "maestro-radio-display",
+					class: "bg-gray-900 p-4 rounded-xl shadow-lg border border-gray-700",
 					h2 { class: "text-xl text-gray-100 text-center font-semibold mb-4",
 						"Counter Display"
 					}
 					CounterDisplay {}
 				}
 
-				div { class: "lg:col-span-1 bg-gray-900 p-4 rounded-xl shadow-lg border border-gray-700",
+				div {
+					id: "maestro-radio-monitor",
+					class: "lg:col-span-1 bg-gray-900 p-4 rounded-xl shadow-lg border border-gray-700",
 					h2 { class: "text-xl text-gray-100 text-center font-semibold mb-4",
 						"Channel Monitor"
 					}

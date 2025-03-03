@@ -253,8 +253,8 @@ pub fn BatchOperationsDemo() -> Element {
 	});
 
 	let handle_batch_invalidate = move |_| {
-		let mut status = operation_status.clone();
-		let client = query_client.clone();
+		let mut status = operation_status;
+		let client = query_client;
 
 		spawn(async move {
 			status.set("Invalidating queries...");

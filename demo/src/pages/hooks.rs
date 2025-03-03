@@ -24,7 +24,7 @@ enum HookSection {
 #[component]
 pub fn HooksDemo() -> Element {
 	let mut total_items = use_signal(|| 100);
-	let clipboard = use_signal(|| use_clipboard());
+	let clipboard = use_signal(use_clipboard);
 
 	let async_result = use_resource(move || async move {
 		sleep(Duration::from_millis(2000)).await;
@@ -43,23 +43,25 @@ pub fn HooksDemo() -> Element {
 	let (pagination, (mut next_idx, mut prev_idx, mut next_page, mut prev_page, mut set_page_size)) = use_pagination(use_memo(move || total_items()), page_size);
 
 	let mut clipboard_content = use_signal(String::new);
-	let mut copy_status = use_signal(|| String::new());
+	let mut copy_status = use_signal(String::new);
 
 	let items = (1..=total_items()).collect::<Vec<i32>>();
 
 	let mut active_section = use_signal(|| HookSection::Clipboard);
 
 	rsx! {
-		div { class: "hooks-demo bg-gray-900 p-4 rounded-lg shadow-lg space-y-6",
+		div {
+			id: "maestro-hooks",
+			class: "hooks-demo bg-gray-900 p-4 rounded-lg shadow-lg space-y-6",
 
-			div { class: "mb-8",
+			div { id: "maestro-hooks-header", class: "mb-8",
 				h1 { class: "text-gray-100 text-center text-3xl font-bold mb-2", "Maestro Hooks" }
 				p { class: "text-gray-300 text-center",
 					"Enhanced hooks collection for Dioxus applications that provides type safety, cross-platform compatibility, and optimized performance."
 				}
 			}
 
-			div { class: "flex",
+			div { id: "maestro-hooks-header", class: "flex",
 				Features {
 					title: "Hooks".to_string(),
 					features: vec![
@@ -75,7 +77,9 @@ pub fn HooksDemo() -> Element {
 				}
 			}
 
-			div { class: "flex flex-wrap sm:flex-nowrap space-x-2 sm:space-x-0 border-b border-gray-700 pb-4",
+			div {
+				id: "maestro-hooks-nav",
+				class: "flex flex-wrap sm:flex-nowrap space-x-2 sm:space-x-0 border-b border-gray-700 pb-4",
 				span {
 					class: tw_join!(
 							"py-2 px-2 cursor-pointer rounded text-sm sm:text-xs", if * active_section.read()
@@ -107,7 +111,9 @@ pub fn HooksDemo() -> Element {
 
 			match *active_section.read() {
 					HookSection::Clipboard => rsx! {
-						section { class: "clipboard-demo bg-gray-900 p-6 rounded-lg shadow",
+						section {
+							id: "maestro-hooks-clipboard",
+							class: "clipboard-demo bg-gray-900 p-6 rounded-lg shadow",
 							h2 { class: "text-lg text-gray-100 text-center font-bold mb-4", "Clipboard Hook" }
 							p { class: "text-gray-300 text-center mb-4",
 								"A unified clipboard interface that works seamlessly across desktop and web platforms with comprehensive error handling."
@@ -171,7 +177,7 @@ pub fn HooksDemo() -> Element {
 							}
 							p { class: "mt-2 text-sm text-gray-500 text-center", "{copy_status}" }
 						}
-						div { class: "flex mt-4",
+						div { id: "maestro-hooks-clipboard-features", class: "flex mt-4",
 							Features {
 								title: "Clipboard".to_string(),
 								features: vec![
@@ -185,7 +191,9 @@ pub fn HooksDemo() -> Element {
 						}
 					},
 					HookSection::Memo => rsx! {
-						section { class: "memo-demo bg-gray-900 p-6 rounded-lg shadow",
+						section {
+							id: "maestro-hooks-memo",
+							class: "memo-demo bg-gray-900 p-6 rounded-lg shadow",
 							h2 { class: "text-lg text-center text-gray-100 font-bold mb-4", "Explicit Memo Hook" }
 							div { class: "flex space-x-4 justify-center mb-8",
 								button {
@@ -233,7 +241,7 @@ pub fn HooksDemo() -> Element {
 								}
 							}
 						}
-						div { class: "flex mt-4",
+						div { id: "maestro-hooks-memo-features", class: "flex mt-4",
 							Features {
 								title: "Explicit Memo".to_string(),
 								features: vec![
@@ -247,7 +255,9 @@ pub fn HooksDemo() -> Element {
 						}
 					},
 					HookSection::Pagination => rsx! {
-						section { class: "pagination-demo bg-gray-900 p-6 rounded-lg shadow",
+						section {
+							id: "maestro-hooks-pagination",
+							class: "pagination-demo bg-gray-900 p-6 rounded-lg shadow",
 							h2 { class: "text-lg font-bold text-gray-100 text-center mb-4", "Pagination Hook" }
 							table { class: "w-auto mx-auto text-center border-collapse shadow border border-gray-700 rounded-md mb-6",
 								tr {
@@ -364,7 +374,7 @@ pub fn HooksDemo() -> Element {
 								}
 							}
 						}
-						div { class: "flex mt-4",
+						div { id: "maestro-hooks-pagination-features", class: "flex mt-4",
 							Features {
 								title: "Pagination".to_string(),
 								features: vec![

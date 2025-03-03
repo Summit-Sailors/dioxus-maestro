@@ -60,7 +60,9 @@ pub fn UIDemo() -> Element {
 	};
 
 	rsx! {
-		div { class: "mx-auto p-4 bg-gray-900 rounded-lg shadow-lg",
+		div {
+			id: "maestro-ui",
+			class: "mx-auto p-4 bg-gray-900 rounded-lg shadow-lg",
 			div { class: "mb-8",
 				h1 { class: "text-gray-100 text-center text-3xl font-bold mb-2", "Maestro UI" }
 				p { class: "text-gray-300 text-center",
@@ -68,7 +70,7 @@ pub fn UIDemo() -> Element {
 				}
 			}
 
-			div { class: "flex space-x-2",
+			div { id: "maestro-ui-features", class: "flex space-x-2",
 				Features {
 					title: "UI".to_string(),
 					features: vec![
@@ -85,7 +87,9 @@ pub fn UIDemo() -> Element {
 			ComponentSection {
 				title: "Buttons",
 				description: "Various button styles, sizes, and types with different variants",
-				div { class: "grid grid-cols-1 md:grid-cols-3 gap-6 md:w-4/5 mx-auto w-full",
+				div {
+					id: "maestro-ui-buttons",
+					class: "grid grid-cols-1 md:grid-cols-3 gap-6 md:w-4/5 mx-auto w-full",
 					Button {
 						r#type: "button",
 						onclick: move |_| handle_button_click("Default Button clicked!".to_string()),
@@ -148,7 +152,9 @@ pub fn UIDemo() -> Element {
 			ComponentSection {
 				title: "Input Fields",
 				description: "Text inputs with different variants and states",
-				div { class: "space-y-4 text-left md:w-4/5 mx-auto w-full",
+				div {
+					id: "maestro-ui-inputs",
+					class: "space-y-4 text-left md:w-4/5 mx-auto w-full",
 					Label {
 						class: "text-gray-200 block mb-2",
 						text: "Default Input:".to_string(),
@@ -193,7 +199,9 @@ pub fn UIDemo() -> Element {
 				title: "Selection Components",
 				description: "Single and multiple selection components",
 
-				div { class: "space-y-6 text-left md:w-4/5 mx-auto w-full",
+				div {
+					id: "maestro-ui-select",
+					class: "space-y-6 text-left md:w-4/5 mx-auto w-full",
 					Select {
 						options: vec![
 								SelectOption {
@@ -307,7 +315,9 @@ pub fn UIDemo() -> Element {
 				title: "Toggle and Radio",
 				description: "Toggle switches and radio buttons",
 
-				div { class: "space-y-6 md:w-4/5 mx-auto w-full flex flex-col items-center",
+				div {
+					id: "maestro-ui-toggle-radio",
+					class: "space-y-6 md:w-4/5 mx-auto w-full flex flex-col items-center",
 					div { class: "space-y-4",
 						ToggleSwitch {
 							state: toggle_state,
@@ -361,7 +371,9 @@ pub fn UIDemo() -> Element {
 				title: "Textarea and Loading",
 				description: "Textarea component with multiple configurations and loading spinner",
 
-				div { class: "space-y-6 text-left md:w-4/5 mx-auto w-full",
+				div {
+					id: "maestro-ui-textarea-spinner",
+					class: "space-y-6 text-left md:w-4/5 mx-auto w-full",
 					// default Textarea
 					Label {
 						class: "text-gray-200",
