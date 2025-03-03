@@ -40,6 +40,7 @@ pub fn HooksDemo() -> Element {
 	);
 
 	let page_size = 10;
+
 	let (pagination, (mut next_idx, mut prev_idx, mut next_page, mut prev_page, mut set_page_size)) = use_pagination(use_memo(move || total_items()), page_size);
 
 	let mut clipboard_content = use_signal(String::new);
@@ -52,11 +53,11 @@ pub fn HooksDemo() -> Element {
 	rsx! {
 		div {
 			id: "maestro-hooks",
-			class: "hooks-demo bg-gray-900 p-4 rounded-lg shadow-lg space-y-6",
+			class: "hooks-demo bg-slate-900 p-4 rounded-lg shadow-lg space-y-6",
 
 			div { id: "maestro-hooks-header", class: "mb-8",
-				h1 { class: "text-gray-100 text-center text-3xl font-bold mb-2", "Maestro Hooks" }
-				p { class: "text-gray-300 text-center",
+				h1 { class: "text-slate-100 text-center text-3xl font-bold mb-2", "Maestro Hooks" }
+				p { class: "text-slate-300 text-center",
 					"Enhanced hooks collection for Dioxus applications that provides type safety, cross-platform compatibility, and optimized performance."
 				}
 			}
@@ -79,12 +80,12 @@ pub fn HooksDemo() -> Element {
 
 			div {
 				id: "maestro-hooks-nav",
-				class: "flex flex-wrap sm:flex-nowrap space-x-2 sm:space-x-0 border-b border-gray-700 pb-4",
+				class: "flex flex-wrap sm:flex-nowrap space-x-2 sm:space-x-0 border-b border-slate-700 pb-4",
 				span {
 					class: tw_join!(
 							"py-2 px-2 cursor-pointer rounded text-sm sm:text-xs", if * active_section.read()
-							== HookSection::Clipboard { "text-white border-b-4 border-gray-500" } else {
-							"text-gray-300" }
+							== HookSection::Clipboard { "text-white border-b-4 border-slate-500" } else {
+							"text-slate-300" }
 					),
 					onclick: move |_| active_section.set(HookSection::Clipboard),
 					"Clipboard"
@@ -92,8 +93,8 @@ pub fn HooksDemo() -> Element {
 				span {
 					class: tw_join!(
 							"py-2 px-2 cursor-pointer rounded text-sm sm:text-xs", if * active_section.read()
-							== HookSection::Memo { "text-white border-b-4 border-gray-500" } else {
-							"text-gray-300" }
+							== HookSection::Memo { "text-white border-b-4 border-slate-500" } else {
+							"text-slate-300" }
 					),
 					onclick: move |_| active_section.set(HookSection::Memo),
 					"Memo"
@@ -101,8 +102,8 @@ pub fn HooksDemo() -> Element {
 				span {
 					class: tw_join!(
 							"py-2 px-2 cursor-pointer rounded text-sm sm:text-xs", if * active_section.read()
-							== HookSection::Pagination { "text-white border-b-4 border-gray-500" } else {
-							"text-gray-300" }
+							== HookSection::Pagination { "text-white border-b-4 border-slate-500" } else {
+							"text-slate-300" }
 					),
 					onclick: move |_| active_section.set(HookSection::Pagination),
 					"Pagination"
@@ -113,14 +114,14 @@ pub fn HooksDemo() -> Element {
 					HookSection::Clipboard => rsx! {
 						section {
 							id: "maestro-hooks-clipboard",
-							class: "clipboard-demo bg-gray-900 p-6 rounded-lg shadow",
-							h2 { class: "text-lg text-gray-100 text-center font-bold mb-4", "Clipboard Hook" }
-							p { class: "text-gray-300 text-center mb-4",
+							class: "clipboard-demo bg-slate-900 p-6 rounded-lg shadow",
+							h2 { class: "text-lg text-slate-100 text-center font-bold mb-4", "Clipboard Hook" }
+							p { class: "text-slate-300 text-center mb-4",
 								"A unified clipboard interface that works seamlessly across desktop and web platforms with comprehensive error handling."
 							}
 							input {
 								class: tw_join!(
-										"md:w-4/5 mx-auto w-full flex justify-center bg-gray-900 border border-gray-500 text-gray-100 rounded px-3 py-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none placeholder-gray-500"
+										"md:w-4/5 mx-auto w-full flex justify-center bg-slate-900 border border-slate-500 text-slate-100 rounded px-3 py-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none placeholder-slate-500"
 								),
 								placeholder: "Type something to copy",
 								value: "{clipboard_content}",
@@ -146,7 +147,7 @@ pub fn HooksDemo() -> Element {
 											width: 16,
 											height: 16,
 											icon: FaCopy,
-											class: "text-gray-50",
+											class: "text-slate-50",
 										}
 									}
 								}
@@ -170,12 +171,12 @@ pub fn HooksDemo() -> Element {
 											width: 16,
 											height: 16,
 											icon: FaPaste,
-											class: "text-gray-50",
+											class: "text-slate-50",
 										}
 									}
 								}
 							}
-							p { class: "mt-2 text-sm text-gray-500 text-center", "{copy_status}" }
+							p { class: "mt-2 text-sm text-slate-500 text-center", "{copy_status}" }
 						}
 						div { id: "maestro-hooks-clipboard-features", class: "flex mt-4",
 							Features {
@@ -193,8 +194,8 @@ pub fn HooksDemo() -> Element {
 					HookSection::Memo => rsx! {
 						section {
 							id: "maestro-hooks-memo",
-							class: "memo-demo bg-gray-900 p-6 rounded-lg shadow",
-							h2 { class: "text-lg text-center text-gray-100 font-bold mb-4", "Explicit Memo Hook" }
+							class: "memo-demo bg-slate-900 p-6 rounded-lg shadow",
+							h2 { class: "text-lg text-center text-slate-100 font-bold mb-4", "Explicit Memo Hook" }
 							div { class: "flex space-x-4 justify-center mb-8",
 								button {
 									onclick: move |_| total_items.set(total_items() + 10),
@@ -207,12 +208,12 @@ pub fn HooksDemo() -> Element {
 									"-10"
 								}
 							}
-							div { class: "bg-gray-800 p-2 rounded-md text-center shadow-inner",
-								p { class: "font-medium text-gray-300",
+							div { class: "bg-slate-800 p-2 rounded-md text-center shadow-inner",
+								p { class: "font-medium text-slate-300",
 									"Total Items: "
 									span { class: "text-blue-500 font-bold", "{total_items}" }
 								}
-								p { class: "font-medium text-gray-300 mt-2",
+								p { class: "font-medium text-slate-300 mt-2",
 									match *async_result.value().read_unchecked() {
 											Some(_) => rsx! {
 												"Memoized Result: "
@@ -227,7 +228,7 @@ pub fn HooksDemo() -> Element {
 																					}
 																			} else {
 																					rsx! {
-																						span { class: "text-gray-200", "{c}" }
+																						span { class: "text-slate-200", "{c}" }
 																					}
 																			}
 																	})
@@ -257,49 +258,49 @@ pub fn HooksDemo() -> Element {
 					HookSection::Pagination => rsx! {
 						section {
 							id: "maestro-hooks-pagination",
-							class: "pagination-demo bg-gray-900 p-6 rounded-lg shadow",
-							h2 { class: "text-lg font-bold text-gray-100 text-center mb-4", "Pagination Hook" }
-							table { class: "w-auto mx-auto text-center border-collapse shadow border border-gray-700 rounded-md mb-6",
+							class: "pagination-demo bg-slate-900 p-6 rounded-lg shadow",
+							h2 { class: "text-lg font-bold text-slate-100 text-center mb-4", "Pagination Hook" }
+							table { class: "w-auto mx-auto text-center border-collapse shadow border border-slate-700 rounded-md mb-6",
 								tr {
-									td { class: "border rounded-md border-gray-500 px-4 py-2 text-gray-200",
+									td { class: "border rounded-md border-slate-500 px-4 py-2 text-slate-200",
 										"Current Page:"
 									}
-									td { class: "border rounded-md border-gray-500 px-4 py-2 text-blue-500 font-bold",
+									td { class: "border rounded-md border-slate-500 px-4 py-2 text-blue-500 font-bold",
 										"{*pagination.page.read() + 1}"
 									}
 								}
 								tr {
-									td { class: "border rounded-md border-gray-500 px-4 py-2 text-gray-200",
+									td { class: "border rounded-md border-slate-500 px-4 py-2 text-slate-200",
 										"Items per page:"
 									}
-									td { class: "border rounded-md border-gray-500 px-4 py-2 text-blue-500 font-bold",
+									td { class: "border rounded-md border-slate-500 px-4 py-2 text-blue-500 font-bold",
 										"{*pagination.page_size.read()}"
 									}
 								}
 								tr {
-									td { class: "border rounded-md border-gray-500 px-4 py-2 text-gray-200",
+									td { class: "border rounded-md border-slate-500 px-4 py-2 text-slate-200",
 										"Total Pages:"
 									}
-									td { class: "border rounded-md border-gray-500 px-4 py-2 text-blue-500 font-bold",
+									td { class: "border rounded-md border-slate-500 px-4 py-2 text-blue-500 font-bold",
 										"{((*total_items.read() as f64) / (*pagination.page_size.read() as f64)).ceil() as i32}"
 									}
 								}
 								tr {
-									td { class: "border rounded-md border-gray-500 px-4 py-2 text-gray-200",
+									td { class: "border rounded-md border-slate-500 px-4 py-2 text-slate-200",
 										"Current Index:"
 									}
-									td { class: "border rounded-md border-gray-500 px-4 py-2 text-blue-500 font-bold",
+									td { class: "border rounded-md border-slate-500 px-4 py-2 text-blue-500 font-bold",
 										"{*pagination.idx.read()}"
 									}
 								}
 								tr {
-									td { class: "border rounded-md border-gray-500 px-4 py-2 text-gray-200",
+									td { class: "border rounded-md border-slate-500 px-4 py-2 text-slate-200",
 										"Pagination Status: "
 									}
 									td {
 										class: tw_join!(
-												"border rounded-md border-gray-500 px-4 py-2", if * pagination.touched.read() {
-												"text-green-500" } else { "text-gray-200" }
+												"border rounded-md border-slate-500 px-4 py-2", if * pagination.touched.read() {
+												"text-green-500" } else { "text-slate-200" }
 										),
 										span { class: "font-medium",
 											if *pagination.touched.read() {
@@ -311,10 +312,10 @@ pub fn HooksDemo() -> Element {
 									}
 								}
 							}
-							div { class: "flex justify-center text-gray-200 items-center gap-4 mb-4",
+							div { class: "flex justify-center text-slate-200 items-center gap-4 mb-4",
 								"Items per page: "
 								select {
-									class: "border bg-gray-900 border-gray-500 rounded p-1",
+									class: "border bg-slate-900 border-slate-500 rounded p-1",
 									value: "{*pagination.page_size.read()}",
 									onchange: move |e| {
 											if let Ok(size) = e.value().parse::<i32>() {
@@ -338,7 +339,7 @@ pub fn HooksDemo() -> Element {
 												.map(|item| {
 														rsx! {
 															div {
-																class: "border border-gray-800 rounded-md p-2 text-gray-50 bg-gray-500 shadow-sm text-center",
+																class: "border border-slate-800 rounded-md p-2 text-slate-50 bg-slate-500 shadow-sm text-center",
 																key: "{item}",
 																"Item {item}"
 															}
@@ -346,30 +347,30 @@ pub fn HooksDemo() -> Element {
 												})
 								}
 							}
-							hr { class: "border border-gray-700 mt-4 w-full" }
+							hr { class: "border border-slate-700 mt-4 w-full" }
 							div { class: "flex space-x-4 mt-6 justify-center",
 								button {
 									disabled: "{*pagination.prev_idx_disabled.read()}",
 									onclick: move |_| prev_idx(),
-									class: "rounded bg-gray-500 text-white py-2 px-4 hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed",
+									class: "rounded bg-slate-500 text-white py-2 px-4 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed",
 									Icon { class: "h-6 w-6", icon: LdChevronLeft }
 								}
 								button {
 									disabled: "{*pagination.prev_page_disabled.read()}",
 									onclick: move |_| prev_page(),
-									class: "rounded bg-gray-500 text-white py-2 px-4 hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed",
+									class: "rounded bg-slate-500 text-white py-2 px-4 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed",
 									Icon { class: "h-6 w-6", icon: LdChevronsLeft }
 								}
 								button {
 									disabled: "{*pagination.next_page_disabled.read()}",
 									onclick: move |_| next_page(),
-									class: "rounded bg-gray-500 text-white py-2 px-4 hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed",
+									class: "rounded bg-slate-500 text-white py-2 px-4 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed",
 									Icon { class: "h-6 w-6", icon: LdChevronsRight }
 								}
 								button {
 									disabled: "{*pagination.next_idx_disabled.read()}",
 									onclick: move |_| next_idx(),
-									class: "rounded bg-gray-500 text-white py-2 px-4 hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed",
+									class: "rounded bg-slate-500 text-white py-2 px-4 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed",
 									Icon { class: "h-6 w-6", icon: LdChevronRight }
 								}
 							}
