@@ -14,13 +14,10 @@ use {
 pub fn FormContent(props: InnerComponentProps<User>) -> Element {
 	let roles = Role::VARIANTS.iter().map(|&s| s.to_string()).collect::<Vec<_>>();
 
-	let input_class = tw_join!(
-		"w-full flex justify-center p-2 rounded-md border border-gray-500 bg-gray-900 text-gray-50",
-		"focus:ring-2 focus:ring-blue-500 focus:outline-none placeholder-gray-500"
-	);
+	let input_class = "border border-slate-300 px-3 w-full py-2 flex items-center min-h-11 rounded-md bg-slate-900 text-slate-200 ring-indigo-500 ring-offset-transparent focus:outline-none placeholder-slate-500";
 
 	rsx! {
-		div { class: "space-y-6 md:w-4/5 mx-auto w-full",
+		div { class: "flex flex-col rounded-lg gap-6 bg-slate-950/20 lg:px-16 sm:px-6 px-2 py-8",
 			FormFieldWrapper {
 				label: "Username",
 				field: props.form.get_form_field("username".to_string()),
@@ -85,10 +82,9 @@ pub fn FormContent(props: InnerComponentProps<User>) -> Element {
 					size: ButtonSize::Default,
 					variant: ButtonVariant::Default,
 					class: tw_join!(
-							"py-2 rounded-md text-gray-100 font-semibold transition-all duration-200 bg-blue-500 hover:bg-blue-500",
-							if * props.form.is_submitting.read() {
-							"bg-gray-500 cursor-not-allowed opacity-70" } else {
-							"bg-blue-600 hover:bg-blue-500 hover:shadow-lg transform hover:scale-105" }
+							"py-2 rounded-md text-slate-100 font-semibold transition-all duration-200 bg-indigo-600 hover:bg-indigo-700 ring-indigo-700 ring-offset-transparent",
+							(* props.form.is_submitting.read())
+							.then_some("bg-slate-500 cursor-not-allowed opacity-70")
 					),
 					if *props.form.is_submitting.read() {
 						div { class: "flex items-center gap-2 justify-center",
@@ -100,7 +96,7 @@ pub fn FormContent(props: InnerComponentProps<User>) -> Element {
 					}
 				}
 			}
-			FormStateDebugger { form: props.form }
 		}
+		FormStateDebugger { form: props.form }
 	}
 }

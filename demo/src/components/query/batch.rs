@@ -90,12 +90,12 @@ async fn simulate_db_delay() {
 #[component]
 fn DataCard<T: DisplayData + 'static>(data: T) -> Element {
 	rsx! {
-    div { class: "bg-gray-700 p-4 rounded-lg shadow",
+    div { class: "bg-slate-700 p-4 rounded-lg shadow",
       div { class: "flex justify-between items-start p-2",
-        h4 { class: "font-semibold text-lg text-gray-100", "{data.get_title()}" }
+        h4 { class: "font-semibold text-lg text-slate-100", "{data.get_title()}" }
       }
-      p { class: "text-gray-200 text-sm mb-2 line-clamp-2", "{data.get_content()}" }
-      div { class: "flex justify-between text-sm text-gray-500",
+      p { class: "text-slate-200 text-sm mb-2 line-clamp-2", "{data.get_content()}" }
+      div { class: "flex justify-between text-sm text-slate-500",
         for (_ , value) in data.get_metadata() {
           span { "{value}" }
         }
@@ -108,7 +108,7 @@ fn render_query_state(query_result: &QueryResult<HashMap<String, String>, Error>
 	match query_result {
 		QueryResult::Ok(data) => {
 			rsx! {
-        div { class: "space-y-4 bg-gray-800",
+        div { class: "space-y-4 bg-slate-800",
           for (key , value) in data.iter() {
             div {
               match key.as_str() {
@@ -116,7 +116,7 @@ fn render_query_state(query_result: &QueryResult<HashMap<String, String>, Error>
                       let items: Vec<User> = serde_json::from_str(value).unwrap_or_default();
                       rsx! {
                         div { class: "space-y-1",
-                          h3 { class: "text-lg text-center font-semibold mb-2 text-gray-200", "Users ({items.len()})" }
+                          h3 { class: "text-lg text-center font-semibold mb-2 text-slate-200", "Users ({items.len()})" }
                           div { class: "grid grid-cols-1 gap-2",
                             for item in items {
                               DataCard { data: item }
@@ -129,7 +129,7 @@ fn render_query_state(query_result: &QueryResult<HashMap<String, String>, Error>
                       let items: Vec<Post> = serde_json::from_str(value).unwrap_or_default();
                       rsx! {
                         div { class: "space-y-4",
-                          h3 { class: "text-lg text-center font-semibold mb-2 text-gray-200", "Posts ({items.len()})" }
+                          h3 { class: "text-lg text-center font-semibold mb-2 text-slate-200", "Posts ({items.len()})" }
                           div { class: "grid grid-cols-1 gap-2",
                             for item in items {
                               DataCard { data: item }
@@ -142,7 +142,7 @@ fn render_query_state(query_result: &QueryResult<HashMap<String, String>, Error>
                       let items: Vec<Comment> = serde_json::from_str(value).unwrap_or_default();
                       rsx! {
                         div { class: "space-y-4",
-                          h3 { class: "text-lg text-center font-semibold mb-2 text-gray-200", "Comments ({items.len()})" }
+                          h3 { class: "text-lg text-center font-semibold mb-2 text-slate-200", "Comments ({items.len()})" }
                           div { class: "grid grid-cols-1 gap-2",
                             for item in items {
                               DataCard { data: item }
@@ -152,7 +152,7 @@ fn render_query_state(query_result: &QueryResult<HashMap<String, String>, Error>
                       }
                   }
                   _ => rsx! {
-                    div { class: "bg-gray-700 p-4 rounded-lg shadow",
+                    div { class: "bg-slate-700 p-4 rounded-lg shadow",
                       pre { class: "text-sm overflow-x-auto", "{value}" }
                     }
                   },
@@ -172,7 +172,7 @@ fn render_query_state(query_result: &QueryResult<HashMap<String, String>, Error>
 		QueryResult::Loading(_) => {
 			rsx! {
         div { class: "flex justify-center items-center p-8",
-          div { class: "animate-spin rounded-full h-8 w-8 border-b-2 border-gray-200" }
+          div { class: "animate-spin rounded-full h-8 w-8 border-b-2 border-slate-200" }
         }
       }
 		},
@@ -303,14 +303,14 @@ pub fn BatchOperationsDemo() -> Element {
 	};
 
 	rsx! {
-    div { class: "p-6 bg-gray-900 rounded-lg shadow-lg",
-      h3 { class: "text-2xl text-gray-100 text-center font-bold mb-4", "Batch Operations" }
+    div { class: "p-6 bg-slate-900 rounded-lg shadow-lg",
+      h3 { class: "text-2xl text-slate-100 text-center font-bold mb-4", "Batch Operations" }
 
-      div { class: "mb-4 p-2 bg-gray-800 rounded text-center text-gray-300",
+      div { class: "mb-4 p-2 bg-slate-800 rounded text-center text-slate-300",
         "Status: "
         span {
           class: match operation_status() {
-              "Idle" => "text-gray-500",
+              "Idle" => "text-slate-500",
               s if s.contains("Completed") => "text-green-500",
               s if s.contains("failed") => "text-red-500",
               _ => "text-blue-500",
@@ -320,13 +320,13 @@ pub fn BatchOperationsDemo() -> Element {
       }
 
       div { class: "grid grid-cols-1 md:grid-cols-2 gap-4 mb-4",
-        div { class: "p-4 border border-gray-700 rounded shadow-md",
+        div { class: "p-4 border border-slate-700 rounded shadow-md",
           {render_query_state(users_query.result().value())}
         }
-        div { class: "p-4 border border-gray-700 rounded shadow-md",
+        div { class: "p-4 border border-slate-700 rounded shadow-md",
           {render_query_state(posts_query.result().value())}
         }
-        div { class: "p-4 border border-gray-700 rounded shadow-md",
+        div { class: "p-4 border border-slate-700 rounded shadow-md",
           {render_query_state(comments_query.result().value())}
         }
       }

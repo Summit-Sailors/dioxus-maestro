@@ -56,19 +56,19 @@ pub fn FormsDemo() -> Element {
 	};
 
 	rsx! {
-		div {
-			id: "maestro-form",
-			class: "p-4 text-gray-100 bg-gray-900 rounded-lg shadow-lg",
-			div { class: "mb-8",
-				h1 { class: "text-gray-100 text-center text-3xl font-bold mb-2", "Maestro Form" }
-				p { class: "text-gray-300 text-center",
+		div { id: "maestro-form", class: "flex flex-col lg:gap-16 sm:gap-8 gap-6",
+			div { class: "flex flex-col gap-3",
+				h1 { class: "text-slate-100 text-center text-2xl sm:text-3xl lg:text-4xl 2xl:text-5xl font-semibold",
+					"Maestro Form"
+				}
+				p { class: "text-slate-300 text-center text-base lg:text-xl 2xl:text-2xl",
 					"A powerful, type-safe form management solution for Dioxus applications that brings the best of Formik's paradigms to Rust."
 				}
 			}
 
 			div { id: "maestro-form-features", class: "flex space-x-2",
 				Features {
-					title: "Form".to_string(),
+					title: "Features".to_string(),
 					features: vec![
 							"Type-safe Form Handling: fully type-safe form state management with Rust's powerful type system"
 									.to_string(),

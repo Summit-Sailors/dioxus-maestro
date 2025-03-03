@@ -2,7 +2,7 @@ use {dioxus::prelude::*, tailwind_fuse::*};
 
 #[derive(TwClass)]
 #[tw(
-	class = "inline-flex px-3 py-4 items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors ring-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
+	class = "inline-flex px-4 py-3 items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors ring-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
 )]
 pub struct ButtonClass {
 	pub variant: ButtonVariant,
@@ -25,13 +25,13 @@ pub enum ButtonVariant {
 
 #[derive(PartialEq, TwVariant)]
 pub enum ButtonSize {
-	#[tw(default, class = "h-10 px-4 py-2")]
+	#[tw(default, class = "h-10")]
 	Default,
-	#[tw(class = "px-9 rounded-md h-9")]
+	#[tw(class = "rounded-md h-9")]
 	Sm,
-	#[tw(class = "px-4 rounded-md h-11")]
+	#[tw(class = "rounded-md h-11")]
 	Lg,
-	#[tw(class = "px-4 rounded-md h-12")]
+	#[tw(class = "rounded-md h-12")]
 	Xl,
 	#[tw(class = "w-12 h-12 !p-0")]
 	IconXl,

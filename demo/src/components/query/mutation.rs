@@ -33,9 +33,9 @@ pub fn SilentMutationDemo() -> Element {
 	};
 
 	rsx! {
-		div { class: "grid justify-center grid-cols-1 text-center p-4 border border-gray-700 bg-gray-900 rounded-lg shadow-lg mt-4",
-			h3 { class: "text-xl text-gray-100 font-bold mb-4", "Silent vs. Normal Mutations" }
-			p { class: "mb-4 text-gray-200 font-bold",
+		div { class: "grid justify-center grid-cols-1 text-center p-4 border border-slate-700 bg-slate-900 rounded-lg shadow-lg mt-4",
+			h3 { class: "text-xl text-slate-100 font-bold mb-4", "Silent vs. Normal Mutations" }
+			p { class: "mb-4 text-slate-200 font-bold",
 				"Counter:"
 				span { class: "text-yellow-500 font-bold", "{counter}" }
 			}
@@ -52,7 +52,7 @@ pub fn SilentMutationDemo() -> Element {
 				}
 			}
 
-			div { class: "mt-4 text-gray-200 font-semibold",
+			div { class: "mt-4 text-slate-200 font-semibold",
 				"Mutation Status: "
 				match *silent_mutation.result() {
 						MutationResult::Loading(_) => rsx! {
@@ -65,7 +65,7 @@ pub fn SilentMutationDemo() -> Element {
 							span { class: "text-red-500", "Error" }
 						},
 						MutationResult::Pending => rsx! {
-							span { class: "text-gray-500", "Pending" }
+							span { class: "text-slate-500", "Pending" }
 						},
 				}
 			}
@@ -94,16 +94,16 @@ pub fn ManualMutationDemo() -> Element {
 	};
 
 	let status_class = move || match status() {
-		"Idle" => "text-gray-500",
+		"Idle" => "text-slate-500",
 		"Starting..." => "text-blue-500",
 		"Processing..." => "text-yellow-500",
 		"Completed!" => "text-green-500",
-		_ => "text-gray-500",
+		_ => "text-slate-500",
 	};
 
 	rsx! {
-		div { class: "flex flex-col items-center bg-gray-900 p-4 border border-gray-700 shadow-lg rounded mt-4",
-			h3 { class: "text-xl font-bold text-gray-200 text-center mb-4", "Manual Mutation Control" }
+		div { class: "flex flex-col items-center bg-slate-900 p-4 border border-slate-700 shadow-lg rounded mt-4",
+			h3 { class: "text-xl font-bold text-slate-200 text-center mb-4", "Manual Mutation Control" }
 
 			p { class: tw_join!("mb-4 text-center font-semibold", status_class()),
 				"Status: {status}"
