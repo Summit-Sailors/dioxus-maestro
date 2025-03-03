@@ -1,12 +1,9 @@
 use {
-  crate::models::user::User, 
-  dioxus::prelude::*, 
-  maestro_sqlx::{ acreate::acreate_sqlx_pool, create::create_sqlx_pool }, 
-  sqlx::{PgPool, Postgres}, 
-  std::env
+  crate::models::user::User, dioxus::prelude::*, maestro_sqlx::{ acreate::acreate_sqlx_pool, create::create_sqlx_pool }, sqlx::{PgPool, Postgres}, std::env
 };
 
-pub fn create_user(user: User, pool: PgPool) -> Result<(), anyhow::Error>{
+#[server]
+pub async fn create_user(user: User, pool: PgPool) -> Result<(), ServerFnError>{
   sqlx::query::<Postgres>(
     "INSERT INTO users (username, email, age, bio, role) VALUES ($1, $2, $3, $4, $5)
     ")
@@ -14,12 +11,13 @@ pub fn create_user(user: User, pool: PgPool) -> Result<(), anyhow::Error>{
     .bind(user.email)
     .bind(user.age)
     .bind(user.bio)
-    .bind(user.role.to_string())
+    .bind(user.role)
     .execute(&pool);
 		Ok(())
 }
 
-async fn fetch_users_async() -> Result<Vec<User>, anyhow::Error> {
+#[server]
+async fn fetch_users_async() -> Result<Vec<User>, ServerFnError> {
   // creating a pool asynchronously
   let pool = acreate_sqlx_pool(env::var("DATABASE_URL")?.as_str()).await;
   let rows: Vec<User> = sqlx::query_as(
@@ -48,20 +46,21 @@ async fn fetch_users_async() -> Result<Vec<User>, anyhow::Error> {
 
 #[server]
 pub async fn fetch_users_sync() -> Result<Vec<User>, ServerFnError> {
+  use tokio::runtime::Runtime;
+
   let pool = create_sqlx_pool(env::var("DATABASE_URL")?.as_str());
   
   let rows = {
-    async fn execute_query(pool: &sqlx::PgPool) -> Result<Vec<dyn sqlx::Row>, sqlx::Error> {
+    async fn execute_query(pool: ) -> Result<Vec<dyn sqlx::Row>, sqlx::Error> {
       sqlx::query(
         r#"
-          SELECT username, email, bio, age, role::text as "role"
+          SELECT username, email, bio, age, role
           FROM users
           ORDER by age
           LIMIT 10 
         "#,
       )
-      .fetch_all(pool)
-      .await
+      .fetch_all(pool);
     }
 
     match Handle::try_current() {
@@ -73,7 +72,7 @@ pub async fn fetch_users_sync() -> Result<Vec<User>, ServerFnError> {
     }
   };
 
-  let users = rows.into_iter().map(|row: User| &User {username:row.username,email:row.email,bio:row.bio,age:row.age,role:row.role, id: todo!() }).collect();
+  let users = rows.(&mut pool).map(|row: User| &User {username:row.username,email:row.email,bio:row.bio,age:row.age,role:row.role, id: todo!() }).collect();
 
   Ok(users)
 }
@@ -159,16 +158,14 @@ fn SqlxDemo() -> Element {
     }
 }
 
-// Asynchronous user fetching with async pool creation
+// asynchronous user fetching with async pool creation
 #[server]
 async fn fetch_users_async() -> Result<Vec<User>, ServerFnError> {
-    // Create pool asynchronously using the acreate_sqlx_pool function
     let pool = acreate_sqlx_pool("postgres://username:password@localhost/database").await;
     
-    // Execute the query
     let rows = sqlx::query!(
         r#"
-        SELECT id, username, email, bio, age, role::text as "role"
+        SELECT id, username, email, bio, age, role
         FROM users
         ORDER BY id
         LIMIT 10
@@ -192,19 +189,18 @@ async fn fetch_users_async() -> Result<Vec<User>, ServerFnError> {
     Ok(users)
 }
 
-// Synchronous user fetching with sync pool creation
+// synchronous user fetching with sync pool creation
 fn fetch_users_sync() -> Result<Vec<User>, anyhow::Error> {
-    // Create pool synchronously - automatically handles runtime management
+    // creating a pool synchronously - automatically handles runtime management
     let pool = create_sqlx_pool("postgres://username:password@localhost/database");
     
-    // Create a tokio runtime for executing the query
     let mut rt = tokio::runtime::Runtime::new()?;
     
-    // Execute the query within the runtime
+    // query execution within the runtime
     let users = rt.block_on(async {
         let rows = sqlx::query!(
             r#"
-            SELECT id, username, email, bio, age, role::text as "role"
+            SELECT id, username, email, bio, age, role
             FROM users
             ORDER BY id
             LIMIT 10
@@ -213,10 +209,10 @@ fn fetch_users_sync() -> Result<Vec<User>, anyhow::Error> {
         .fetch_all(&pool)
         .await?;
         
-        // Convert rows to User structs
+        // rows to User structs
         let users = rows.into_iter()
-            .map(|row| User {
-                id: row.id,
+            .map(|row| &User {
+                id: row.,
                 username: row.username,
                 email: row.email,
                 bio: row.bio,
@@ -231,31 +227,29 @@ fn fetch_users_sync() -> Result<Vec<User>, anyhow::Error> {
     Ok(users)
 }
 
-// Demonstrates real-time user monitoring with SQL LISTEN/NOTIFY
+// demonstrates real-time user monitoring with SQL LISTEN/NOTIFY
 #[server]
 async fn listen_for_user_changes() -> Result<Vec<User>, ServerFnError> {
-    // Create pool asynchronously
     let pool = acreate_sqlx_pool("postgres://username:password@localhost/database").await;
     
-    // Create a listener
     let mut listener = sqlx::postgres::PgListener::connect_with(&pool).await?;
     
-    // Listen for the 'user_changed' notification
+    // listen for the 'user_changed' notification
     listener.listen("user_changed").await?;
     
-    // Process notifications - in a real app you'd handle this as a stream
+    // process notifications - in a real app you'd handle this as a stream
     let mut users = Vec::new();
     
-    // Get first 5 notifications (or timeout after 10 seconds)
+    // get first 5 notifications (or timeout after 10 seconds)
     let mut stream = listener.into_stream();
     let timeout = std::time::Duration::from_secs(10);
     
     for _ in 0..5 {
         if let Some(notification) = tokio::time::timeout(timeout, stream.next()).await.ok().flatten() {
-            // Parse user ID from notification payload
+            // parse user ID from notification payload
             let user_id: i64 = notification.payload().parse()?;
             
-            // Fetch updated user data
+            // fetch updated user data
             let user = fetch_user_by_id(pool.clone(), user_id).await?;
             users.push(user);
         } else {
@@ -266,14 +260,15 @@ async fn listen_for_user_changes() -> Result<Vec<User>, ServerFnError> {
     Ok(users)
 }
 
-async fn fetch_user_by_id(pool: SqlxPgPool, id: i64) -> Result<User, sqlx::Error> {
+
+#[server]
+async fn fetch_user_by_id(pool: SqlxPgPool, id: i64) -> Result<User, ServerFnError> {
     let row = sqlx::query!(
         r#"
-        SELECT id, username, email, bio, age, role::text as "role"
+        SELECT id, username, email, bio, age, role
         FROM users
         WHERE id = $1
-        "#,
-        id
+        "#
     )
     .fetch_one(&pool)
     .await?;

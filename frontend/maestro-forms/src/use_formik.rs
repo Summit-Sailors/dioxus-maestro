@@ -66,7 +66,7 @@ where
 		
     self.is_submitting.set(true);
 
-    let mut form = self.clone();
+    let mut form = *self;
     let complete_submission = move || {
       form.is_submitting.toggle();
       if result.1 && form.should_auto_reset {
@@ -74,7 +74,8 @@ where
       }
     };
 
-    handler.call((event, result.clone(), Box::new(complete_submission))).spawn();
+    handler.call((event, result.clone(), Box::new(complete_submission)));
+    ().spawn();
   }
 
 

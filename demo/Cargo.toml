@@ -9,8 +9,8 @@ version = "0.1.0"
 
 # clients
 maestro-diesel = { path = "../clients/maestro-diesel", features = ["async", "server", "sync"], optional = true }
-maestro-sqlx = { path = "../clients/maestro-sqlx", features = ["acreate", "create"], optional = true }
 maestro-serpapi = { path = "../clients/maestro-serpapi", features = ["dioxus", "server"], optional = true }
+maestro-sqlx = { path = "../clients/maestro-sqlx", features = ["acreate", "create"], optional = true }
 
 # components
 maestro-forms = { path = "../frontend/maestro-forms" }
@@ -18,34 +18,35 @@ maestro-hooks = { path = "../frontend/maestro-hooks" }
 maestro-plotters = { path = "../frontend/maestro-plotters" }
 maestro-query = { path = "../frontend/maestro-query" }
 maestro-radio = { path = "../frontend/maestro-radio" }
-maestro-toast = { path = "../frontend/maestro-toast", features = ["web"]}
+maestro-toast = { path = "../frontend/maestro-toast", features = ["web"] }
 maestro-ui = { path = "../frontend/maestro-ui" }
 
 # thrird party deps
-dioxus = { version = "0.6.1", features = ["fullstack", "router"] }
+anyhow = "1.0.96"
 apalis = { version = "0.5.5", features = ["cron", "postgres"], optional = true }
 apalis-core = { version = "0.5.5", optional = true }
-log = "0.4"
-serde = { version = "1.0.217", features = ["derive"] }
-strum = "0.26.3"
-strum_macros = "0.26.4"
-validator = { version = "0.19", features = ["derive"] }
-serde_json = "1.0.134"
-dioxus-logger = "0.6.2"
 async-std = "1.13.0"
 chrono = { workspace = true }
+dioxus = { version = "0.6.3", features = ["fullstack", "router"] }
+dioxus-logger = "0.6.2"
 instant = { version = "0.1.13", features = ["wasm-bindgen"] }
 js-sys = "0.3.77"
-tailwind_fuse = { version = "0.3.1", features = ["variant"] }
-syntect = { version = "5.2.0", default-features = false, features = ["default-fancy"]}
-anyhow = "1.0.95"
+log = "0.4.26"
+serde = { version = "1.0.218", features = ["derive"] }
+serde_json = "1.0.139"
+strum = "0.27.1"
+strum_macros = "0.27.1"
+syntect = { version = "5.2.0", default-features = false, features = ["default-fancy"] }
+tailwind_fuse = { version = "0.3.2", features = ["variant"] }
+validator = { version = "0.20.0", features = ["derive"] }
 
-sqlx = { version = "0.8", features = [ "runtime-async-std", "tls-native-tls" ] }
 diesel = { version = "2.2.7", features = ["postgres"] }
 diesel-async = { version = "0.5.2", features = ["postgres"] }
+sqlx = { version = "0.8.3", features = ["runtime-async-std", "tls-native-tls"] }
 tokio = { version = "1.43.0", features = ["full"], optional = true }
 tokio-retry = "0.3.0"
 
+dioxus-free-icons.workspace = true
 plotters = { version = "0.3.7", default-features = false, features = [
   "all_elements",
   "all_series",
@@ -59,8 +60,7 @@ plotters = { version = "0.3.7", default-features = false, features = [
   "image",
   "svg_backend",
 ] }
-web-sys = "0.3.76"
-dioxus-free-icons.workspace = true
+web-sys = "0.3.77"
 
 [build-dependencies]
 dotenvy = { git = "https://github.com/allan2/dotenvy.git", features = ["macros"] }
@@ -68,5 +68,5 @@ dotenvy = { git = "https://github.com/allan2/dotenvy.git", features = ["macros"]
 [features]
 desktop = ["apalis", "dioxus/desktop"]
 mobile = ["apalis", "dioxus/mobile"]
-server = ["dep:apalis-core", "dep:maestro-diesel", "dep:maestro-sqlx", "dep:maestro-serpapi", "dep:tokio", "dioxus/server",]
+server = ["dep:apalis-core", "dep:maestro-diesel", "dep:maestro-serpapi", "dep:maestro-sqlx", "dep:tokio", "dioxus/server"]
 web = ["dioxus/web", "server"]

@@ -1,0 +1,11 @@
+set shell := ["bash", "-uc"]
+
+default:
+  @just --choose --justfile {{justfile()}}
+
+diesel-migrations:
+
+sqlx-migrations:
+
+
+  
