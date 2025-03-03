@@ -90,115 +90,91 @@ async fn simulate_db_delay() {
 #[component]
 fn DataCard<T: DisplayData + 'static>(data: T) -> Element {
 	rsx! {
-		div {
-			class: "bg-white p-4 rounded-lg shadow",
-			div {
-				class: "flex justify-between items-start mb-2",
-				h4 {
-					class: "font-semibold text-lg text-gray-800",
-					"{data.get_title()}"
-				}
-			}
-			p {
-				class: "text-gray-600 text-sm mb-2 line-clamp-2",
-				"{data.get_content()}"
-			}
-			div {
-				class: "flex justify-between text-sm text-gray-500",
-				for (_, value) in data.get_metadata() {
-					span { "{value}" }
-				}
-			}
-		}
-	}
+    div { class: "bg-gray-700 p-4 rounded-lg shadow",
+      div { class: "flex justify-between items-start p-2",
+        h4 { class: "font-semibold text-lg text-gray-100", "{data.get_title()}" }
+      }
+      p { class: "text-gray-200 text-sm mb-2 line-clamp-2", "{data.get_content()}" }
+      div { class: "flex justify-between text-sm text-gray-500",
+        for (_ , value) in data.get_metadata() {
+          span { "{value}" }
+        }
+      }
+    }
+  }
 }
 
 fn render_query_state(query_result: &QueryResult<HashMap<String, String>, Error>) -> Element {
 	match query_result {
 		QueryResult::Ok(data) => {
 			rsx! {
-				div {
-					class: "space-y-4",
-					for (key, value) in data.iter() {
-						div {
-							match key.as_str() {
-								"users" => {
-									let items: Vec<User> = serde_json::from_str(value).unwrap_or_default();
-									rsx! {
-										div {
-											class: "space-y-1",
-											h3 { class: "text-lg text-center font-semibold mb-2 text-gray-800", "Users ({items.len()})" }
-											div {
-												class: "grid grid-cols-1 gap-2",
-												for item in items {
-													DataCard { data: item }
-												}
-											}
-										}
-									}
-								}
-								"posts" => {
-									let items: Vec<Post> = serde_json::from_str(value).unwrap_or_default();
-									rsx! {
-										div {
-											class: "space-y-4",
-											h3 { class: "text-lg text-center font-semibold mb-2 text-gray-800", "Posts ({items.len()})" }
-											div {
-												class: "grid grid-cols-1 md:grid-cols-2 gap-2",
-												for item in items {
-													DataCard { data: item }
-												}
-											}
-										}
-									}
-								}
-								"comments" => {
-									let items: Vec<Comment> = serde_json::from_str(value).unwrap_or_default();
-									rsx! {
-										div {
-											class: "space-y-4",
-											h3 { class: "text-lg text-center font-semibold mb-2 text-gray-800", "Comments ({items.len()})" }
-											div {
-												class: "grid grid-cols-1 md:grid-cols-2 gap-2",
-												for item in items {
-													DataCard { data: item }
-												}
-											}
-										}
-									}
-								}
-								_ => rsx! {
-									div {
-										class: "bg-white p-4 rounded-lg shadow",
-										pre {
-											class: "text-sm overflow-x-auto",
-											"{value}"
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
+        div { class: "space-y-4 bg-gray-800",
+          for (key , value) in data.iter() {
+            div {
+              match key.as_str() {
+                  "users" => {
+                      let items: Vec<User> = serde_json::from_str(value).unwrap_or_default();
+                      rsx! {
+                        div { class: "space-y-1",
+                          h3 { class: "text-lg text-center font-semibold mb-2 text-gray-200", "Users ({items.len()})" }
+                          div { class: "grid grid-cols-1 gap-2",
+                            for item in items {
+                              DataCard { data: item }
+                            }
+                          }
+                        }
+                      }
+                  }
+                  "posts" => {
+                      let items: Vec<Post> = serde_json::from_str(value).unwrap_or_default();
+                      rsx! {
+                        div { class: "space-y-4",
+                          h3 { class: "text-lg text-center font-semibold mb-2 text-gray-200", "Posts ({items.len()})" }
+                          div { class: "grid grid-cols-1 gap-2",
+                            for item in items {
+                              DataCard { data: item }
+                            }
+                          }
+                        }
+                      }
+                  }
+                  "comments" => {
+                      let items: Vec<Comment> = serde_json::from_str(value).unwrap_or_default();
+                      rsx! {
+                        div { class: "space-y-4",
+                          h3 { class: "text-lg text-center font-semibold mb-2 text-gray-200", "Comments ({items.len()})" }
+                          div { class: "grid grid-cols-1 gap-2",
+                            for item in items {
+                              DataCard { data: item }
+                            }
+                          }
+                        }
+                      }
+                  }
+                  _ => rsx! {
+                    div { class: "bg-gray-700 p-4 rounded-lg shadow",
+                      pre { class: "text-sm overflow-x-auto", "{value}" }
+                    }
+                  },
+              }
+            }
+          }
+        }
+      }
 		},
 		QueryResult::Err(err) => {
 			rsx! {
-				div {
-					class: "bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative",
-					"Error: {err}"
-				}
-			}
+        div { class: "bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative",
+          "Error: {err}"
+        }
+      }
 		},
 		QueryResult::Loading(_) => {
 			rsx! {
-				div {
-					class: "flex justify-center items-center p-8",
-					div {
-						class: "animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"
-					}
-				}
-			}
+        div { class: "flex justify-center items-center p-8",
+          div { class: "animate-spin rounded-full h-8 w-8 border-b-2 border-gray-200" }
+        }
+      }
 		},
 	}
 }
@@ -277,8 +253,8 @@ pub fn BatchOperationsDemo() -> Element {
 	});
 
 	let handle_batch_invalidate = move |_| {
-		let mut status = operation_status.clone();
-		let client = query_client.clone();
+		let mut status = operation_status;
+		let client = query_client;
 
 		spawn(async move {
 			status.set("Invalidating queries...");
@@ -291,8 +267,8 @@ pub fn BatchOperationsDemo() -> Element {
 	};
 
 	let handle_batch_mutation = move |_| {
-		let mut status = operation_status.clone();
-		let mutation = batch_mutation.clone();
+		let mut status = operation_status;
+		let mutation = batch_mutation;
 
 		spawn(async move {
 			status.set("Starting batch operation...");
@@ -327,53 +303,46 @@ pub fn BatchOperationsDemo() -> Element {
 	};
 
 	rsx! {
-		div {
-			class: "p-6 bg-white rounded-lg shadow-lg",
-			h3 { class: "text-2xl text-gray-800 text-center font-bold mb-4", "Batch Operations Demo" }
+    div { class: "p-6 bg-gray-900 rounded-lg shadow-lg",
+      h3 { class: "text-2xl text-gray-100 text-center font-bold mb-4", "Batch Operations" }
 
-			div {
-				class: "mb-4 p-2 bg-gray-100 rounded text-center text-gray-700",
-				"Status: ",
-				span {
-					class: match operation_status() {
-						"Idle" => "text-gray-500",
-						s if s.contains("Completed") => "text-green-500",
-						s if s.contains("failed") => "text-red-500",
-						_ => "text-blue-500"
-					},
-					"{operation_status}"
-				}
-			}
+      div { class: "mb-4 p-2 bg-gray-800 rounded text-center text-gray-300",
+        "Status: "
+        span {
+          class: match operation_status() {
+              "Idle" => "text-gray-500",
+              s if s.contains("Completed") => "text-green-500",
+              s if s.contains("failed") => "text-red-500",
+              _ => "text-blue-500",
+          },
+          "{operation_status}"
+        }
+      }
 
-			div {
-				class: "grid grid-cols-1 md:grid-cols-2 gap-4 mb-4",
-				div {
-					class: "p-4 border rounded shadow-md",
-					{render_query_state(users_query.result().value())}
-				}
-				div {
-					class: "p-4 border rounded shadow-md",
-					{render_query_state(posts_query.result().value())}
-				}
-				div {
-					class: "p-4 border rounded shadow-md",
-					{render_query_state(comments_query.result().value())}
-				}
-			}
+      div { class: "grid grid-cols-1 md:grid-cols-2 gap-4 mb-4",
+        div { class: "p-4 border border-gray-700 rounded shadow-md",
+          {render_query_state(users_query.result().value())}
+        }
+        div { class: "p-4 border border-gray-700 rounded shadow-md",
+          {render_query_state(posts_query.result().value())}
+        }
+        div { class: "p-4 border border-gray-700 rounded shadow-md",
+          {render_query_state(comments_query.result().value())}
+        }
+      }
 
-			div {
-				class: "grid flex justify-center gap-4 mt-6",
-				Button {
-					class: "bg-blue-500 text-white rounded hover:bg-blue-600",
-					onclick: handle_batch_invalidate,
-					"Invalidate All Queries"
-				}
-				Button {
-					class: "bg-green-500 text-white rounded hover:bg-green-600",
-					onclick: handle_batch_mutation,
-					"Run Batch Mutation"
-				}
-			}
-		}
-	}
+      div { class: "flex justify-center gap-4 mt-6",
+        Button {
+          class: "bg-blue-500 text-white rounded hover:bg-blue-600",
+          onclick: handle_batch_invalidate,
+          "Invalidate All Queries"
+        }
+        Button {
+          class: "bg-green-500 text-white rounded hover:bg-green-600",
+          onclick: handle_batch_mutation,
+          "Run Batch Mutation"
+        }
+      }
+    }
+  }
 }

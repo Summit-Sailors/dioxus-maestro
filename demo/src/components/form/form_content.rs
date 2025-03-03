@@ -14,11 +14,13 @@ use {
 pub fn FormContent(props: InnerComponentProps<User>) -> Element {
 	let roles = Role::VARIANTS.iter().map(|&s| s.to_string()).collect::<Vec<_>>();
 
-	let input_class =
-		tw_join!("w-full p-2 rounded-md border border-gray-500 text-gray-800", "focus:ring-2 focus:ring-blue-400 focus:outline-none placeholder-gray-400");
+	let input_class = tw_join!(
+		"w-full flex justify-center p-2 rounded-md border border-gray-500 bg-gray-900 text-gray-50",
+		"focus:ring-2 focus:ring-blue-500 focus:outline-none placeholder-gray-500"
+	);
 
 	rsx! {
-		div { class: "space-y-6",
+		div { class: "space-y-6 md:w-4/5 mx-auto w-full",
 			FormFieldWrapper {
 				label: "Username",
 				field: props.form.get_form_field("username".to_string()),
@@ -71,22 +73,22 @@ pub fn FormContent(props: InnerComponentProps<User>) -> Element {
 					name: "role",
 					values: roles.clone(),
 					labels: Some(roles),
-					class: "w-full p-2 rounded-md border border-gray-700 text-gray-800 focus:ring focus:ring-blue-400 focus:outline-none",
+					class: "{input_class}",
 					disabled: *props.form.is_submitting.read(),
 				}
 			}
 
-			div { class: "grid flex justify-center mt-2",
+			div { class: "flex justify-center mt-2",
 				Button {
 					r#type: "submit",
 					disabled: *props.form.is_submitting.read(),
 					size: ButtonSize::Default,
 					variant: ButtonVariant::Default,
 					class: tw_join!(
-							"py-2 rounded-md text-white font-semibold transition-all duration-200 bg-blue-500 hover:bg-blue-500", if *
-							props.form.is_submitting.read() { "bg-gray-500 cursor-not-allowed opacity-70" }
-							else { "bg-blue-600 hover:bg-blue-500 hover:shadow-lg transform hover:scale-105"
-							}
+							"py-2 rounded-md text-gray-100 font-semibold transition-all duration-200 bg-blue-500 hover:bg-blue-500",
+							if * props.form.is_submitting.read() {
+							"bg-gray-500 cursor-not-allowed opacity-70" } else {
+							"bg-blue-600 hover:bg-blue-500 hover:shadow-lg transform hover:scale-105" }
 					),
 					if *props.form.is_submitting.read() {
 						div { class: "flex items-center gap-2 justify-center",

@@ -25,6 +25,10 @@ pub struct CodeEditorProps {
 	title: String,
 	#[props(into)]
 	demo: Element,
+	#[props(into)]
+	menu_toggle: Element,
+	#[props(into)]
+	backdrop: Element,
 	code_map: HashMap<String, String>,
 }
 
@@ -33,12 +37,12 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
 	let code = use_signal(|| props.code_map.clone());
 	let mut is_expanded = use_signal(|| false);
 	let clipboard = use_clipboard();
-	let mut copy_status = use_signal(|| String::new());
+	let mut copy_status = use_signal(String::new);
 	let mut is_copying = use_signal(|| false);
 
 	// the currently selected code
 	let file_keys: Vec<SelectOption<String>> = props.code_map.keys().cloned().map(|value| SelectOption { label: value.clone(), value: value.clone() }).collect();
-	let mut selected_file = use_signal(|| file_keys.first().and_then(|value| Some(value.value.clone())).unwrap_or("".to_string()).clone());
+	let mut selected_file = use_signal(|| file_keys.first().map(|value| value.value.clone()).unwrap_or("".to_string()).clone());
 
 	let handle_copy = move |_| {
 		let content = code().get(&selected_file()).unwrap_or(&"".to_string()).clone();
@@ -60,8 +64,6 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
 	let toggle_expanded = move |_| {
 		is_expanded.toggle();
 	};
-
-	let handle_file_selection = move |event: FormEvent| selected_file.set(event.value().clone());
 
 	// syntax highlighting function
 	let highlight_code = move |code: &str, lang: &str| -> String {
@@ -91,13 +93,14 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
 	let current_code = code().get(&selected_file()).unwrap_or(&String::new()).clone();
 	let highlighted_code = highlight_code(&current_code, &props.language);
 
-	rsx! {
-		div { class: "p-2 bg-gray-800 rounded-lg w-full flex flex-col",
+	let action_buttons = rsx! {
+		// header section
+		div { class: "text-white z-10 bg-gray-900 left-0 rounded-md p-2",
+			div { class: "flex flex-col space-y-2",
 
-			// header section
-			div { class: "flex items-center justify-between text-white top-0 z-10 bg-gray-800 p-2",
-				h2 { class: "text-xl font-semibold", "{props.title}" }
-				div { class: "flex space-x-2",
+				div { {props.menu_toggle} }
+
+				div {
 					button {
 						class: "p-2 rounded-full hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 relative",
 						disabled: "{is_copying()}",
@@ -106,12 +109,15 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
 						Icon { icon: FaCopy, width: 20, height: 20 }
 						div {
 							class: tw_join!(
-									"absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs py-1 px-2 rounded transition-opacity duration-300 {}",
+									"absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs py-1 px-2 rounded transition-opacity duration-300 {}",
 									if copy_status().is_empty() { "opacity-0" } else { "opacity-100" }
 							),
 							"{copy_status}"
 						}
 					}
+				}
+
+				div {
 					button {
 						class: "p-2 rounded-full hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500",
 						onclick: toggle_expanded,
@@ -130,6 +136,16 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
 					}
 				}
 			}
+		}
+	};
+
+	rsx! {
+
+		div { class: tw_join!("flex min-h-screen",), {action_buttons.clone()} }
+
+		div { class: "dark p-2 bg-gray-900 border border-gray-700 rounded-lg h-full w-full flex flex-col",
+
+			{props.backdrop}
 
 			// scrollable container for demo and code
 			div {
@@ -139,7 +155,7 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
 				),
 
 				// demo component section
-				div { class: "bg-gray-300 overflow-hidden dark:bg-gray-700 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-500 mt-4 flex-1",
+				div { class: "bg-gray-300 overflow-hidden dark:bg-gray-700 rounded-lg shadow-md border border-gray-800 dark:border-gray-800 mt-4 flex-1",
 					div { class: "w-full h-full overflow-auto", {props.demo} }
 				}
 

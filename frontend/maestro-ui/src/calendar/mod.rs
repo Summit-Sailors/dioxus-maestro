@@ -36,6 +36,8 @@ pub struct CalendarDisplayProps {
 	container_class: &'static str,
 	#[builder(default = "")]
 	header_class: &'static str,
+  #[builder(default = "")]
+	footer_class: &'static str,
 	#[builder(default = "")]
 	month_toggle_button_class: &'static str,
 	#[builder(default = "")]
@@ -115,6 +117,7 @@ pub fn Calendar(display_props: CalendarDisplayProps, select_props: CalendarSelec
 		wrapper_class,
 		container_class,
 		header_class,
+    footer_class,
 		month_toggle_button_class,
 		body_class,
 		grid_class,
@@ -135,65 +138,69 @@ pub fn Calendar(display_props: CalendarDisplayProps, select_props: CalendarSelec
 		CalendarMaybeWrapper { is_full, selected_date, wrapper_class,
 			div {
 				class: tw_merge!(
-						"w-full max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden maestro-calendar-container",
-						container_class
+          "w-full max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden maestro-calendar-container",
+          container_class
 				),
 				div {
 					class: tw_merge!(
-							"px-4 py-2 bg-gray-50 flex items-center justify-between maestro-calendar-header",
-							header_class
+            "px-4 py-2 bg-gray-50 flex items-center justify-between maestro-calendar-header",
+            header_class
 					),
 					div {
 						button {
 							onclick: move |_| display_year -= 1,
 							class: tw_merge!(
-									"p-1 rounded-full hover:bg-gray-200 mr-1 text-gray-600",
-									month_toggle_button_class
+                "p-1 rounded-full hover:bg-gray-200 mr-1 text-gray-600",
+                month_toggle_button_class
 							),
 							Icon { class: "h-6 w-6", icon: LdChevronsLeft }
 						}
 						button {
 							onclick: move |_| {
-									let prev_display_month = display_month() as u8;
-									display_month -= 1_u8.into();
-									if prev_display_month == 1 && display_month() as u8 == 12 {
-											display_year -= 1;
-									} else if prev_display_month == 12 && display_month() as u8 == 1 {
-											display_year += 1;
-									}
+                let prev_display_month = display_month() as u8;
+                display_month -= 1_u8.into();
+                if prev_display_month == 1 && display_month() as u8 == 12 {
+                  display_year -= 1;
+                } else if prev_display_month == 12 && display_month() as u8 == 1 {
+                  display_year += 1;
+                }
 							},
 							class: tw_merge!(
-									"p-1 rounded-full hover:bg-gray-200 mr-1 text-gray-600",
-									month_toggle_button_class
+                "p-1 rounded-full hover:bg-gray-200 mr-1 text-gray-600",
+                month_toggle_button_class
 							),
 							Icon { class: "h-6 w-6", icon: LdChevronLeft }
 						}
 					}
-					h2 { class: "text-lg font-semibold text-gray-800",
+					h2 { 
+            class: tw_merge!(
+              "text-lg font-semibold text-gray-800",
+              header_class
+            ),
 						"{display_month()} {display_year()}"
 					}
 					div {
 						button {
 							onclick: move |_| {
-									let prev_display_month = display_month() as u8;
-									display_month += 1_u8.into();
-									if prev_display_month == 1 && display_month() as u8 == 12 {
-											display_year -= 1;
-									} else if prev_display_month == 12 && display_month() as u8 == 1 {
-											display_year += 1;
-									}
+                let prev_display_month = display_month() as u8;
+                display_month += 1_u8.into();
+                if prev_display_month == 1 && display_month() as u8 == 12 {
+                  display_year -= 1;
+                } else if prev_display_month == 12 && display_month() as u8 == 1 {
+                  display_year += 1;
+                }
 							},
 							class: tw_merge!(
-									"p-1 rounded-full hover:bg-gray-200 mr-1 text-gray-600",
-									month_toggle_button_class
+                "p-1 rounded-full hover:bg-gray-200 mr-1 text-gray-600",
+                month_toggle_button_class
 							),
 							Icon { class: "h-6 w-6", icon: LdChevronRight }
 						}
 						button {
 							onclick: move |_| display_year += 1,
 							class: tw_merge!(
-									"p-1 rounded-full hover:bg-gray-200 mr-1 text-gray-600",
-									month_toggle_button_class
+                "p-1 rounded-full hover:bg-gray-200 mr-1 text-gray-600",
+                month_toggle_button_class
 							),
 							Icon { class: "h-6 w-6", icon: LdChevronsRight }
 						}
@@ -226,8 +233,12 @@ pub fn Calendar(display_props: CalendarDisplayProps, select_props: CalendarSelec
 						}
 					}
 				}
-				div { class: "px-4 py-2 bg-gray-50 border-t calendar-footer",
-					p { class: "text-sm text-gray-600",
+				div { 
+          class: tw_merge!(
+            "px-4 py-2 bg-gray-50 border-t calendar-footer",
+            footer_class
+          ),
+					p { 
 						r#"Selected: {selected_date().format("%Y-%m-%d").to_string()}"#
 					}
 				}
@@ -261,8 +272,8 @@ pub fn CalendarMaybeWrapper(CalendarMaybeWrapperProps { is_full, children, selec
 				}
 				div {
 					class: tw_merge!(
-							"absolute min-w-[448px] top-20 mt-6 z-50 bg-white shadow-lg rounded-lg border maestro-calendar-wrapper-container",
-							if is_open() { "block" } else { "hidden" }
+            "absolute min-w-[448px] top-20 mt-6 z-50 bg-white shadow-lg rounded-lg border maestro-calendar-wrapper-container",
+            if is_open() { "block" } else { "hidden" }
 					),
 					{children}
 				}
@@ -295,8 +306,8 @@ pub fn CalendarDayComponent(delta: u8, display_props: CalendarDisplayProps, sele
 		return rsx! {
 			div {
 				class: tw_merge!(
-						"h-10 w-10 rounded-full flex items-center justify-center text-sm text-gray-900 maestro-calendar-day",
-						day_class
+          "h-10 w-10 rounded-full flex items-center justify-center text-sm text-gray-900 maestro-calendar-day",
+          day_class
 				),
 				""
 			}
@@ -313,31 +324,31 @@ pub fn CalendarDayComponent(delta: u8, display_props: CalendarDisplayProps, sele
 	rsx! {
 		button {
 			onclick: move |_| {
-					selected_day.set(delta);
-					selected_month.set(display_month());
-					selected_year.set(display_year());
+        selected_day.set(delta);
+        selected_month.set(display_month());
+        selected_year.set(display_year());
 			},
 			onmouseenter: move |_| hover_date.set(Some(this_display_date)),
 			onmouseleave: move |_| hover_date.set(None),
 			disabled: is_disabled,
 			key: delta,
 			class: tw_merge!(
-					"h-10 w-10 rounded-full flex items-center justify-center text-sm text-gray-900 maestro-calendar-day relative",
-					day_class, is_today
-					.then_some(tw_merge!("bg-blue-500 text-white maestro-calendar-day__today", &
-					day_today_class)), (selected_date() == this_display_date)
-					.then_some(tw_merge!("bg-blue-200 maestro-calendar-day__selected", &
-					day_selected_class)), is_disabled
-					.then_some(tw_merge!("text-gray-500 cursor-not-allowed maestro-calendar-day__disabled",
-					day_disabled_class)), (! is_today && selected_date() != this_display_date && !
-					is_disabled).then_some(tw_merge!("hover:bg-gray-100", hover_day_class))
+        "h-10 w-10 rounded-full flex items-center justify-center text-sm text-gray-900 maestro-calendar-day relative",
+        day_class, is_today
+        .then_some(tw_merge!("bg-blue-500 text-white maestro-calendar-day__today", &
+        day_today_class)), (selected_date() == this_display_date)
+        .then_some(tw_merge!("bg-blue-200 maestro-calendar-day__selected", &
+        day_selected_class)), is_disabled
+        .then_some(tw_merge!("text-gray-500 cursor-not-allowed maestro-calendar-day__disabled",
+        day_disabled_class)), (! is_today && selected_date() != this_display_date && !
+        is_disabled).then_some(tw_merge!("hover:bg-gray-100", hover_day_class))
 			),
 			"{delta}"
 			if !curr_date_events.is_empty() {
 				span {
 					class: tw_merge!(
-							"absolute -bottom-0.5 left-0 right-0 mx-auto flex gap-0.5 items-center w-fit maestro-calendar-events",
-							events_class
+            "absolute -bottom-0.5 left-0 right-0 mx-auto flex gap-0.5 items-center w-fit maestro-calendar-events",
+            events_class
 					),
 					for e in curr_date_events {
 						span {

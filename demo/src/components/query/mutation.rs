@@ -26,16 +26,16 @@ pub fn SilentMutationDemo() -> Element {
 	let handle_silent_mutation = move |_| {
 		let new_value = counter() + 1;
 		counter.set(new_value);
-		let silent_mutation = silent_mutation.clone();
+		let silent_mutation = silent_mutation;
 		spawn(async move {
 			silent_mutation.mutate_silent(new_value).await;
 		});
 	};
 
 	rsx! {
-		div { class: "grid flex justify-center grid-cols-1 text-center p-4 border bg-white rounded-lg shadow-lg mt-4",
-			h3 { class: "text-xl text-gray-700 font-bold mb-4", "Silent vs Normal Mutations" }
-			p { class: "mb-4 text-gray-700 font-bold",
+		div { class: "grid justify-center grid-cols-1 text-center p-4 border border-gray-700 bg-gray-900 rounded-lg shadow-lg mt-4",
+			h3 { class: "text-xl text-gray-100 font-bold mb-4", "Silent vs. Normal Mutations" }
+			p { class: "mb-4 text-gray-200 font-bold",
 				"Counter:"
 				span { class: "text-yellow-500 font-bold", "{counter}" }
 			}
@@ -52,7 +52,7 @@ pub fn SilentMutationDemo() -> Element {
 				}
 			}
 
-			div { class: "mt-4 text-gray-700 font-semibold",
+			div { class: "mt-4 text-gray-200 font-semibold",
 				"Mutation Status: "
 				match *silent_mutation.result() {
 						MutationResult::Loading(_) => rsx! {
@@ -83,7 +83,7 @@ pub fn ManualMutationDemo() -> Element {
 	});
 
 	let handle_manual_mutation = move |_| {
-		let mutation = manual_mutation.clone();
+		let mutation = manual_mutation;
 		status.set("Starting...");
 
 		spawn(async move {
@@ -102,8 +102,8 @@ pub fn ManualMutationDemo() -> Element {
 	};
 
 	rsx! {
-		div { class: "grid flex justify-center bg-white p-4 border shadow-lg rounded mt-4",
-			h3 { class: "text-xl font-bold text-gray-700 text-center mb-4", "Manual Mutation Control" }
+		div { class: "flex flex-col items-center bg-gray-900 p-4 border border-gray-700 shadow-lg rounded mt-4",
+			h3 { class: "text-xl font-bold text-gray-200 text-center mb-4", "Manual Mutation Control" }
 
 			p { class: tw_join!("mb-4 text-center font-semibold", status_class()),
 				"Status: {status}"

@@ -52,7 +52,7 @@ where
 										(
 												"Is Valid",
 												*form.is_valid.read(),
-												(|v: bool| v.then_some("text-green-500").unwrap_or("text-red-500"))
+												(|v: bool| if v { "text-green-500" } else { "text-red-500" })
 														as ClassFn,
 										),
 										(
