@@ -3,7 +3,7 @@ use {
 	dioxus::prelude::*,
 	maestro_hooks::pagination::use_pagination,
 	serde::{Deserialize, Serialize},
-	std::str::FromStr,
+	tailwind_fuse::tw_join,
 };
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
@@ -16,7 +16,6 @@ struct User {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Hash)]
-#[serde(rename_all = "lowercase")]
 enum Role {
 	Admin,
 	User,
@@ -69,152 +68,151 @@ fn DieselDemo() -> Element {
 	});
 
 	rsx! {
-		div { class: "container mx-auto p-4",
-			h1 { class: "text-2xl font-bold mb-4", "Users with Pagination" }
+    div { class: "w-4/5 mx-auto p-4",
+      h1 { class: "text-2xl font-bold mb-4", "Users with Pagination" }
 
-			if *loading() {
-				div { class: "text-blue-500", "Loading users..." }
-			} else if let Some(err) = error() {
-				div { class: "text-red-500", "Error: {err}" }
-			} else {
-				div {
-					// pagination info
-					h2 {
-						class: "text-xl font-semibold mb-2",
-						{ format!("Users ({})", pagination.counter_label) }
-					}
+      if loading() {
+        div { class: "text-blue-500", "Loading users..." }
+      } else if let Some(err) = error() {
+        div { class: "text-red-500", "Error: {err}" }
+      } else {
+        div {
+          // pagination info
+          h2 { class: "text-xl font-semibold mb-2",
+            {format!("Users ({})", pagination.counter_label)}
+          }
 
-					// item navigation controls
-					div {
-						class: "flex items-center space-x-2 mb-4",
-						button {
-							class: tw_join!(
-								"px-3 py-1 border rounded"
-								if pagination.prev_idx_disabled() { "opacity-50 cursor-not-allowed" } else { "hover:bg-gray-100" }
-							),
-							disabled: pagination.prev_idx_disabled(),
-							onclick: move |_| prev_idx(),
-							"Prev Item"
-						}
+          // item navigation controls
+          div { class: "flex items-center space-x-2 mb-4",
+            button {
+              class: tw_join!(
+                  "px-3 py-1 border rounded", if * pagination.prev_idx_disabled.read() {
+                  "opacity-50 cursor-not-allowed" } else { "hover:bg-gray-100" }
+              ),
+              disabled: *pagination.prev_idx_disabled.read(),
+              onclick: move |_| prev_idx(),
+              "Prev Item"
+            }
 
-						span { class: "text-sm", "Item: {pagination.idx() + 1}" }
+            span { class: "text-sm", "Item: {*pagination.idx.read() + 1}" }
 
-						button {
-							class: tw_join!(
-								"px-3 py-1 border rounded",
-								if pagination.next_idx_disabled() { "opacity-50 cursor-not-allowed" } else { "hover:bg-gray-100" }
-							),
-							disabled: pagination.next_idx_disabled(),
-							onclick: move |_| next_idx(),
-							"Next Item"
-						}
-					}
+            button {
+              class: tw_join!(
+                  "px-3 py-1 border rounded", if * pagination.next_idx_disabled.read() {
+                  "opacity-50 cursor-not-allowed" } else { "hover:bg-gray-100" }
+              ),
+              disabled: *pagination.next_idx_disabled.read(),
+              onclick: move |_| next_idx(),
+              "Next Item"
+            }
+          }
 
-					// currently focused user (if available)
-					if let Some(user) = current_user() {
-						div {
-							class: "bg-yellow-50 p-4 border border-gray-700 rounded-lg mb-4",
-							h3 { class: "text-lg font-medium", "Currently Selected: {user.username}" }
-							p { class: "text-sm text-gray-600", "{user.email}" }
-							p { class: "mt-1 text-sm", "{user.bio}" }
-							p { class: "mt-1 text-xs text-gray-500", "Age: {user.age}" }
-							span {
-								class: match user.role {
-									Role::Admin => "bg-red-100 text-red-800",
-									Role::Moderator => "bg-yellow-100 text-yellow-800",
-									Role::User => "bg-green-100 text-green-800",
-								},
-								class: "{class} px-2 py-1 text-xs font-semibold rounded-full",
-								"{user.role:?}"
-							}
-						}
-					}
+          // currently focused user (if available)
+          if let Some(user) = current_user() {
+            div { class: "bg-yellow-50 p-4 border border-gray-700 rounded-lg mb-4",
+              h3 { class: "text-lg font-medium", "Currently Selected: {user.username}" }
+              p { class: "text-sm text-gray-600", "{user.email}" }
+              p { class: "mt-1 text-sm", "{user.bio}" }
+              p { class: "mt-1 text-xs text-gray-500", "Age: {user.age}" }
+              span {
+                class: tw_join!(
+                    "px-2 py-1 text-xs font-semibold rounded-full", match user.role { Role::Admin =>
+                    "bg-red-100 text-red-800", Role::Moderator => "bg-yellow-100 text-yellow-800",
+                    Role::User => "bg-green-100 text-green-800", }
+                ),
+                "{user.role:?}"
+              }
+            }
+          }
 
-					// user list
-					ul {
-						class: "list-none divide-y divide-gray-200",
-						{users().iter().enumerate().map(|(i, user)| {
-							// the absolute index for this user in the current page
-							let absolute_idx = pagination.page() * pagination.page_size() + i as i32;
-							// if this is the currently selected user
-							let is_selected = absolute_idx == pagination.idx();
+          // user list
+          ul { class: "list-none divide-y divide-gray-200",
+            {
+                users()
+                    .iter()
+                    .enumerate()
+                    .map(|(i, user)| {
+                        let absolute_idx = *pagination.page.read() * *pagination.page_size.read()
+                            + i as i32;
+                        let is_selected = absolute_idx == *pagination.idx.read();
+                        rsx! {
+                          li {
+                            key: "{user.username}",
+                            class: tw_join!(
+                                "py-4", if is_selected { "bg-blue-50 border-l-4 border-blue-500 pl-2" } else { ""
+                                }
+                            ),
+                            div { class: "flex justify-between",
+                              div {
+                                p { class: "font-medium", "{user.username}" }
+                                p { class: "text-sm text-gray-600", "{user.email}" }
+                              }
+                              div {
+                                span {
+                                  class: tw_join!(
+                                      "px-2 py-1 text-xs font-semibold rounded-full", match user.role { Role::Admin =>
+                                      "bg-red-100 text-red-800", Role::Moderator => "bg-yellow-100 text-yellow-800",
+                                      Role::User => "bg-green-100 text-green-800", }
+                                  ),
+                                  "{user.role:?}"
+                                }
+                              }
+                            }
+                            p { class: "mt-1 text-sm", "{user.bio}" }
+                            p { class: "mt-1 text-xs text-gray-500", "Age: {user.age}" }
+                            // button to select this specific item
+                            button {
+                              class: "mt-2 px-2 py-1 text-xs text-blue-600 hover:text-blue-800",
+                              onclick: move |_| {
+                                  pagination.idx.set(absolute_idx);
+                              },
+                              "Select"
+                            }
+                          }
+                        }
+                    })
+            }
+          }
 
-							rsx! {
-								li {
-									key: "{user.username}",
-									class: tw_join!(
-										"py-4"
-										if is_selected { "bg-blue-50 border-l-4 border-blue-500 pl-2" } else { "" }
-									),
-									div {
-										class: "flex justify-between",
-										div {
-											p { class: "font-medium", "{user.username}" }
-											p { class: "text-sm text-gray-600", "{user.email}" }
-										}
-										div {
-											span {
-												class: match user.role {
-													Role::Admin => "bg-red-100 text-red-800",
-													Role::Moderator => "bg-yellow-100 text-yellow-800",
-													Role::User => "bg-green-100 text-green-800",
-												},
-												class: "{class} px-2 py-1 text-xs font-semibold rounded-full",
-												"{user.role:?}"
-											}
-										}
-									}
-									p { class: "mt-1 text-sm", "{user.bio}" }
-									p { class: "mt-1 text-xs text-gray-500", "Age: {user.age}" }
+          // page navigation controls
+          div { class: "flex justify-between items-center mt-4",
 
-									// button to select this specific item
-									button {
-										class: "mt-2 px-2 py-1 text-xs text-blue-600 hover:text-blue-800",
-										onclick: move |_| {
-											pagination.idx.set(absolute_idx);
-										},
-										"Select"
-									}
-								}
-							}
-						})}
-					}
+            // prev
+            button {
+              class: tw_join!(
+                  "px-4 py-2 border rounded", if * pagination.prev_page_disabled.read() {
+                  "opacity-50 cursor-not-allowed" } else { "hover:bg-gray-100" }
+              ),
+              disabled: *pagination.prev_page_disabled.read(),
+              onclick: move |_| prev_page(),
+              "Prev Page"
+            }
 
-					// page navigation controls
-					div {
-						class: "flex justify-between items-center mt-4",
+            // page indicator
+            span { class: "text-sm font-medium",
+              {format!("Page {}", *pagination.page.read() + 1)}
+            }
 
-						// prev
-						button {
-							class: "px-4 py-2 border rounded {if pagination.prev_page_disabled() { 'opacity-50 cursor-not-allowed' } else { 'hover:bg-gray-100' }}",
-							disabled: pagination.prev_page_disabled(),
-							onclick: move |_| prev_page(),
-							"Prev Page"
-						}
-
-						// page indicator
-						span {
-							class: "text-sm font-medium",
-							format!("Page {}", pagination.page() + 1)
-						}
-
-						// next
-						button {
-							class: "px-4 py-2 border rounded {if pagination.next_page_disabled() { 'opacity-50 cursor-not-allowed' } else { 'hover:bg-gray-100' }}",
-							disabled: pagination.next_page_disabled(),
-							onclick: move |_| next_page(),
-							"Next Page"
-						}
-					}
-				}
-			}
-		}
-	}
+            // next
+            button {
+              class: tw_join!(
+                  "px-4 py-2 border rounded", if * pagination.next_page_disabled.read() {
+                  "opacity-50 cursor-not-allowed" } else { "hover:bg-gray-100" }
+              ),
+              disabled: *pagination.next_page_disabled.read(),
+              onclick: move |_| next_page(),
+              "Next Page"
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 // server function to handle async pagination
 #[server]
-async fn afetch_users_paginated(page: i32, page_size: i32) -> Result<PaginatedResultDTO<User>, ServerFnError> {
+async fn afetch_users_paginated(page: i32, page_size: i32) -> Result<maestro_diesel::extensions::pagination::dtos::PaginatedResultDTO<User>, ServerFnError> {
 	use maestro_diesel::{
 		async_client::from_server::extract_diesel_pool,
 		extensions::pagination::dtos::{PaginatedResultDTO, PaginationRequestDTO},
@@ -233,12 +231,12 @@ async fn afetch_users_paginated(page: i32, page_size: i32) -> Result<PaginatedRe
 	use maestro_diesel::extensions::pagination::paginate_async::PaginateAsync;
 
 	// the diesel query builder with pagination
-	let query = users::table.into_boxed();
+	let query = diesel::QueryDsl::into_boxed(crate::clients::db::diesel_schema::users::table);
 
 	// applying pagination using the PaginateAsync trait
 	let paginated_results = query
 		.paginate(pagination_request.page, pagination_request.page_size)
-		.aload_paginated::<UserRecord>(pool)
+		.aload_paginated::<User>(pool)
 		.await
 		.map_err(|e| ServerFnError::ServerError(format!("Database error: {}", e)))?;
 
@@ -252,7 +250,7 @@ async fn afetch_users_paginated(page: i32, page_size: i32) -> Result<PaginatedRe
 
 #[server]
 // sync version for comparison
-async fn fetch_users_paginated(page: i32, page_size: i32) -> Result<PaginatedResultDTO<User>, ServerFnError> {
+async fn fetch_users_paginated(page: i32, page_size: i32) -> Result<maestro_diesel::extensions::pagination::dtos::PaginatedResultDTO<User>, ServerFnError> {
 	use maestro_diesel::{
 		async_client::from_server::extract_diesel_pool,
 		extensions::pagination::dtos::{PaginatedResultDTO, PaginationRequestDTO},
@@ -264,7 +262,7 @@ async fn fetch_users_paginated(page: i32, page_size: i32) -> Result<PaginatedRes
 	// the sync pagination extension
 	use maestro_diesel::extensions::pagination::paginate_sync::Paginate;
 
-	let paginated_results = users::table.paginate::<UserRecord>(page, page_size, &mut conn)?;
+	let paginated_results = crate::clients::db::diesel_schema::users::table.paginate::<User>(page, page_size, &mut conn)?;
 
 	// UserRecord to User model
 	let users = paginated_results
@@ -284,7 +282,7 @@ async fn fetch_users_paginated(page: i32, page_size: i32) -> Result<PaginatedRes
 #[server]
 async fn acreate_user_in_transaction(new_user: User) -> Result<(), ServerFnError> {
 	use {
-		diesel_async::AsyncConnection,
+		diesel_async::{AsyncConnection, RunQueryDsl},
 		maestro_diesel::{
 			async_client::client::acreate_diesel_pool,
 			extensions::pagination::dtos::{PaginatedResultDTO, PaginationRequestDTO},
@@ -297,16 +295,7 @@ async fn acreate_user_in_transaction(new_user: User) -> Result<(), ServerFnError
 	let transaction_result = conn
 		.transaction(|tx| {
 			let fut = async move {
-				diesel::insert_into(users::table)
-					.values((
-						users::username.eq(&new_user.username),
-						users::email.eq(&new_user.email),
-						users::bio.eq(&new_user.bio),
-						users::age.eq(&new_user.age),
-						users::role.eq(&format!("{:?}", new_user.role).to_lowercase()),
-					))
-					.execute(tx)
-					.await?;
+				diesel::insert_into(crate::clients::db::diesel_schema::users::dsl::users).values(&new_user).execute(tx).await?;
 
 				// additional operations within the same transaction
 
