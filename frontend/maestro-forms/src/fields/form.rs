@@ -7,6 +7,8 @@ use {
 
 pub type FormResult<T> = (T, bool);
 
+pub type OnFormSubmitResult<T> = EventHandler<(FormEvent, FormResult<T>, Box<dyn FnOnce()>)>;
+
 #[derive(Clone, PartialEq, Props)]
 pub struct FormProps<T>
 where
@@ -15,7 +17,7 @@ where
 	pub form: Formik<T>,
 	inner: Component<InnerComponentProps<T>>,
 	#[props(optional)]
-	pub onsubmit: Option<EventHandler<(FormEvent, FormResult<T>, Box<dyn FnOnce()>)>>,
+	pub onsubmit: OnFormSubmitResult<T>,
 	#[props(optional)]
 	pub auto_reset: Option<bool>,
 	#[props(extends = GlobalAttributes, extends = form)]
@@ -40,9 +42,7 @@ where
 
 	let onsubmit = move |e: FormEvent| {
 		e.stop_propagation();
-		if let Some(submit_handler) = props.onsubmit {
-			props.form.submit(e, submit_handler);
-		}
+		props.form.submit(e, props.onsubmit);
 	};
 
 	rsx! {

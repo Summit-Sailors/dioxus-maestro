@@ -40,7 +40,7 @@ pub fn CompleteQueryDemo() -> Element {
 
 			div { id: "maestro-query-features", class: "flex space-x-2",
 				Features {
-					title: "Form".to_string(),
+					title: "Features".to_string(),
 					features: vec![
 							"Automatic Cache Management: Built-in stale-time tracking and cache invalidation"
 									.to_string(),

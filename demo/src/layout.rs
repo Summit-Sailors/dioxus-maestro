@@ -24,16 +24,6 @@ pub fn Layout(children: Element) -> Element {
 	let mut menu_open = use_signal(|| false);
 	let current_route = use_route::<Route>();
 
-	let backdrop = rsx! {
-		div {
-			class: tw_join!(
-					"fixed inset-0 bg-black/30 backdrop-blur-sm z-40 transition-all duration-300", if
-					menu_open() { "opacity-100" } else { "opacity-0 pointer-events-none" }
-			),
-			onclick: move |_| menu_open.set(false),
-		}
-	};
-
 	let navigation_menu = rsx! {
 		// sidebar
 		nav {

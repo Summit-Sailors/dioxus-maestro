@@ -56,7 +56,9 @@ pub fn FormsDemo() -> Element {
 	};
 
 	rsx! {
-		div { id: "maestro-form", class: "flex flex-col lg:gap-16 sm:gap-8 gap-6",
+		div {
+			id: "maestro-form",
+			class: "flex flex-col lg:gap-16 sm:gap-8 gap-6",
 			div { class: "flex flex-col gap-3",
 				h1 { class: "text-slate-100 text-center text-2xl sm:text-3xl lg:text-4xl 2xl:text-5xl font-semibold",
 					"Maestro Form"

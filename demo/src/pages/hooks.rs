@@ -64,7 +64,7 @@ pub fn HooksDemo() -> Element {
 
 			div { id: "maestro-hooks-header", class: "flex",
 				Features {
-					title: "Hooks".to_string(),
+					title: "Features".to_string(),
 					features: vec![
 							"Type Safety: Enhanced error handling and type-safe operations compared to standard Dioxus hooks"
 									.to_string(),

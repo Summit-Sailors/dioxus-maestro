@@ -65,7 +65,7 @@ pub fn RadioDemo() -> Element {
 
 			div { id: "maestro-radio-features", class: "flex space-x-2",
 				Features {
-					title: "Radio".to_string(),
+					title: "Features".to_string(),
 					features: vec![
 							"Granular Control: Define custom channels for different types of state updates"
 									.to_string(),

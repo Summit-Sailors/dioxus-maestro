@@ -87,7 +87,7 @@ pub fn ToastDemo() -> Element {
 
 			div { id: "maestro-toast-features", class: "flex space-x-2",
 				Features {
-					title: "Toast".to_string(),
+					title: "Features".to_string(),
 					features: vec![
 							"No Manual State Management: Automatic toast tracking and removal".to_string(),
 							"Flexible Configuration: Granular control over toast behavior".to_string(),

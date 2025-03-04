@@ -44,7 +44,7 @@ pub fn CalendarDemo() -> Element {
 
 			div { id: "calendar-features", class: "flex space-x-2",
 				Features {
-					title: "Calendar".to_string(),
+					title: "Features".to_string(),
 					features: vec![
 							"Compile-Time Safety: Leverages Rust's enum system to prevent invalid calendar operations"
 									.to_string(),

@@ -127,7 +127,10 @@ pub fn QueryDemo() -> Element {
 
 		spawn(async move {
 			is_loading.set(true);
-			match admin_query_clone.result().value() {
+
+			let query_result_value = { admin_query_clone.result().value().clone() };
+
+			match query_result_value {
 				QueryResult::Ok(user) => {
 					let mut updated = user.clone();
 					updated.role = new_role;
@@ -148,7 +151,10 @@ pub fn QueryDemo() -> Element {
 						hide_after: 5,
 					});
 				},
-				_ => {
+				QueryResult::Loading(_) => {
+					// show loading
+				},
+				QueryResult::Err(_) => {
 					toast.write().popup(ToastInfo {
 						heading: Some("Error".into()),
 						context: "Failed to update user role: User data not available".into(),
@@ -157,6 +163,8 @@ pub fn QueryDemo() -> Element {
 						allow_toast_close: true,
 						hide_after: 8,
 					});
+
+					is_loading.set(false);
 
 					// revert UI on failure
 				},

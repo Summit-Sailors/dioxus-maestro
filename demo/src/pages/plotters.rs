@@ -191,7 +191,7 @@ pub fn PlottersDemo() -> Element {
 
 			div { id: "maestro-plotters-features", class: "flex space-x-2",
 				Features {
-					title: "Form".to_string(),
+					title: "Features".to_string(),
 					features: vec![
 							"Superior Type Safety: Leverages Rust's type system for chart configurations and data validation"
 									.to_string(),
@@ -218,7 +218,9 @@ pub fn PlottersDemo() -> Element {
 				class: "grid grid-cols-1 md:grid-cols-2 gap-8",
 				// bar chart section
 				div { class: "bg-slate-800 text-center rounded-lg shadow-lg p-6 border border-slate-700 hover:shadow-xl transition-shadow",
-					h3 { class: "text-2xl font-bold mb-4 text-slate-200", "Monthly Revenue Performance" }
+					h3 { class: "text-2xl font-bold mb-4 text-slate-200",
+						"Monthly Revenue Performance"
+					}
 					p { class: "text-slate-400 mb-4", "Year-to-date revenue breakdown by month" }
 					div { class: "aspect-square",
 						canvas {
@@ -300,7 +302,9 @@ pub fn PlottersDemo() -> Element {
 				div {
 					id: "maestro-plotters-scatter",
 					class: "bg-slate-800 text-center rounded-lg shadow-lg p-6 border border-slate-700 hover:shadow-xl transition-shadow",
-					h3 { class: "text-2xl font-bold mb-4 text-slate-200", "Growth Correlation Analysis" }
+					h3 { class: "text-2xl font-bold mb-4 text-slate-200",
+						"Growth Correlation Analysis"
+					}
 					p { class: "text-slate-400 mb-4",
 						"Revenue vs Customer Acquisition with key highlights"
 					}

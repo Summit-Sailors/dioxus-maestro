@@ -72,7 +72,7 @@ pub fn UIDemo() -> Element {
 
 			div { id: "maestro-ui-features", class: "flex space-x-2",
 				Features {
-					title: "UI".to_string(),
+					title: "Features".to_string(),
 					features: vec![
 							"Type Safety: Leverages Rust's type system".to_string(),
 							"Reactive Design: Built for Dioxus's reactive paradigm".to_string(),
