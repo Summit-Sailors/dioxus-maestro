@@ -9,6 +9,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        poppins: ["Poppins", "serif"],
+      },
       keyframes: {
         highlight: {
           "0%": { background: "#8f8" },
@@ -16,9 +19,6 @@ module.exports = {
         },
       },
       animation: { highlight: "highlight 1s" },
-      fontFamily: {
-        inter: ["Inter", "sans-serif"],
-      },
       colors: {
         primary: {
           light: "#4f46e5",
@@ -33,25 +33,16 @@ module.exports = {
         lg: "1024px",
         xl: "1280px",
         "2xl": "1536px",
+        "3xl": "1728px",
       },
     },
     container: {
+      center: true,
       padding: {
-        DEFAULT: "1rem",
-        sm: "2rem",
+        DEFAULT: "2rem",
+        sm: 0,
       },
     },
   },
   plugins: [],
-  safelist: [
-    "bg-gray-800",
-    "hidden",
-    "lg:block",
-    "lg:hidden",
-    "p-6",
-    "fixed",
-    "min-h-screen",
-    "overflow-y-auto",
-    "transition-all",
-  ],
 };

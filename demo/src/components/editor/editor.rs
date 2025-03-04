@@ -1,12 +1,13 @@
 use {
+	crate::components::icons::{collapse::Collapse, expand::Expand},
 	async_std::task::sleep,
 	dioxus::prelude::*,
-	dioxus_free_icons::{
-		icons::fa_solid_icons::{FaCopy, FaMaximize, FaMinimize},
-		Icon,
-	},
+	dioxus_free_icons::{icons::io_icons::IoCopyOutline, Icon},
 	maestro_hooks::clipboard::use_clipboard,
-	maestro_ui::select::{Select, SelectOption},
+	maestro_ui::{
+		button::{Button, ButtonSize, ButtonVariant},
+		select::{Select, SelectOption},
+	},
 	std::collections::HashMap,
 	syntect::{
 		easy::HighlightLines,
@@ -94,45 +95,44 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
 	let highlighted_code = highlight_code(&current_code, &props.language);
 
 	let action_buttons = rsx! {
-		// header section
-		div { class: "text-white z-10 bg-gray-900 left-0 rounded-md p-2",
-			div { class: "flex flex-col space-y-2",
-
-				div { {props.menu_toggle} }
-
-				div {
-					button {
-						class: "p-2 rounded-full hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 relative",
+		div { class: "text-slate-100 z-10 bg-slate-900 sticky top-0 left-0 px-5 py-6",
+			div { class: "flex flex-col sm:flex-row gap-4 items-center sm:items-start sm:justify-center",
+				div { class: "relative",
+					Button {
+						variant: ButtonVariant::Icon,
+						size: ButtonSize::IconMd,
+						r#type: "button",
+						class: "text-slate-300 hover:text-slate-100 transition-colors",
 						disabled: "{is_copying()}",
 						onclick: handle_copy,
 						title: "Copy Code",
-						Icon { icon: FaCopy, width: 20, height: 20 }
-						div {
-							class: tw_join!(
-									"absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs py-1 px-2 rounded transition-opacity duration-300 {}",
-									if copy_status().is_empty() { "opacity-0" } else { "opacity-100" }
-							),
-							"{copy_status}"
+						Icon {
+							icon: IoCopyOutline,
+							width: 20,
+							height: 20,
+							class: "fill-none",
 						}
+					}
+					div {
+						class: tw_join!(
+								"absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white text-xs py-1 px-2 rounded transition-opacity duration-300 {}",
+								if copy_status().is_empty() { "opacity-0" } else { "opacity-100" }
+						),
+						"{copy_status}"
 					}
 				}
 
-				div {
-					button {
-						class: "p-2 rounded-full hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500",
-						onclick: toggle_expanded,
-						title: if is_expanded() { "Collapse Code" } else { "View Code" },
-						{
-								if is_expanded() {
-										rsx! {
-											Icon { icon: FaMaximize, width: 20, height: 20 }
-										}
-								} else {
-										rsx! {
-											Icon { icon: FaMinimize, width: 20, height: 20 }
-										}
-								}
-						}
+				Button {
+					variant: ButtonVariant::Icon,
+					size: ButtonSize::IconMd,
+					r#type: "button",
+					class: "text-slate-300 hover:text-slate-100 transition-colors",
+					onclick: toggle_expanded,
+					title: if is_expanded() { "Collapse Code" } else { "View Code" },
+					if is_expanded() {
+						Collapse { class: "w-5 h-5" }
+					} else {
+						Expand { class: "w-5 h-5" }
 					}
 				}
 			}
@@ -140,33 +140,18 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
 	};
 
 	rsx! {
+		div { class: "grid sm:grid-cols-[108px_1fr] grid-cols-[42px_1fr]  overflow-y-auto",
+			div { class: "border-r border-r-slate-700 relative", {action_buttons.clone()} }
 
-		div { class: tw_join!("flex min-h-screen",), {action_buttons.clone()} }
-
-		div { class: "dark p-2 bg-gray-900 border border-gray-700 rounded-lg h-full w-full flex flex-col",
-
-			{props.backdrop}
-
-			// scrollable container for demo and code
-			div {
-				class: tw_join!(
-						"grid grid-cols-1 transition-all duration-500 ease-in-out lg:overflow-hidden", if
-						is_expanded() { "lg:grid-cols-2" } else { "grid-cols-1" }
-				),
-
-				// demo component section
-				div { class: "bg-gray-300 overflow-hidden dark:bg-gray-700 rounded-lg shadow-md border border-gray-800 dark:border-gray-800 mt-4 flex-1",
-					div { class: "w-full h-full overflow-auto", {props.demo} }
-				}
-
+			div { class: "lg:px-16 lg:py-16 sm:py-8 sm:px-6 py-6 px-4 bg-slate-900 h-full w-full flex flex-col overflow-x-hidden",
 				// code section
 				if is_expanded() {
-					div { class: "overflow-hidden rounded-lg bg-gray-900 px-6 flex-1 mt-4 flex flex-col",
-						h2 { class: "text-xl font-semibold text-center text-white mt-4",
+					div { class: "bg-slate-900 flex-1 flex flex-col",
+						h2 { class: "text-slate-100 text-center text-2xl sm:text-3xl lg:text-4xl 2xl:text-5xl font-semibold mb-3",
 							"Source Code"
 						}
 
-						div { class: "flex justify-center my-3",
+						div { class: "flex justify-center",
 
 							Select {
 								options: file_keys,
@@ -174,15 +159,15 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
 								onchange: move |value| selected_file.set(value),
 								label: "Single Select",
 								placeholder: "Select an option",
-								button_class: "text-gray-200 bg-gray-800",
-								dropdown_class: "text-gray-200 !bg-gray-800 border-gray-700",
-								option_class: "hover:bg-gray-700 text-gray-200",
+								button_class: "text-slate-200 bg-slate-900",
+								dropdown_class: "text-slate-200 !bg-slate-900 border-slate-700",
+								option_class: "hover:bg-slate-800 text-slate-200",
 							}
 						}
 
-						div { class: "relative flex-1 bg-gray-900 rounded-lg shadow-md border border-gray-700 p-4 h-full overflow-auto",
+						div { class: "relative flex-1 bg-slate-900 rounded-lg flex flex-col bg-slate-950/20 lg:px-16 sm:px-6 px-2 py-8 h-full overflow-x-auto mt-8",
 
-							div { class: "flex justify-between items-center bg-gray-800 text-gray-300 text-xs px-4 py-2 rounded-t-md",
+							div { class: "flex justify-between items-center bg-slate-800 text-slate-300 text-xs px-4 py-2 rounded-t-md",
 								span { class: "font-mono", "{selected_file()}" }
 								div { class: "flex gap-1",
 									span { class: "w-3 h-3 bg-red-500 rounded-full" }
@@ -198,6 +183,8 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
 							}
 						}
 					}
+				} else {
+					div { class: "w-full h-full", {props.demo} }
 				}
 			}
 		}

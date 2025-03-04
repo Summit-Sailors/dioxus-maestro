@@ -1,20 +1,21 @@
 use {
 	crate::{
-		components::{editor::editor::CodeEditor, logo_light::LogoLight},
+		components::{backdrop::Backdrop, editor::editor::CodeEditor, logo_light::LogoLight},
 		router::Route,
 	},
 	dioxus::prelude::*,
 	dioxus_free_icons::{
 		icons::{
-			fa_solid_icons::{FaBars, FaX},
-			fi_icons::FiGithub,
+			bs_icons::{BsLayoutSidebar, BsLayoutSidebarReverse},
+			io_icons::IoLogoGithub,
 		},
 		Icon,
 	},
 	maestro_toast::{init::use_init_toast_ctx, toast_frame_component::ToastFrame},
+	maestro_ui::button::{Button, ButtonSize, ButtonVariant},
 	std::collections::HashMap,
 	strum::IntoEnumIterator,
-	tailwind_fuse::tw_join,
+	tailwind_fuse::{tw_join, tw_merge},
 };
 
 #[component]
@@ -36,36 +37,20 @@ pub fn Layout(children: Element) -> Element {
 	let navigation_menu = rsx! {
 		// sidebar
 		nav {
-			// class: "min-w-40",
 			class: tw_join!(
-					"py-2 z-50 shadow-lg rounded-lg bg-gray-800 min-w-40",
-					"transform transition-transform duration-300 ease-in-out", if current_route
-					.name() == "Home" { "hidden lg:hidden translate-x-0" } else if ! menu_open() {
-					"hidden xl:block" } else {
-					"right-0 block w-64 absolute min-h-screen rounded-md z-50" }
+					"relative py-6 sm:px-5 px-0 z-50 bg-slate-900 border-l border-l-slate-700",
+					"transform transition-transform duration-300 ease-in-out", (current_route.name()
+					== "Home").then_some("hidden lg:hidden translate-x-0")
 			),
-			NavigationMenu { close_menu: menu_open }
-		}
-	};
-
-	let menu_toggle_button = rsx! {
-		button {
-			class: tw_join!(
-					"xl:hidden flex items-center justify-center text-white bg-gray-800 p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-600",
-					if current_route.name() == "Home" { "hidden" } else { "block" }
-			),
-			onclick: move |_| menu_open.toggle(),
-			{
-					if menu_open() {
-							rsx! {
-								Icon { icon: FaX, width: 20, height: 20 }
-							}
-					} else {
-							rsx! {
-								Icon { icon: FaBars, width: 20, height: 20 }
-							}
-					}
+			Button {
+				variant: ButtonVariant::Icon,
+				size: ButtonSize::IconMd,
+				r#type: "button",
+				class: "text-slate-300 hover:text-slate-100 xl:hidden transition-colors mx-auto",
+				onclick: move |_| menu_open.set(true),
+				Icon { icon: BsLayoutSidebar, class: "w-5 h-5" }
 			}
+			NavigationMenu { close_menu: menu_open }
 		}
 	};
 
@@ -75,18 +60,13 @@ pub fn Layout(children: Element) -> Element {
 					Outlet::<Route> {}
 				},
 				_ => rsx! {
-					div {
-						class: tw_join!(
-								"my-8 mr-4 flex gap-[1px] flex-1 h-full max-h-[inherit] relative lg:overflow-hidden",
-						),
+					div { class: "flex-1 grid xl:grid-cols-[1fr_358px] sm:grid-cols-[1fr_80px] grid-cols-[1fr_42px] overflow-y-auto relative overflow-x-hidden",
 						CodeEditor {
 							title: current_route.name(),
 							code_map: get_source_code(&current_route),
 							demo: rsx! {
 								Outlet::<Route> {}
 							},
-							menu_toggle: menu_toggle_button,
-							backdrop,
 						}
 						{navigation_menu}
 					}
@@ -97,49 +77,45 @@ pub fn Layout(children: Element) -> Element {
 	rsx! {
 		head {
 			document::Link { rel: "icon", href: asset!("/assets/favicon.ico") }
+			document::Link { rel: "preconnect", href: "https://fonts.googleapis.com" }
+			document::Link {
+				rel: "stylesheet",
+				href: "https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap",
+			}
 		}
 
 		ToastFrame { manager: toast }
 
-		div {
-			id: "maestro-demo",
-			class: "dark bg-gray-900 flex flex-col relative md:h-screen min-h-screen",
-
+		div { id: "maestro-demo", class: "flex flex-col h-screen",
+			Backdrop { show: menu_open }
 			header {
 				id: "maestro-demo-header",
-				class: tw_join!(
-						"flex justify-between items-center w-full text-white gap-4",
-						"px-8 py-4 sticky top-0 left-0 w-full bg-gray-900 z-50 shadow-md hover:shadow-lg",
-						"sm:text-lg text-base"
-				),
+				class: "py-4 sticky top-0 left-0 w-full bg-slate-900 z-30 shadow-[0_0_30px_4px] shadow-slate-500/20 border-b border-b-slate-700",
+				div { class: "container flex justify-between items-center w-full text-slate-100 gap-4",
+					LogoLight { class: "w-32 h-auto" }
 
-				LogoLight { class: "w-12 sm:w-28 h-auto" }
-
-				h1 { class: "sm:text-lg text-base font-semibold", "Dioxus Maestro" }
-
-				a {
-					href: "https://github.com/Summit-Sailors/dioxus-maestro/tree/maestro-demo/demo",
-					target: "_blank",
-					class: "flex items-center space-x-2 text-gray-300 hover:text-white transition",
-
-					Icon {
-						icon: FiGithub,
-						width: 16,
-						height: 16,
-						class: "sm:w-16 sm:h-16 w-8 h-8",
+					h1 { class: "lg:text-xl text-lg font-semibold hidden sm:block",
+						"Dioxus Maestro"
 					}
-
-					span { class: "hidden sm:block", "View On GitHub" }
+					a {
+						href: "https://github.com/Summit-Sailors/dioxus-maestro/tree/maestro-demo/demo",
+						target: "_blank",
+						class: "flex items-center space-x-2 text-xl text-slate-300 hover:text-slate-100 transition ring-0 ring-offset-0 focus-visible:outline-none",
+						Icon {
+							icon: IoLogoGithub,
+							width: 16,
+							height: 16,
+							class: "w-8 h-8 text-slate-100",
+						}
+						span { class: "hidden lg:block", "View On GitHub" }
+					}
 				}
 			}
 
 			// main Content
 			main {
 				id: "maestro-demo-main",
-				class: tw_join!(
-						"flex-1 flex flex-col transition-all duration-300 max-h-[inherit]",
-						"w-full px-4 lg:overflow-hidden"
-				),
+				class: "flex-1 flex flex-col overflow-hidden",
 				{content}
 			}
 		}
@@ -151,9 +127,22 @@ fn NavigationMenu(close_menu: Signal<bool>) -> Element {
 	let current_route = use_route::<Route>();
 
 	rsx! {
-		div { id: "maestro-demo-nav", class: "h-full w-full",
+		div {
+			id: "maestro-demo-nav",
+			class: tw_merge!(
+					"h-full xl:w-full w-80 bg-slate-900 xl:sticky overflow-y-auto absolute transition-all ease-linear duration-300 top-0 -right-80 z-50 px-5 xl:px-0 py-6 xl:py-0 flex gap-4 xl:border-l-0 border-l border-l-slate-600 xl:border-t-0 border-t border-t-slate-600",
+					(close_menu()).then_some("right-0")
+			),
+			Button {
+				variant: ButtonVariant::Icon,
+				size: ButtonSize::IconMd,
+				r#type: "button",
+				class: "text-slate-300 hover:text-slate-100 xl:hidden transition-colors",
+				onclick: move |_| close_menu.set(false),
+				Icon { icon: BsLayoutSidebarReverse, class: "w-5 h-5" }
+			}
 
-			div { class: "px-4 w-full",
+			div { class: "w-full flex-1",
 				{
 						Route::iter()
 								.map(|route| {
@@ -162,9 +151,9 @@ fn NavigationMenu(close_menu: Signal<bool>) -> Element {
 											Link {
 												to: route.clone(),
 												class: tw_join!(
-														"block px-4 py-2 rounded-md transition-colors w-full text-center",
-														"hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-600", if
-														is_current { "bg-gray-700 text-white" } else { "text-gray-300 hover:text-white" }
+														"block px-4 py-5 transition-colors w-full text-center text-slate-200 font-medium text-xl border-b border-b-slate-600",
+														"hover:bg-slate-800/20 hover:text-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-600",
+														is_current.then_some("bg-slate-800 text-slate-100")
 												),
 												onclick: move |_| close_menu.set(false),
 												"{route.name()}"

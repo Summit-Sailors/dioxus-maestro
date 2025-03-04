@@ -19,12 +19,12 @@ pub fn Features(props: FeatureProps) -> Element {
 	let mut is_expanded = use_signal(|| false);
 
 	rsx! {
-		div { class: "mb-4 rounded-lg hover:shadow-lg",
+		div { class: "overflow-hidden",
 			div {
-				class: "inline-flex items-center cursor-pointer px-3 py-2",
+				class: "flex items-center cursor-pointer gap-3",
 				onclick: move |_| is_expanded.toggle(),
-				span { class: "font-semibold text-md text-gray-100",
-					{format!("{} Features", props.title)}
+				span { class: "font-medium text-2xl text-slate-300 transition-colors hover:text-slate-100",
+					"{props.title}"
 				}
 				span {
 					Icon {
@@ -32,8 +32,8 @@ pub fn Features(props: FeatureProps) -> Element {
 						height: 16,
 						icon: IoChevronForward,
 						class: tw_join!(
-								"transition-transform duration-200 text-gray-50", (is_expanded())
-								.then_some("rotate-180")
+								"fill-none transition-transform duration-200", (is_expanded())
+								.then_some("rotate-90")
 						),
 					}
 				}
@@ -41,47 +41,44 @@ pub fn Features(props: FeatureProps) -> Element {
 
 			div {
 				class: tw_join!(
-						"px-3 pb-3 w-full transition-all duration-300", if is_expanded() {
-						"block opacity-100 max-h-full scale-y-100" } else {
-						"hidden opacity-0 max-h-0 scale-y-0" }
+						"w-full transition-all duration-300", if is_expanded() {
+						"block opacity-100 h-full scale-y-100 mt-3" } else {
+						"opacity-0 h-0 scale-y-0 mt-0" }
 				),
-				div { class: "mt-2 p-4 rounded-lg shadow-lg",
-					ul {
-						{
-								props
-										.features
-										.iter()
-										.map(|feature| {
-												let (_feature, description) = match feature.find(":") {
-														Some(idx) => {
-																let (b, n) = feature.split_at(idx + 1);
-																(b.to_string(), n.to_string())
+				ul { class: "flex flex-col gap-2.5",
+					{
+							props
+									.features
+									.iter()
+									.map(|feature| {
+											let (_feature, description) = match feature.find(":") {
+													Some(idx) => {
+															let (b, n) = feature.split_at(idx + 1);
+															(b.to_string(), n.to_string())
+													}
+													None => (String::new(), feature.clone()),
+											};
+											rsx! {
+												li { class: "flex items-start gap-2 text-slate-100",
+													span { class: "w-5 h-5 flex items-center justify-center bg-indigo-500 rounded-full",
+														Icon {
+															width: 16,
+															height: 16,
+															icon: FaCheck,
+															class: "text-slate-200 w-2 h-2",
 														}
-														None => (String::new(), feature.clone()),
-												};
-												rsx! {
-													li { class: "flex flex-wrap items-start mb-2 space-x-2",
-														span {
-															Icon {
-																width: 16,
-																height: 16,
-																icon: FaCheck,
-																class: "text-green-500 mt-0.5",
-															}
-														}
-
+													}
+													span {
 														if !_feature.is_empty() {
-															span { class: "text-gray-100 font-medium border rounded-md border-gray-700 p-1",
-																"{_feature}"
-															}
-															span { class: "text-gray-400", "{description}" }
+															span { class: "font-medium", "{_feature}" }
+															"{description}"
 														} else {
-															span { class: "text-gray-100", "{feature}" }
+															"{feature}"
 														}
 													}
 												}
-										})
-						}
+											}
+									})
 					}
 				}
 			}

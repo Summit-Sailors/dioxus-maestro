@@ -10,12 +10,7 @@ html {
 }
 
 body {
-  @apply bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100 font-inter flex flex-col max-h-screen h-full [&>div]:h-full;
-}
-
-/* responsive container */
-.container {
-  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  @apply bg-slate-900 text-slate-100 font-poppins flex flex-col max-h-screen h-full [&>div]:h-full;
 }
 
 /* toast styles - simplified */
@@ -40,5 +35,38 @@ body {
   .maestro-toast {
     width: 100%;
     max-width: 100%;
+  }
+}
+
+@layer components {
+  @screen sm {
+    .container {
+      max-width: 584px;
+      padding: 0;
+    }
+  }
+
+  @screen lg {
+    .container {
+      max-width: 854px;
+    }
+  }
+
+  @screen xl {
+    .container {
+      max-width: 1066px;
+    }
+  }
+
+  @screen 2xl {
+    .container {
+      max-width: 1260px;
+    }
+  }
+
+  @screen 3xl {
+    .container {
+      max-width: 1440px;
+    }
   }
 }
