@@ -7,15 +7,27 @@ name = "maestro-serpapi"
 repository = ""
 
 [dependencies]
+
+api = { path = "../../../PromptCraft/crates/api", features = ["server"] }
+chrome-fastapi = { path = "../../../services/crates/chrome-fastapi" }
+
 bon = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 strum = { workspace = true }
 strum_macros = { workspace = true }
 
-dioxus = { version = "0.6.3", features = ["fullstack"], optional = true }
+dioxus = { version = "0.6.3", features = ["fullstack"] }
 reqwest = { version = "0.12.12", features = ["json", "multipart"], optional = true }
+
+readability-rs = "0.5.0"
+
+tokio-retry2 = { version = "0.5.7", features = ["jitter", "tracing"], optional = true }
+
+anyhow = { version = "1.0.97", default-features = false }
+futures = { version = "0.3.31", default-features = false }
+url = { version = "2.5.4", features = ["serde"] }
 
 [features]
 dioxus = []
-server = ["dioxus?/server", "reqwest"]
+server = ["dioxus/server", "reqwest", "tokio-retry2"]

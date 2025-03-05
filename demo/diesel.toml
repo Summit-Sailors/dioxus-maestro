@@ -1,0 +1,6 @@
+[print_schema]
+custom_type_derives = ["diesel::query_builder::QueryId"]
+file = "src/clients/db/diesel_schema.rs"
+
+[migrations_directory]
+dir = "diesel_migrations"

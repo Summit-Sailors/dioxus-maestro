@@ -1,10 +1,10 @@
 use dioxus::prelude::*;
 
-pub struct UsePagination {
+pub struct Pagination {
 	pub idx: Signal<i32>,
 	pub page: Signal<i32>,
 	pub page_size: Signal<i32>,
-	pub total: Memo<i32>,
+	pub total: Signal<i32>,
 	pub counter_label: Memo<String>,
 	pub next_idx_disabled: Memo<bool>,
 	pub prev_idx_disabled: Memo<bool>,
@@ -14,7 +14,7 @@ pub struct UsePagination {
 	pub items_in_current_page: Memo<i32>,
 }
 
-impl Clone for UsePagination {
+impl Clone for Pagination {
 	fn clone(&self) -> Self {
 		Self {
 			idx: self.idx,
@@ -32,7 +32,7 @@ impl Clone for UsePagination {
 	}
 }
 
-pub fn use_pagination(total: Memo<i32>, page_size: i32) -> (UsePagination, (impl FnMut(), impl FnMut(), impl FnMut(), impl FnMut(), impl FnMut(i32))) {
+pub fn use_pagination(total: Signal<i32>, page_size: i32) -> (Pagination, (impl FnMut(), impl FnMut(), impl FnMut(), impl FnMut(), impl FnMut(i32))) {
 	let mut idx = use_signal(|| 0);
 	let mut page = use_signal(|| 0);
 	let mut page_size_signal = use_signal(|| page_size);
@@ -119,7 +119,7 @@ pub fn use_pagination(total: Memo<i32>, page_size: i32) -> (UsePagination, (impl
 	};
 
 	(
-		UsePagination {
+		Pagination {
 			idx,
 			page,
 			page_size: page_size_signal,

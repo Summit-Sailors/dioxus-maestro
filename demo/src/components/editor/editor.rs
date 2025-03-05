@@ -91,98 +91,98 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
 	let highlighted_code = highlight_code(&current_code, &props.language);
 
 	let action_buttons = rsx! {
-    div { class: "text-slate-100 z-10 bg-slate-900 sticky top-0 left-0 px-5 py-6",
-      div { class: "flex flex-col sm:flex-row gap-4 items-center sm:items-start sm:justify-center",
-        div { class: "relative",
-          Button {
-            variant: ButtonVariant::Icon,
-            size: ButtonSize::IconMd,
-            r#type: "button",
-            class: "text-slate-300 hover:text-slate-100 transition-colors",
-            disabled: "{is_copying()}",
-            onclick: handle_copy,
-            title: "Copy Code",
-            Icon {
-              icon: IoCopyOutline,
-              width: 20,
-              height: 20,
-              class: "fill-none",
-            }
-          }
-          div {
-            class: tw_join!(
-                "absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white text-xs py-1 px-2 rounded transition-opacity duration-300 {}",
-                if copy_status().is_empty() { "opacity-0" } else { "opacity-100" }
-            ),
-            "{copy_status}"
-          }
-        }
+		div { class: "text-slate-100 z-10 bg-slate-900 sticky top-0 left-0 px-5 py-6",
+			div { class: "flex flex-col sm:flex-row gap-4 items-center sm:items-start sm:justify-center",
+				div { class: "relative",
+					Button {
+						variant: ButtonVariant::Icon,
+						size: ButtonSize::IconMd,
+						r#type: "button",
+						class: "text-slate-300 hover:text-slate-100 transition-colors",
+						disabled: "{is_copying()}",
+						onclick: handle_copy,
+						title: "Copy Code",
+						Icon {
+							icon: IoCopyOutline,
+							width: 20,
+							height: 20,
+							class: "fill-none",
+						}
+					}
+					div {
+						class: tw_join!(
+								"absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white text-xs py-1 px-2 rounded transition-opacity duration-300 {}",
+								if copy_status().is_empty() { "opacity-0" } else { "opacity-100" }
+						),
+						"{copy_status}"
+					}
+				}
 
-        Button {
-          variant: ButtonVariant::Icon,
-          size: ButtonSize::IconMd,
-          r#type: "button",
-          class: "text-slate-300 hover:text-slate-100 transition-colors",
-          onclick: toggle_expanded,
-          title: if is_expanded() { "Collapse Code" } else { "View Code" },
-          if is_expanded() {
-            Collapse { class: "w-5 h-5" }
-          } else {
-            Expand { class: "w-5 h-5" }
-          }
-        }
-      }
-    }
-  };
+				Button {
+					variant: ButtonVariant::Icon,
+					size: ButtonSize::IconMd,
+					r#type: "button",
+					class: "text-slate-300 hover:text-slate-100 transition-colors",
+					onclick: toggle_expanded,
+					title: if is_expanded() { "Collapse Code" } else { "View Code" },
+					if is_expanded() {
+						Collapse { class: "w-5 h-5" }
+					} else {
+						Expand { class: "w-5 h-5" }
+					}
+				}
+			}
+		}
+	};
 
 	rsx! {
-    div { class: "grid sm:grid-cols-[108px_1fr] grid-cols-[42px_1fr]  overflow-y-auto",
-      div { class: "border-r border-r-slate-700 relative", {action_buttons.clone()} }
+		div { class: "grid sm:grid-cols-[108px_1fr] grid-cols-[42px_1fr]  overflow-y-auto",
+			div { class: "border-r border-r-slate-700 relative", {action_buttons.clone()} }
 
-      div { class: "lg:px-16 lg:py-16 sm:py-8 sm:px-6 py-6 px-4 bg-slate-900 h-full w-full flex flex-col overflow-x-hidden",
-        // code section
-        if is_expanded() {
-          div { class: "bg-slate-900 flex-1 flex flex-col",
-            h2 { class: "text-slate-100 text-center text-2xl sm:text-3xl lg:text-4xl 2xl:text-5xl font-semibold mb-3",
-              "Source Code"
-            }
+			div { class: "lg:px-16 lg:py-16 sm:py-8 sm:px-6 py-6 px-4 bg-slate-900 h-full w-full flex flex-col overflow-x-hidden",
+				// code section
+				if is_expanded() {
+					div { class: "bg-slate-900 flex-1 flex flex-col",
+						h2 { class: "text-slate-100 text-center text-2xl sm:text-3xl lg:text-4xl 2xl:text-5xl font-semibold mb-3",
+							"Source Code"
+						}
 
-            div { class: "flex justify-center",
+						div { class: "flex justify-center",
 
-              Select {
-                options: file_keys,
-                current_value: Some(selected_file.read().to_string()),
-                onchange: move |value| selected_file.set(value),
-                label: "Single Select",
-                placeholder: "Select an option",
-                button_class: "text-slate-200 bg-slate-900",
-                dropdown_class: "text-slate-200 !bg-slate-900 border-slate-700",
-                option_class: "hover:bg-slate-800 text-slate-200",
-              }
-            }
+							Select {
+								options: file_keys,
+								current_value: Some(selected_file.read().to_string()),
+								onchange: move |value| selected_file.set(value),
+								label: "Single Select",
+								placeholder: "Select an option",
+								button_class: "text-slate-200 bg-slate-900",
+								dropdown_class: "text-slate-200 !bg-slate-900 border-slate-700",
+								option_class: "hover:bg-slate-800 text-slate-200",
+							}
+						}
 
-            div { class: "relative flex-1 bg-slate-900 rounded-lg flex flex-col bg-slate-950/20 lg:px-16 sm:px-6 px-2 py-8 h-full overflow-x-auto mt-8",
+						div { class: "relative flex-1 bg-slate-900 rounded-lg flex flex-col bg-slate-950/20 lg:px-16 sm:px-6 px-2 py-8 h-full overflow-x-auto mt-8",
 
-              div { class: "flex justify-between items-center bg-slate-800 text-slate-300 text-xs px-4 py-2 rounded-t-md",
-                span { class: "font-mono", "{selected_file()}" }
-                div { class: "flex gap-1",
-                  span { class: "w-3 h-3 bg-red-500 rounded-full" }
-                  span { class: "w-3 h-3 bg-yellow-500 rounded-full" }
-                  span { class: "w-3 h-3 bg-green-500 rounded-full" }
-                }
-              }
+							div { class: "flex justify-between items-center bg-slate-800 text-slate-300 text-xs px-4 py-2 rounded-t-md",
+								span { class: "font-mono", "{selected_file()}" }
+								div { class: "flex gap-1",
+									span { class: "w-3 h-3 bg-red-500 rounded-full" }
+									span { class: "w-3 h-3 bg-yellow-500 rounded-full" }
+									span { class: "w-3 h-3 bg-green-500 rounded-full" }
+								}
+							}
 
-              div {
-                class: "font-mono text-sm whitespace-pre p-4",
-                // dangerous_inner_html to render the highlighted code
-                dangerous_inner_html: "{highlighted_code}",
-              }
-            }
-          }
-        } else {
-          div { class: "w-full h-full", {props.demo} }
-        }
-      }
-    }
-  }
+							div {
+								class: "font-mono text-sm whitespace-pre p-4",
+								// dangerous_inner_html to render the highlighted code
+								dangerous_inner_html: "{highlighted_code}",
+							}
+						}
+					}
+				} else {
+					div { class: "w-full h-full", {props.demo} }
+				}
+			}
+		}
+	}
 }

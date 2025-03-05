@@ -41,7 +41,7 @@ pub fn HooksDemo() -> Element {
 
 	let page_size = 10;
 
-	let (pagination, (mut next_idx, mut prev_idx, mut next_page, mut prev_page, mut set_page_size)) = use_pagination(use_memo(move || total_items()), page_size);
+	let (pagination, (mut next_idx, mut prev_idx, mut next_page, mut prev_page, mut set_page_size)) = use_pagination(total_items, page_size);
 
 	let mut clipboard_content = use_signal(String::new);
 	let mut copy_status = use_signal(String::new);
@@ -317,7 +317,7 @@ pub fn HooksDemo() -> Element {
 								select {
 									class: "border bg-slate-900 border-slate-500 rounded p-1",
 									value: "{*pagination.page_size.read()}",
-									onchange: move |e| {
+									onchange: move |e: FormEvent| {
 											if let Ok(size) = e.value().parse::<i32>() {
 													set_page_size(size);
 											}

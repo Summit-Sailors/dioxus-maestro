@@ -28,11 +28,6 @@ pub fn UIDemo() -> Element {
 
 	let mut selected_value = use_signal(|| "option1".to_string());
 
-	// let handle_radio_change = move |value: String| {
-	// 	let mut selected_value = selected_value.clone();
-	// 	move |_| selected_value.set(value.clone())
-	// };
-
 	let mut toast = use_toast();
 
 	let mut handle_button_click = move |button_message: String| {
