@@ -9,6 +9,7 @@ version = "0.1.0"
 
 # clients
 maestro-diesel = { path = "../clients/maestro-diesel", features = ["async", "server", "sync"], optional = true }
+maestro-serpapi = { path = "../clients/maestro-serpapi", features = ["dioxus", "server"], optional = true }
 maestro-sqlx = { path = "../clients/maestro-sqlx", features = ["acreate", "create"], optional = true }
 
 # components and utilities
@@ -46,7 +47,7 @@ plotters = { version = "0.3.7", default-features = false, features = [
   "svg_backend",
 ] }
 serde = { version = "1.0.218", features = ["derive"] }
-serde_json = "1.0.139"
+serde_json = "1.0.140"
 strum = "0.27.1"
 strum_macros = "0.27.1"
 syntect = { version = "5.2.0", default-features = false, features = ["default-fancy"] }
@@ -54,11 +55,34 @@ tailwind_fuse = { version = "0.3.2", features = ["variant"] }
 validator = { version = "0.20.0", features = ["derive"] }
 web-sys = "0.3.77"
 
+tokio = { version = "1.43.0", features = ["full"], optional = true }
+tokio-stream = { version = "0.1.17", optional = true }
+tokio-util = { version = "0.7.13", features = ["full", "tracing"], optional = true }
+
+sqlx = { version = "0.8.3", features = ["runtime-tokio", "tls-native-tls"], optional = true }
+
+diesel = { version = "2.2.8", features = ["chrono", "postgres", "serde_json", "uuid"], optional = true }
+diesel-async = { version = "0.5.2", features = ["postgres"], optional = true }
+diesel-derive-enum = { version = "2.1.0", features = ["postgres"], optional = true }
+
 [build-dependencies]
 dotenvy = { git = "https://github.com/allan2/dotenvy.git", features = ["macros"] }
 
 [features]
 desktop = ["apalis", "dioxus/desktop"]
 mobile = ["apalis", "dioxus/mobile"]
-server = ["dep:apalis-core", "dep:maestro-diesel", "dep:maestro-sqlx", "dioxus/server"]
+server = [
+  "dep:apalis-core",
+  "dep:diesel",
+  "dep:diesel-async",
+  "dep:diesel-derive-enum",
+  "dep:maestro-diesel",
+  "dep:maestro-serpapi",
+  "dep:maestro-sqlx",
+  "dep:sqlx",
+  "dep:tokio",
+  "dep:tokio-stream",
+  "dep:tokio-util",
+  "dioxus/server",
+]
 web = ["dioxus/web"]

@@ -33,7 +33,8 @@ struct UserForm {
 Form {
   form: form, // Form context
   onsubmit: handle_submit, // Your onsubmit handler
-  inner: form_content // A function that returns the actual form
+  auto_reset: bool, // whether form should reset after submission
+  inner: form_content // A function that returns the actual form (the form component)
 }
 ```
 
@@ -108,7 +109,7 @@ pub fn UserFormComponent() -> Element {
       onsubmit: move |(_event, (submitted_user, is_valid), complete_submission): (FormEvent, FormResult<User>, Box<dyn FnOnce()>)| {
         // Handle submission
 
-        // Call the complete_submission() method at the end
+        // Call the complete_submission() method to finalize the submission process and update form states. 
         complete_submission();
       },
       auto_reset: true
@@ -125,7 +126,7 @@ pub fn UserFormComponent() -> Element {
 Maestro Forms includes a built-in form state debugger that helps during development:
 
 ```rust
-FormStateDebugger { form: props.form } 
+FormStateDebugger { form: props.form }
 // View the demo directory for sample implementation of the FormStateDebugger
 ```
 

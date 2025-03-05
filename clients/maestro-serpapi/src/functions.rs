@@ -1,18 +1,14 @@
-use {
-	api::prompt_preset::models::SerpapiDTO,
-	dioxus::prelude::*,
-	dioxus_logger::tracing::{debug, error},
-};
 #[cfg(feature = "server")]
 use {
-	chrome_fastapi::codegen::types::UrlRequest,
-	chrome_fastapi::codegen::Client as ChromeClient,
-	futures::future::join_all,
-	maestro_serpapi::client::serpapi_request,
-	readability::ExtractOptions,
-	std::io::Cursor,
-	tokio_retry2::{strategy::ExponentialBackoff, Retry},
-	url::Url,
+	crate::client::serpapi_request, chrome_fastapi::codegen::types::UrlRequest, chrome_fastapi::codegen::Client as ChromeClient, futures::future::join_all,
+	readability::ExtractOptions, std::io::Cursor, tokio_retry2::strategy::ExponentialBackoff, tokio_retry2::Retry, url::Url,
+};
+use {
+	api::prompt_preset::models,
+	dioxus::{
+		logger::tracing::{debug, error},
+		prelude::*,
+	},
 };
 
 #[cfg(feature = "server")]
