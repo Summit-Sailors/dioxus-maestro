@@ -1,10 +1,15 @@
 use {
 	crate::components::ui::{component_section::ComponentSection, features::Features},
+	async_std::task::sleep,
 	dioxus::prelude::*,
-	dioxus_free_icons::{icons::fa_solid_icons::FaCopy, Icon},
-	maestro_toast::{ctx::use_toast, toast_info::ToastInfo, toast_position::EToastPosition},
+	dioxus_free_icons::{
+		icons::{fa_solid_icons::FaCopy, ld_icons::LdX},
+		Icon,
+	},
+	maestro_toast::{ctx::use_toast, toast_code::EToastCode, toast_info::ToastInfo, toast_position::EToastPosition},
 	maestro_ui::{
 		button::{Button, ButtonSize, ButtonVariant},
+		dialog::{Dialog, DialogClose, DialogContent, DialogDescription, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger},
 		input::{Input, InputVariant},
 		label::Label,
 		multi_select::MultiSelect,
@@ -15,6 +20,7 @@ use {
 		textarea::Textarea,
 		toggle::{EToggleSwitchLabelPlacement, ToggleSwitch, ToggleSwitchLabelStatesProp},
 	},
+	std::time::Duration,
 };
 
 #[component]
@@ -27,6 +33,7 @@ pub fn UIDemo() -> Element {
 	let mut range_value = use_signal(|| 0);
 
 	let mut selected_value = use_signal(|| "option1".to_string());
+	let mut dialog_open = use_signal(|| false);
 
 	// let handle_radio_change = move |value: String| {
 	// 	let mut selected_value = selected_value.clone();
@@ -455,6 +462,52 @@ pub fn UIDemo() -> Element {
 						value_class: "mt-2",
 						thumb_class: "[&::-webkit-slider-thumb]:bg-blue-600 [&::-webkit-slider-thumb]:ring-blue-600 [&::-webkit-slider-thumb]:hover:ring-blue-600 [&::-webkit-slider-thumb]:hover:bg-blue-800 [&::-webkit-slider-thumb]:rounded-sm [&::-moz-range-thumb]:bg-blue-600 [&::-moz-range-thumb]:ring-blue-600 [&::-moz-range-thumb]:hover:bg-blue-800 [&::-moz-range-thumb]:rounded-sm [&::-ms-thumb]:bg-blue-600 [&::-ms-thumb]:ring-blue-600 [&::-ms-thumb]:hover:ring-blue-600 [&::-ms-thumb]:hover:bg-blue-800 [&::-ms-thumb]:rounded-sm",
 						track_class: "[&::-webkit-slider-runnable-track]:bg-blue-300 [&::-moz-range-track]:bg-blue-300 [&::-ms-track]:bg-blue-300 [&::-webkit-slider-runnable-track]:hover:bg-blue-300 [&::-moz-range-track]:hover:bg-blue-300 [&::-ms-track]:hover:bg-blue-300",
+					}
+
+					Dialog { open: dialog_open,
+						DialogTrigger { class: "bg-orange-600 text-white font-medium text-lg rounded px-3 py-2",
+							"Open dialog"
+						}
+						DialogPortal {
+							DialogOverlay { class: "fixed top-0 left-0 right-0 bottom-0 bg-gray-950/20 inset-0 backdrop-blur-sm z-[100] !m-0 opacity-0 transition-all linear duration-1000 data-[state=open]:opacity-100" }
+							DialogContent { class: "max-w-96 w-full rounded-md bg-white text-gray-800 shadow p-4 flex flex-col gap-5 z-[110] fixed mx-auto my-auto top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 max-h-80 opacity-0 transition-opacity data-[state=open]:opacity-100",
+								div { class: "flex items-start justify-between gap-4",
+									DialogTitle { class: "text-xl font-semibold", "Dialog Title" }
+									DialogClose { class: "w-4 h-4 text-gray-600 hover:text-gray-800",
+										Icon { icon: LdX }
+									}
+								}
+								DialogDescription {
+									p { class: "text-base text-gray-600 text-center",
+										"Some description"
+									}
+								}
+								div { class: "w-full flex flex-col items-center justify-center",
+									p {
+										"this button may play role of submit and will close dialog now. But also it will simulate close after some time (for example, submit)"
+									}
+									Button {
+										r#type: "button",
+										onclick: move |_| {
+												spawn(async move {
+														let info = ToastInfo {
+																heading: Some("Button Click Handler".to_string()),
+																context: "Will close in a second".into(),
+																icon: Some(EToastCode::Success),
+																position: EToastPosition::TopRight,
+																allow_toast_close: true,
+																hide_after: 5,
+														};
+														toast.write().popup(info);
+														sleep(Duration::from_secs(1)).await;
+														dialog_open.set(false)
+												});
+										},
+										"Close"
+									}
+								}
+							}
+						}
 					}
 				}
 			}
