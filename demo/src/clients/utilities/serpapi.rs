@@ -1,7 +1,6 @@
 use {
 	dioxus::prelude::*,
 	maestro_serpapi::{
-		client::serpapi_request,
 		request_type::{ETimeFrame, Engine, SafeSearch, SearchType},
 		response_type::{OrganicResult, SearchResponse},
 	},
@@ -10,7 +9,7 @@ use {
 #[derive(Clone, Debug)]
 struct SearchState {
 	query: String,
-	results: Vec<OrganicResult>,
+	results: Vec<T>,
 	loading: bool,
 	error: Option<String>,
 }
@@ -111,6 +110,8 @@ fn SerpApiDemo() -> Element {
 // server function to perform the search
 #[server]
 async fn search_google(query: String) -> Result<Vec<OrganicResult>, ServerFnError> {
+	use maestro_serpapi::client::serpapi_request;
+
 	// the SerpAPI request with various parameters to showcase the flexibility
 	let search_response = serpapi_request()
 		.q(query) // search query
@@ -134,6 +135,8 @@ async fn advanced_search(
 	time_frame: Option<ETimeFrame>,
 	location: Option<String>,
 ) -> Result<SearchResponse, ServerFnError> {
+	use maestro_serpapi::client::serpapi_request;
+
 	let search_response = serpapi_request()
 		.q(query)
 		.engine(Engine::Google)

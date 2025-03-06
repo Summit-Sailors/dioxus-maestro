@@ -1,5 +1,5 @@
-pub mod diesel;
-pub mod sqlx;
+// pub mod diesel;
+// pub mod sqlx;
 
-#[cfg(feature = "server")]
-pub mod diesel_schema;
+// #[cfg(feature = "server")]
+// pub mod diesel_schema;

@@ -40,6 +40,9 @@ inherits = "dev"
 
 [workspace.dependencies]
 
+# api = { path = "../PromptCraft/crates/api" }
+chrome-fastapi = { path = "../services/crates/chrome-fastapi" }
+
 # frontend
 maestro-forms = { path = "frontend/maestro-forms" }
 maestro-hooks = { path = "frontend/maestro-hooks" }

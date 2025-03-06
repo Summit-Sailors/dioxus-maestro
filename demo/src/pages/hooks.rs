@@ -41,7 +41,7 @@ pub fn HooksDemo() -> Element {
 
 	let page_size = 10;
 
-	let (pagination, (mut next_idx, mut prev_idx, mut next_page, mut prev_page, mut set_page_size)) = use_pagination(total_items, page_size);
+	let mut pagination = use_pagination(total_items, page_size);
 
 	let mut clipboard_content = use_signal(String::new);
 	let mut copy_status = use_signal(String::new);
@@ -319,7 +319,7 @@ pub fn HooksDemo() -> Element {
 									value: "{*pagination.page_size.read()}",
 									onchange: move |e: FormEvent| {
 											if let Ok(size) = e.value().parse::<i32>() {
-													set_page_size(size);
+													pagination.set_page_size(size);
 											}
 									},
 									option { value: "5", "5" }
@@ -351,25 +351,25 @@ pub fn HooksDemo() -> Element {
 							div { class: "flex space-x-4 mt-6 justify-center",
 								button {
 									disabled: "{*pagination.prev_idx_disabled.read()}",
-									onclick: move |_| prev_idx(),
+									onclick: move |_| pagination.prev_idx(),
 									class: "rounded bg-slate-500 text-white py-2 px-4 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed",
 									Icon { class: "h-6 w-6", icon: LdChevronLeft }
 								}
 								button {
 									disabled: "{*pagination.prev_page_disabled.read()}",
-									onclick: move |_| prev_page(),
+									onclick: move |_| pagination.prev_page(),
 									class: "rounded bg-slate-500 text-white py-2 px-4 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed",
 									Icon { class: "h-6 w-6", icon: LdChevronsLeft }
 								}
 								button {
 									disabled: "{*pagination.next_page_disabled.read()}",
-									onclick: move |_| next_page(),
+									onclick: move |_| pagination.next_page(),
 									class: "rounded bg-slate-500 text-white py-2 px-4 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed",
 									Icon { class: "h-6 w-6", icon: LdChevronsRight }
 								}
 								button {
 									disabled: "{*pagination.next_idx_disabled.read()}",
-									onclick: move |_| next_idx(),
+									onclick: move |_| pagination.next_idx(),
 									class: "rounded bg-slate-500 text-white py-2 px-4 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed",
 									Icon { class: "h-6 w-6", icon: LdChevronRight }
 								}

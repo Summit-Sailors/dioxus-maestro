@@ -74,12 +74,12 @@ fn SqlxDemo() -> Element {
 								users
 										.read()
 										.iter()
-										.map(|user| {
+										.map(|user: &User| {
 												rsx! {
 													li { key: "{user.email}",
 														p { "Username: {user.username}" }
 														p { "Email: {user.email}" }
-														p { "Role: {user.role}" }
+														p { "Role: {user.role.into()}" }
 													}
 												}
 										})

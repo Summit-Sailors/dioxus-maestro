@@ -8,8 +8,8 @@ repository = ""
 
 [dependencies]
 
-api = { path = "../../../PromptCraft/crates/api", features = ["server"] }
-chrome-fastapi = { path = "../../../services/crates/chrome-fastapi" }
+# api = { workspace = true, features = ["server"] }
+chrome-fastapi = { workspace = true }
 
 bon = { workspace = true }
 serde = { workspace = true }

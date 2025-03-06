@@ -8,8 +8,10 @@ version = "0.1.0"
 # local deps
 
 # clients
+# api = { workspace = true, features = ["server"], optional = true }
+chrome-fastapi = { workspace = true }
 maestro-diesel = { path = "../clients/maestro-diesel", features = ["async", "server", "sync"], optional = true }
-maestro-serpapi = { path = "../clients/maestro-serpapi", features = ["dioxus", "server"], optional = true }
+# maestro-serpapi = { path = "../clients/maestro-serpapi", features = ["dioxus", "server"], optional = true }
 maestro-sqlx = { path = "../clients/maestro-sqlx", features = ["acreate", "create"], optional = true }
 
 # components and utilities
@@ -73,11 +75,12 @@ desktop = ["apalis", "dioxus/desktop"]
 mobile = ["apalis", "dioxus/mobile"]
 server = [
   "dep:apalis-core",
+  # "dep:api",
   "dep:diesel",
   "dep:diesel-async",
   "dep:diesel-derive-enum",
   "dep:maestro-diesel",
-  "dep:maestro-serpapi",
+  # "dep:maestro-serpapi",
   "dep:maestro-sqlx",
   "dep:sqlx",
   "dep:tokio",
