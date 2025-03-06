@@ -43,7 +43,6 @@ inherits = "dev"
 # frontend
 maestro-forms = { path = "frontend/maestro-forms" }
 maestro-hooks = { path = "frontend/maestro-hooks" }
-maestro-query = { path = "frontend/maestro-query" }
 maestro-toast = { path = "frontend/maestro-toast" }
 maestro-ui = { path = "frontend/maestro-ui" }
 
