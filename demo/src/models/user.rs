@@ -42,7 +42,7 @@ impl Default for User {
 	}
 }
 
-#[derive(Clone, PartialEq, Serialize, Deserialize, Default)]
+#[derive(Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct UserAttrs {
 	pub gender: String,
 	pub favorite_color: String,
