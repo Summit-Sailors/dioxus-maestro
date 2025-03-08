@@ -1,9 +1,4 @@
-use {
-	crate::router::Route,
-	dioxus::prelude::*,
-	maestro_ui::button::{Button, ButtonSize, ButtonVariant},
-	strum::IntoEnumIterator,
-};
+use {crate::router::Route, dioxus::prelude::*, maestro_ui::button::Button, strum::IntoEnumIterator};
 
 #[component]
 pub fn HomePage() -> Element {
@@ -58,8 +53,8 @@ pub fn FeatureCard(title: &'static str, description: String, route: Option<Route
 					class: "mt-auto ring-0 ring-offset-0 focus-visible:outline-none",
 					Button {
 						class: "w-fit text-lg bg-indigo-600 text-slate-100 hover:bg-indigo-700 ring-indigo-700 ring-offset-slate-800/70 focus:outline-none",
-						variant: ButtonVariant::Default,
-						size: ButtonSize::Lg,
+						// variant: ButtonVariant::Default,
+						// size: ButtonSize::Lg,
 						r#type: "button",
 						"Explore"
 					}

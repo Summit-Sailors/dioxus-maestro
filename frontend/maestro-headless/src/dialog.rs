@@ -1,6 +1,14 @@
-use {dioxus::prelude::*, web_sys::window};
+use {
+	crate::{
+		button::{use_button::use_button, Button},
+		hooks::use_attributes,
+	},
+	dioxus::prelude::*,
+	std::fmt::Debug,
+	web_sys::window,
+};
 
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Clone, PartialEq, Debug, Copy)]
 struct DialogContext {
 	pub open: Signal<bool>,
 	pub onclose: Option<Callback>,
@@ -58,25 +66,33 @@ pub fn Dialog(props: DialogProps) -> Element {
 	}
 }
 
+// TO DO!!! Impossible to pass attributes to child, used a hack (custom hook)
+
 #[derive(Clone, PartialEq, Props)]
 pub struct DialogTriggerProps {
 	pub children: Element,
 	#[props(extends = GlobalAttributes, extends = button)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = false)]
+	disabled: bool,
 }
 
 #[component]
 pub fn DialogTrigger(props: DialogTriggerProps) -> Element {
+	let DialogTriggerProps { attributes, disabled, .. } = props;
 	let mut dialog_context = use_context::<DialogContext>();
+	let button_context = use_button(false, disabled);
+	use_attributes(button_context.self_ref, attributes.clone());
 
 	rsx! {
-		button {
+		Button {
+			context: button_context,
 			r#type: "button",
 			aria_haspopup: "dialog",
-			aria_expanded: *dialog_context.open.clone().read(),
-			"data-state": if *dialog_context.open.clone().read() { "open" } else { "closed" },
+			aria_expanded: *dialog_context.open.read(),
+			"data-state": if *dialog_context.open.read() { "open" } else { "closed" },
 			onclick: move |_| dialog_context.toggle(true),
-			..props.attributes,
+			disabled: props.disabled,
 			{props.children}
 		}
 	}
@@ -132,13 +148,33 @@ pub struct DialogContentProps {
 
 #[component]
 pub fn DialogContent(props: DialogContentProps) -> Element {
-	let dialog_context = use_context::<DialogContext>();
+	let mut dialog_context = use_context::<DialogContext>();
+	let mut content_element = use_signal::<Option<std::rc::Rc<dioxus::events::MountedData>>>(|| None);
+
+	use_effect(move || {
+		spawn(async move {
+			if *dialog_context.open.peek() {
+				if let Some(element) = content_element() {
+					let _ = element.set_focus(true).await;
+				}
+			}
+		});
+	});
 
 	if *dialog_context.open.read() {
 		rsx! {
 			div {
 				role: "dialog",
 				"data-state": if *dialog_context.open.read() { "open" } else { "closed" },
+				tabindex: "0",
+				onkeydown: move |evt: KeyboardEvent| {
+						if evt.key() == Key::Escape {
+								dialog_context.toggle(false);
+						}
+				},
+				onmounted: move |el| {
+						content_element.set(Some(el.data()));
+				},
 				..props.attributes,
 				{props.children}
 			}
@@ -186,12 +222,13 @@ pub struct DialogCloseProps {
 #[component]
 pub fn DialogClose(props: DialogCloseProps) -> Element {
 	let mut dialog_context = use_context::<DialogContext>();
-
+	let button_context = use_button(false, false);
+	use_attributes(button_context.self_ref, props.attributes.clone());
 	rsx! {
-		button {
+		Button {
 			r#type: "button",
 			onclick: move |_| dialog_context.toggle(false),
-			..props.attributes,
+			context: button_context,
 			{props.children}
 		}
 	}

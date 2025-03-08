@@ -191,7 +191,7 @@ fn get_source_code(route: &Route) -> HashMap<String, String> {
 			code_map.insert("toast".to_string(), String::from(include_str!("pages/toast.rs")));
 		},
 		Route::UIDemo {} => {
-			code_map.insert("ui".to_string(), String::from(include_str!("pages/ui.rs")));
+			code_map.insert("ui".to_string(), String::from(include_str!("pages/ui/mod.rs")));
 		},
 		Route::CalendarDemo {} => {
 			code_map.insert("calendar".to_string(), String::from(include_str!("pages/calendar.rs")));

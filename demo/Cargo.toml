@@ -13,6 +13,7 @@ maestro-sqlx = { path = "../clients/maestro-sqlx", features = ["acreate", "creat
 
 # components and utilities
 maestro-forms = { path = "../frontend/maestro-forms" }
+maestro-headless = { path = "../frontend/maestro-headless" }
 maestro-hooks = { path = "../frontend/maestro-hooks" }
 maestro-plotters = { path = "../frontend/maestro-plotters" }
 maestro-query = { path = "../frontend/maestro-query" }
