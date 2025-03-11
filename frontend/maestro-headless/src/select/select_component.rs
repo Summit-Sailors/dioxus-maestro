@@ -1,79 +1,23 @@
 use {
+	crate::{
+		button::{Button, use_button},
+		focus_trap::FocusTrap,
+		hooks::use_outside_click,
+		select::{SelectContext, SelectOption, UseSelectProps, use_select},
+	},
 	dioxus::prelude::*,
 	dioxus_free_icons::{
-		icons::bs_icons::{BsCheck, BsChevronDown},
 		Icon,
+		icons::{
+			bs_icons::{BsCheck, BsChevronDown, BsSearch},
+			ld_icons::LdX,
+		},
 	},
-	dioxus_logger::tracing::info,
 	std::{
-		cmp::Ordering,
 		fmt::{Debug, Display},
+		rc::Rc,
 	},
 };
-
-#[derive(Clone, PartialEq, Debug, Copy)]
-pub struct SelectContext<T>
-where
-	T: Clone + PartialEq + Display + Debug + 'static,
-{
-	pub options: Signal<Vec<SelectOption<T>>>,
-	pub value: Signal<Option<T>>,
-	pub onchange: Option<Callback<T>>,
-	pub open: Signal<bool>,
-	pub disabled: Signal<bool>,
-	pub onopenchange: Option<Callback<bool>>,
-	pub search_input: Signal<String>,
-	pub is_searchable: bool,
-}
-
-impl<T> SelectContext<T>
-where
-	T: Clone + PartialEq + Display + Debug + 'static,
-{
-	pub fn new(
-		value: Signal<Option<T>>,
-		options: Signal<Vec<SelectOption<T>>>,
-		onchange: Option<Callback<T>>,
-		open: Signal<bool>,
-		onopenchange: Option<Callback<bool>>,
-		is_searchable: bool,
-		disabled: Signal<bool>,
-	) -> Self {
-		info!("RERUN");
-		Self { value, options, onchange, open, onopenchange, is_searchable, disabled, search_input: Signal::new(String::default()) }
-	}
-
-	fn set_options(&mut self, options: Vec<SelectOption<T>>) {
-		self.options.set(options);
-	}
-
-	pub fn on_search_input_change(&mut self) {
-		let search = self.search_input.peek().clone();
-		let current_value = self.value.peek().clone();
-		let options = self.options.peek().clone();
-		let mut filtered = options.into_iter().filter(|option| option.label.to_lowercase().contains(&search.to_lowercase())).collect::<Vec<SelectOption<T>>>();
-		filtered.sort_by(|a, b| {
-			if let Some(current_value) = &current_value {
-				if &a.value == current_value {
-					Ordering::Less
-				} else if &b.value == current_value {
-					Ordering::Greater
-				} else {
-					Ordering::Equal
-				}
-			} else {
-				Ordering::Equal
-			}
-		});
-		self.set_options(filtered);
-	}
-}
-
-#[derive(Clone, PartialEq, Debug)]
-pub struct SelectOption<T> {
-	pub label: String,
-	pub value: T,
-}
 
 #[derive(Clone, PartialEq, Props)]
 pub struct SelectProps<T>
@@ -99,25 +43,20 @@ where
 #[component]
 pub fn Select<T: Clone + PartialEq + Display + Debug + 'static>(props: SelectProps<T>) -> Element {
 	let SelectProps { options, default_open, disabled, onchange, onopenchange, value, is_searchable, children, attributes } = props;
-
-	let options = use_signal::<Vec<SelectOption<T>>>(|| options.clone());
-	let is_disabled = use_signal(|| disabled);
-	let is_default_open = use_signal(|| default_open);
-
-	let mut select_context = use_context_provider(|| SelectContext::new(value, options, onchange, is_default_open, onopenchange, is_searchable, is_disabled));
+	let mut select_context = use_select::<T>(UseSelectProps { value, options, onchange, default_open, onopenchange, is_searchable, disabled });
 
 	use_effect(use_reactive!(|disabled| {
-		if disabled != *select_context.disabled.peek() {
-			select_context.disabled.set(disabled);
+		if disabled != *(*select_context.peek()).disabled.peek() {
+			select_context.with_mut(|ctx| ctx.disabled.set(disabled));
 		}
 	}));
 
 	rsx! {
 		div {
 			aria_haspopup: "listbox",
-			aria_expanded: *select_context.open.read(),
-			aria_disabled: "{*select_context.disabled.read()}",
-			tabindex: if *select_context.disabled.read() { "-1" } else { "0" },
+			aria_expanded: select_context().open,
+			aria_disabled: select_context().disabled,
+			role: "combobox",
 			..attributes,
 			{children}
 		}
@@ -139,7 +78,13 @@ pub struct SelectTriggerProps {
 
 #[component]
 pub fn SelectTrigger<T: Clone + PartialEq + Debug + Display + 'static>(props: SelectTriggerProps) -> Element {
-	let mut select_context = use_context::<SelectContext<T>>();
+	let select_context = use_context::<Signal<SelectContext<T>>>();
+
+	let button_context = use_button(false, *select_context().disabled.read());
+	let mut attributes = props.attributes.clone();
+	attributes.push(Attribute::new("aria_haspopup", "listbox", None, false));
+	attributes.push(Attribute::new("aria_expanded", select_context().open, None, false));
+	attributes.push(Attribute::new("aria_disabled", select_context().disabled, None, false));
 
 	let icon_down = props.icon.clone().unwrap_or_else(|| {
 		rsx! {
@@ -147,28 +92,28 @@ pub fn SelectTrigger<T: Clone + PartialEq + Debug + Display + 'static>(props: Se
 				width: 16,
 				height: 16,
 				icon: BsChevronDown,
-				style: if *select_context.open.read() { "transform: rotateX(180deg);" } else { "" },
+				style: if *select_context().open.read() { "transform: rotateX(180deg);" } else { "" },
 			}
 		}
 	});
 	rsx! {
-		button {
+		Button {
+			context: button_context,
+			disabled: *select_context().disabled.read(),
+			r#type: "button",
 			onclick: move |event| {
+					let open = *select_context().open.peek();
 					props.onclick.unwrap_or_default().call(event);
-					select_context.open.toggle();
-					select_context
-							.onopenchange
-							.unwrap_or_default()
-							.call(*select_context.open.peek());
+					select_context().toggle(!open);
 			},
-			onkeydown: move |event| {
-					props.onkeydown.unwrap_or_default().call(event);
-					select_context.open.toggle();
-					select_context
-							.onopenchange
-							.unwrap_or_default()
-							.call(*select_context.open.peek());
+			onkeydown: move |event: Event<KeyboardData>| {
+					if event.code() == Code::Space || event.code() == Code::Enter {
+							let open = *select_context().open.peek();
+							props.onkeydown.unwrap_or_default().call(event);
+							select_context().toggle(!open);
+					}
 			},
+			additional_attributes: attributes.clone(),
 			{props.children}
 			{icon_down}
 		}
@@ -185,16 +130,15 @@ pub struct SelectValueProps {
 
 #[component]
 pub fn SelectValue<T: Clone + PartialEq + Display + Debug + 'static>(props: SelectValueProps) -> Element {
-	let select_context = use_context::<SelectContext<T>>();
-
-	let value = select_context.value.read();
+	let select_context = use_context::<Signal<SelectContext<T>>>();
+	let value = select_context().value.read().clone();
 
 	rsx! {
 		span {
 			"data-state": if value.is_some() { "selected" } else { "placeholder" },
 			..props.attributes.clone(),
-			if value.as_ref().is_some() {
-				"{value.as_ref().unwrap()}"
+			if value.is_some() {
+				"{&select_context().init_options.iter().find(|option| option.value == value.clone().unwrap()).unwrap().label}"
 			} else {
 				"{props.placeholder}"
 			}
@@ -207,304 +151,166 @@ pub struct OptionProps<T>
 where
 	T: Clone + PartialEq + Display + Debug + 'static,
 {
-	#[props(extends = li, extends = GlobalAttributes)]
-	attributes: Vec<Attribute>,
+	pub option: SelectOption<T>,
+	#[props(optional)]
+	pub children: Element,
 	#[props(optional, default=None)]
-	onclick: Option<EventHandler<MountedData>>,
-	option: SelectOption<T>,
-	children: Element,
+	pub select_indicator: Option<Element>,
+	#[props(optional, default=String::default())]
+	pub class: String,
 }
 
 #[component]
 fn Option<T: Clone + PartialEq + Display + Debug + 'static>(props: OptionProps<T>) -> Element {
-	let select_context = use_context::<SelectContext<T>>();
+	let select_context = use_context::<Signal<SelectContext<T>>>();
+	let SelectOption { value, label, disabled } = props.option;
+	let is_selected = select_context().value.read().clone().is_some_and(|x| x == value.clone());
+	let is_focused = select_context().focused_index.read().clone().map_or(false, |i| i == value.clone());
+	let cloned_value = value.clone();
 
-	rsx! {
-		li {..props.attributes,
-
-			{props.children}
+	let select_indicator = props.select_indicator.clone().unwrap_or_else(|| {
+		rsx! {
 			Icon { width: 16, height: 16, icon: BsCheck }
 		}
-	}
-}
+	});
 
-#[derive(Props, PartialEq, Clone)]
-pub struct SelectDropdownProps<T>
-where
-	T: Clone + PartialEq + Display + Debug + 'static,
-{
-	#[props(extends = span, extends = GlobalAttributes)]
-	attributes: Vec<Attribute>,
-	#[props(optional, default=None)]
-	value_renderer: Option<Component<OptionProps<T>>>,
-}
+	let handle_change = move |_| {
+		select_context().on_change(cloned_value.clone());
+		if let Some(onchange) = &select_context().onchange {
+			onchange.call(cloned_value.clone());
+		}
+		if let Some(onopenchange) = &select_context().onopenchange {
+			onopenchange.call(false);
+		}
+		select_context().toggle(false);
+	};
 
-#[component]
-pub fn SelectDropdown<T: Clone + PartialEq + Display + Debug + 'static>(props: SelectDropdownProps<T>) -> Element {
-	let select_context = use_context::<SelectContext<T>>();
-
-	let ValueRender = props.value_renderer.unwrap_or(Option::<T>);
 	rsx! {
-		div {..props.attributes,
-			ul {
-				for option in select_context.options.read().iter() {
-					ValueRender { option: option.clone() }
-				}
+		li {
+			"data-selected": is_selected,
+			"data-focused": is_focused,
+			aria_selected: is_selected,
+			"data-role": "option",
+			role: "option",
+			tabindex: if !disabled { "0" } else { "-1" },
+			style: format!("{}", if disabled { "pointer-events:none;" } else { "cursor:pointer;" }),
+			class: props.class.clone(),
+			onclick: handle_change,
+			onkeydown: move |event| {
+					if event.key() == Key::Enter || event.code() == Code::Space {
+							select_context().on_change(value.clone());
+							if let Some(onchange) = &select_context().onchange {
+									onchange.call(value.clone());
+							}
+							if let Some(onopenchange) = &select_context().onopenchange {
+									onopenchange.call(false);
+							}
+							select_context().toggle(false);
+					}
+			},
+			if props.children.is_ok() {
+				{props.children}
+			} else {
+				"{label}"
+			}
+			if is_selected {
+				{select_indicator}
 			}
 		}
 	}
 }
 
-// #[component]
-// pub fn Select<T: Clone + PartialEq + std::fmt::Display + 'static>(props: SelectProps<T>) -> Element {
-// 	let SelectProps { options, default_open, onchange, onopenchange, value, is_searchable, children } = props;
+#[derive(Props, PartialEq, Clone)]
+pub struct SelectDropdownProps {
+	#[props(extends = span, extends = GlobalAttributes)]
+	attributes: Vec<Attribute>,
+	#[props(optional, default=None)]
+	search_icon: Option<Element>,
+	#[props(optional, default = true)]
+	use_search_icon: bool,
+	#[props(optional, default=None)]
+	select_indicator: Option<Element>,
+	#[props(optional, default=String::default())]
+	options_list_class: String,
+	#[props(optional, default=String::default())]
+	option_class: String,
+	#[props(optional, default=None)]
+	option_renderer: Option<Element>,
+}
 
-// 	use_context_provider(|| SelectContext::new(value, Signal::new(options), onchange, Signal::new(default_open), onopenchange, is_searchable));
-// 	rsx! {
-// 		div { {children} }
-// 	}
-// }
+#[component]
+pub fn SelectDropdown<T: Clone + PartialEq + Display + Debug + 'static>(props: SelectDropdownProps) -> Element {
+	let select_context = use_context::<Signal<SelectContext<T>>>();
+	let mut current_ref = use_signal(|| None::<Rc<MountedData>>);
+	let handle_close = use_callback(move |()| {
+		if *select_context.peek().open.peek() {
+			select_context().toggle(false);
+		}
+	});
 
-// use {
-// 	crate::{
-// 		button::{Button, ButtonSize, ButtonVariant},
-// 		input::{Input, InputVariant},
-// 	},
-// 	dioxus::prelude::*,
-// 	dioxus_free_icons::{
-// 		icons::{
-// 			bs_icons::BsSearch,
-// 			io_icons::{IoCheckmarkOutline, IoChevronDownOutline},
-// 			ld_icons::LdX,
-// 		},
-// 		Icon,
-// 	},
-// 	std::cmp::Ordering,
-// 	tailwind_fuse::*,
-// };
+	use_outside_click(current_ref, handle_close);
 
-// #[derive(Clone, PartialEq)]
-// pub struct SelectOption<T> {
-// 	pub label: String,
-// 	pub value: T,
-// }
+	let search_icon = props.search_icon.clone().unwrap_or_else(|| {
+		rsx! {
+			span { "data-role": "search-icon",
+				Icon { width: 16, height: 16, icon: BsSearch }
+			}
+		}
+	});
 
-// #[derive(Clone, PartialEq, Props)]
-// pub struct SelectProps<T>
-// where
-// 	T: Clone + PartialEq + std::fmt::Display + 'static,
-// {
-// 	pub options: Vec<SelectOption<T>>,
-// 	#[props(default = None)]
-// 	pub current_value: Option<T>,
-// 	pub onchange: Option<EventHandler<T>>,
-// 	#[props(default = String::new())]
-// 	pub label: String,
-// 	#[props(default = String::new())]
-// 	pub placeholder: String,
-// 	#[props(default = String::new())]
-// 	pub placeholder_class: String,
-// 	#[props(default = String::new())]
-// 	pub option_class: String,
-// 	#[props(default = String::new())]
-// 	pub dropdown_class: String,
-// 	#[props(default = String::new())]
-// 	pub container_class: String,
-// 	#[props(default = String::new())]
-// 	pub button_class: String,
-// 	#[props(default = String::new())]
-// 	pub button_wrapper_class: String,
-// 	#[props(default = String::new())]
-// 	pub label_class: String,
-// 	#[props(default = String::new())]
-// 	pub search_input_container_class: String,
-// 	#[props(default = String::new())]
-// 	pub search_clear_class: String,
-// 	#[props(default = String::new())]
-// 	pub search_input_class: String,
-// 	pub icon_down: Option<Element>,
-// 	pub icon_check: Option<Element>,
-// 	pub option_renderer: Option<fn(&SelectOption<T>) -> Element>,
-// 	pub onopen: Option<EventHandler<Option<Event<MouseData>>>>,
-// 	pub onclose: Option<EventHandler<Option<Event<FocusData>>>>,
-// 	#[props(default = false)]
-// 	pub is_searchable: bool,
-// }
-
-// #[component]
-// pub fn Select<T: Clone + PartialEq + std::fmt::Display + 'static>(props: SelectProps<T>) -> Element {
-// 	let mut is_opened = use_signal(|| false);
-// 	let mut search_input = use_signal(String::new);
-// 	let SelectProps { options, current_value, placeholder, ref placeholder_class, .. } = props;
-
-// 	let display_value =
-// 		current_value.as_ref().and_then(|value| options.iter().find(|opt| &opt.value == value).map(|opt| opt.label.clone())).unwrap_or_else(||
-// placeholder.clone());
-
-// 	let is_placeholder = current_value.is_none();
-// 	let display_options = {
-// 		let search = search_input();
-
-// 		let mut filtered =
-// 			options.clone().into_iter().filter(|option| option.label.to_lowercase().contains(&search.to_lowercase())).collect::<Vec<SelectOption<T>>>();
-
-// 		filtered.sort_by(|a, b| {
-// 			if let Some(current_value) = &current_value {
-// 				if &a.value == current_value {
-// 					Ordering::Less
-// 				} else if &b.value == current_value {
-// 					Ordering::Greater
-// 				} else {
-// 					Ordering::Equal
-// 				}
-// 			} else {
-// 				Ordering::Equal
-// 			}
-// 		});
-// 		filtered
-// 	};
-
-// 	let icon_down = props.icon_down.clone().unwrap_or_else(|| {
-// 		rsx! {
-// 			Icon {
-// 				width: 16,
-// 				height: 16,
-// 				icon: IoChevronDownOutline,
-// 				class: tw_merge!(
-// 						"absolute top-0 bottom-0 my-auto right-3 transition-all ease-linear fill-none",
-// 						(is_opened()).then_some("rotate-180")
-// 				),
-// 			}
-// 		}
-// 	});
-
-// 	rsx! {
-// 		div { class: tw_merge!("flex flex-col gap-2 w-full relative min-h-12", & props.container_class),
-// 			if !props.label.is_empty() {
-// 				span { class: tw_merge!("text-gray-400", & props.label_class), {props.label} }
-// 			}
-// 			div {
-// 				class: tw_merge!(
-// 						"relative w-full cursor-pointer maestro-select-button__wrapper", & props
-// 						.button_wrapper_class
-// 				),
-// 				button {
-// 					class: tw_merge!(
-// 							"min-h-12 flex items-center border border-gray-500 rounded-md transition-colors ease-linear relative flex py-2 px-3 w-full h-full focus:outline-none
-// focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-700 focus-visible:ring-offset-white maestro-select-button", 							& props.
-// button_class 					),
-// 					onfocusout: move |ev| {
-// 							is_opened.set(false);
-// 							search_input.set(String::new());
-// 							props.onclose.unwrap_or_default().call(Some(ev));
-// 					},
-// 					onmousedown: move |ev| {
-// 							ev.prevent_default();
-// 							ev.stop_propagation();
-// 							is_opened.toggle();
-// 							props.onopen.unwrap_or_default().call(Some(ev))
-// 					},
-// 					r#type: "button",
-// 					span {
-// 						class: tw_merge!(
-// 								"line-clamp-1 pr-2 text-left", if is_placeholder { placeholder_class } else { ""
-// 								}
-// 						),
-// 						"{display_value}"
-// 					}
-// 					{icon_down}
-// 				}
-// 				div {
-// 					class: tw_merge!(
-// 							"absolute flex flex-col gap-1 p-4 w-full left-0 right-0 top-[100%] mt-3 rounded-md max-h-48 overflow-y-auto bg-gray-100 border
-// maestro-select-dropdown", 							if is_opened() { "flex z-40" } else { "hidden -z-40" }, & props.dropdown_class
-// 					),
-// 					onclick: move |ev| {
-// 							ev.stop_propagation();
-// 					},
-// 					if props.is_searchable {
-// 						div {
-// 							class: tw_merge!(
-// 									"relative px-3 text-gray-500 maestro-select-search_container", & props
-// 									.search_input_container_class
-// 							),
-// 							Icon {
-// 								width: 16,
-// 								icon: BsSearch,
-// 								class: "absolute top-2.5 left-3",
-// 							}
-// 							Input {
-// 								r#type: "text",
-// 								variant: InputVariant::Underlined,
-// 								value: search_input(),
-// 								class: tw_merge!(
-// 										"px-7 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-none focus-visible:ring-offset-0 maestro-select-search_input",
-// 										& props.search_input_class
-// 								),
-// 								onchange: move |event: Event<FormData>| search_input.set(event.value()),
-// 							}
-// 							Button {
-// 								variant: ButtonVariant::Icon,
-// 								r#type: "button",
-// 								size: ButtonSize::IconSm,
-// 								class: tw_merge!(
-// 										"h-fit w-fit absolute top-2.5 right-3 text-gray-500 hover:text-gray-700 focus-visible:text-gray-700 focus-visible:ring-0
-// focus-visible:ring-transparent focus-visible:ring-none focus-visible:ring-offset-0 maestro-select-search_clear", 										& props.search_clear_class
-// 								),
-// 								onclick: move |event: Event<MouseData>| {
-// 										event.stop_propagation();
-// 										search_input.set(String::new());
-// 								},
-// 								Icon { width: 16, icon: LdX }
-// 							}
-// 						}
-// 					}
-// 					{
-// 							display_options
-// 									.iter()
-// 									.map(|option| {
-// 											let option_clone = option.clone();
-// 											rsx! {
-// 												div {
-// 													key: "{option.value}",
-// 													id: "{option.value}",
-// 													class: tw_merge!(
-// 															"flex w-full items-center py-2 hover:bg-gray-300 rounded px-3 cursor-pointer", &
-// 															props.option_class
-// 													),
-// 													onclick: move |ev| {
-// 															ev.stop_propagation();
-// 															is_opened.set(false);
-// 															props.onclose.unwrap_or_default().call(None);
-// 															search_input.set(String::new());
-// 															props.onchange.unwrap_or_default().call(option_clone.value.clone());
-// 													},
-// 													{
-// 															if let Some(renderer) = props.option_renderer {
-// 																	renderer(option)
-// 															} else {
-// 																	rsx! {
-// 																	"{option.label}"
-// 																	}
-// 															}
-// 													}
-// 													if props.icon_check.is_some() {
-// 														{props.icon_check.clone().unwrap()}
-// 													} else {
-// 														Icon {
-// 															icon: IoCheckmarkOutline,
-// 															class: tw_merge!(
-// 																	"fill-none ml-auto", if current_value.as_ref() == Some(& option.value) {
-// 																	"opacity-100" } else { "opacity-0" }
-// 															),
-// 														}
-// 													}
-// 												}
-// 											}
-// 									})
-// 					}
-// 				}
-// 			}
-// 		}
-// 	}
-// }
+	if *select_context().open.read() {
+		rsx! {
+			FocusTrap {
+				div {
+					"data-open": select_context().open,
+					role: "listbox",
+					onclick: move |event| event.stop_propagation(),
+					onmounted: move |event| current_ref.set(Some(event.data())),
+					..props.attributes,
+					ul {
+						"data-role": "listbox",
+						class: props.options_list_class.clone(),
+						if select_context().is_searchable {
+							li {
+								"data-role": "search-container",
+								class: props.option_class.clone(),
+								if props.use_search_icon {
+									{search_icon}
+								}
+								input {
+									r#type: "text",
+									"data-role": "search",
+									value: select_context().search_input.clone(),
+									oninput: move |event: Event<FormData>| select_context().on_search_change(event.value()),
+								}
+								Button {
+									r#type: "button",
+									role: "button",
+									"data-role": "clear",
+									aria_hidden: (*select_context().search_input.read()).is_empty(),
+									aria_label: "clear search input",
+									onclick: move |event: Event<MouseData>| {
+											event.stop_propagation();
+											select_context().on_search_change(String::new());
+									},
+									Icon { width: 16, icon: LdX }
+								}
+							}
+							for option in select_context().options.iter() {
+								Option {
+									key: option.clone().value,
+									option: option.clone(),
+									select_indicator: props.select_indicator.clone(),
+									class: &props.option_class,
+									{props.option_renderer.clone()}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	} else {
+		rsx! {}
+	}
+}

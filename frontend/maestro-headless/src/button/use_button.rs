@@ -7,7 +7,7 @@ pub struct UseButton {
 	pub is_focused: Signal<bool>,
 	pub pending: Signal<bool>,
 	pub disabled: Signal<bool>,
-	pub self_ref: Signal<Option<web_sys::Element>>,
+	pub self_ref: Signal<Option<Event<MountedData>>>,
 }
 
 impl UseButton {
@@ -17,7 +17,7 @@ impl UseButton {
 		is_pressed: Signal<bool>,
 		is_hovered: Signal<bool>,
 		is_focused: Signal<bool>,
-		self_ref: Signal<Option<web_sys::Element>>,
+		self_ref: Signal<Option<Event<MountedData>>>,
 	) -> Self {
 		Self { pending, disabled, is_focused, is_hovered, is_pressed, self_ref }
 	}
@@ -27,6 +27,14 @@ impl UseButton {
 	}
 
 	pub fn onmouseup(&mut self) {
+		self.is_pressed.set(false);
+	}
+
+	pub fn onkeydown(&mut self) {
+		self.is_pressed.set(true);
+	}
+
+	pub fn onkeyup(&mut self) {
 		self.is_pressed.set(false);
 	}
 
@@ -61,7 +69,7 @@ pub fn use_button(pending: bool, disabled: bool) -> UseButton {
 	let is_focused = use_signal(|| false);
 	let is_pending = use_signal(|| pending);
 	let is_disabled = use_signal(|| disabled);
-	let self_ref = use_signal::<Option<web_sys::Element>>(|| None);
+	let self_ref = use_signal::<Option<Event<MountedData>>>(|| None);
 	let mut button = use_context_provider(|| UseButton::new(is_disabled, is_pending, is_pressed, is_hovered, is_focused, self_ref));
 
 	use_effect(use_reactive!(|pending, disabled| {

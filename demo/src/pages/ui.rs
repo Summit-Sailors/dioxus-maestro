@@ -1,40 +1,32 @@
 use {
 	crate::components::ui::{component_section::ComponentSection, features::Features},
-	async_std::task::sleep,
-	components::buttons_section::ButtonsSection,
 	dioxus::prelude::*,
-	dioxus_free_icons::{icons::ld_icons::LdX, Icon},
-	dioxus_logger::tracing::info,
-	maestro_headless::dialog::{Dialog, DialogClose, DialogContent, DialogDescription, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger},
-	maestro_toast::{ctx::use_toast, toast_code::EToastCode, toast_info::ToastInfo, toast_position::EToastPosition},
+	dioxus_free_icons::{icons::fa_solid_icons::FaCopy, Icon},
+	maestro_toast::{ctx::use_toast, toast_info::ToastInfo, toast_position::EToastPosition},
 	maestro_ui::{
-		button::Button,
+		button::{Button, ButtonSize, ButtonVariant},
 		input::{Input, InputVariant},
 		label::Label,
+		multi_select::MultiSelect,
 		radio::Radio,
 		range::Range,
+		select::{Select, SelectOption},
 		spinner::FreeIconSpinner,
 		textarea::Textarea,
 		toggle::{EToggleSwitchLabelPlacement, ToggleSwitch, ToggleSwitchLabelStatesProp},
 	},
-	std::time::Duration,
-	tailwind_fuse::tw_merge,
 };
-
-pub mod components;
 
 #[component]
 pub fn UIDemo() -> Element {
-	let selected_option = use_signal(|| "Option 1".to_string());
-	let selected_options = use_signal(Vec::<String>::new);
+	let mut selected_option = use_signal(|| "Option 1".to_string());
+	let mut selected_options = use_signal(Vec::<String>::new);
 	let toggle_state = use_signal(|| false);
 	let mut text_input = use_signal(String::new);
 	let mut text_area_value = use_signal(String::new);
 	let mut range_value = use_signal(|| 0);
 
 	let mut selected_value = use_signal(|| "option1".to_string());
-	let mut dialog_open = use_signal(|| false);
-	let mut dis = use_signal(String::new);
 
 	// let handle_radio_change = move |value: String| {
 	// 	let mut selected_value = selected_value.clone();
@@ -42,6 +34,18 @@ pub fn UIDemo() -> Element {
 	// };
 
 	let mut toast = use_toast();
+
+	let mut handle_button_click = move |button_message: String| {
+		let info = ToastInfo {
+			heading: Some("Button Click Handler".to_string()),
+			context: button_message,
+			icon: None,
+			position: EToastPosition::TopRight,
+			allow_toast_close: true,
+			hide_after: 5,
+		};
+		toast.write().popup(info);
+	};
 
 	let handle_textarea_onenter_click = move |_| {
 		let info = ToastInfo {
@@ -79,7 +83,70 @@ pub fn UIDemo() -> Element {
 				}
 			}
 
-			ButtonsSection {}
+			// buttons section
+			ComponentSection {
+				title: "Buttons",
+				description: "Various button styles, sizes, and types with different variants",
+				div {
+					id: "maestro-ui-buttons",
+					class: "grid grid-cols-1 md:grid-cols-3 gap-6 md:w-4/5 mx-auto w-full",
+					Button {
+						r#type: "button",
+						onclick: move |_| handle_button_click("Default Button clicked!".to_string()),
+						"Default"
+					}
+					Button {
+						class: "rounded-lg text-slate-200 hover:bg-slate-800",
+						variant: ButtonVariant::Outline,
+						r#type: "button",
+						onclick: move |_| handle_button_click("Outline Button clicked!".to_string()),
+						"Outline"
+					}
+					Button {
+						class: "text-slate-700",
+						variant: ButtonVariant::Ghost,
+						r#type: "reset",
+						onclick: move |_| handle_button_click("Ghost Button clicked!".to_string()),
+						"Ghost"
+					}
+					Button {
+						class: "px-2 py-1 bg-slate-300 text-slate-900 text-sm hover:bg-slate-400",
+						size: ButtonSize::Sm,
+						r#type: "button",
+						onclick: move |_| handle_button_click("Small Submit Button clicked!".to_string()),
+						"Small"
+					}
+					Button {
+						class: "rounded-lg",
+						size: ButtonSize::Xl,
+						r#type: "button",
+						onclick: move |_| handle_button_click("Large Ghost Button clicked!".to_string()),
+						"Large"
+					}
+					Button {
+						class: "text-blue-500 hover:text-blue-700",
+						variant: ButtonVariant::Link,
+						r#type: "button",
+						onclick: move |_| handle_button_click("Link Button clicked!".to_string()),
+						"Link"
+					}
+					Button {
+						class: "px-6 py-3 bg-slate-300 hover:bg-slate-600 text-slate-900",
+						variant: ButtonVariant::Icon,
+						size: ButtonSize::IconLg,
+						r#type: "button",
+						onclick: move |_| handle_button_click("Icon Button clicked!".to_string()),
+						children: rsx! {
+							Icon {
+								title: "Icon Button",
+								icon: FaCopy,
+								width: 24,
+								height: 24,
+							}
+						},
+					}
+				}
+			}
 
 			// input fields section
 			ComponentSection {
@@ -128,122 +195,122 @@ pub fn UIDemo() -> Element {
 
 
 			// select and multiselect section
-			// ComponentSection {
-			// 	title: "Selection Components",
-			// 	description: "Single and multiple selection components",
+			ComponentSection {
+				title: "Selection Components",
+				description: "Single and multiple selection components",
 
-			// 	div {
-			// 		id: "maestro-ui-select",
-			// 		class: "space-y-6 text-left md:w-4/5 mx-auto w-full",
-			// 		Select {
-			// 			options: vec![
-			// 					SelectOption {
-			// 							label: "Option 1".to_string(),
-			// 							value: "Option 1".to_string(),
-			// 					},
-			// 					SelectOption {
-			// 							label: "Option 2".to_string(),
-			// 							value: "Option 2".to_string(),
-			// 					},
-			// 					SelectOption {
-			// 							label: "Option 3".to_string(),
-			// 							value: "Option 3".to_string(),
-			// 					},
-			// 			],
-			// 			current_value: selected_option(),
-			// 			onchange: move |value| selected_option.set(value),
-			// 			label: "Single Select:",
-			// 			placeholder: "Select an option",
-			// 			placeholder_class: "text-slate-500",
-			// 			dropdown_class: "bg-slate-900 border border-slate-700",
-			// 			option_class: "hover:bg-slate-500 bg-slate-800 text-slate-100",
-			// 			label_class: "text-slate-200",
-			// 			button_class: "bg-slate-900 text-slate-200",
-			// 		}
+				div {
+					id: "maestro-ui-select",
+					class: "space-y-6 text-left md:w-4/5 mx-auto w-full",
+					Select {
+						options: vec![
+								SelectOption {
+										label: "Option 1".to_string(),
+										value: "Option 1".to_string(),
+								},
+								SelectOption {
+										label: "Option 2".to_string(),
+										value: "Option 2".to_string(),
+								},
+								SelectOption {
+										label: "Option 3".to_string(),
+										value: "Option 3".to_string(),
+								},
+						],
+						current_value: selected_option(),
+						onchange: move |value| selected_option.set(value),
+						label: "Single Select:",
+						placeholder: "Select an option",
+						placeholder_class: "text-slate-500",
+						dropdown_class: "bg-slate-900 border border-slate-700",
+						option_class: "hover:bg-slate-500 bg-slate-800 text-slate-100",
+						label_class: "text-slate-200",
+						button_class: "bg-slate-900 text-slate-200",
+					}
 
-			// 		Select {
-			// 			options: vec![
-			// 					SelectOption {
-			// 							label: "Option 1".to_string(),
-			// 							value: "Option 1".to_string(),
-			// 					},
-			// 					SelectOption {
-			// 							label: "Option 2".to_string(),
-			// 							value: "Option 2".to_string(),
-			// 					},
-			// 					SelectOption {
-			// 							label: "Option 3".to_string(),
-			// 							value: "Option 3".to_string(),
-			// 					},
-			// 			],
-			// 			current_value: selected_option(),
-			// 			onchange: move |value| selected_option.set(value),
-			// 			label: "Single Select with Search:",
-			// 			placeholder: "Select an option",
-			// 			placeholder_class: "text-slate-500",
-			// 			dropdown_class: "bg-slate-900 border border-slate-700",
-			// 			option_class: "hover:bg-slate-500 bg-slate-800 text-slate-100",
-			// 			label_class: "text-slate-200",
-			// 			button_class: "bg-slate-900 text-slate-200",
-			// 			is_searchable: true,
-			// 		}
+					Select {
+						options: vec![
+								SelectOption {
+										label: "Option 1".to_string(),
+										value: "Option 1".to_string(),
+								},
+								SelectOption {
+										label: "Option 2".to_string(),
+										value: "Option 2".to_string(),
+								},
+								SelectOption {
+										label: "Option 3".to_string(),
+										value: "Option 3".to_string(),
+								},
+						],
+						current_value: selected_option(),
+						onchange: move |value| selected_option.set(value),
+						label: "Single Select with Search:",
+						placeholder: "Select an option",
+						placeholder_class: "text-slate-500",
+						dropdown_class: "bg-slate-900 border border-slate-700",
+						option_class: "hover:bg-slate-500 bg-slate-800 text-slate-100",
+						label_class: "text-slate-200",
+						button_class: "bg-slate-900 text-slate-200",
+						is_searchable: true,
+					}
 
-			// 		MultiSelect {
-			// 			options: vec![
-			// 					SelectOption {
-			// 							label: "Item 1".to_string(),
-			// 							value: "Item 1".to_string(),
-			// 					},
-			// 					SelectOption {
-			// 							label: "Item 2".to_string(),
-			// 							value: "Item 2".to_string(),
-			// 					},
-			// 					SelectOption {
-			// 							label: "Item 3".to_string(),
-			// 							value: "Item 3".to_string(),
-			// 					},
-			// 			],
-			// 			current_value: selected_options(),
-			// 			onchange: move |value| selected_options.set(value),
-			// 			label: "Multi Select:",
-			// 			placeholder: "Select items...",
-			// 			placeholder_class: "text-slate-500",
-			// 			dropdown_class: "bg-slate-900 border border-slate-700",
-			// 			option_class: "hover:bg-slate-500 bg-slate-800 text-slate-100",
-			// 			label_class: "text-slate-200",
-			// 			button_class: "bg-slate-900 text-slate-200",
-			// 		}
+					MultiSelect {
+						options: vec![
+								SelectOption {
+										label: "Item 1".to_string(),
+										value: "Item 1".to_string(),
+								},
+								SelectOption {
+										label: "Item 2".to_string(),
+										value: "Item 2".to_string(),
+								},
+								SelectOption {
+										label: "Item 3".to_string(),
+										value: "Item 3".to_string(),
+								},
+						],
+						current_value: selected_options(),
+						onchange: move |value| selected_options.set(value),
+						label: "Multi Select:",
+						placeholder: "Select items...",
+						placeholder_class: "text-slate-500",
+						dropdown_class: "bg-slate-900 border border-slate-700",
+						option_class: "hover:bg-slate-500 bg-slate-800 text-slate-100",
+						label_class: "text-slate-200",
+						button_class: "bg-slate-900 text-slate-200",
+					}
 
-			// 		MultiSelect {
-			// 			options: vec![
-			// 					SelectOption {
-			// 							label: "Item 1".to_string(),
-			// 							value: "Item 1".to_string(),
-			// 					},
-			// 					SelectOption {
-			// 							label: "Item 2".to_string(),
-			// 							value: "Item 2".to_string(),
-			// 					},
-			// 					SelectOption {
-			// 							label: "Item 3".to_string(),
-			// 							value: "Item 3".to_string(),
-			// 					},
-			// 			],
-			// 			current_value: selected_options(),
-			// 			onchange: move |value| selected_options.set(value),
-			// 			label: "Multi Select With Search:",
-			// 			placeholder: "Select items...",
-			// 			placeholder_class: "text-slate-500",
-			// 			dropdown_class: "bg-slate-900 border border-slate-700",
-			// 			option_class: "hover:bg-slate-500 bg-slate-800 text-slate-100",
-			// 			label_class: "text-slate-200",
-			// 			button_class: "bg-slate-900 text-slate-200",
-			// 			is_searchable: true,
-			// 		}
-			// 	}
-			// }
+					MultiSelect {
+						options: vec![
+								SelectOption {
+										label: "Item 1".to_string(),
+										value: "Item 1".to_string(),
+								},
+								SelectOption {
+										label: "Item 2".to_string(),
+										value: "Item 2".to_string(),
+								},
+								SelectOption {
+										label: "Item 3".to_string(),
+										value: "Item 3".to_string(),
+								},
+						],
+						current_value: selected_options(),
+						onchange: move |value| selected_options.set(value),
+						label: "Multi Select With Search:",
+						placeholder: "Select items...",
+						placeholder_class: "text-slate-500",
+						dropdown_class: "bg-slate-900 border border-slate-700",
+						option_class: "hover:bg-slate-500 bg-slate-800 text-slate-100",
+						label_class: "text-slate-200",
+						button_class: "bg-slate-900 text-slate-200",
+						is_searchable: true,
+					}
+				}
+			}
 
-			// // toggle and radio section
+			// toggle and radio section
 			ComponentSection {
 				title: "Toggle and Radio",
 				description: "Toggle switches and radio buttons",
@@ -308,7 +375,9 @@ pub fn UIDemo() -> Element {
 					id: "maestro-ui-textarea-spinner",
 					class: "space-y-6 text-left md:w-4/5 mx-auto w-full",
 					// default Textarea
-					Label { class: "text-slate-200", text: "Default Textarea:",
+					Label {
+						class: "text-slate-200",
+						text: Some("Default Textarea:".into()),
 						Textarea {
 							value: text_area_value(),
 							onchange: move |event: Event<FormData>| text_area_value.set(event.value()),
@@ -318,7 +387,9 @@ pub fn UIDemo() -> Element {
 					}
 
 					// disabled Textarea
-					Label { class: "text-slate-200", text: "Disabled Textarea:",
+					Label {
+						class: "text-slate-200",
+						text: Some("Disabled Textarea:".into()),
 						Textarea {
 							value: "Disabled content".to_string(),
 							disabled: true,
@@ -330,7 +401,7 @@ pub fn UIDemo() -> Element {
 					// textarea with on_enter functionality
 					Label {
 						class: "text-slate-200",
-						text: "Textarea with Enter Handler:",
+						text: Some("Textarea with Enter Handler:".into()),
 						Textarea {
 							value: text_area_value(),
 							onchange: move |event: Event<FormData>| text_area_value.set(event.value()),
@@ -343,7 +414,7 @@ pub fn UIDemo() -> Element {
 					// textarea with custom styles
 					Label {
 						class: "text-slate-200",
-						text: "Custom Styled Textarea:",
+						text: Some("Custom Styled Textarea:".into()),
 						Textarea {
 							value: text_area_value(),
 							onchange: move |event: Event<FormData>| text_area_value.set(event.value()),
@@ -384,58 +455,6 @@ pub fn UIDemo() -> Element {
 						value_class: "mt-2",
 						thumb_class: "[&::-webkit-slider-thumb]:bg-blue-600 [&::-webkit-slider-thumb]:ring-blue-600 [&::-webkit-slider-thumb]:hover:ring-blue-600 [&::-webkit-slider-thumb]:hover:bg-blue-800 [&::-webkit-slider-thumb]:rounded-sm [&::-moz-range-thumb]:bg-blue-600 [&::-moz-range-thumb]:ring-blue-600 [&::-moz-range-thumb]:hover:bg-blue-800 [&::-moz-range-thumb]:rounded-sm [&::-ms-thumb]:bg-blue-600 [&::-ms-thumb]:ring-blue-600 [&::-ms-thumb]:hover:ring-blue-600 [&::-ms-thumb]:hover:bg-blue-800 [&::-ms-thumb]:rounded-sm",
 						track_class: "[&::-webkit-slider-runnable-track]:bg-blue-300 [&::-moz-range-track]:bg-blue-300 [&::-ms-track]:bg-blue-300 [&::-webkit-slider-runnable-track]:hover:bg-blue-300 [&::-moz-range-track]:hover:bg-blue-300 [&::-ms-track]:hover:bg-blue-300",
-					}
-					Button {
-						class: "flex items-center justify-center rounded-full bg-slate-300 border border-slate-300 hover:bg-slate-600 hover:text-slate-50 h-10 w-10 text-slate-900 transition-colors ease-linear focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-100 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:opacity-50 disabled:pointer-events-none",
-						r#type: "button",
-						onclick: move |_| dis.set("text-3xl".into()),
-						"Disable"
-					}
-					{info!("{}", dis())}
-					Dialog { open: dialog_open,
-						DialogTrigger { class: tw_merge!("bg-orange-600 text-white font-medium text-lg rounded px-3 py-2", dis()),
-							"Open dialog"
-						}
-						DialogPortal {
-							DialogOverlay { class: "fixed top-0 left-0 right-0 bottom-0 bg-gray-950/20 inset-0 backdrop-blur-sm z-[100] !m-0 opacity-0 transition-all linear duration-1000 data-[state=open]:opacity-100" }
-							DialogContent { class: "max-w-96 w-full rounded-md bg-white text-gray-800 shadow p-4 flex flex-col gap-5 z-[110] fixed mx-auto my-auto top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 max-h-80 opacity-0 transition-opacity data-[state=open]:opacity-100",
-								div { class: "flex items-start justify-between gap-4",
-									DialogTitle { class: "text-xl font-semibold", "Dialog Title" }
-									DialogClose { class: "w-4 h-4 text-gray-600 hover:text-gray-800",
-										Icon { icon: LdX }
-									}
-								}
-								DialogDescription {
-									p { class: "text-base text-gray-600 text-center",
-										"Some description"
-									}
-								}
-								div { class: "w-full flex flex-col items-center justify-center",
-									p {
-										"this button may play role of submit and will close dialog now. But also it will simulate close after some time (for example, submit)"
-									}
-									Button {
-										r#type: "button",
-										onclick: move |_| {
-												spawn(async move {
-														let info = ToastInfo {
-																heading: Some("Button Click Handler".to_string()),
-																context: "Will close in a second".into(),
-																icon: Some(EToastCode::Success),
-																position: EToastPosition::TopRight,
-																allow_toast_close: true,
-																hide_after: 5,
-														};
-														toast.write().popup(info);
-														sleep(Duration::from_secs(1)).await;
-														dialog_open.set(false)
-												});
-										},
-										"Close"
-									}
-								}
-							}
-						}
 					}
 				}
 			}
