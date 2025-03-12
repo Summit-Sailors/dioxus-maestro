@@ -1,7 +1,7 @@
 use {
 	crate::{button::Button, focus_trap::FocusTrap, hooks::use_escape},
 	dioxus::prelude::*,
-	std::{fmt::Debug, rc::Rc},
+	std::fmt::Debug,
 	web_sys::window,
 };
 

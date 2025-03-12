@@ -18,12 +18,29 @@ pub struct ToggleProps {
 	pub pressed: Signal<bool>,
 	#[props(default = None)]
 	pub children: Option<Element>,
+	#[props(default = None)]
+	pub onkeydown: Option<EventHandler<Event<KeyboardData>>>,
+	#[props(default = None)]
+	pub onkeyup: Option<EventHandler<Event<KeyboardData>>>,
+	#[props(default = None)]
+	pub onfocus: Option<EventHandler<Event<FocusData>>>,
+	#[props(default = None)]
+	pub onblur: Option<EventHandler<Event<FocusData>>>,
+	#[props(default = None)]
+	pub onmousedown: Option<EventHandler<Event<MouseData>>>,
+	#[props(default = None)]
+	pub onmouseup: Option<EventHandler<Event<MouseData>>>,
+	#[props(default = None)]
+	pub onmouseenter: Option<EventHandler<Event<MouseData>>>,
+	#[props(default = None)]
+	pub onmouseleave: Option<EventHandler<Event<MouseData>>>,
 }
 
 #[component]
 pub fn Toggle(props: ToggleProps) -> Element {
-	let ToggleProps { disabled, attributes, additional_attributes, on_toggle_change, mut pressed, children } = props;
+	let ToggleProps { disabled, attributes, additional_attributes, on_toggle_change, mut pressed, children, .. } = props;
 	let mut attributes = attributes.clone();
+
 	attributes.extend(additional_attributes);
 	attributes.push(Attribute::new("aria-pressed", pressed(), None, false));
 	attributes.push(Attribute::new("aria-disabled", pressed(), None, false));
@@ -46,6 +63,14 @@ pub fn Toggle(props: ToggleProps) -> Element {
 					}
 			},
 			disabled,
+			onblur: props.onblur,
+			onfocus: props.onfocus,
+			onkeydown: props.onkeydown,
+			onkeyup: props.onkeyup,
+			onmousedown: props.onmousedown,
+			onmouseenter: props.onmouseenter,
+			onmouseleave: props.onmouseleave,
+			onmouseup: props.onmouseup,
 			additional_attributes: attributes.clone(),
 			if let Some(children) = children {
 				{children}

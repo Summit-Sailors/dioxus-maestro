@@ -12,6 +12,7 @@ use {
 	maestro_headless::{
 		accordion::{Accordion, AccordionContent, AccordionHeader, AccordionItem, AccordionTrigger, AccordionVariant},
 		button::Button,
+		checkbox::{Checkbox, CheckboxIndicator, CheckboxInput},
 		dialog::{Dialog, DialogClose, DialogContent, DialogDescription, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger},
 		select::{Select, SelectDropdown, SelectOption, SelectTrigger, SelectValue},
 		toggle::Toggle,
@@ -349,6 +350,16 @@ pub fn HeadlessDemo() -> Element {
 					class: "data-[state=on]:bg-slate-200  data-[state=on]:text-slate-900 border-l border-l-slate-700 bg-slate-600 text-slate-50 flex justify-center items-center p-3 w-12 h-12",
 					value: "3",
 					Icon { icon: LdAlignLeft }
+				}
+			}
+		}
+		div { class: "flex gap-6",
+			Checkbox { class: "", value: group_toggle_value, name: "box",
+				div { class: "flex justify-center items-center gap-3",
+					CheckboxInput { class: "w-10 h-10 rounded flex items-center justify-center border border-slate-100",
+						CheckboxIndicator { class: "text-slate-100 " }
+					}
+					span { class: "text-slate-100", "Check" }
 				}
 			}
 		}

@@ -1,5 +1,8 @@
 use {
-	crate::{button::Button, hooks::use_arrow_key_navigation},
+	crate::{
+		button::Button,
+		hooks::{use_arrow_key_navigation, use_interaction_state},
+	},
 	dioxus::prelude::*,
 	std::rc::Rc,
 };
@@ -96,22 +99,97 @@ pub struct AccordionProps {
 	attributes: Vec<Attribute>,
 	#[props(optional, default = AccordionVariant::Single)]
 	variant: AccordionVariant,
+	#[props(default = None)]
+	pub onkeydown: Option<EventHandler<Event<KeyboardData>>>,
+	#[props(default = None)]
+	pub onkeyup: Option<EventHandler<Event<KeyboardData>>>,
+	#[props(default = None)]
+	pub onfocus: Option<EventHandler<Event<FocusData>>>,
+	#[props(default = None)]
+	pub onblur: Option<EventHandler<Event<FocusData>>>,
+	#[props(default = None)]
+	pub onmousedown: Option<EventHandler<Event<MouseData>>>,
+	#[props(default = None)]
+	pub onmouseup: Option<EventHandler<Event<MouseData>>>,
+	#[props(default = None)]
+	pub onmouseenter: Option<EventHandler<Event<MouseData>>>,
+	#[props(default = None)]
+	pub onmouseleave: Option<EventHandler<Event<MouseData>>>,
+	#[props(optional, default = None)]
 	pub children: Element,
 }
 
 #[component]
 pub fn Accordion(props: AccordionProps) -> Element {
-	let AccordionProps { value, on_value_change, collapsible, disabled, variant, children, attributes } = props;
+	let AccordionProps { value, on_value_change, collapsible, disabled, variant, children, attributes, .. } = props;
 
 	use_context_provider::<AccordionContext>(|| AccordionContext::new(value, on_value_change, collapsible, disabled, variant));
+	let mut interaction_state = use_interaction_state(Signal::new(false), disabled);
 	let mut current_ref = use_signal(|| None::<Rc<MountedData>>);
 	let handle_key_down = use_arrow_key_navigation(current_ref, Some(String::from("li[role='presentation']:not([tabindex='-1'])")));
 
 	rsx! {
 		ul {
 			role: "accordion",
-			onmounted: move |event| current_ref.set(Some(event.data())),
-			onkeydown: handle_key_down,
+			onmounted: move |event| {
+					interaction_state.self_ref.set(Some(event.clone()));
+					current_ref.set(Some(event.data()));
+			},
+			onmousedown: move |event| {
+					interaction_state.onmousedown();
+					if let Some(handler) = props.onmousedown {
+							handler.call(event);
+					}
+			},
+			onkeydown: move |event| {
+					interaction_state.onkeydown();
+					handle_key_down(event.clone());
+					if let Some(handler) = props.onkeydown {
+							handler.call(event);
+					}
+			},
+			onkeyup: move |event| {
+					interaction_state.onkeyup();
+					if let Some(handler) = props.onkeyup {
+							handler.call(event);
+					}
+			},
+			onmouseup: move |event| {
+					interaction_state.onmouseup();
+					if let Some(handler) = props.onmouseup {
+							handler.call(event);
+					}
+			},
+			onmouseenter: move |event| {
+					interaction_state.onmouseenter();
+					if let Some(handler) = props.onmouseenter {
+							handler.call(event);
+					}
+			},
+			onmouseleave: move |event| {
+					interaction_state.onmouseleave();
+					if let Some(handler) = props.onmouseleave {
+							handler.call(event);
+					}
+			},
+			onfocus: move |event| {
+					interaction_state.onfocus();
+					if let Some(handler) = props.onfocus {
+							handler.call(event);
+					}
+			},
+			onblur: move |event| {
+					interaction_state.onblur();
+					if let Some(handler) = props.onblur {
+							handler.call(event);
+					}
+			},
+			aria_disabled: "{!interaction_state.is_allowed()}",
+			"data-disabled": *interaction_state.disabled.read(),
+			"data-pressed": *interaction_state.is_pressed.read(),
+			"data-hovered": *interaction_state.is_hovered.read(),
+			"data-focused": *interaction_state.is_focused.read(),
+			"data-focuse-visible": *interaction_state.is_focused.read(),
 			..attributes,
 			{children}
 		}
@@ -125,12 +203,30 @@ pub struct AccordionItemProps {
 	pub value: String,
 	#[props(extends = li, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = None)]
+	pub onkeydown: Option<EventHandler<Event<KeyboardData>>>,
+	#[props(default = None)]
+	pub onkeyup: Option<EventHandler<Event<KeyboardData>>>,
+	#[props(default = None)]
+	pub onfocus: Option<EventHandler<Event<FocusData>>>,
+	#[props(default = None)]
+	pub onblur: Option<EventHandler<Event<FocusData>>>,
+	#[props(default = None)]
+	pub onmousedown: Option<EventHandler<Event<MouseData>>>,
+	#[props(default = None)]
+	pub onmouseup: Option<EventHandler<Event<MouseData>>>,
+	#[props(default = None)]
+	pub onmouseenter: Option<EventHandler<Event<MouseData>>>,
+	#[props(default = None)]
+	pub onmouseleave: Option<EventHandler<Event<MouseData>>>,
+	#[props(optional, default = None)]
 	pub children: Element,
 }
 
 #[component]
 pub fn AccordionItem(props: AccordionItemProps) -> Element {
 	let accordion_context = use_context::<AccordionContext>();
+	let mut interaction_state = use_interaction_state(Signal::new(false), props.disabled);
 	let mut accordion_item_context = use_context_provider::<AccordionItemContext>(|| {
 		AccordionItemContext::new(Signal::new(props.value.clone()), Signal::new(accordion_context.value.peek().contains(&props.value.clone())), props.disabled)
 	});
@@ -145,6 +241,58 @@ pub fn AccordionItem(props: AccordionItemProps) -> Element {
 
 	rsx! {
 		li {
+			onmousedown: move |event| {
+					interaction_state.onmousedown();
+					if let Some(handler) = props.onmousedown {
+							handler.call(event);
+					}
+			},
+			onkeydown: move |event| {
+					interaction_state.onkeydown();
+					if let Some(handler) = props.onkeydown {
+							handler.call(event);
+					}
+			},
+			onkeyup: move |event| {
+					interaction_state.onkeyup();
+					if let Some(handler) = props.onkeyup {
+							handler.call(event);
+					}
+			},
+			onmouseup: move |event| {
+					interaction_state.onmouseup();
+					if let Some(handler) = props.onmouseup {
+							handler.call(event);
+					}
+			},
+			onmouseenter: move |event| {
+					interaction_state.onmouseenter();
+					if let Some(handler) = props.onmouseenter {
+							handler.call(event);
+					}
+			},
+			onmouseleave: move |event| {
+					interaction_state.onmouseleave();
+					if let Some(handler) = props.onmouseleave {
+							handler.call(event);
+					}
+			},
+			onfocus: move |event| {
+					interaction_state.onfocus();
+					if let Some(handler) = props.onfocus {
+							handler.call(event);
+					}
+			},
+			onblur: move |event| {
+					interaction_state.onblur();
+					if let Some(handler) = props.onblur {
+							handler.call(event);
+					}
+			},
+			"data-pressed": *interaction_state.is_pressed.read(),
+			"data-hovered": *interaction_state.is_hovered.read(),
+			"data-focused": *interaction_state.is_focused.read(),
+			"data-focuse-visible": *interaction_state.is_focused.read(),
 			"data-state": if *accordion_item_context.open.read() { "open" } else { "closed" },
 			"data-disabled": is_disabled,
 			aria_disabled: is_disabled,

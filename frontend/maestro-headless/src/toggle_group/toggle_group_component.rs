@@ -1,5 +1,8 @@
 use {
-	crate::{hooks::use_arrow_key_navigation, toggle::Toggle},
+	crate::{
+		hooks::{use_arrow_key_navigation, use_interaction_state},
+		toggle::Toggle,
+	},
 	dioxus::prelude::*,
 	std::rc::Rc,
 };
@@ -64,25 +67,94 @@ pub struct ToggleGroupProps {
 	#[props(extends = div, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
 	pub children: Element,
+	#[props(default = None)]
+	pub onkeydown: Option<EventHandler<Event<KeyboardData>>>,
+	#[props(default = None)]
+	pub onkeyup: Option<EventHandler<Event<KeyboardData>>>,
+	#[props(default = None)]
+	pub onfocus: Option<EventHandler<Event<FocusData>>>,
+	#[props(default = None)]
+	pub onblur: Option<EventHandler<Event<FocusData>>>,
+	#[props(default = None)]
+	pub onmousedown: Option<EventHandler<Event<MouseData>>>,
+	#[props(default = None)]
+	pub onmouseup: Option<EventHandler<Event<MouseData>>>,
+	#[props(default = None)]
+	pub onmouseenter: Option<EventHandler<Event<MouseData>>>,
+	#[props(default = None)]
+	pub onmouseleave: Option<EventHandler<Event<MouseData>>>,
 }
 
 #[component]
 pub fn ToggleGroup(props: ToggleGroupProps) -> Element {
-	let ToggleGroupProps { value, on_value_change, disabled, orientation, children, attributes } = props;
+	let ToggleGroupProps { value, on_value_change, disabled, orientation, children, attributes, .. } = props;
 
 	let toggle_group_context = use_context_provider::<ToggleGroupContext>(|| ToggleGroupContext::new(value, on_value_change, disabled, orientation));
 
 	let mut container_ref = use_signal(|| None::<Rc<MountedData>>);
 
 	let handle_key_down = use_arrow_key_navigation(container_ref, Some("[role='radio']:not([tabindex='-1'])".to_string()));
+	let mut interaction_state = use_interaction_state(Signal::new(false), props.disabled);
 
 	rsx! {
 		div {
 			role: "group",
 			aria_disabled: *toggle_group_context.disabled.read(),
 			"data-disabled": *toggle_group_context.disabled.read(),
+			onmousedown: move |event| {
+					interaction_state.onmousedown();
+					if let Some(handler) = props.onmousedown {
+							handler.call(event);
+					}
+			},
+			onkeydown: move |event| {
+					interaction_state.onkeydown();
+					handle_key_down(event.clone());
+					if let Some(handler) = props.onkeydown {
+							handler.call(event);
+					}
+			},
+			onkeyup: move |event| {
+					interaction_state.onkeyup();
+					if let Some(handler) = props.onkeyup {
+							handler.call(event);
+					}
+			},
+			onmouseup: move |event| {
+					interaction_state.onmouseup();
+					if let Some(handler) = props.onmouseup {
+							handler.call(event);
+					}
+			},
+			onmouseenter: move |event| {
+					interaction_state.onmouseenter();
+					if let Some(handler) = props.onmouseenter {
+							handler.call(event);
+					}
+			},
+			onmouseleave: move |event| {
+					interaction_state.onmouseleave();
+					if let Some(handler) = props.onmouseleave {
+							handler.call(event);
+					}
+			},
+			onfocus: move |event| {
+					interaction_state.onfocus();
+					if let Some(handler) = props.onfocus {
+							handler.call(event);
+					}
+			},
+			onblur: move |event| {
+					interaction_state.onblur();
+					if let Some(handler) = props.onblur {
+							handler.call(event);
+					}
+			},
 			onmounted: move |event| container_ref.set(Some(event.data())),
-			onkeydown: handle_key_down,
+			"data-pressed": *interaction_state.is_pressed.read(),
+			"data-hovered": *interaction_state.is_hovered.read(),
+			"data-focused": *interaction_state.is_focused.read(),
+			"data-focuse-visible": *interaction_state.is_focused.read(),
 			..attributes,
 			{children}
 		}
@@ -97,6 +169,22 @@ pub struct ToggleGroupItemProps {
 	#[props(extends = button, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
 	pub children: Element,
+	#[props(default = None)]
+	pub onkeydown: Option<EventHandler<Event<KeyboardData>>>,
+	#[props(default = None)]
+	pub onkeyup: Option<EventHandler<Event<KeyboardData>>>,
+	#[props(default = None)]
+	pub onfocus: Option<EventHandler<Event<FocusData>>>,
+	#[props(default = None)]
+	pub onblur: Option<EventHandler<Event<FocusData>>>,
+	#[props(default = None)]
+	pub onmousedown: Option<EventHandler<Event<MouseData>>>,
+	#[props(default = None)]
+	pub onmouseup: Option<EventHandler<Event<MouseData>>>,
+	#[props(default = None)]
+	pub onmouseenter: Option<EventHandler<Event<MouseData>>>,
+	#[props(default = None)]
+	pub onmouseleave: Option<EventHandler<Event<MouseData>>>,
 }
 
 #[component]
@@ -129,6 +217,14 @@ pub fn ToggleGroupItem(props: ToggleGroupItemProps) -> Element {
 					}
 			},
 			additional_attributes: props.attributes.clone(),
+			onblur: props.onblur,
+			onfocus: props.onfocus,
+			onkeydown: props.onkeydown,
+			onkeyup: props.onkeyup,
+			onmousedown: props.onmousedown,
+			onmouseenter: props.onmouseenter,
+			onmouseleave: props.onmouseleave,
+			onmouseup: props.onmouseup,
 			{props.children}
 		}
 	}

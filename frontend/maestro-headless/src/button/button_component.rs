@@ -1,5 +1,5 @@
 use {
-	crate::button::use_button::{ButtonContext, use_button},
+	crate::hooks::{InteractionStateContext, use_interaction_state},
 	dioxus::prelude::*,
 };
 
@@ -36,86 +36,86 @@ pub struct ButtonProps {
 	#[props(default = None)]
 	pub children: Element,
 	#[props(default = None)]
-	context: Option<ButtonContext>, /* allaws to use this components in wrapper: use button's context in wrapper and pass default attrs, or use raw button
-	                                 * component */
+	context: Option<InteractionStateContext>, /* allaws to use this components in wrapper: use button's context in wrapper and pass default attrs, or use raw
+	                                           * button component */
 }
 
 #[component]
 pub fn Button(props: ButtonProps) -> Element {
 	let ButtonProps { pending, disabled, context, .. } = props;
-	let mut x_button = context.unwrap_or(use_button(pending, disabled));
+	let mut interaction_state = context.unwrap_or(use_interaction_state(pending, disabled));
 
 	rsx! {
 		button {
-			disabled: "{*x_button.disabled.read()}",
+			disabled: "{*interaction_state.disabled.read()}",
 			onclick: move |event| {
-					if x_button.is_allowed() {
+					if interaction_state.is_allowed() {
 							if let Some(handler) = props.onclick {
 									handler.call(event);
 							}
 					}
 			},
 			onmounted: move |event| {
-					x_button.self_ref.set(Some(event.clone()));
+					interaction_state.self_ref.set(Some(event.clone()));
 					if let Some(handler) = props.onmounted {
 							handler.call(event);
 					}
 			},
 			onmousedown: move |event| {
-					x_button.onmousedown();
+					interaction_state.onmousedown();
 					if let Some(handler) = props.onmousedown {
 							handler.call(event);
 					}
 			},
 			onkeydown: move |event| {
-					x_button.onkeydown();
+					interaction_state.onkeydown();
 					if let Some(handler) = props.onkeydown {
 							handler.call(event);
 					}
 			},
 			onkeyup: move |event| {
-					x_button.onkeyup();
+					interaction_state.onkeyup();
 					if let Some(handler) = props.onkeyup {
 							handler.call(event);
 					}
 			},
 			onmouseup: move |event| {
-					x_button.onmouseup();
+					interaction_state.onmouseup();
 					if let Some(handler) = props.onmouseup {
 							handler.call(event);
 					}
 			},
 			onmouseenter: move |event| {
-					x_button.onmouseenter();
+					interaction_state.onmouseenter();
 					if let Some(handler) = props.onmouseenter {
 							handler.call(event);
 					}
 			},
 			onmouseleave: move |event| {
-					x_button.onmouseleave();
+					interaction_state.onmouseleave();
 					if let Some(handler) = props.onmouseleave {
 							handler.call(event);
 					}
 			},
 			onfocus: move |event| {
-					x_button.onfocus();
+					interaction_state.onfocus();
 					if let Some(handler) = props.onfocus {
 							handler.call(event);
 					}
 			},
 			onblur: move |event| {
-					x_button.onblur();
+					interaction_state.onblur();
 					if let Some(handler) = props.onblur {
 							handler.call(event);
 					}
 			},
-			aria_disabled: "{!x_button.is_allowed()}",
-			"data-disabled": *x_button.disabled.read(),
-			"data-pressed": *x_button.is_pressed.read(),
-			"data-hovered": *x_button.is_hovered.read(),
-			"data-focused": *x_button.is_focused.read(),
-			"data-focuse-visible": *x_button.is_focused.read(),
-			"data-pending": *x_button.pending.read(),
+			aria_disabled: "{!interaction_state.is_allowed()}",
+			"data-disabled": *interaction_state.disabled.read(),
+			"data-pressed": *interaction_state.is_pressed.read(),
+			"data-hovered": *interaction_state.is_hovered.read(),
+			"data-focused": *interaction_state.is_focused.read(),
+			"data-focuse-visible": *interaction_state.is_focused.read(),
+			"data-pending": *interaction_state.pending.read(),
 			..props.attributes,
 			..props.additional_attributes,
 			{props.children}

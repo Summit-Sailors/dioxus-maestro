@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 
 #[derive(Debug, PartialEq, Clone, Copy, Default)]
-pub struct ButtonContext {
+pub struct InteractionStateContext {
 	pub is_pressed: Signal<bool>,
 	pub is_hovered: Signal<bool>,
 	pub is_focused: Signal<bool>,
@@ -10,7 +10,7 @@ pub struct ButtonContext {
 	pub self_ref: Signal<Option<Event<MountedData>>>,
 }
 
-impl ButtonContext {
+impl InteractionStateContext {
 	pub fn new(
 		disabled: Signal<bool>,
 		pending: Signal<bool>,
@@ -63,12 +63,10 @@ impl ButtonContext {
 	}
 }
 
-pub fn use_button(pending: Signal<bool>, disabled: Signal<bool>) -> ButtonContext {
+pub fn use_interaction_state(pending: Signal<bool>, disabled: Signal<bool>) -> InteractionStateContext {
 	let is_pressed = use_signal(|| false);
 	let is_hovered = use_signal(|| false);
 	let is_focused = use_signal(|| false);
 	let self_ref = use_signal::<Option<Event<MountedData>>>(|| None);
-	let button = use_context_provider(|| ButtonContext::new(disabled, pending, is_pressed, is_hovered, is_focused, self_ref));
-
-	button
+	use_context_provider(|| InteractionStateContext::new(disabled, pending, is_pressed, is_hovered, is_focused, self_ref))
 }
