@@ -1,14 +1,14 @@
 use {
-	crate::button::use_button::{UseButton, use_button},
+	crate::button::use_button::{ButtonContext, use_button},
 	dioxus::prelude::*,
 };
 
 #[derive(Props, PartialEq, Debug, Clone)]
 pub struct ButtonProps {
-	#[props(default = false)]
-	pub pending: bool,
-	#[props(default = false)]
-	pub disabled: bool,
+	#[props(default = Signal::new(false))]
+	pub pending: Signal<bool>,
+	#[props(default = Signal::new(false))]
+	pub disabled: Signal<bool>,
 	#[props(extends = GlobalAttributes, extends = button)]
 	pub attributes: Vec<Attribute>,
 	#[props(default = Vec::new())]
@@ -36,7 +36,8 @@ pub struct ButtonProps {
 	#[props(default = None)]
 	pub children: Element,
 	#[props(default = None)]
-	context: Option<UseButton>, // allaws to use this components in wrapper: use button's context in wrapper and pass default attrs, or use raw button component
+	context: Option<ButtonContext>, /* allaws to use this components in wrapper: use button's context in wrapper and pass default attrs, or use raw button
+	                                 * component */
 }
 
 #[component]

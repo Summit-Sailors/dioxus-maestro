@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 
 #[derive(Debug, PartialEq, Clone, Copy, Default)]
-pub struct UseButton {
+pub struct ButtonContext {
 	pub is_pressed: Signal<bool>,
 	pub is_hovered: Signal<bool>,
 	pub is_focused: Signal<bool>,
@@ -10,7 +10,7 @@ pub struct UseButton {
 	pub self_ref: Signal<Option<Event<MountedData>>>,
 }
 
-impl UseButton {
+impl ButtonContext {
 	pub fn new(
 		disabled: Signal<bool>,
 		pending: Signal<bool>,
@@ -63,24 +63,12 @@ impl UseButton {
 	}
 }
 
-pub fn use_button(pending: bool, disabled: bool) -> UseButton {
+pub fn use_button(pending: Signal<bool>, disabled: Signal<bool>) -> ButtonContext {
 	let is_pressed = use_signal(|| false);
 	let is_hovered = use_signal(|| false);
 	let is_focused = use_signal(|| false);
-	let is_pending = use_signal(|| pending);
-	let is_disabled = use_signal(|| disabled);
 	let self_ref = use_signal::<Option<Event<MountedData>>>(|| None);
-	let mut button = use_context_provider(|| UseButton::new(is_disabled, is_pending, is_pressed, is_hovered, is_focused, self_ref));
-
-	use_effect(use_reactive!(|pending, disabled| {
-		if pending != *button.pending.peek() {
-			button.pending.set(pending);
-		}
-
-		if disabled != *button.disabled.peek() {
-			button.disabled.set(disabled);
-		}
-	}));
+	let button = use_context_provider(|| ButtonContext::new(disabled, pending, is_pressed, is_hovered, is_focused, self_ref));
 
 	button
 }

@@ -2,7 +2,7 @@ use {
 	crate::{
 		button::{Button, use_button},
 		focus_trap::FocusTrap,
-		hooks::use_outside_click,
+		hooks::{use_escape, use_outside_click},
 		select::{SelectContext, SelectOption, UseSelectProps, use_select},
 	},
 	dioxus::prelude::*,
@@ -18,6 +18,8 @@ use {
 		rc::Rc,
 	},
 };
+
+// TO DO: custom options: currently because of search component gets options on init
 
 #[derive(Clone, PartialEq, Props)]
 pub struct SelectProps<T>
@@ -80,11 +82,10 @@ pub struct SelectTriggerProps {
 pub fn SelectTrigger<T: Clone + PartialEq + Debug + Display + 'static>(props: SelectTriggerProps) -> Element {
 	let select_context = use_context::<Signal<SelectContext<T>>>();
 
-	let button_context = use_button(false, *select_context().disabled.read());
 	let mut attributes = props.attributes.clone();
-	attributes.push(Attribute::new("aria_haspopup", "listbox", None, false));
-	attributes.push(Attribute::new("aria_expanded", select_context().open, None, false));
-	attributes.push(Attribute::new("aria_disabled", select_context().disabled, None, false));
+	attributes.push(Attribute::new("aria-haspopup", "listbox", None, false));
+	attributes.push(Attribute::new("aria-expanded", select_context().open, None, false));
+	attributes.push(Attribute::new("aria-disabled", select_context().disabled, None, false));
 
 	let icon_down = props.icon.clone().unwrap_or_else(|| {
 		rsx! {
@@ -98,8 +99,7 @@ pub fn SelectTrigger<T: Clone + PartialEq + Debug + Display + 'static>(props: Se
 	});
 	rsx! {
 		Button {
-			context: button_context,
-			disabled: *select_context().disabled.read(),
+			disabled: select_context().disabled,
 			r#type: "button",
 			onclick: move |event| {
 					let open = *select_context().open.peek();
@@ -152,8 +152,6 @@ where
 	T: Clone + PartialEq + Display + Debug + 'static,
 {
 	pub option: SelectOption<T>,
-	#[props(optional)]
-	pub children: Element,
 	#[props(optional, default=None)]
 	pub select_indicator: Option<Element>,
 	#[props(optional, default=String::default())]
@@ -191,6 +189,8 @@ fn Option<T: Clone + PartialEq + Display + Debug + 'static>(props: OptionProps<T
 			"data-focused": is_focused,
 			aria_selected: is_selected,
 			"data-role": "option",
+			aria_disabled: disabled,
+			"data-disabled": disabled,
 			role: "option",
 			tabindex: if !disabled { "0" } else { "-1" },
 			style: format!("{}", if disabled { "pointer-events:none;" } else { "cursor:pointer;" }),
@@ -208,11 +208,7 @@ fn Option<T: Clone + PartialEq + Display + Debug + 'static>(props: OptionProps<T
 							select_context().toggle(false);
 					}
 			},
-			if props.children.is_ok() {
-				{props.children}
-			} else {
-				"{label}"
-			}
+			"{label}"
 			if is_selected {
 				{select_indicator}
 			}
@@ -234,8 +230,6 @@ pub struct SelectDropdownProps {
 	options_list_class: String,
 	#[props(optional, default=String::default())]
 	option_class: String,
-	#[props(optional, default=None)]
-	option_renderer: Option<Element>,
 }
 
 #[component]
@@ -248,7 +242,8 @@ pub fn SelectDropdown<T: Clone + PartialEq + Display + Debug + 'static>(props: S
 		}
 	});
 
-	use_outside_click(current_ref, handle_close);
+	use_outside_click(current_ref, handle_close, select_context().open);
+	use_escape(handle_close, select_context().open);
 
 	let search_icon = props.search_icon.clone().unwrap_or_else(|| {
 		rsx! {
@@ -302,7 +297,6 @@ pub fn SelectDropdown<T: Clone + PartialEq + Display + Debug + 'static>(props: S
 									option: option.clone(),
 									select_indicator: props.select_indicator.clone(),
 									class: &props.option_class,
-									{props.option_renderer.clone()}
 								}
 							}
 						}

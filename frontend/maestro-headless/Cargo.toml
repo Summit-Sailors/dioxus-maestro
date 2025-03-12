@@ -22,8 +22,8 @@ dioxus-free-icons = { workspace = true }
 dioxus-logger = { workspace = true }
 dioxus-sdk = { workspace = true }
 
+async-std = "1.13.0"
 tailwind_fuse = { workspace = true }
-
 
 tracing-wasm = { version = "0.2.1", optional = true }
 web-sys = { version = "0.3.76", features = ["Document", "MutationObserver", "MutationObserverInit", "MutationRecord", "NodeFilter", "TreeWalker", "Window"] }

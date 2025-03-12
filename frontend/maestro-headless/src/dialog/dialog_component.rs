@@ -1,9 +1,5 @@
 use {
-	crate::{
-		button::{Button, use_button},
-		focus_trap::FocusTrap,
-		hooks::use_outside_key_down,
-	},
+	crate::{button::Button, focus_trap::FocusTrap, hooks::use_escape},
 	dioxus::prelude::*,
 	std::{fmt::Debug, rc::Rc},
 	web_sys::window,
@@ -73,33 +69,31 @@ pub struct DialogTriggerProps {
 	pub children: Element,
 	#[props(extends = GlobalAttributes, extends = button)]
 	pub attributes: Vec<Attribute>,
-	#[props(default = false)]
-	disabled: bool,
+	#[props(default = Signal::new(false))]
+	disabled: Signal<bool>,
 }
 
 #[component]
 pub fn DialogTrigger(props: DialogTriggerProps) -> Element {
 	let DialogTriggerProps { attributes, disabled, .. } = props;
 	let mut dialog_context = use_context::<DialogContext>();
-	let button_context = use_button(false, disabled);
 
 	let mut attributes = attributes.clone();
-	attributes.push(Attribute::new("aria_haspopup", "dialog", None, false));
-	attributes.push(Attribute::new("aria_expanded", *dialog_context.open.read(), None, false));
+	attributes.push(Attribute::new("aria-haspopup", "dialog", None, false));
+	attributes.push(Attribute::new("aria-expanded", *dialog_context.open.read(), None, false));
 	attributes.push(Attribute::new("data-state", if *dialog_context.open.read() { "open" } else { "closed" }, None, false));
 	if !attributes.iter().any(|x| x.name == "title") {
 		attributes.push(Attribute::new("title", "Open popup", None, false));
 	}
-	if !attributes.iter().any(|x| x.name == "aria_label") {
-		attributes.push(Attribute::new("aria_label", "Open popup", None, false));
+	if !attributes.iter().any(|x| x.name == "aria-label") {
+		attributes.push(Attribute::new("aria-label", "Open popup", None, false));
 	}
-	if !attributes.iter().any(|x| x.name == "aria_role") {
-		attributes.push(Attribute::new("aria_role", "button", None, false));
+	if !attributes.iter().any(|x| x.name == "aria-role") {
+		attributes.push(Attribute::new("aria-role", "button", None, false));
 	}
 
 	rsx! {
 		Button {
-			context: button_context,
 			r#type: "button",
 			onclick: move |_| dialog_context.toggle(true),
 			disabled,
@@ -160,12 +154,11 @@ pub struct DialogContentProps {
 #[component]
 pub fn DialogContent(props: DialogContentProps) -> Element {
 	let mut dialog_context = use_context::<DialogContext>();
-	let mut current_ref = use_signal(|| None::<Rc<MountedData>>);
 	let handle_close = use_callback(move |()| {
 		dialog_context.toggle(false);
 	});
 
-	use_outside_key_down(current_ref, handle_close);
+	use_escape(handle_close, dialog_context.open);
 
 	if *dialog_context.open.read() {
 		rsx! {
@@ -174,7 +167,6 @@ pub fn DialogContent(props: DialogContentProps) -> Element {
 					role: "dialog",
 					"aria-modal": true,
 					"data-state": if *dialog_context.open.read() { "open" } else { "closed" },
-					onmounted: move |event| current_ref.set(Some(event.data())),
 					..props.attributes,
 					{props.children}
 				}
@@ -264,22 +256,20 @@ pub struct DialogCloseProps {
 #[component]
 pub fn DialogClose(props: DialogCloseProps) -> Element {
 	let mut dialog_context = use_context::<DialogContext>();
-	let button_context = use_button(false, false);
 	let mut attributes = props.attributes.clone();
 	if !attributes.iter().any(|x| x.name == "title") {
 		attributes.push(Attribute::new("title", "Close popup", None, false));
 	}
-	if !attributes.iter().any(|x| x.name == "aria_label") {
-		attributes.push(Attribute::new("aria_label", "Close popup", None, false));
+	if !attributes.iter().any(|x| x.name == "aria-label") {
+		attributes.push(Attribute::new("aria-label", "Close popup", None, false));
 	}
-	if !attributes.iter().any(|x| x.name == "aria_role") {
-		attributes.push(Attribute::new("aria_role", "button", None, false));
+	if !attributes.iter().any(|x| x.name == "aria-role") {
+		attributes.push(Attribute::new("aria-role", "button", None, false));
 	}
 	rsx! {
 		Button {
 			r#type: "button",
 			onclick: move |_| dialog_context.toggle(false),
-			context: button_context,
 			additional_attributes: attributes.clone(),
 			{props.children}
 		}

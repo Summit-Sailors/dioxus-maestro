@@ -26,7 +26,7 @@ pub fn FocusTrap(props: FocusTrapProps) -> Element {
 		if let Some(node) = current_ref.read().as_ref() {
 			let node = node.try_as_web_event();
 			if let Some(node) = node {
-				let query = node.query_selector_all("[tabindex]:not([tabindex='-1']), a[href], button, input, select, textarea").unwrap();
+				let query = node.query_selector_all("[tabindex]:not([tabindex='-1']):not([disabled]):not([aria-disabled='true']):not([data-disabled='true']), a[href]:not([disabled]):not([aria-disabled='true']):not([data-disabled='true']), button:not([disabled]):not([aria-disabled='true']):not([data-disabled='true']), input:not([disabled]):not([aria-disabled='true']):not([data-disabled='true']), select:not([disabled]):not([aria-disabled='true']):not([data-disabled='true']), textarea:not([disabled]):not([aria-disabled='true']):not([data-disabled='true'])").unwrap();
 				let mut tabbables = Vec::new();
 				for i in 0..query.length() {
 					if let Some(element) = query.get(i).and_then(|e| e.dyn_into::<HtmlElement>().ok()) {
@@ -113,17 +113,34 @@ pub fn FocusTrap(props: FocusTrapProps) -> Element {
 			let closure = Closure::wrap(Box::new(move |event: web_sys::KeyboardEvent| {
 				if let Some(node) = current_ref.read().as_ref() {
 					let node = node.try_as_web_event();
-					if node.is_some() && event.key() == "Tab" {
+					if node.is_some() {
 						let tabbables = get_tabbable_candidates(());
 						if !tabbables.is_empty() {
 							let active = cloned_document.active_element().and_then(|e| e.dyn_into::<HtmlElement>().ok());
 							if let Some(active) = active {
-								if !event.shift_key() && active == *tabbables.last().unwrap() {
-									event.prevent_default();
-									tabbables[0].focus().ok();
-								} else if event.shift_key() && active == tabbables[0] {
-									event.prevent_default();
-									tabbables.last().unwrap().focus().ok();
+								let active_index = tabbables.iter().position(|el| *el == active);
+								if let Some(index) = active_index {
+									match event.key().as_str() {
+										"Tab" =>
+											if !event.shift_key() && active == *tabbables.last().unwrap() {
+												event.prevent_default();
+												tabbables[0].focus().ok();
+											} else if event.shift_key() && active == tabbables[0] {
+												event.prevent_default();
+												tabbables.last().unwrap().focus().ok();
+											},
+										"ArrowDown" => {
+											event.prevent_default();
+											let next_index = (index + 1) % tabbables.len();
+											tabbables[next_index].focus().ok();
+										},
+										"ArrowUp" => {
+											event.prevent_default();
+											let prev_index = if index == 0 { tabbables.len() - 1 } else { index - 1 };
+											tabbables[prev_index].focus().ok();
+										},
+										_ => {},
+									}
 								}
 							}
 						}
@@ -132,7 +149,6 @@ pub fn FocusTrap(props: FocusTrapProps) -> Element {
 			}) as Box<dyn FnMut(web_sys::KeyboardEvent)>);
 			closure_keyboard_ref.set(Some(closure));
 		}
-
 		if let Some(closure) = &*closure_keyboard_ref.read() {
 			let options = AddEventListenerOptions::new();
 			document

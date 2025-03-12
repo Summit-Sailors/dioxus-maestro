@@ -5,14 +5,17 @@ use {
 	dioxus_free_icons::{
 		icons::{
 			fa_solid_icons::{FaCopy, FaFaceSmile},
-			ld_icons::LdX,
+			ld_icons::{LdAlignCenter, LdAlignLeft, LdAlignRight, LdSmile, LdX},
 		},
 		Icon,
 	},
 	maestro_headless::{
+		accordion::{Accordion, AccordionContent, AccordionHeader, AccordionItem, AccordionTrigger, AccordionVariant},
 		button::Button,
 		dialog::{Dialog, DialogClose, DialogContent, DialogDescription, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger},
 		select::{Select, SelectDropdown, SelectOption, SelectTrigger, SelectValue},
+		toggle::Toggle,
+		toggle_group::{ToggleGroup, ToggleGroupItem},
 	},
 	maestro_toast::{ctx::use_toast, toast_info::ToastInfo, toast_position::EToastPosition},
 	std::time::Duration,
@@ -24,6 +27,9 @@ pub fn HeadlessDemo() -> Element {
 	let mut disabled = use_signal(|| false);
 	let mut pending = use_signal(|| false);
 	let mut popup_open = use_signal(|| false);
+	let mut toggle = use_signal(|| false);
+	let group_toggle_value = use_signal(|| String::from("1"));
+
 	let options = Vec::from([
 		SelectOption { value: 1, label: "Apple".into(), disabled: false },
 		SelectOption { value: 2, label: "Banana".into(), disabled: false },
@@ -109,7 +115,7 @@ pub fn HeadlessDemo() -> Element {
 						"Default: no classnames"
 					}
 					Button {
-						disabled: disabled(),
+						disabled,
 						class: "rounded-lg text-slate-200 bg-indigo-600 w-fit px-3 py-2 h-12 focus-visible:ring-2 focus-visible:ring-offset-2 outline-none transition-colors hover:bg-indigo-800 focus-visible:ring-indigo-800 focus-visible:ring-offset-black focus-visible:bg-indigo-800 aria-[disabled=true]:opacity-50 aria-[disabled=true]:pointer-events-none data-[pending=true]:pointer-events-none data-[pending=true]:bg-indigo-400",
 						r#type: "button",
 						id: "IndigoButton",
@@ -127,7 +133,7 @@ pub fn HeadlessDemo() -> Element {
 						}
 					}
 					Button {
-						pending: pending(),
+						pending,
 						class: "rounded-full w-fit px-3 py-2 h-12 focus-visible:ring-2 focus-visible:ring-offset-2 outline-none transition-colors bg-slate-200 border border-slate-200 text-slate-900 hover:bg-slate-900 hover:text-slate-200 focus-visible:ring-slate-200 focus-visible:ring-offset-black focus-visible:bg-slate-200 focus-visible:text-slate-900 aria-[disabled=true]:opacity-50 aria-[disabled=true]:pointer-events-none data-[pending=true]:bg-slate-500",
 						r#type: "reset",
 						onclick: handle_pending_click,
@@ -200,7 +206,7 @@ pub fn HeadlessDemo() -> Element {
 								"This dialog is controlled by user. Props 'open' and 'on_open_change' passed. Also used custom close Icon. The button below has onclick handler and closes dialog in 5 seconds"
 							}
 							Button {
-								pending: pending(),
+								pending,
 								class: "rounded-full w-fit px-3 py-2 h-12 focus-visible:ring-2 focus-visible:ring-offset-2 outline-none transition-colors bg-slate-200 border border-slate-200 text-slate-900 hover:bg-slate-900 hover:text-slate-200 focus-visible:ring-slate-200 focus-visible:ring-offset-black focus-visible:bg-slate-200 focus-visible:text-slate-900 aria-[disabled=true]:opacity-50 aria-[disabled=true]:pointer-events-none data-[pending=true]:bg-slate-500",
 								onclick: dialog_close,
 								"Close"
@@ -224,7 +230,125 @@ pub fn HeadlessDemo() -> Element {
 				}
 				SelectDropdown::<i32> {
 					class: "absolute top-[100%] mt-2 rounded bg-slate-900 text-slate-200 border border-slate-700 z-10 px-2 py-4 [&_*]:transition-all",
-					option_class: "data-[role=option]:flex data-[role=option]:items-center data-[role=option]:justify-between data-[role=option]:gap-4 data-[role=option]:px-2 data-[role=option]:py-3 data-[role=option]:hover:bg-slate-700 data-[role=option]:focus-visible::bg-slate-700 data-[role=search-container]:relative [&>[data-role=search]]:px-6 [&>[data-role=search]]:h-10 [&>[data-role=search]]:text-slate-800 [&>[data-role=search-icon]]:text-slate-500 [&>[data-role=search-icon]]:h-fit [&>[data-role=search-icon]]:m-auto [&>[data-role=search-icon]]:absolute [&>[data-role=search-icon]]:top-0 [&>[data-role=search-icon]]:bottom-0 [&>[data-role=search-icon]]:left-1 [&_[aria-hidden=true]]:opacity-0 [&_[data-role=clear]]:absolute [&_[data-role=clear]]:top-0 [&_[data-role=clear]]:bottom-0 [&_[data-role=clear]]:right-1 ",
+					option_class: "data-[role=option]:flex data-[role=opçtion]:items-center data-[role=option]:justify-between data-[role=option]:gap-4 data-[role=option]:px-2 data-[role=option]:py-3 data-[role=option]:hover:bg-slate-700 data-[role=option]:focus-visible::bg-slate-700 data-[role=search-container]:relative [&>[data-role=search]]:px-6 [&>[data-role=search]]:h-10 [&>[data-role=search]]:text-slate-800 [&>[data-role=search-icon]]:text-slate-500 [&>[data-role=search-icon]]:h-fit [&>[data-role=search-icon]]:m-auto [&>[data-role=search-icon]]:absolute [&>[data-role=search-icon]]:top-0 [&>[data-role=search-icon]]:bottom-0 [&>[data-role=search-icon]]:left-1 [&_[aria-hidden=true]]:opacity-0 [&_[data-role=clear]]:absolute [&_[data-role=clear]]:top-0 [&_[data-role=clear]]:bottom-0 [&_[data-role=clear]]:right-1 ",
+				}
+			}
+		}
+		div { class: "flex gap-6",
+			Accordion {
+				// collapsible: false,
+				value: Signal::new(Vec::from(["1".into()])),
+				class: "relative w-48 flex flex-col px-4 py-2",
+				variant: AccordionVariant::Single,
+				AccordionItem { value: "1", class: "p-2 flex flex-col gap-3",
+					AccordionTrigger { class: "rounded hover:bg-slate-200 focus-visible:bg-slate-200",
+						AccordionHeader { "Value1" }
+					}
+					AccordionContent { class: "data-[state=open]:flex hidden",
+						"Yes. It adheres to the WAI-ARIA design pattern."
+					}
+				}
+				AccordionItem { value: "2", class: "p-2 flex flex-col gap-3",
+					AccordionTrigger { class: "rounded hover:bg-slate-200 focus-visible:bg-slate-200",
+						AccordionHeader { "Value2" }
+					}
+					AccordionContent { class: "data-[state=open]:flex hidden",
+						"Yes. It adheres to the WAI-ARIA design pattern."
+					}
+				}
+				AccordionItem {
+					value: "3",
+					disabled: Signal::new(true),
+					class: "p-2 flex flex-col gap-3 data-[disabled=true]:opacity-50",
+					AccordionTrigger { class: "rounded hover:bg-slate-200 focus-visible:bg-slate-200",
+						AccordionHeader { "Value3 disabled" }
+					}
+					AccordionContent { class: "data-[state=open]:flex hidden",
+						"Yes. It adheres to the WAI-ARIA design pattern."
+					}
+				}
+				AccordionItem {
+					value: "4",
+					class: "p-2 flex flex-col gap-3 data-[disabled=true]:opacity-50",
+					AccordionTrigger { class: "rounded hover:bg-slate-200 focus-visible:bg-slate-200",
+						AccordionHeader { "Value4" }
+					}
+					AccordionContent { class: "data-[state=open]:flex hidden",
+						"Yes. It adheres to the WAI-ARIA design pattern."
+					}
+				}
+			}
+
+			Accordion {
+				value: Signal::new(Vec::from(["1".into()])),
+				variant: AccordionVariant::Multiple,
+				class: "relative w-48 flex flex-col",
+				AccordionItem { value: "1", class: "p-2 flex flex-col gap-3",
+					AccordionTrigger { class: "rounded hover:bg-slate-200 focus-visible:bg-slate-200",
+						AccordionHeader { "Value1" }
+					}
+					AccordionContent { class: "data-[state=open]:flex hidden",
+						"Yes. It adheres to the WAI-ARIA design pattern."
+					}
+				}
+				AccordionItem { value: "2", class: "p-2 flex flex-col gap-3",
+					AccordionTrigger { class: "rounded hover:bg-slate-200 focus-visible:bg-slate-200",
+						AccordionHeader { "Value2" }
+					}
+					AccordionContent { class: "data-[state=open]:flex hidden",
+						"Yes. It adheres to the WAI-ARIA design pattern."
+					}
+				}
+				AccordionItem {
+					value: "3",
+					disabled: Signal::new(true),
+					class: "p-2 flex flex-col gap-3 disabled:opacity-50",
+					AccordionTrigger { class: "rounded hover:bg-slate-200 focus-visible:bg-slate-200",
+						AccordionHeader { "Value3 disabled" }
+					}
+					AccordionContent { class: "data-[state=open]:flex hidden",
+						"Yes. It adheres to the WAI-ARIA design pattern."
+					}
+				}
+				AccordionItem { value: "4", class: "p-2 flex flex-col gap-3",
+					AccordionTrigger { class: "rounded hover:bg-slate-200 focus-visible:bg-slate-200",
+						AccordionHeader { "Value4" }
+					}
+					AccordionContent { class: "data-[state=open]:flex hidden",
+						"Yes. It adheres to the WAI-ARIA design pattern."
+					}
+				}
+			}
+		}
+		div { class: "flex gap-6",
+			Toggle {
+				class: "aria-[pressed=true]:bg-orange-700 bg-orange-500 text-slate-50 flex justify-center items-center p-3 w-12 h-12 rounded",
+				pressed: toggle,
+			}
+			Toggle {
+				class: "aria-[pressed=true]:bg-orange-700 text-slate-50  bg-orange-500 flex justify-center items-center p-3 w-12 h-12 rounded",
+				pressed: toggle,
+				Icon { icon: LdSmile }
+			}
+		}
+		div { class: "flex gap-6",
+			ToggleGroup {
+				class: "flex justify-center items-center rounded overflow-hidden border border-slate-700",
+				value: group_toggle_value,
+				ToggleGroupItem {
+					class: "data-[state=on]:bg-slate-200  data-[state=on]:text-slate-900 border-r border-r-slate-700 bg-slate-600 text-slate-50 flex justify-center items-center p-3 w-12 h-12",
+					value: "1",
+					Icon { icon: LdAlignRight }
+				}
+				ToggleGroupItem {
+					class: "data-[state=on]:bg-slate-200 data-[state=on]:text-slate-900 bg-slate-600 text-slate-50 flex justify-center items-center p-3 w-12 h-12",
+					value: "2",
+					Icon { icon: LdAlignCenter }
+				}
+				ToggleGroupItem {
+					class: "data-[state=on]:bg-slate-200  data-[state=on]:text-slate-900 border-l border-l-slate-700 bg-slate-600 text-slate-50 flex justify-center items-center p-3 w-12 h-12",
+					value: "3",
+					Icon { icon: LdAlignLeft }
 				}
 			}
 		}
