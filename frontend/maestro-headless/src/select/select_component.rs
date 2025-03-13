@@ -62,7 +62,7 @@ where
 pub fn Select<T: Clone + PartialEq + Display + Debug + 'static>(props: SelectProps<T>) -> Element {
 	let SelectProps { options, default_open, disabled, onchange, onopenchange, value, is_searchable, children, attributes, .. } = props;
 	let mut select_context = use_select::<T>(UseSelectProps { value, options, onchange, default_open, onopenchange, is_searchable, disabled });
-	let mut interaction_state = use_interaction_state(Signal::new(false), Signal::new(props.disabled));
+	let mut interaction_state = use_interaction_state(ReadOnlySignal::new(Signal::new(false)), ReadOnlySignal::new(Signal::new(false)));
 
 	use_effect(use_reactive!(|disabled| {
 		if disabled != *(*select_context.peek()).disabled.peek() {
@@ -312,8 +312,8 @@ pub fn SelectDropdown<T: Clone + PartialEq + Display + Debug + 'static>(props: S
 		}
 	});
 
-	use_outside_click(current_ref, handle_close, select_context().open);
-	use_escape(handle_close, select_context().open);
+	// use_outside_click(current_ref, handle_close, select_context().open);
+	// use_escape(handle_close, select_context().open);
 
 	let search_icon = props.search_icon.clone().unwrap_or_else(|| {
 		rsx! {

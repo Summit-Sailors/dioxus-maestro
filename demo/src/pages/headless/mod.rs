@@ -9,6 +9,7 @@ use {
 		},
 		Icon,
 	},
+	dioxus_logger::tracing::info,
 	maestro_headless::{
 		accordion::{Accordion, AccordionContent, AccordionHeader, AccordionItem, AccordionTrigger, AccordionVariant},
 		button::Button,
@@ -29,7 +30,8 @@ pub fn HeadlessDemo() -> Element {
 	let mut pending = use_signal(|| false);
 	let mut popup_open = use_signal(|| false);
 	let mut toggle = use_signal(|| false);
-	let group_toggle_value = use_signal(|| String::from("1"));
+	let mut group_toggle_value = use_signal(|| String::from("1"));
+	let mut checked = use_signal(|| true);
 
 	let options = Vec::from([
 		SelectOption { value: 1, label: "Apple".into(), disabled: false },
@@ -116,7 +118,7 @@ pub fn HeadlessDemo() -> Element {
 						"Default: no classnames"
 					}
 					Button {
-						disabled,
+						disabled: disabled(),
 						class: "rounded-lg text-slate-200 bg-indigo-600 w-fit px-3 py-2 h-12 focus-visible:ring-2 focus-visible:ring-offset-2 outline-none transition-colors hover:bg-indigo-800 focus-visible:ring-indigo-800 focus-visible:ring-offset-black focus-visible:bg-indigo-800 aria-[disabled=true]:opacity-50 aria-[disabled=true]:pointer-events-none data-[pending=true]:pointer-events-none data-[pending=true]:bg-indigo-400",
 						r#type: "button",
 						id: "IndigoButton",
@@ -134,7 +136,7 @@ pub fn HeadlessDemo() -> Element {
 						}
 					}
 					Button {
-						pending,
+						pending: pending(),
 						class: "rounded-full w-fit px-3 py-2 h-12 focus-visible:ring-2 focus-visible:ring-offset-2 outline-none transition-colors bg-slate-200 border border-slate-200 text-slate-900 hover:bg-slate-900 hover:text-slate-200 focus-visible:ring-slate-200 focus-visible:ring-offset-black focus-visible:bg-slate-200 focus-visible:text-slate-900 aria-[disabled=true]:opacity-50 aria-[disabled=true]:pointer-events-none data-[pending=true]:bg-slate-500",
 						r#type: "reset",
 						onclick: handle_pending_click,
@@ -185,8 +187,9 @@ pub fn HeadlessDemo() -> Element {
 					}
 				}
 
-				Dialog { open: popup_open,
-					// on_open_change: move |_| popup_open.toggle(),
+				Dialog {
+					open: popup_open(),
+					on_open_change: move |value: Option<bool>| popup_open.set(value.unwrap_or_default()),
 					DialogTrigger { class: "rounded-full w-fit px-3 py-2 h-12 focus-visible:ring-2 focus-visible:ring-offset-2 outline-none transition-colors bg-orange-600 border border-slate-200 text-slate-100 hover:bg-orange-800  focus-visible:ring-orange-200 focus-visible:ring-offset-black focus-visible:bg-orange-800 aria-[disabled=true]:opacity-50 aria-[disabled=true]:pointer-events-none data-[pending=true]:bg-slate-500",
 						"Open Dialog"
 					}
@@ -237,8 +240,8 @@ pub fn HeadlessDemo() -> Element {
 		}
 		div { class: "flex gap-6",
 			Accordion {
-				// collapsible: false,
-				value: Signal::new(Vec::from(["1".into()])),
+				collapsible: false,
+				default_value: Vec::from(["1".into()]),
 				class: "relative w-48 flex flex-col px-4 py-2",
 				variant: AccordionVariant::Single,
 				AccordionItem { value: "1", class: "p-2 flex flex-col gap-3",
@@ -259,7 +262,7 @@ pub fn HeadlessDemo() -> Element {
 				}
 				AccordionItem {
 					value: "3",
-					disabled: Signal::new(true),
+					disabled: true,
 					class: "p-2 flex flex-col gap-3 data-[disabled=true]:opacity-50",
 					AccordionTrigger { class: "rounded hover:bg-slate-200 focus-visible:bg-slate-200",
 						AccordionHeader { "Value3 disabled" }
@@ -281,7 +284,7 @@ pub fn HeadlessDemo() -> Element {
 			}
 
 			Accordion {
-				value: Signal::new(Vec::from(["1".into()])),
+				default_value: Vec::from(["1".into()]),
 				variant: AccordionVariant::Multiple,
 				class: "relative w-48 flex flex-col",
 				AccordionItem { value: "1", class: "p-2 flex flex-col gap-3",
@@ -302,7 +305,7 @@ pub fn HeadlessDemo() -> Element {
 				}
 				AccordionItem {
 					value: "3",
-					disabled: Signal::new(true),
+					disabled: true,
 					class: "p-2 flex flex-col gap-3 disabled:opacity-50",
 					AccordionTrigger { class: "rounded hover:bg-slate-200 focus-visible:bg-slate-200",
 						AccordionHeader { "Value3 disabled" }
@@ -324,29 +327,31 @@ pub fn HeadlessDemo() -> Element {
 		div { class: "flex gap-6",
 			Toggle {
 				class: "aria-[pressed=true]:bg-orange-700 bg-orange-500 text-slate-50 flex justify-center items-center p-3 w-12 h-12 rounded",
-				pressed: toggle,
+				pressed: toggle(),
+				on_toggle_change: move |value: Option<bool>| toggle.set(value.unwrap_or_default()),
 			}
 			Toggle {
 				class: "aria-[pressed=true]:bg-orange-700 text-slate-50  bg-orange-500 flex justify-center items-center p-3 w-12 h-12 rounded",
-				pressed: toggle,
+				default_pressed: toggle(),
 				Icon { icon: LdSmile }
 			}
 		}
 		div { class: "flex gap-6",
 			ToggleGroup {
 				class: "flex justify-center items-center rounded overflow-hidden border border-slate-700",
-				value: group_toggle_value,
-				ToggleGroupItem {
+				value: group_toggle_value(),
+				on_value_change: move |value: Option<String>| group_toggle_value.set(value.unwrap_or_default()),
+				ToggleGroupItem::<String> {
 					class: "data-[state=on]:bg-slate-200  data-[state=on]:text-slate-900 border-r border-r-slate-700 bg-slate-600 text-slate-50 flex justify-center items-center p-3 w-12 h-12",
 					value: "1",
 					Icon { icon: LdAlignRight }
 				}
-				ToggleGroupItem {
+				ToggleGroupItem::<String> {
 					class: "data-[state=on]:bg-slate-200 data-[state=on]:text-slate-900 bg-slate-600 text-slate-50 flex justify-center items-center p-3 w-12 h-12",
 					value: "2",
 					Icon { icon: LdAlignCenter }
 				}
-				ToggleGroupItem {
+				ToggleGroupItem::<String> {
 					class: "data-[state=on]:bg-slate-200  data-[state=on]:text-slate-900 border-l border-l-slate-700 bg-slate-600 text-slate-50 flex justify-center items-center p-3 w-12 h-12",
 					value: "3",
 					Icon { icon: LdAlignLeft }
@@ -354,10 +359,25 @@ pub fn HeadlessDemo() -> Element {
 			}
 		}
 		div { class: "flex gap-6",
-			Checkbox { class: "", value: group_toggle_value, name: "box",
+			Checkbox { class: "", value: group_toggle_value(), name: "box",
 				div { class: "flex justify-center items-center gap-3",
-					CheckboxInput { class: "w-10 h-10 rounded flex items-center justify-center border border-slate-100",
-						CheckboxIndicator { class: "text-slate-100 " }
+					CheckboxInput::<String> { class: "w-10 h-10 rounded flex items-center justify-center border border-slate-100",
+						CheckboxIndicator::<String> { class: "text-slate-100 " }
+					}
+					span { class: "text-slate-100", "Check" }
+				}
+			}
+			Checkbox {
+				class: "",
+				value: 1_i32,
+				name: "box",
+				checked: checked(),
+				onchange: move |v: Option<bool>| {
+						checked.set(v.unwrap_or_default());
+				},
+				div { class: "flex justify-center items-center gap-3",
+					CheckboxInput::<i32> { class: "w-10 h-10 rounded flex items-center justify-center border border-slate-100",
+						CheckboxIndicator::<i32> { class: "text-slate-100 " }
 					}
 					span { class: "text-slate-100", "Check" }
 				}

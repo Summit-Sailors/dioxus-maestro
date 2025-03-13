@@ -7,14 +7,14 @@ use {
 	},
 };
 
-pub fn use_escape(on_outside_key: Callback<()>, flag: Signal<bool>) {
+pub fn use_escape(on_outside_key: Callback<()>, flag: Memo<Option<bool>>) {
 	let mut closure_ref = use_signal(|| None::<Closure<dyn FnMut(web_sys::KeyboardEvent)>>);
 
 	use_effect(move || {
 		let window = window().expect("should have a window in this context");
 		let document = window.document().expect("window should have a document");
 
-		if closure_ref.peek().is_none() && flag() {
+		if closure_ref.peek().is_none() && flag().unwrap_or(false) {
 			let closure = Closure::wrap(Box::new(move |event: web_sys::KeyboardEvent| {
 				if event.key().as_str() == "Escape" {
 					event.prevent_default();
@@ -24,7 +24,7 @@ pub fn use_escape(on_outside_key: Callback<()>, flag: Signal<bool>) {
 			closure_ref.set(Some(closure));
 		}
 
-		if flag() {
+		if flag().unwrap_or(false) {
 			if let Some(closure) = &*closure_ref.read() {
 				let options = AddEventListenerOptions::new();
 
@@ -36,7 +36,7 @@ pub fn use_escape(on_outside_key: Callback<()>, flag: Signal<bool>) {
 	});
 
 	use_effect(move || {
-		if !flag() {
+		if !flag().unwrap_or(false) {
 			if let Some(closure) = closure_ref.peek().as_ref() {
 				let window = window().expect("should have a window in this context");
 				let document = window.document().expect("window should have a document");

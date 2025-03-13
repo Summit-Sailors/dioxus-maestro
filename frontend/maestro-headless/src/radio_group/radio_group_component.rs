@@ -1,30 +1,30 @@
 use {
 	crate::{
 		hooks::{InteractionStateContext, UseControllableStateParams, use_arrow_key_navigation, use_controllable_state, use_interaction_state},
-		toggle::Toggle,
+		radio::Radio,
 		utils::GroupOrientation,
 	},
 	dioxus::prelude::*,
-	dioxus_logger::tracing::info,
 	std::{fmt::Debug, rc::Rc},
 };
 
 #[derive(Clone, PartialEq, Debug)]
-pub struct ToggleGroupContext<T>
+pub struct RadioGroupContext<T>
 where
 	T: Clone + PartialEq + Debug + Default + 'static,
 {
+	pub name: String,
 	pub value: Memo<Option<T>>,
 	pub on_value_change: Callback<Option<T>>,
 	pub orientation: ReadOnlySignal<GroupOrientation>,
 }
 
-impl<T> ToggleGroupContext<T>
+impl<T> RadioGroupContext<T>
 where
 	T: Clone + PartialEq + Debug + Default + 'static,
 {
-	pub fn new(value: Memo<Option<T>>, on_value_change: Callback<Option<T>>, orientation: ReadOnlySignal<GroupOrientation>) -> Self {
-		Self { value, on_value_change, orientation }
+	pub fn new(value: Memo<Option<T>>, on_value_change: Callback<Option<T>>, orientation: ReadOnlySignal<GroupOrientation>, name: String) -> Self {
+		Self { value, on_value_change, orientation, name }
 	}
 
 	pub fn onselect(&self, value: T) {
@@ -37,10 +37,11 @@ where
 }
 
 #[derive(Props, Clone, PartialEq)]
-pub struct ToggleGroupProps<T>
+pub struct RadioGroupProps<T>
 where
 	T: Clone + PartialEq + Debug + Default + 'static,
 {
+	pub name: String,
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
 	pub value: ReadOnlySignal<Option<T>>,
 	#[props(optional, default = None)]
@@ -73,8 +74,8 @@ where
 }
 
 #[component]
-pub fn ToggleGroup<T: Clone + PartialEq + Debug + Default + 'static>(props: ToggleGroupProps<T>) -> Element {
-	let ToggleGroupProps { value, default_value, on_value_change, disabled, orientation, children, attributes, .. } = props;
+pub fn RadioGroup<T: Clone + PartialEq + Debug + Default + 'static>(props: RadioGroupProps<T>) -> Element {
+	let RadioGroupProps { name, value, default_value, on_value_change, disabled, orientation, children, attributes, .. } = props;
 	let is_controlled = use_hook(move || value().is_some());
 	let (value, set_value) = use_controllable_state(UseControllableStateParams {
 		is_controlled,
@@ -83,7 +84,7 @@ pub fn ToggleGroup<T: Clone + PartialEq + Debug + Default + 'static>(props: Togg
 		on_change: on_value_change,
 	});
 
-	use_context_provider::<ToggleGroupContext<T>>(|| ToggleGroupContext::new(value, set_value, orientation));
+	use_context_provider::<RadioGroupContext<T>>(|| RadioGroupContext::new(value, set_value, orientation, name));
 
 	let mut container_ref = use_signal(|| None::<Rc<MountedData>>);
 
@@ -156,10 +157,12 @@ pub fn ToggleGroup<T: Clone + PartialEq + Debug + Default + 'static>(props: Togg
 }
 
 #[derive(Props, Clone, PartialEq)]
-pub struct ToggleGroupItemProps<T>
+pub struct RadioGroupItemProps<T>
 where
 	T: Clone + PartialEq + Debug + Default + 'static,
 {
+	#[props(default = String::default())]
+	pub class: String,
 	pub value: ReadOnlySignal<T>,
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]
 	pub disabled: ReadOnlySignal<bool>,
@@ -185,28 +188,30 @@ where
 }
 
 #[component]
-pub fn ToggleGroupItem<T: Clone + PartialEq + Debug + Default + 'static>(props: ToggleGroupItemProps<T>) -> Element {
-	let toggle_group_context = use_context::<ToggleGroupContext<T>>();
-	let pressed = use_memo(move || toggle_group_context.value.read().clone().unwrap_or_default() == *props.value.read());
+pub fn RadioGroupItem<T: Clone + PartialEq + Debug + Default + 'static>(props: RadioGroupItemProps<T>) -> Element {
+	let radio_group_context = use_context::<RadioGroupContext<T>>();
+	let checked = use_memo(move || radio_group_context.value.read().clone().unwrap_or_default() == *props.value.read());
 	let state_context = use_context::<InteractionStateContext>();
 
 	let is_disabled = use_memo(move || *state_context.disabled.read() || *props.disabled.read());
 	use_context_provider::<Memo<bool>>(|| is_disabled);
 
 	rsx! {
-		Toggle {
+		Radio::<T> {
+			class: props.class.clone(),
 			role: "radio",
 			tabindex: if is_disabled() { -1 } else { 0 },
 			disabled: is_disabled(),
-			pressed: pressed(),
-			on_toggle_change: move |pressed: Option<bool>| {
-					if pressed.is_some() {
-							toggle_group_context.onselect(props.value.read().clone());
+			checked: checked(),
+			name: radio_group_context.name.clone(),
+			value: props.value,
+			onchange: move |checked: Option<bool>| {
+					if checked.is_some() {
+							radio_group_context.onselect(props.value.read().clone());
 					} else {
-							toggle_group_context.ondeselect();
+							radio_group_context.ondeselect();
 					}
 			},
-			additional_attributes: props.attributes.clone(),
 			onblur: props.onblur,
 			onfocus: props.onfocus,
 			onkeydown: props.onkeydown,

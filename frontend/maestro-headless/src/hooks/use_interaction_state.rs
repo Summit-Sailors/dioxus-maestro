@@ -1,19 +1,19 @@
 use dioxus::prelude::*;
 
-#[derive(Debug, PartialEq, Clone, Copy, Default)]
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub struct InteractionStateContext {
 	pub is_pressed: Signal<bool>,
 	pub is_hovered: Signal<bool>,
 	pub is_focused: Signal<bool>,
-	pub pending: Signal<bool>,
-	pub disabled: Signal<bool>,
+	pub pending: ReadOnlySignal<bool>,
+	pub disabled: ReadOnlySignal<bool>,
 	pub self_ref: Signal<Option<Event<MountedData>>>,
 }
 
 impl InteractionStateContext {
 	pub fn new(
-		disabled: Signal<bool>,
-		pending: Signal<bool>,
+		disabled: ReadOnlySignal<bool>,
+		pending: ReadOnlySignal<bool>,
 		is_pressed: Signal<bool>,
 		is_hovered: Signal<bool>,
 		is_focused: Signal<bool>,
@@ -63,7 +63,7 @@ impl InteractionStateContext {
 	}
 }
 
-pub fn use_interaction_state(pending: Signal<bool>, disabled: Signal<bool>) -> InteractionStateContext {
+pub fn use_interaction_state(pending: ReadOnlySignal<bool>, disabled: ReadOnlySignal<bool>) -> InteractionStateContext {
 	let is_pressed = use_signal(|| false);
 	let is_hovered = use_signal(|| false);
 	let is_focused = use_signal(|| false);

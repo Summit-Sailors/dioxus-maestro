@@ -1,7 +1,7 @@
 use {
 	crate::{
 		button::Button,
-		hooks::{use_arrow_key_navigation, use_interaction_state},
+		hooks::{InteractionStateContext, UseControllableStateParams, use_arrow_key_navigation, use_controllable_state, use_interaction_state},
 	},
 	dioxus::prelude::*,
 	std::rc::Rc,
@@ -15,53 +15,41 @@ pub enum AccordionVariant {
 
 #[derive(Clone, PartialEq, Debug, Copy)]
 pub struct AccordionItemContext {
-	pub value: Signal<String>,
-	pub disabled: Signal<bool>,
-	pub open: Signal<bool>,
+	pub value: Memo<String>,
+	pub open: Memo<bool>,
 }
 
 impl AccordionItemContext {
-	pub fn new(value: Signal<String>, open: Signal<bool>, disabled: Signal<bool>) -> Self {
-		Self { value, open, disabled }
+	pub fn new(value: Memo<String>, open: Memo<bool>) -> Self {
+		Self { value, open }
 	}
 }
 
 #[derive(Clone, PartialEq, Debug, Copy)]
 struct AccordionContext {
-	pub value: Signal<Vec<String>>,
-	pub on_value_change: Option<Callback<Vec<String>>>,
+	pub value: Memo<Option<Vec<String>>>,
+	pub set_value: Callback<Option<Vec<String>>>,
 	pub collapsible: bool,
-	pub disabled: Signal<bool>,
 	pub variant: AccordionVariant,
 }
 
 impl AccordionContext {
-	pub fn new(
-		value: Signal<Vec<String>>,
-		on_value_change: Option<Callback<Vec<String>>>,
-		collapsible: bool,
-		disabled: Signal<bool>,
-		variant: AccordionVariant,
-	) -> Self {
-		Self { value, on_value_change, collapsible, disabled, variant }
+	pub fn new(value: Memo<Option<Vec<String>>>, set_value: Callback<Option<Vec<String>>>, collapsible: bool, variant: AccordionVariant) -> Self {
+		Self { value, set_value, collapsible, variant }
 	}
 
-	pub fn onopen(&mut self, value: String) {
+	pub fn onopen(&self, value: String) {
 		match self.variant {
 			AccordionVariant::Single => {
-				self.value.set(Vec::from([value.clone()]));
-
-				if let Some(callback) = self.on_value_change {
-					callback.call(self.value.peek().clone());
+				self.set_value.call(Some(Vec::from([value.clone()])));
+			},
+			AccordionVariant::Multiple => {
+				let mut new_value = self.value.peek().clone().unwrap_or_default();
+				if !new_value.contains(&value) {
+					new_value.push(value);
+					self.set_value.call(Some(new_value));
 				}
 			},
-			AccordionVariant::Multiple =>
-				if !self.value.peek().contains(&value) {
-					self.value.write().push(value);
-					if let Some(callback) = self.on_value_change {
-						callback.call(self.value.peek().clone());
-					}
-				},
 		}
 	}
 
@@ -69,17 +57,12 @@ impl AccordionContext {
 		match self.variant {
 			AccordionVariant::Single =>
 				if self.collapsible {
-					self.value.set(Vec::new());
-					if let Some(callback) = self.on_value_change {
-						callback.call(self.value.peek().clone());
-					}
+					self.set_value.call(None);
 				},
 			AccordionVariant::Multiple => {
-				self.value.write().retain(|v| v != &value);
-
-				if let Some(callback) = self.on_value_change {
-					callback.call(self.value.peek().clone());
-				}
+				let mut new_value = self.value.peek().clone().unwrap_or_default();
+				new_value.retain(|v| v != &value);
+				self.set_value.call(Some(new_value));
 			},
 		}
 	}
@@ -87,14 +70,16 @@ impl AccordionContext {
 
 #[derive(Props, Clone, PartialEq)]
 pub struct AccordionProps {
-	#[props(optional, default = Signal::new(Vec::from([String::new()])))]
-	pub value: Signal<Vec<String>>,
+	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
+	pub value: ReadOnlySignal<Option<Vec<String>>>,
+	#[props(optional, default = Vec::from([String::new()]))]
+	pub default_value: Vec<String>,
 	#[props(optional)]
-	pub on_value_change: Option<Callback<Vec<String>>>,
+	pub on_value_change: Option<Callback<Option<Vec<String>>>>,
 	#[props(optional, default = true)]
 	pub collapsible: bool,
-	#[props(optional, default = Signal::new(false))]
-	pub disabled: Signal<bool>,
+	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]
+	pub disabled: ReadOnlySignal<bool>,
 	#[props(extends = ul, extends = GlobalAttributes)]
 	attributes: Vec<Attribute>,
 	#[props(optional, default = AccordionVariant::Single)]
@@ -121,10 +106,13 @@ pub struct AccordionProps {
 
 #[component]
 pub fn Accordion(props: AccordionProps) -> Element {
-	let AccordionProps { value, on_value_change, collapsible, disabled, variant, children, attributes, .. } = props;
+	let AccordionProps { value, default_value, on_value_change, collapsible, disabled, variant, children, attributes, .. } = props;
+	let is_controlled = use_hook(move || value().is_some());
+	let (value, set_value) =
+		use_controllable_state(UseControllableStateParams { is_controlled, prop: value, default_prop: default_value, on_change: on_value_change });
 
-	use_context_provider::<AccordionContext>(|| AccordionContext::new(value, on_value_change, collapsible, disabled, variant));
-	let mut interaction_state = use_interaction_state(Signal::new(false), disabled);
+	use_context_provider::<AccordionContext>(|| AccordionContext::new(value, set_value, collapsible, variant));
+	let mut interaction_state = use_interaction_state(ReadOnlySignal::new(Signal::new(false)), disabled);
 	let mut current_ref = use_signal(|| None::<Rc<MountedData>>);
 	let handle_key_down = use_arrow_key_navigation(current_ref, Some(String::from("li[role='presentation']:not([tabindex='-1'])")));
 
@@ -198,8 +186,8 @@ pub fn Accordion(props: AccordionProps) -> Element {
 
 #[derive(Props, Clone, PartialEq)]
 pub struct AccordionItemProps {
-	#[props(optional, default = Signal::new(false))]
-	pub disabled: Signal<bool>,
+	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]
+	pub disabled: ReadOnlySignal<bool>,
 	pub value: String,
 	#[props(extends = li, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
@@ -226,18 +214,15 @@ pub struct AccordionItemProps {
 #[component]
 pub fn AccordionItem(props: AccordionItemProps) -> Element {
 	let accordion_context = use_context::<AccordionContext>();
-	let mut interaction_state = use_interaction_state(Signal::new(false), props.disabled);
-	let mut accordion_item_context = use_context_provider::<AccordionItemContext>(|| {
-		AccordionItemContext::new(Signal::new(props.value.clone()), Signal::new(accordion_context.value.peek().contains(&props.value.clone())), props.disabled)
-	});
+	let accordion_interaction_state = use_context::<InteractionStateContext>();
+	let mut interaction_state = use_interaction_state(ReadOnlySignal::new(Signal::new(false)), props.disabled);
+	let cloned_value = props.value.clone();
+	let open = use_memo(move || accordion_context.value.read().clone().unwrap_or_default().contains(&cloned_value));
+	let item_value = use_memo(move || props.value.clone());
+	let accordion_item_context = use_context_provider::<AccordionItemContext>(|| AccordionItemContext::new(item_value, open));
 
-	let is_disabled = *accordion_context.disabled.read() || *accordion_item_context.disabled.read();
-
-	use_effect(move || {
-		if !accordion_context.value.read().contains(&*accordion_item_context.value.peek()) {
-			accordion_item_context.open.set(false);
-		}
-	});
+	let is_disabled = use_memo(move || *accordion_interaction_state.disabled.read() || *interaction_state.disabled.read());
+	use_context_provider::<Memo<bool>>(|| is_disabled);
 
 	rsx! {
 		li {
@@ -294,10 +279,10 @@ pub fn AccordionItem(props: AccordionItemProps) -> Element {
 			"data-focused": *interaction_state.is_focused.read(),
 			"data-focuse-visible": *interaction_state.is_focused.read(),
 			"data-state": if *accordion_item_context.open.read() { "open" } else { "closed" },
-			"data-disabled": is_disabled,
-			aria_disabled: is_disabled,
+			"data-disabled": is_disabled(),
+			aria_disabled: is_disabled(),
 			role: "presentation",
-			tabindex: if is_disabled { -1 } else { 0 },
+			tabindex: if is_disabled() { -1 } else { 0 },
 			..props.attributes,
 			{props.children}
 		}
@@ -314,11 +299,11 @@ pub struct AccordionTriggerProps {
 #[component]
 pub fn AccordionTrigger(props: AccordionTriggerProps) -> Element {
 	let mut accordion_context = use_context::<AccordionContext>();
-	let mut accordion_item_context = use_context::<AccordionItemContext>();
-	let is_disabled = *accordion_context.disabled.read() || *accordion_item_context.disabled.read();
+	let accordion_item_context = use_context::<AccordionItemContext>();
+	let is_disabled = use_context::<Memo<bool>>();
 
 	let mut attributes = props.attributes.clone();
-	attributes.push(Attribute::new("aria-disabled", is_disabled, None, false));
+	attributes.push(Attribute::new("aria-disabled", is_disabled(), None, false));
 	attributes.push(Attribute::new("aria-expanded", *accordion_item_context.open.read(), None, false));
 	attributes.push(Attribute::new("data-disabled", *accordion_item_context.open.read(), None, false));
 	attributes.push(Attribute::new("data-state", if *accordion_item_context.open.read() { "open" } else { "closed" }, None, false));
@@ -326,10 +311,10 @@ pub fn AccordionTrigger(props: AccordionTriggerProps) -> Element {
 	rsx! {
 		Button {
 			r#type: "button",
-			style: if is_disabled { "pointer-events:none;" } else { "cursor:pointer;" },
+			style: if is_disabled() { "pointer-events:none;" } else { "cursor:pointer;" },
 			tabindex: -1,
 			onclick: move |_| {
-					if is_disabled {
+					if is_disabled() {
 							return;
 					}
 					let value = accordion_item_context.value.peek().clone();
@@ -342,10 +327,8 @@ pub fn AccordionTrigger(props: AccordionTriggerProps) -> Element {
 											} else {
 													accordion_context.onopen(value);
 											}
-											accordion_item_context.open.toggle();
 									} else if !open {
 											accordion_context.onopen(value);
-											accordion_item_context.open.toggle();
 									}
 							}
 							AccordionVariant::Multiple => {
@@ -354,11 +337,10 @@ pub fn AccordionTrigger(props: AccordionTriggerProps) -> Element {
 									} else {
 											accordion_context.onopen(value);
 									}
-									accordion_item_context.open.toggle();
 							}
 					}
 			},
-			disabled: Signal::new(is_disabled),
+			disabled: is_disabled(),
 			additional_attributes: attributes.clone(),
 			{props.children}
 		}

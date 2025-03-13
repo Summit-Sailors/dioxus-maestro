@@ -1,39 +1,38 @@
 use {
 	crate::hooks::{InteractionStateContext, UseControllableStateParams, use_controllable_state, use_interaction_state},
 	dioxus::prelude::*,
-	dioxus_free_icons::{Icon, icons::bs_icons::BsCheck},
 	std::fmt::Debug,
 };
 
 #[derive(Clone, PartialEq, Debug)]
-pub struct CheckboxContext<T>
+pub struct RadioContext<T>
 where
-	T: Clone + PartialEq + Debug + 'static,
+	T: Clone + PartialEq + Debug + Default + 'static,
 {
-	pub value: T,
+	pub value: ReadOnlySignal<T>,
 	pub name: String,
 	pub onchange: Callback<Option<bool>>,
 	pub checked: Memo<Option<bool>>,
 	pub required: bool,
 }
 
-impl<T> CheckboxContext<T>
+impl<T> RadioContext<T>
 where
-	T: Clone + PartialEq + Debug + 'static,
+	T: Clone + PartialEq + Debug + Default + 'static,
 {
-	pub fn new(value: T, onchange: Callback<Option<bool>>, checked: Memo<Option<bool>>, name: String, required: bool) -> Self {
+	pub fn new(value: ReadOnlySignal<T>, onchange: Callback<Option<bool>>, checked: Memo<Option<bool>>, name: String, required: bool) -> Self {
 		Self { value, onchange, checked, name, required }
 	}
 }
 
 #[derive(Props, PartialEq, Debug, Clone)]
-pub struct CheckboxProps<T>
+pub struct RadioProps<T>
 where
 	T: Clone + PartialEq + Debug + 'static,
 {
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]
 	pub disabled: ReadOnlySignal<bool>,
-	pub value: T,
+	pub value: ReadOnlySignal<T>,
 	pub name: String,
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
 	pub checked: ReadOnlySignal<Option<bool>>,
@@ -65,12 +64,12 @@ where
 }
 
 #[component]
-pub fn Checkbox<T: Clone + PartialEq + Debug + 'static>(props: CheckboxProps<T>) -> Element {
-	let CheckboxProps { disabled, value, name, checked, default_checked, attributes, onchange, children, required, .. } = props;
+pub fn Radio<T: Clone + PartialEq + Debug + Default + 'static>(props: RadioProps<T>) -> Element {
+	let RadioProps { disabled, value, name, checked, default_checked, attributes, onchange, children, required, .. } = props;
 	let is_controlled = use_hook(move || checked().is_some());
 	let (checked, set_checked) =
 		use_controllable_state(UseControllableStateParams { is_controlled, prop: checked, default_prop: default_checked, on_change: onchange });
-	let checkbox_context = use_context_provider::<CheckboxContext<T>>(|| CheckboxContext::new(value, set_checked, checked, name, required));
+	let radio_context = use_context_provider::<RadioContext<T>>(|| RadioContext::new(value, set_checked, checked, name, required));
 	let mut interaction_state = use_interaction_state(ReadOnlySignal::new(Signal::new(false)), disabled);
 
 	rsx! {
@@ -128,9 +127,9 @@ pub fn Checkbox<T: Clone + PartialEq + Debug + 'static>(props: CheckboxProps<T>)
 			"data-hovered": *interaction_state.is_hovered.read(),
 			"data-focused": *interaction_state.is_focused.read(),
 			"data-focuse-visible": *interaction_state.is_focused.read(),
-			aria_checked: *checkbox_context.checked.read(),
-			aria_required: *checkbox_context.checked.peek(),
-			"data-state": if checkbox_context.checked.read().unwrap_or_default() { "checked" } else { "unchecked" },
+			aria_checked: *radio_context.checked.read(),
+			aria_required: *radio_context.checked.peek(),
+			"data-state": if radio_context.checked.read().unwrap_or_default() { "checked" } else { "unchecked" },
 			"data-disabled": *interaction_state.disabled.read(),
 			aria_disabled: *interaction_state.disabled.read(),
 			..attributes,
@@ -140,7 +139,7 @@ pub fn Checkbox<T: Clone + PartialEq + Debug + 'static>(props: CheckboxProps<T>)
 }
 
 #[derive(Props, PartialEq, Debug, Clone)]
-pub struct CheckboxInputProps {
+pub struct RadioInputProps {
 	#[props(extends = GlobalAttributes, extends = input)]
 	pub attributes: Vec<Attribute>,
 	pub children: Element,
@@ -165,23 +164,23 @@ pub struct CheckboxInputProps {
 }
 
 #[component]
-pub fn CheckboxInput<T: Clone + PartialEq + Debug + 'static>(props: CheckboxInputProps) -> Element {
-	let checkbox_context = use_context::<CheckboxContext<T>>();
+pub fn RadioInput<T: Clone + PartialEq + Debug + Default + 'static>(props: RadioInputProps) -> Element {
+	let radio_context = use_context::<RadioContext<T>>();
 	let mut interaction_state = use_context::<InteractionStateContext>();
 
 	rsx! {
 		input {
 			style: "position:absolute;width:0px;height:0px;margin:0px;opacity:0;z-index:-20",
 			tabindex: -1,
-			r#type: "checkbox",
-			checked: *checkbox_context.checked.read(),
-			name: *checkbox_context.checked.peek(),
+			r#type: "radio",
+			checked: *radio_context.checked.read(),
+			name: radio_context.name,
 			disabled: *interaction_state.disabled.read(),
 			aria_hidden: true,
 			onchange: move |_| {
-					match !checkbox_context.checked.peek().unwrap_or_default() {
-							true => checkbox_context.onchange.call(Some(true)),
-							false => checkbox_context.onchange.call(None),
+					match !radio_context.checked.peek().unwrap_or_default() {
+							true => radio_context.onchange.call(Some(true)),
+							false => radio_context.onchange.call(None),
 					};
 			},
 			..props.attributes,
@@ -237,11 +236,11 @@ pub fn CheckboxInput<T: Clone + PartialEq + Debug + 'static>(props: CheckboxInpu
 					}
 			},
 			class: props.class.clone(),
-			role: "checkbox",
-			aria_checked: *checkbox_context.checked.read(),
-			aria_selected: *checkbox_context.checked.read(),
-			aria_required: checkbox_context.required,
-			"data-state": if checkbox_context.checked.read().unwrap_or_default() { "checked" } else { "unchecked" },
+			role: "radio",
+			aria_checked: *radio_context.checked.read(),
+			aria_selected: *radio_context.checked.read(),
+			aria_required: radio_context.required,
+			"data-state": if radio_context.checked.read().unwrap_or_default() { "checked" } else { "unchecked" },
 			"data-disabled": *interaction_state.disabled.read(),
 			aria_disabled: *interaction_state.disabled.read(),
 			"data-pressed": *interaction_state.is_pressed.read(),
@@ -254,7 +253,7 @@ pub fn CheckboxInput<T: Clone + PartialEq + Debug + 'static>(props: CheckboxInpu
 }
 
 #[derive(Props, PartialEq, Debug, Clone)]
-pub struct CheckboxIndicatorProps {
+pub struct RadioIndicatorProps {
 	#[props(extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
 	#[props(default = None)]
@@ -262,21 +261,21 @@ pub struct CheckboxIndicatorProps {
 }
 
 #[component]
-pub fn CheckboxIndicator<T: Clone + PartialEq + Debug + 'static>(props: CheckboxIndicatorProps) -> Element {
-	let checkbox_context = use_context::<CheckboxContext<T>>();
+pub fn RadioIndicator<T: Clone + PartialEq + Debug + Default + 'static>(props: RadioIndicatorProps) -> Element {
+	let radio_context = use_context::<RadioContext<T>>();
 	let interaction_state = use_context::<InteractionStateContext>();
 
 	rsx! {
 		span {
-			"data-state": if checkbox_context.checked.read().unwrap_or_default() { "checked" } else { "unchecked" },
+			"data-state": if radio_context.checked.read().unwrap_or_default() { "checked" } else { "unchecked" },
 			"data-disabled": *interaction_state.disabled.read(),
-			style: "pointer-events:none;position:relative;display:flex;justify-content:center;align-items:center",
+			style: "pointer-events:none;position:relative;display:flex;justify-content:center;align-items:center;",
 			..props.attributes,
-			if checkbox_context.checked.read().unwrap_or_default() {
+			if radio_context.checked.read().unwrap_or_default() {
 				if let Some(children) = props.children {
 					{children}
 				} else {
-					Icon { icon: BsCheck }
+					span { style: "width:8px;height:8px;border:1px solid;rounded:100%;" }
 				}
 			}
 		}
