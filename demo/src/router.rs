@@ -1,17 +1,10 @@
 use {
 	crate::{
 		layout::Layout,
-    pages::{
-      form::FormsDemo,
-      home::HomePage,
-      hooks::HooksDemo,
-      plotters::PlottersDemo,
-      query::CompleteQueryDemo,
-      radio::RadioDemo,
-      toast::ToastDemo,
-      ui::UIDemo,
-      calendar::CalendarDemo,
-    }
+		pages::{
+			calendar::CalendarDemo, form::FormsDemo, headless::HeadlessDemo, home::HomePage, hooks::HooksDemo, plotters::PlottersDemo, query::CompleteQueryDemo,
+			radio::RadioDemo, toast::ToastDemo, ui::UIDemo,
+		},
 	},
 	dioxus::prelude::*,
 	strum_macros::EnumIter,
@@ -38,6 +31,8 @@ pub enum Route {
 	UIDemo {},
 	#[route("/calendar")]
 	CalendarDemo {},
+	#[route("/headless")]
+	HeadlessDemo {},
 }
 
 impl Route {
@@ -51,12 +46,13 @@ impl Route {
 			Route::RadioDemo {} => "Radio",
 			Route::ToastDemo {} => "Toast",
 			Route::UIDemo {} => "UI",
-      Route::CalendarDemo {} => "Calendar",
+			Route::CalendarDemo {} => "Calendar",
+			Route::HeadlessDemo {} => "Headless",
 		}
 	}
 
-  pub fn description(&self) -> &'static str {
-    match self {
+	pub fn description(&self) -> &'static str {
+		match self {
 			Route::HomePage {} => "Home",
 			Route::FormsDemo {} => "A powerful, type-safe form management solution for Dioxus applications that brings the best of Formik's paradigms to Rust.",
 			Route::HooksDemo {} => "Enhanced hooks collection for Dioxus applications that provides type safety, cross-platform compatibility, and optimized performance.",
@@ -66,6 +62,7 @@ impl Route {
 			Route::ToastDemo {} => "A powerful, flexible, and intuitive toast notification system designed specifically for Dioxus applications. ",
 			Route::UIDemo {} => "A comprehensive, type-safe, and highly customizable UI component library for Dioxus, designed to provide developers with powerful, flexible, and elegant UI building blocks.",
       Route::CalendarDemo {} => "A  highly customizable UI calendar and date picker utility.",
+      Route::HeadlessDemo {} => "Headless components",
 		}
-  }
+	}
 }

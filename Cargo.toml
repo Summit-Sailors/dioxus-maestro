@@ -1,7 +1,7 @@
 [workspace.package]
 authors = []
 description = ""
-edition = "2021"
+edition = "2024"
 license = ""
 repository = ""
 
@@ -42,6 +42,7 @@ inherits = "dev"
 
 # frontend
 maestro-forms = { path = "frontend/maestro-forms" }
+maestro-headless = { path = "frontend/maestro-headless" }
 maestro-hooks = { path = "frontend/maestro-hooks" }
 maestro-toast = { path = "frontend/maestro-toast" }
 maestro-ui = { path = "frontend/maestro-ui" }
