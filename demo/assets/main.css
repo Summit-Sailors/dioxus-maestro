@@ -1328,6 +1328,10 @@ video {
   gap: 2rem;
 }
 
+.gap-0 {
+  gap: 0px;
+}
+
 .space-x-1 > :not([hidden]) ~ :not([hidden]) {
   --tw-space-x-reverse: 0;
   margin-right: calc(0.25rem * var(--tw-space-x-reverse));
@@ -2842,6 +2846,15 @@ body>div {
   display: flex;
 }
 
+.data-\[state\=\]\:h-fit[data-state=""] {
+  height: -moz-fit-content;
+  height: fit-content;
+}
+
+.data-\[state\=closed\]\:h-0[data-state="closed"] {
+  height: 0px;
+}
+
 .data-\[role\=op\E7tion\]\:items-center[data-role="opçtion"] {
   align-items: center;
 }
@@ -2851,6 +2864,10 @@ body>div {
 }
 
 .data-\[role\=option\]\:gap-4[data-role="option"] {
+  gap: 1rem;
+}
+
+.data-\[state\=open\]\:gap-4[data-state="open"] {
   gap: 1rem;
 }
 

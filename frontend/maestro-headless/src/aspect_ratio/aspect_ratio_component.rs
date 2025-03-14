@@ -4,6 +4,7 @@ use dioxus::prelude::*;
 pub struct AspectRatioProps {
 	#[props(default = 1.0)]
 	pub ratio: f32,
+
 	#[props(extends = div, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
 	pub children: Element,

@@ -6,46 +6,36 @@ use {
 };
 
 #[derive(Clone, PartialEq, Debug)]
-pub struct CheckboxContext<T>
-where
-	T: Clone + PartialEq + Debug + 'static,
-{
-	pub value: T,
+pub struct CheckboxContext {
+	pub value: ReadOnlySignal<String>,
 	pub name: String,
-	pub onchange: Callback<Option<bool>>,
 	pub checked: Memo<Option<bool>>,
 	pub required: bool,
+	pub on_change: Callback<Option<bool>>,
 }
 
-impl<T> CheckboxContext<T>
-where
-	T: Clone + PartialEq + Debug + 'static,
-{
-	pub fn new(value: T, onchange: Callback<Option<bool>>, checked: Memo<Option<bool>>, name: String, required: bool) -> Self {
-		Self { value, onchange, checked, name, required }
+impl CheckboxContext {
+	pub fn new(value: ReadOnlySignal<String>, on_change: Callback<Option<bool>>, checked: Memo<Option<bool>>, name: String, required: bool) -> Self {
+		Self { value, on_change, checked, name, required }
 	}
 }
 
 #[derive(Props, PartialEq, Debug, Clone)]
-pub struct CheckboxProps<T>
-where
-	T: Clone + PartialEq + Debug + 'static,
-{
-	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]
-	pub disabled: ReadOnlySignal<bool>,
-	pub value: T,
-	pub name: String,
+pub struct CheckboxProps {
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
 	pub checked: ReadOnlySignal<Option<bool>>,
 	#[props(optional, default = false)]
 	pub default_checked: bool,
-	#[props(extends = GlobalAttributes, extends = label)]
-	pub attributes: Vec<Attribute>,
 	#[props(default = None)]
-	pub onchange: Option<Callback<Option<bool>>>,
-	pub children: Element,
+	pub on_change: Option<Callback<Option<bool>>>,
+
+	pub value: ReadOnlySignal<String>,
+	pub name: String,
+	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]
+	pub disabled: ReadOnlySignal<bool>,
 	#[props(default = false)]
 	pub required: bool,
+
 	#[props(default = None)]
 	pub onkeydown: Option<EventHandler<Event<KeyboardData>>>,
 	#[props(default = None)]
@@ -62,20 +52,31 @@ where
 	pub onmouseenter: Option<EventHandler<Event<MouseData>>>,
 	#[props(default = None)]
 	pub onmouseleave: Option<EventHandler<Event<MouseData>>>,
+
+	#[props(extends = GlobalAttributes, extends = label)]
+	pub attributes: Vec<Attribute>,
+	pub children: Element,
 }
 
 #[component]
-pub fn Checkbox<T: Clone + PartialEq + Debug + 'static>(props: CheckboxProps<T>) -> Element {
-	let CheckboxProps { disabled, value, name, checked, default_checked, attributes, onchange, children, required, .. } = props;
+pub fn Checkbox(props: CheckboxProps) -> Element {
+	let CheckboxProps { disabled, value, name, checked, default_checked, attributes, on_change, children, required, .. } = props;
 	let is_controlled = use_hook(move || checked().is_some());
-	let (checked, set_checked) =
-		use_controllable_state(UseControllableStateParams { is_controlled, prop: checked, default_prop: default_checked, on_change: onchange });
-	let checkbox_context = use_context_provider::<CheckboxContext<T>>(|| CheckboxContext::new(value, set_checked, checked, name, required));
+	let (checked, set_checked) = use_controllable_state(UseControllableStateParams { is_controlled, prop: checked, default_prop: default_checked, on_change });
+	let context = use_context_provider::<CheckboxContext>(|| CheckboxContext::new(value, set_checked, checked, name, required));
 	let mut interaction_state = use_interaction_state(ReadOnlySignal::new(Signal::new(false)), disabled);
 
 	rsx! {
 		label {
 			style: "position:relative;",
+			"data-pressed": *interaction_state.is_pressed.read(),
+			"data-hovered": *interaction_state.is_hovered.read(),
+			"data-focused": *interaction_state.is_focused.read(),
+			"data-focuse-visible": *interaction_state.is_focused.read(),
+			aria_checked: *context.checked.read(),
+			aria_required: context.required,
+			"data-state": if context.checked.read().unwrap_or_default() { "checked" } else { "unchecked" },
+			aria_disabled: *interaction_state.disabled.read(),
 			onmousedown: move |event| {
 					interaction_state.onmousedown();
 					if let Some(handler) = props.onmousedown {
@@ -124,15 +125,6 @@ pub fn Checkbox<T: Clone + PartialEq + Debug + 'static>(props: CheckboxProps<T>)
 							handler.call(event);
 					}
 			},
-			"data-pressed": *interaction_state.is_pressed.read(),
-			"data-hovered": *interaction_state.is_hovered.read(),
-			"data-focused": *interaction_state.is_focused.read(),
-			"data-focuse-visible": *interaction_state.is_focused.read(),
-			aria_checked: *checkbox_context.checked.read(),
-			aria_required: *checkbox_context.checked.peek(),
-			"data-state": if checkbox_context.checked.read().unwrap_or_default() { "checked" } else { "unchecked" },
-			"data-disabled": *interaction_state.disabled.read(),
-			aria_disabled: *interaction_state.disabled.read(),
 			..attributes,
 			{children}
 		}
@@ -141,11 +133,9 @@ pub fn Checkbox<T: Clone + PartialEq + Debug + 'static>(props: CheckboxProps<T>)
 
 #[derive(Props, PartialEq, Debug, Clone)]
 pub struct CheckboxInputProps {
-	#[props(extends = GlobalAttributes, extends = input)]
-	pub attributes: Vec<Attribute>,
-	pub children: Element,
 	#[props(default = String::default())]
 	pub class: String,
+
 	#[props(default = None)]
 	pub onkeydown: Option<EventHandler<Event<KeyboardData>>>,
 	#[props(default = None)]
@@ -162,11 +152,15 @@ pub struct CheckboxInputProps {
 	pub onmouseenter: Option<EventHandler<Event<MouseData>>>,
 	#[props(default = None)]
 	pub onmouseleave: Option<EventHandler<Event<MouseData>>>,
+
+	#[props(extends = GlobalAttributes, extends = input)]
+	pub attributes: Vec<Attribute>,
+	pub children: Element,
 }
 
 #[component]
-pub fn CheckboxInput<T: Clone + PartialEq + Debug + 'static>(props: CheckboxInputProps) -> Element {
-	let checkbox_context = use_context::<CheckboxContext<T>>();
+pub fn CheckboxInput(props: CheckboxInputProps) -> Element {
+	let context = use_context::<CheckboxContext>();
 	let mut interaction_state = use_context::<InteractionStateContext>();
 
 	rsx! {
@@ -174,20 +168,31 @@ pub fn CheckboxInput<T: Clone + PartialEq + Debug + 'static>(props: CheckboxInpu
 			style: "position:absolute;width:0px;height:0px;margin:0px;opacity:0;z-index:-20",
 			tabindex: -1,
 			r#type: "checkbox",
-			checked: *checkbox_context.checked.read(),
-			name: *checkbox_context.checked.peek(),
+			checked: *context.checked.read(),
+			name: *context.checked.peek(),
 			disabled: *interaction_state.disabled.read(),
 			aria_hidden: true,
 			onchange: move |_| {
-					match !checkbox_context.checked.peek().unwrap_or_default() {
-							true => checkbox_context.onchange.call(Some(true)),
-							false => checkbox_context.onchange.call(None),
+					match !context.checked.peek().unwrap_or_default() {
+							true => context.on_change.call(Some(true)),
+							false => context.on_change.call(None),
 					};
 			},
 			..props.attributes,
 		}
 		div {
 			tabindex: if !*interaction_state.disabled.read() { "0" } else { "-1" },
+			class: props.class.clone(),
+			role: "checkbox",
+			aria_checked: *context.checked.read(),
+			aria_selected: *context.checked.read(),
+			aria_required: context.required,
+			"data-state": if context.checked.read().unwrap_or_default() { "checked" } else { "unchecked" },
+			aria_disabled: *interaction_state.disabled.read(),
+			"data-pressed": *interaction_state.is_pressed.read(),
+			"data-hovered": *interaction_state.is_hovered.read(),
+			"data-focused": *interaction_state.is_focused.read(),
+			"data-focuse-visible": *interaction_state.is_focused.read(),
 			onmousedown: move |event| {
 					interaction_state.onmousedown();
 					if let Some(handler) = props.onmousedown {
@@ -236,18 +241,6 @@ pub fn CheckboxInput<T: Clone + PartialEq + Debug + 'static>(props: CheckboxInpu
 							handler.call(event);
 					}
 			},
-			class: props.class.clone(),
-			role: "checkbox",
-			aria_checked: *checkbox_context.checked.read(),
-			aria_selected: *checkbox_context.checked.read(),
-			aria_required: checkbox_context.required,
-			"data-state": if checkbox_context.checked.read().unwrap_or_default() { "checked" } else { "unchecked" },
-			"data-disabled": *interaction_state.disabled.read(),
-			aria_disabled: *interaction_state.disabled.read(),
-			"data-pressed": *interaction_state.is_pressed.read(),
-			"data-hovered": *interaction_state.is_hovered.read(),
-			"data-focused": *interaction_state.is_focused.read(),
-			"data-focuse-visible": *interaction_state.is_focused.read(),
 			{props.children}
 		}
 	}
@@ -262,17 +255,17 @@ pub struct CheckboxIndicatorProps {
 }
 
 #[component]
-pub fn CheckboxIndicator<T: Clone + PartialEq + Debug + 'static>(props: CheckboxIndicatorProps) -> Element {
-	let checkbox_context = use_context::<CheckboxContext<T>>();
+pub fn CheckboxIndicator(props: CheckboxIndicatorProps) -> Element {
+	let context = use_context::<CheckboxContext>();
 	let interaction_state = use_context::<InteractionStateContext>();
 
 	rsx! {
 		span {
-			"data-state": if checkbox_context.checked.read().unwrap_or_default() { "checked" } else { "unchecked" },
-			"data-disabled": *interaction_state.disabled.read(),
+			"data-state": if context.checked.read().unwrap_or_default() { "checked" } else { "unchecked" },
+			aria_disabled: *interaction_state.disabled.read(),
 			style: "pointer-events:none;position:relative;display:flex;justify-content:center;align-items:center",
 			..props.attributes,
-			if checkbox_context.checked.read().unwrap_or_default() {
+			if context.checked.read().unwrap_or_default() {
 				if let Some(children) = props.children {
 					{children}
 				} else {

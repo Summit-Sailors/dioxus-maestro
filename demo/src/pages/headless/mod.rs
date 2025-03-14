@@ -14,6 +14,7 @@ use {
 		accordion::{Accordion, AccordionContent, AccordionHeader, AccordionItem, AccordionTrigger, AccordionVariant},
 		button::Button,
 		checkbox::{Checkbox, CheckboxIndicator, CheckboxInput},
+		collapsible::{Collapsible, CollapsibleContent, CollapsibleTrigger},
 		dialog::{Dialog, DialogClose, DialogContent, DialogDescription, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger},
 		select::{Select, SelectDropdown, SelectOption, SelectTrigger, SelectValue},
 		toggle::Toggle,
@@ -328,9 +329,11 @@ pub fn HeadlessDemo() -> Element {
 			Toggle {
 				class: "aria-[pressed=true]:bg-orange-700 bg-orange-500 text-slate-50 flex justify-center items-center p-3 w-12 h-12 rounded",
 				pressed: toggle(),
+				value: "on",
 				on_toggle_change: move |value: Option<bool>| toggle.set(value.unwrap_or_default()),
 			}
 			Toggle {
+				value: "on",
 				class: "aria-[pressed=true]:bg-orange-700 text-slate-50  bg-orange-500 flex justify-center items-center p-3 w-12 h-12 rounded",
 				default_pressed: toggle(),
 				Icon { icon: LdSmile }
@@ -340,18 +343,18 @@ pub fn HeadlessDemo() -> Element {
 			ToggleGroup {
 				class: "flex justify-center items-center rounded overflow-hidden border border-slate-700",
 				value: group_toggle_value(),
-				on_value_change: move |value: Option<String>| group_toggle_value.set(value.unwrap_or_default()),
-				ToggleGroupItem::<String> {
+				on_value_chenge: move |value: Option<String>| group_toggle_value.set(value.unwrap_or_default()),
+				ToggleGroupItem {
 					class: "data-[state=on]:bg-slate-200  data-[state=on]:text-slate-900 border-r border-r-slate-700 bg-slate-600 text-slate-50 flex justify-center items-center p-3 w-12 h-12",
 					value: "1",
 					Icon { icon: LdAlignRight }
 				}
-				ToggleGroupItem::<String> {
+				ToggleGroupItem {
 					class: "data-[state=on]:bg-slate-200 data-[state=on]:text-slate-900 bg-slate-600 text-slate-50 flex justify-center items-center p-3 w-12 h-12",
 					value: "2",
 					Icon { icon: LdAlignCenter }
 				}
-				ToggleGroupItem::<String> {
+				ToggleGroupItem {
 					class: "data-[state=on]:bg-slate-200  data-[state=on]:text-slate-900 border-l border-l-slate-700 bg-slate-600 text-slate-50 flex justify-center items-center p-3 w-12 h-12",
 					value: "3",
 					Icon { icon: LdAlignLeft }
@@ -361,25 +364,38 @@ pub fn HeadlessDemo() -> Element {
 		div { class: "flex gap-6",
 			Checkbox { class: "", value: group_toggle_value(), name: "box",
 				div { class: "flex justify-center items-center gap-3",
-					CheckboxInput::<String> { class: "w-10 h-10 rounded flex items-center justify-center border border-slate-100",
-						CheckboxIndicator::<String> { class: "text-slate-100 " }
+					CheckboxInput { class: "w-10 h-10 rounded flex items-center justify-center border border-slate-100",
+						CheckboxIndicator { class: "text-slate-100 " }
 					}
 					span { class: "text-slate-100", "Check" }
 				}
 			}
 			Checkbox {
 				class: "",
-				value: 1_i32,
+				value: 1_i32.to_string(),
 				name: "box",
 				checked: checked(),
-				onchange: move |v: Option<bool>| {
+				on_change: move |v: Option<bool>| {
 						checked.set(v.unwrap_or_default());
 				},
 				div { class: "flex justify-center items-center gap-3",
-					CheckboxInput::<i32> { class: "w-10 h-10 rounded flex items-center justify-center border border-slate-100",
-						CheckboxIndicator::<i32> { class: "text-slate-100 " }
+					CheckboxInput { class: "w-10 h-10 rounded flex items-center justify-center border border-slate-100",
+						CheckboxIndicator { class: "text-slate-100 " }
 					}
 					span { class: "text-slate-100", "Check" }
+				}
+			}
+		}
+		div { class: "flex gap-6",
+			Collapsible { class: "flex flex-col data-[state=open]:gap-4 gap-0",
+				div { class: "flex justify-between items-center gap-3 px-6 py-3",
+					span { class: "text-slate-100", "Collapsible" }
+					CollapsibleTrigger { class: "w-10 h-10 rounded-full flex items-center justify-center border border-slate-300 text-slate-300",
+						Icon { icon: LdSmile }
+					}
+				}
+				CollapsibleContent { class: "overflow-hidden transition-all ease-linear data-[state=closed]:h-0 data-[state=]:h-fit",
+					span { class: "text-slate-100", "Content of collapsible" }
 				}
 			}
 		}

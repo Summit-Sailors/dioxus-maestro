@@ -4,20 +4,23 @@ use {
 		hooks::{UseControllableStateParams, use_controllable_state},
 	},
 	dioxus::prelude::*,
-	dioxus_free_icons::{Icon, icons::bs_icons::BsInfo},
 };
 
 #[derive(Props, PartialEq, Debug, Clone)]
-pub struct ToggleProps {
+pub struct SwitchProps {
+	#[props(default = ReadOnlySignal::new(Signal::new("on".to_string())))]
 	pub value: ReadOnlySignal<String>,
+
 	#[props(default = ReadOnlySignal::new(Signal::new(None)))]
-	pub pressed: ReadOnlySignal<Option<bool>>,
+	pub checked: ReadOnlySignal<Option<bool>>,
 	#[props(default = false)]
-	pub default_pressed: bool,
+	pub default_checked: bool,
 	#[props(default = None)]
 	pub on_toggle_change: Option<Callback<Option<bool>>>,
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]
 	pub disabled: ReadOnlySignal<bool>,
+	#[props(optional, default = false)]
+	pub required: bool,
 
 	#[props(default = None)]
 	pub onkeydown: Option<EventHandler<Event<KeyboardData>>>,
@@ -40,22 +43,22 @@ pub struct ToggleProps {
 	pub attributes: Vec<Attribute>,
 	#[props(default = Vec::new())]
 	pub additional_attributes: Vec<Attribute>,
-	#[props(default = None)]
 	pub children: Option<Element>,
 }
 
 #[component]
-pub fn Toggle(props: ToggleProps) -> Element {
-	let ToggleProps { value, disabled, attributes, additional_attributes, on_toggle_change, pressed, default_pressed, children, .. } = props;
-	let is_controlled = use_hook(move || pressed().is_some());
-	let (pressed, set_pressed) =
-		use_controllable_state(UseControllableStateParams { is_controlled, prop: pressed, default_prop: default_pressed, on_change: on_toggle_change });
+pub fn Switch(props: SwitchProps) -> Element {
+	let SwitchProps { value, disabled, required, attributes, additional_attributes, on_toggle_change, checked, default_checked, children, .. } = props;
+	let is_controlled = use_hook(move || checked().is_some());
+	let (checked, set_checked) =
+		use_controllable_state(UseControllableStateParams { is_controlled, prop: checked, default_prop: default_checked, on_change: on_toggle_change });
 	let mut attributes = attributes.clone();
+	use_context_provider::<Memo<Option<bool>>>(|| checked);
 
 	attributes.extend(additional_attributes);
-	attributes.push(Attribute::new("aria-pressed", pressed(), None, false));
+	attributes.push(Attribute::new("aria-pressed", checked(), None, false));
 	attributes.push(Attribute::new("aria-disabled", disabled(), None, false));
-	attributes.push(Attribute::new("data-state", if pressed().unwrap_or_default() { "on" } else { "off" }, None, false));
+	attributes.push(Attribute::new("data-state", if checked().unwrap_or_default() { "on" } else { "off" }, None, false));
 	if !attributes.iter().any(|x| x.name == "aria-role") {
 		attributes.push(Attribute::new("aria-role", "radio", None, false));
 	}
@@ -64,11 +67,16 @@ pub fn Toggle(props: ToggleProps) -> Element {
 		Button {
 			value: value(),
 			r#type: "button",
-			disabled,
+			disabled: disabled(),
+			role: "switch",
+			aria_checked: checked().unwrap_or_default(),
+			aria_required: required,
+			"data-state": if checked().unwrap_or_default() { "checked" } else { "unchecked" },
+			aria_disabled: disabled(),
 			onclick: move |_| {
 					if !disabled() {
-							let new_toggle = !pressed.peek().unwrap_or_default();
-							set_pressed(Some(new_toggle));
+							let new_checked = !checked.peek().unwrap_or_default();
+							set_checked(Some(new_checked));
 					}
 			},
 			onblur: props.onblur,
@@ -80,11 +88,29 @@ pub fn Toggle(props: ToggleProps) -> Element {
 			onmouseleave: props.onmouseleave,
 			onmouseup: props.onmouseup,
 			additional_attributes: attributes.clone(),
-			if let Some(children) = children {
-				{children}
-			} else {
-				Icon { icon: BsInfo }
-			}
+
+			{children}
+
+		}
+	}
+}
+
+#[derive(Props, PartialEq, Debug, Clone)]
+pub struct SwitchIndicatorProps {
+	#[props(extends = GlobalAttributes, extends = span)]
+	pub attributes: Vec<Attribute>,
+	#[props(optional)]
+	pub children: Element,
+}
+
+#[component]
+pub fn SwitchIndicator(props: SwitchIndicatorProps) -> Element {
+	let checked = use_context::<Memo<Option<bool>>>();
+	rsx! {
+		span {
+			"data-state": if checked().unwrap_or_default() { "checked" } else { "unchecked" },
+			..props.attributes,
+			{props.children}
 		}
 	}
 }

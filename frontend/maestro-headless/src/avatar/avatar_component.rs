@@ -15,12 +15,13 @@ pub struct AvatarContext {
 
 #[derive(Props, PartialEq, Debug, Clone)]
 pub struct AvatarProps {
+	#[props(default = None)]
+	pub onload: Option<Callback<bool>>,
+
 	#[props(extends = GlobalAttributes, extends = div)]
 	pub attributes: Vec<Attribute>,
 	#[props(default = None)]
 	pub children: Element,
-	#[props(default = None)]
-	pub onload: Option<Callback<bool>>,
 }
 
 #[component]
@@ -40,19 +41,19 @@ pub struct AvatarImageProps {
 
 #[component]
 pub fn AvatarImage(props: AvatarImageProps) -> Element {
-	let mut avatar_context = use_context::<AvatarContext>();
-	match *avatar_context.status.read() {
+	let mut context = use_context::<AvatarContext>();
+	match *context.status.read() {
 		AvatarImageLoadingStatus::Success => rsx! {
 			img {
 				onload: move |_| {
-						avatar_context.status.set(AvatarImageLoadingStatus::Success);
-						if let Some(callback) = avatar_context.on_status_change {
+						context.status.set(AvatarImageLoadingStatus::Success);
+						if let Some(callback) = context.on_status_change {
 								callback.call(true);
 						}
 				},
 				onerror: move |_| {
-						avatar_context.status.set(AvatarImageLoadingStatus::Error);
-						if let Some(callback) = avatar_context.on_status_change {
+						context.status.set(AvatarImageLoadingStatus::Error);
+						if let Some(callback) = context.on_status_change {
 								callback.call(false);
 						}
 				},
@@ -65,18 +66,20 @@ pub fn AvatarImage(props: AvatarImageProps) -> Element {
 
 #[derive(Props, PartialEq, Debug, Clone)]
 pub struct AvatarFallbackProps {
+	#[props(default = 0)]
+	pub delayMs: u32,
+
 	#[props(extends = GlobalAttributes, extends = span)]
 	pub attributes: Vec<Attribute>,
 	#[props(default = None)]
 	pub children: Element,
-	#[props(default = 0)]
-	pub delayMs: u32,
 }
 
 #[component]
 pub fn AvatarFallback(props: AvatarFallbackProps) -> Element {
-	let avatar_context = use_context::<AvatarContext>();
+	let context = use_context::<AvatarContext>();
 	let mut can_load = use_signal(|| false);
+
 	use_effect(move || {
 		spawn(async move {
 			if props.delayMs > 0 {
@@ -85,7 +88,8 @@ pub fn AvatarFallback(props: AvatarFallbackProps) -> Element {
 			}
 		});
 	});
-	if *avatar_context.status.read() != AvatarImageLoadingStatus::Success && can_load() {
+
+	if *context.status.read() != AvatarImageLoadingStatus::Success && can_load() {
 		rsx! {
 			span { ..props.attributes,{props.children} }
 		}

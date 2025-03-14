@@ -1,7 +1,7 @@
 use {
 	crate::{
+		checkbox::Checkbox,
 		hooks::{InteractionStateContext, UseControllableStateParams, use_arrow_key_navigation, use_controllable_state, use_interaction_state},
-		radio::Radio,
 		utils::EGroupOrientation,
 	},
 	dioxus::prelude::*,
@@ -9,36 +9,42 @@ use {
 };
 
 #[derive(Clone, PartialEq, Debug)]
-pub struct RadioGroupContext {
+pub struct CheckboxGroupContext {
 	pub name: String,
-	pub value: Memo<Option<String>>,
-	pub set_value: Callback<Option<String>>,
+	pub value: Memo<Option<Vec<String>>>,
+	pub set_value: Callback<Option<Vec<String>>>,
 	pub orientation: ReadOnlySignal<EGroupOrientation>,
 }
 
-impl RadioGroupContext {
-	pub fn new(value: Memo<Option<String>>, set_value: Callback<Option<String>>, orientation: ReadOnlySignal<EGroupOrientation>, name: String) -> Self {
+impl CheckboxGroupContext {
+	pub fn new(value: Memo<Option<Vec<String>>>, set_value: Callback<Option<Vec<String>>>, orientation: ReadOnlySignal<EGroupOrientation>, name: String) -> Self {
 		Self { value, set_value, orientation, name }
 	}
 
 	pub fn on_select(&self, value: String) {
-		self.set_value.call(Some(value));
+		let mut values = self.value.peek().clone().unwrap_or_default();
+		if values.contains(&value) {
+			values.push(value);
+			self.set_value.call(Some(values));
+		}
 	}
 
-	pub fn on_deselect(&self) {
-		self.set_value.call(None);
+	pub fn on_deselect(&self, value: String) {
+		let mut values = self.value.peek().clone().unwrap_or_default();
+		values.retain(|v| v != &value);
+		self.set_value.call(Some(values));
 	}
 }
 
 #[derive(Props, Clone, PartialEq)]
-pub struct RadioGroupProps {
+pub struct CheckboxGroupProps {
 	pub name: String,
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
-	pub value: ReadOnlySignal<Option<String>>,
+	pub value: ReadOnlySignal<Option<Vec<String>>>,
 	#[props(optional, default = None)]
-	default_value: Option<String>,
+	default_value: Option<Vec<String>>,
 	#[props(optional)]
-	pub on_value_change: Option<Callback<Option<String>>>,
+	pub on_value_change: Option<Callback<Option<Vec<String>>>>,
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]
 	pub disabled: ReadOnlySignal<bool>,
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(EGroupOrientation::Horizontal)))]
@@ -67,8 +73,8 @@ pub struct RadioGroupProps {
 }
 
 #[component]
-pub fn RadioGroup(props: RadioGroupProps) -> Element {
-	let RadioGroupProps { name, value, default_value, on_value_change, disabled, orientation, children, attributes, .. } = props;
+pub fn CheckboxGroup(props: CheckboxGroupProps) -> Element {
+	let CheckboxGroupProps { name, value, default_value, on_value_change, disabled, orientation, children, attributes, .. } = props;
 	let is_controlled = use_hook(move || value().is_some());
 	let (value, set_value) = use_controllable_state(UseControllableStateParams {
 		is_controlled,
@@ -77,7 +83,7 @@ pub fn RadioGroup(props: RadioGroupProps) -> Element {
 		on_change: on_value_change,
 	});
 
-	use_context_provider::<RadioGroupContext>(|| RadioGroupContext::new(value, set_value, orientation, name));
+	use_context_provider::<CheckboxGroupContext>(|| CheckboxGroupContext::new(value, set_value, orientation, name));
 
 	let mut container_ref = use_signal(|| None::<Rc<MountedData>>);
 
@@ -149,7 +155,7 @@ pub fn RadioGroup(props: RadioGroupProps) -> Element {
 }
 
 #[derive(Props, Clone, PartialEq)]
-pub struct RadioGroupItemProps {
+pub struct CheckboxGroupItemProps {
 	pub value: ReadOnlySignal<String>,
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]
 	pub disabled: ReadOnlySignal<bool>,
@@ -179,16 +185,16 @@ pub struct RadioGroupItemProps {
 }
 
 #[component]
-pub fn RadioGroupItem(props: RadioGroupItemProps) -> Element {
-	let context = use_context::<RadioGroupContext>();
-	let checked = use_memo(move || context.value.read().clone().unwrap_or_default() == *props.value.read());
+pub fn CheckboxGroupItem(props: CheckboxGroupItemProps) -> Element {
+	let context = use_context::<CheckboxGroupContext>();
+	let checked = use_memo(move || context.value.read().clone().unwrap_or_default().contains(&*props.value.read()));
 	let interaction_state = use_context::<InteractionStateContext>();
 
 	let is_disabled = use_memo(move || *interaction_state.disabled.read() || *props.disabled.read());
 	use_context_provider::<Memo<bool>>(|| is_disabled);
 
 	rsx! {
-		Radio {
+		Checkbox {
 			name: context.name.clone(),
 			value: props.value,
 			class: props.class.clone(),
@@ -199,7 +205,7 @@ pub fn RadioGroupItem(props: RadioGroupItemProps) -> Element {
 					if checked.is_some() {
 							context.on_select(props.value.read().clone());
 					} else {
-							context.on_deselect();
+							context.on_deselect(props.value.read().clone());
 					}
 			},
 			onblur: props.onblur,
