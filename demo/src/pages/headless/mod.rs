@@ -482,12 +482,12 @@ pub fn HeadlessDemo() -> Element {
 					value: group_toggle_value(),
 					name: "box",
 					CheckboxIndicator { class: "text-slate-100 " }
-				}
-				span { class: "text-slate-100", "Check" }
-			}
-			div { class: "flex justify-center items-center gap-3",
-				Checkbox {
-					class: "w-10 h-10 rounded flex items-center justify-center border border-slate-100",
+			Checkbox { class: "", value: group_toggle_value(), name: "box",
+				div { class: "flex justify-center items-center gap-3",
+					CheckboxInput { class: "w-10 h-10 rounded flex items-center justify-center border border-slate-100",
+						CheckboxIndicator { class: "text-slate-100 " }
+					}
+					span { class: "text-slate-100", "Check" }
 					value: 1_i32.to_string(),
 					name: "box",
 					checked: checked(),
