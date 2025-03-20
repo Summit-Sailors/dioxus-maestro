@@ -104,13 +104,9 @@ fn get_element_rect(ref_element: Signal<Option<Rc<MountedData>>>) -> Option<Rect
 			let scroll_x = window.page_x_offset().unwrap_or(0.0) as f32;
 			let scroll_y = window.page_y_offset().unwrap_or(0.0) as f32;
 			return Some(Rect { x: rect.left() as f32 + scroll_x, y: rect.top() as f32 + scroll_y, width: rect.width() as f32, height: rect.height() as f32 });
-		};
 	}
 	None
 }
-
-fn calculate_position(
-	reference_rect: &Rect,
 	floating_rect: &Rect,
 	placement: &Placement,
 	arrow_width: f32,
@@ -169,18 +165,6 @@ fn calculate_position(
 	let arrow_data = ArrowData { x: arrow_x, y: arrow_y, center_offset: 0.0 };
 
 	let (origin_x, origin_y) = match side {
-		ESide::Top => (format!("{}px", arrow_x.unwrap_or(floating_rect.width / 2.0)), format!("{}px", floating_rect.height)),
-		ESide::Right => ("0px".to_string(), format!("{}px", arrow_y.unwrap_or(floating_rect.height / 2.0))),
-		ESide::Bottom => (format!("{}px", arrow_x.unwrap_or(floating_rect.width / 2.0)), "0px".to_string()),
-		ESide::Left => (format!("{}px", floating_rect.width), format!("{}px", arrow_y.unwrap_or(floating_rect.height / 2.0))),
-	};
-
-	let transform_origin = TransformOriginData { x: origin_x, y: origin_y };
-
-	(styles, arrow_data, transform_origin)
-}
-
-#[derive(Props, Clone, PartialEq)]
 pub struct PopperProps {
 	#[props(default = false)]
 	pub is_arrow_hidden: bool,

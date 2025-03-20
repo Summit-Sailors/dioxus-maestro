@@ -92,6 +92,7 @@ pub fn Button(props: ButtonProps) -> Element {
 							}
 					}
 			},
+
 			onmouseenter: move |event| {
 					if !disabled() && !pending() {
 							if let Some(handler) = props.onmouseenter {
