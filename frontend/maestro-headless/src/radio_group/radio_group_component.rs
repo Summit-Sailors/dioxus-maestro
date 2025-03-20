@@ -1,6 +1,6 @@
 use {
 	crate::{
-		hooks::{InteractionStateContext, UseControllableStateParams, use_arrow_key_navigation, use_controllable_state, use_interaction_state},
+		hooks::{UseControllableStateParams, use_arrow_key_navigation, use_controllable_state, use_interaction_state},
 		radio::Radio,
 		utils::EGroupOrientation,
 	},
@@ -14,11 +14,18 @@ pub struct RadioGroupContext {
 	pub value: Memo<Option<String>>,
 	pub set_value: Callback<Option<String>>,
 	pub orientation: ReadOnlySignal<EGroupOrientation>,
+	pub disabled: ReadOnlySignal<bool>,
 }
 
 impl RadioGroupContext {
-	pub fn new(value: Memo<Option<String>>, set_value: Callback<Option<String>>, orientation: ReadOnlySignal<EGroupOrientation>, name: String) -> Self {
-		Self { value, set_value, orientation, name }
+	pub fn new(
+		value: Memo<Option<String>>,
+		set_value: Callback<Option<String>>,
+		orientation: ReadOnlySignal<EGroupOrientation>,
+		name: String,
+		disabled: ReadOnlySignal<bool>,
+	) -> Self {
+		Self { value, set_value, orientation, name, disabled }
 	}
 
 	pub fn on_select(&self, value: String) {
@@ -77,42 +84,38 @@ pub fn RadioGroup(props: RadioGroupProps) -> Element {
 		on_change: on_value_change,
 	});
 
-	use_context_provider::<RadioGroupContext>(|| RadioGroupContext::new(value, set_value, orientation, name));
+	use_context_provider::<RadioGroupContext>(|| RadioGroupContext::new(value, set_value, orientation, name, disabled));
 
 	let mut container_ref = use_signal(|| None::<Rc<MountedData>>);
 
-	let handle_key_down = use_arrow_key_navigation(container_ref, Some("[role='radio']:not([tabindex='-1'])".to_string()), orientation());
-	let mut interaction_state = use_interaction_state(ReadOnlySignal::new(Signal::new(false)), disabled);
+	let handle_key_down = use_arrow_key_navigation(container_ref, Some("[role='radio'][data-focusable='true']".to_string()), orientation());
+	let mut interaction_state = use_interaction_state();
 
 	rsx! {
 		div {
 			role: "group",
-			aria_disabled: *interaction_state.disabled.read(),
-			"data-pressed": *interaction_state.is_pressed.read(),
+			aria_disabled: disabled(),
+			"data-disabled": disabled(),
 			"data-hovered": *interaction_state.is_hovered.read(),
 			"data-focused": *interaction_state.is_focused.read(),
 			"data-focuse-visible": *interaction_state.is_focused.read(),
 			onmousedown: move |event| {
-					interaction_state.onmousedown();
 					if let Some(handler) = props.onmousedown {
 							handler.call(event);
 					}
 			},
 			onkeydown: move |event| {
-					interaction_state.onkeydown();
 					handle_key_down(event.clone());
 					if let Some(handler) = props.onkeydown {
 							handler.call(event);
 					}
 			},
 			onkeyup: move |event| {
-					interaction_state.onkeyup();
 					if let Some(handler) = props.onkeyup {
 							handler.call(event);
 					}
 			},
 			onmouseup: move |event| {
-					interaction_state.onmouseup();
 					if let Some(handler) = props.onmouseup {
 							handler.call(event);
 					}
@@ -153,8 +156,6 @@ pub struct RadioGroupItemProps {
 	pub value: ReadOnlySignal<String>,
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]
 	pub disabled: ReadOnlySignal<bool>,
-	#[props(default = String::default())]
-	pub class: String,
 
 	#[props(default = None)]
 	pub onkeydown: Option<EventHandler<Event<KeyboardData>>>,
@@ -173,7 +174,7 @@ pub struct RadioGroupItemProps {
 	#[props(default = None)]
 	pub onmouseleave: Option<EventHandler<Event<MouseData>>>,
 
-	#[props(extends = label, extends = GlobalAttributes)]
+	#[props(extends = button, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
 	pub children: Element,
 }
@@ -182,19 +183,18 @@ pub struct RadioGroupItemProps {
 pub fn RadioGroupItem(props: RadioGroupItemProps) -> Element {
 	let context = use_context::<RadioGroupContext>();
 	let checked = use_memo(move || context.value.read().clone().unwrap_or_default() == *props.value.read());
-	let interaction_state = use_context::<InteractionStateContext>();
 
-	let is_disabled = use_memo(move || *interaction_state.disabled.read() || *props.disabled.read());
-	use_context_provider::<Memo<bool>>(|| is_disabled);
+	let is_disabled = use_memo(move || *props.disabled.read() || *props.disabled.read());
 
 	rsx! {
 		Radio {
 			name: context.name.clone(),
 			value: props.value,
-			class: props.class.clone(),
-			tabindex: if is_disabled() { -1 } else { 0 },
 			disabled: is_disabled(),
 			checked: checked(),
+			tabindex: if is_disabled() || !checked() { -1 } else { 0 },
+			aria_orientation: &*context.orientation.clone().read().to_string(),
+			"data-focusable": !is_disabled(),
 			on_change: move |checked: Option<bool>| {
 					if checked.is_some() {
 							context.on_select(props.value.read().clone());
@@ -210,6 +210,7 @@ pub fn RadioGroupItem(props: RadioGroupItemProps) -> Element {
 			onmouseenter: props.onmouseenter,
 			onmouseleave: props.onmouseleave,
 			onmouseup: props.onmouseup,
+			extra_attributes: props.attributes.clone(),
 			{props.children}
 		}
 	}

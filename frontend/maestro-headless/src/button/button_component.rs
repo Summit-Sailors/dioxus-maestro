@@ -31,7 +31,7 @@ pub struct ButtonProps {
 	#[props(extends = GlobalAttributes, extends = button)]
 	pub attributes: Vec<Attribute>,
 	#[props(default = Vec::new())]
-	pub additional_attributes: Vec<Attribute>,
+	pub extra_attributes: Vec<Attribute>,
 	#[props(default = None)]
 	pub children: Element,
 }
@@ -39,18 +39,20 @@ pub struct ButtonProps {
 #[component]
 pub fn Button(props: ButtonProps) -> Element {
 	let ButtonProps { pending, disabled, .. } = props;
-	let mut interaction_state = use_interaction_state(pending, disabled);
+	let mut interaction_state = use_interaction_state();
+	let mut is_pressed = use_signal(|| false);
 	rsx! {
 		button {
-			disabled: "{*interaction_state.disabled.read()}",
-			aria_disabled: "{!interaction_state.is_allowed()}",
-			"data-pressed": *interaction_state.is_pressed.read(),
+			disabled: disabled(),
+			aria_disabled: disabled() || pending(),
+			"data-disabled": disabled(),
+			"data-pressed": is_pressed(),
 			"data-hovered": *interaction_state.is_hovered.read(),
 			"data-focused": *interaction_state.is_focused.read(),
 			"data-focuse-visible": *interaction_state.is_focused.read(),
-			"data-pending": *interaction_state.pending.read(),
+			"data-pending": pending(),
 			onclick: move |event| {
-					if interaction_state.is_allowed() {
+					if !disabled() && !pending() {
 							if let Some(handler) = props.onclick {
 									handler.call(event);
 							}
@@ -63,39 +65,53 @@ pub fn Button(props: ButtonProps) -> Element {
 					}
 			},
 			onmousedown: move |event| {
-					interaction_state.onmousedown();
-					if let Some(handler) = props.onmousedown {
-							handler.call(event);
+					if !disabled() && !pending() {
+							is_pressed.set(true);
+							if let Some(handler) = props.onmousedown {
+									handler.call(event);
+							}
 					}
 			},
 			onkeydown: move |event| {
-					interaction_state.onkeydown();
-					if let Some(handler) = props.onkeydown {
-							handler.call(event);
+					if !disabled() && !pending() {
+							is_pressed.set(false);
+							if let Some(handler) = props.onkeydown {
+									handler.call(event);
+							}
 					}
 			},
+
 			onkeyup: move |event| {
-					interaction_state.onkeyup();
-					if let Some(handler) = props.onkeyup {
-							handler.call(event);
+					if !disabled() && !pending() {
+							is_pressed.set(false);
+							if let Some(handler) = props.onkeyup {
+									handler.call(event);
+							}
 					}
 			},
 			onmouseup: move |event| {
-					interaction_state.onmouseup();
-					if let Some(handler) = props.onmouseup {
-							handler.call(event);
+					if !disabled() && !pending() {
+							is_pressed.set(false);
+							if let Some(handler) = props.onmouseup {
+									handler.call(event);
+							}
 					}
 			},
+
 			onmouseenter: move |event| {
-					interaction_state.onmouseenter();
-					if let Some(handler) = props.onmouseenter {
-							handler.call(event);
+					if !disabled() && !pending() {
+							interaction_state.onmouseenter();
+							if let Some(handler) = props.onmouseenter {
+									handler.call(event);
+							}
 					}
 			},
 			onmouseleave: move |event| {
-					interaction_state.onmouseleave();
-					if let Some(handler) = props.onmouseleave {
-							handler.call(event);
+					if !disabled() && !pending() {
+							interaction_state.onmouseleave();
+							if let Some(handler) = props.onmouseleave {
+									handler.call(event);
+							}
 					}
 			},
 			onfocus: move |event| {
@@ -111,7 +127,7 @@ pub fn Button(props: ButtonProps) -> Element {
 					}
 			},
 			..props.attributes,
-			..props.additional_attributes,
+			..props.extra_attributes,
 			{props.children}
 		}
 	}

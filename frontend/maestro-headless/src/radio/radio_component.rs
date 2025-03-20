@@ -1,5 +1,8 @@
 use {
-	crate::hooks::{InteractionStateContext, UseControllableStateParams, use_controllable_state, use_interaction_state},
+	crate::{
+		button::Button,
+		hooks::{UseControllableStateParams, use_controllable_state},
+	},
 	dioxus::prelude::*,
 	std::fmt::Debug,
 };
@@ -10,12 +13,20 @@ pub struct RadioContext {
 	pub name: String,
 	pub checked: Memo<Option<bool>>,
 	pub required: bool,
+	pub disabled: ReadOnlySignal<bool>,
 	pub on_change: Callback<Option<bool>>,
 }
 
 impl RadioContext {
-	pub fn new(value: ReadOnlySignal<String>, on_change: Callback<Option<bool>>, checked: Memo<Option<bool>>, name: String, required: bool) -> Self {
-		Self { value, on_change, checked, name, required }
+	pub fn new(
+		value: ReadOnlySignal<String>,
+		on_change: Callback<Option<bool>>,
+		checked: Memo<Option<bool>>,
+		name: String,
+		required: bool,
+		disabled: ReadOnlySignal<bool>,
+	) -> Self {
+		Self { value, on_change, checked, name, required, disabled }
 	}
 }
 
@@ -52,196 +63,64 @@ pub struct RadioProps {
 	#[props(default = None)]
 	pub onmouseleave: Option<EventHandler<Event<MouseData>>>,
 
-	#[props(extends = GlobalAttributes, extends = label)]
+	#[props(extends = GlobalAttributes, extends = button)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
 #[component]
 pub fn Radio(props: RadioProps) -> Element {
-	let RadioProps { disabled, value, name, checked, default_checked, attributes, on_change, children, required, .. } = props;
+	let RadioProps { disabled, value, name, checked, default_checked, attributes, extra_attributes, on_change, children, required, .. } = props;
 	let is_controlled = use_hook(move || checked().is_some());
 	let (checked, set_checked) = use_controllable_state(UseControllableStateParams { is_controlled, prop: checked, default_prop: default_checked, on_change });
-	let context = use_context_provider::<RadioContext>(|| RadioContext::new(value, set_checked, checked, name, required));
-	let mut interaction_state = use_interaction_state(ReadOnlySignal::new(Signal::new(false)), disabled);
+	let context = use_context_provider::<RadioContext>(|| RadioContext::new(value, set_checked, checked, name, required, disabled));
+	let mut attributes = attributes.clone();
+	attributes.extend(extra_attributes);
 
 	rsx! {
-		label {
-			role: "radio",
-			style: "position:relative;",
-			"data-pressed": *interaction_state.is_pressed.read(),
-			"data-hovered": *interaction_state.is_hovered.read(),
-			"data-focused": *interaction_state.is_focused.read(),
-			"data-focuse-visible": *interaction_state.is_focused.read(),
-			aria_checked: *context.checked.read(),
-			aria_required: *context.checked.peek(),
-			"data-state": if context.checked.read().unwrap_or_default() { "checked" } else { "unchecked" },
-			aria_disabled: *interaction_state.disabled.read(),
-			onmousedown: move |event| {
-					interaction_state.onmousedown();
-					if let Some(handler) = props.onmousedown {
-							handler.call(event);
-					}
-			},
-			onkeydown: move |event| {
-					interaction_state.onkeydown();
-					if let Some(handler) = props.onkeydown {
-							handler.call(event);
-					}
-			},
-			onkeyup: move |event| {
-					interaction_state.onkeyup();
-					if let Some(handler) = props.onkeyup {
-							handler.call(event);
-					}
-			},
-			onmouseup: move |event| {
-					interaction_state.onmouseup();
-					if let Some(handler) = props.onmouseup {
-							handler.call(event);
-					}
-			},
-			onmouseenter: move |event| {
-					interaction_state.onmouseenter();
-					if let Some(handler) = props.onmouseenter {
-							handler.call(event);
-					}
-			},
-			onmouseleave: move |event| {
-					interaction_state.onmouseleave();
-					if let Some(handler) = props.onmouseleave {
-							handler.call(event);
-					}
-			},
-			onfocus: move |event| {
-					interaction_state.onfocus();
-					if let Some(handler) = props.onfocus {
-							handler.call(event);
-					}
-			},
-			onblur: move |event| {
-					interaction_state.onblur();
-					if let Some(handler) = props.onblur {
-							handler.call(event);
-					}
-			},
-			..attributes,
-			{children}
-		}
-	}
-}
-
-#[derive(Props, PartialEq, Debug, Clone)]
-pub struct RadioInputProps {
-	#[props(default = String::default())]
-	pub class: String,
-
-	#[props(default = None)]
-	pub onkeydown: Option<EventHandler<Event<KeyboardData>>>,
-	#[props(default = None)]
-	pub onkeyup: Option<EventHandler<Event<KeyboardData>>>,
-	#[props(default = None)]
-	pub onfocus: Option<EventHandler<Event<FocusData>>>,
-	#[props(default = None)]
-	pub onblur: Option<EventHandler<Event<FocusData>>>,
-	#[props(default = None)]
-	pub onmousedown: Option<EventHandler<Event<MouseData>>>,
-	#[props(default = None)]
-	pub onmouseup: Option<EventHandler<Event<MouseData>>>,
-	#[props(default = None)]
-	pub onmouseenter: Option<EventHandler<Event<MouseData>>>,
-	#[props(default = None)]
-	pub onmouseleave: Option<EventHandler<Event<MouseData>>>,
-
-	#[props(extends = GlobalAttributes, extends = input)]
-	pub attributes: Vec<Attribute>,
-	pub children: Element,
-}
-
-#[component]
-pub fn RadioInput(props: RadioInputProps) -> Element {
-	let context = use_context::<RadioContext>();
-	let mut interaction_state = use_context::<InteractionStateContext>();
-
-	rsx! {
-		input {
-			style: "position:absolute;width:0px;height:0px;margin:0px;opacity:0;z-index:-20",
-			tabindex: -1,
-			r#type: "radio",
-			checked: *context.checked.read(),
-			name: context.name,
-			disabled: *interaction_state.disabled.read(),
-			aria_hidden: true,
-			onchange: move |_| {
-					match !context.checked.peek().unwrap_or_default() {
-							true => context.on_change.call(Some(true)),
-							false => context.on_change.call(None),
-					};
-			},
-			..props.attributes,
-		}
-		div {
-			tabindex: if !*interaction_state.disabled.read() { "0" } else { "-1" },
-			class: props.class.clone(),
-			role: "radio",
-			aria_checked: *context.checked.read(),
-			aria_selected: *context.checked.read(),
-			aria_required: context.required,
-			"data-state": if context.checked.read().unwrap_or_default() { "checked" } else { "unchecked" },
-			aria_disabled: *interaction_state.disabled.read(),
-			"data-pressed": *interaction_state.is_pressed.read(),
-			"data-hovered": *interaction_state.is_hovered.read(),
-			"data-focused": *interaction_state.is_focused.read(),
-			"data-focuse-visible": *interaction_state.is_focused.read(),
-			onmousedown: move |event| {
-					interaction_state.onmousedown();
-					if let Some(handler) = props.onmousedown {
-							handler.call(event);
-					}
-			},
-			onkeydown: move |event| {
-					interaction_state.onkeydown();
-					if let Some(handler) = props.onkeydown {
-							handler.call(event);
-					}
-			},
-			onkeyup: move |event| {
-					interaction_state.onkeyup();
-					if let Some(handler) = props.onkeyup {
-							handler.call(event);
-					}
-			},
-			onmouseup: move |event| {
-					interaction_state.onmouseup();
-					if let Some(handler) = props.onmouseup {
-							handler.call(event);
-					}
-			},
-			onmouseenter: move |event| {
-					interaction_state.onmouseenter();
-					if let Some(handler) = props.onmouseenter {
-							handler.call(event);
-					}
-			},
-			onmouseleave: move |event| {
-					interaction_state.onmouseleave();
-					if let Some(handler) = props.onmouseleave {
-							handler.call(event);
-					}
-			},
-			onfocus: move |event| {
-					interaction_state.onfocus();
-					if let Some(handler) = props.onfocus {
-							handler.call(event);
-					}
-			},
-			onblur: move |event| {
-					interaction_state.onblur();
-					if let Some(handler) = props.onblur {
-							handler.call(event);
-					}
-			},
-			{props.children}
+		div { position: "relative",
+			input {
+				position: "absolute",
+				width: 0,
+				height: 0,
+				opacity: 0,
+				margin: 0,
+				tabindex: -1,
+				r#type: "radio",
+				checked: context.checked.read().unwrap_or_default(),
+				name: context.name,
+				disabled: disabled(),
+				aria_hidden: true,
+				required: context.required,
+			}
+			Button {
+				tabindex: if disabled() { "-1" } else { "0" },
+				role: "radio",
+				aria_checked: *context.checked.read(),
+				aria_required: context.required,
+				aria_disabled: disabled(),
+				"data-state": if context.checked.read().unwrap_or_default() { "checked" } else { "unchecked" },
+				"data-disabled": disabled(),
+				disabled,
+				onclick: move |_| {
+						match !context.checked.peek().unwrap_or_default() {
+								true => context.on_change.call(Some(true)),
+								false => context.on_change.call(None),
+						};
+				},
+				onmousedown: props.onmousedown,
+				onkeydown: props.onkeydown,
+				onkeyup: props.onkeyup,
+				onmouseup: props.onmouseup,
+				onmouseenter: props.onmouseenter,
+				onmouseleave: props.onmouseleave,
+				onfocus: props.onfocus,
+				onblur: props.onblur,
+				extra_attributes: attributes,
+				{children}
+			}
 		}
 	}
 }
@@ -257,19 +136,28 @@ pub struct RadioIndicatorProps {
 #[component]
 pub fn RadioIndicator<T: Clone + PartialEq + Debug + Default + 'static>(props: RadioIndicatorProps) -> Element {
 	let context = use_context::<RadioContext>();
-	let interaction_state = use_context::<InteractionStateContext>();
 
 	rsx! {
 		span {
+			aria_disabled: *context.disabled.read(),
 			"data-state": if context.checked.read().unwrap_or_default() { "checked" } else { "unchecked" },
-			"data-disabled": *interaction_state.disabled.read(),
-			style: "pointer-events:none;position:relative;display:flex;justify-content:center;align-items:center;",
+			"data-disabled": *context.disabled.read(),
+			pointer_events: "none",
+			position: "relative",
+			display: "flex",
+			justify_content: "center",
+			align_items: "center",
 			..props.attributes,
 			if context.checked.read().unwrap_or_default() {
 				if let Some(children) = props.children {
 					{children}
 				} else {
-					span { style: "width:8px;height:8px;border:1px solid;rounded:100%;" }
+					span {
+						width: "8px",
+						height: "8px",
+						border: "1px solid",
+						border_radius: "100%",
+					}
 				}
 			}
 		}

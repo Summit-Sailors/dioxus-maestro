@@ -14,9 +14,18 @@ pub struct AspectRatioProps {
 pub fn AspectRatio(props: AspectRatioProps) -> Element {
 	rsx! {
 		div {
-			style: format!("position:relative;width:100%;padding-bottom:{}%;", 100.0 / props.ratio),
+			position: "relative",
+			width: "100%",
+			padding_bottom: "{100.0 / props.ratio}%",
 			..props.attributes,
-			div { style: "position:relative;top:0;left:0;bottom:0;left:0", {props.children} }
+			div {
+				position: "relative",
+				top: 0,
+				left: 0,
+				bottom: 0,
+				right: 0,
+				{props.children}
+			}
 		}
 	}
 }

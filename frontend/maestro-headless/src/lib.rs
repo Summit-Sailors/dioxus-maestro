@@ -1,5 +1,6 @@
 #![allow(non_snake_case)]
 pub mod accordion;
+pub mod arrow;
 pub mod aspect_ratio;
 pub mod avatar;
 pub mod button;
@@ -9,10 +10,14 @@ pub mod collapsible;
 pub mod dialog;
 pub mod focus_trap;
 pub mod hooks;
+pub mod popover;
+pub mod popper;
+pub mod progress;
 pub mod radio;
 pub mod radio_group;
 pub mod select;
 pub mod switch;
+pub mod tabs;
 pub mod toggle;
 pub mod toggle_group;
 pub mod utils;

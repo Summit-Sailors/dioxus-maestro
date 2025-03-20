@@ -16,11 +16,12 @@ struct DialogContext {
 	pub on_close: Option<Callback>,
 	pub set_open: Callback<Option<bool>>,
 	pub content_id: Uuid,
+	pub trigger_id: Uuid,
 }
 
 impl DialogContext {
 	pub fn new(open: Memo<Option<bool>>, on_close: Option<Callback>, set_open: Callback<Option<bool>>) -> Self {
-		Self { open, on_close, set_open, content_id: Uuid::new_v4() }
+		Self { open, on_close, set_open, content_id: Uuid::new_v4(), trigger_id: Uuid::new_v4() }
 	}
 
 	pub fn toggle(&mut self, value: bool) {
@@ -54,7 +55,6 @@ pub fn Dialog(props: DialogProps) -> Element {
 		use_controllable_state(UseControllableStateParams { is_controlled, prop: open, default_prop: default_open, on_change: on_open_change });
 	let context = use_context_provider::<DialogContext>(|| DialogContext::new(open, on_close, set_open));
 
-	// TO DO: works on web
 	use_effect(move || {
 		let window = window().expect("should have a window in this context");
 		let document = window.document().expect("window should have a document");
@@ -86,29 +86,19 @@ pub fn DialogTrigger(props: DialogTriggerProps) -> Element {
 	let DialogTriggerProps { attributes, disabled, .. } = props;
 	let mut context = use_context::<DialogContext>();
 
-	let mut attributes = attributes.clone();
-	attributes.push(Attribute::new("aria-haspopup", "dialog", None, false));
-	attributes.push(Attribute::new("aria-expanded", *context.open.read(), None, false));
-	attributes.push(Attribute::new("data-state", if context.open.read().unwrap_or_default() { "open" } else { "closed" }, None, false));
-	if !attributes.iter().any(|x| x.name == "title") {
-		attributes.push(Attribute::new("title", "Open popup", None, false));
-	}
-	if !attributes.iter().any(|x| x.name == "aria-label") {
-		attributes.push(Attribute::new("aria-label", "Open popup", None, false));
-	}
-	if !attributes.iter().any(|x| x.name == "aria-role") {
-		attributes.push(Attribute::new("aria-role", "button", None, false));
-	}
-	if !attributes.iter().any(|x| x.name == "aria-controls") {
-		attributes.push(Attribute::new("aria-controls", context.content_id.to_string(), None, false));
-	}
-
 	rsx! {
 		Button {
+			id: context.trigger_id.to_string(),
 			r#type: "button",
 			onclick: move |_| context.toggle(true),
 			disabled,
-			additional_attributes: attributes.clone(),
+			aria_haspopup: "dialog",
+			aria_expanded: *context.open.read(),
+			aria_controls: context.content_id.to_string(),
+			aria_disabled: disabled,
+			"data-disabled": disabled,
+			extra_attributes: attributes.clone(),
+			"data-state": if context.open.read().unwrap_or_default() { "open" } else { "closed" },
 			{props.children}
 		}
 	}
@@ -144,7 +134,7 @@ pub fn DialogOverlay(props: DialogOverlayProps) -> Element {
 		rsx! {
 			div {
 				"data-state": if context.open.peek().unwrap_or_default() { "open" } else { "closed" },
-				style: "pointer-events: auto;",
+				pointer_events: "auto",
 				onclick: move |_| context.toggle(false),
 				..props.attributes,
 				{props.children}
@@ -177,7 +167,8 @@ pub fn DialogContent(props: DialogContentProps) -> Element {
 				div {
 					role: "dialog",
 					id: context.content_id.to_string(),
-					"aria-modal": true,
+					aria_modal: true,
+					aria_labelledby: context.trigger_id.to_string(),
 					"data-state": if context.open.read().unwrap_or_default() { "open" } else { "closed" },
 					..props.attributes,
 					{props.children}
@@ -268,21 +259,13 @@ pub struct DialogCloseProps {
 #[component]
 pub fn DialogClose(props: DialogCloseProps) -> Element {
 	let mut context = use_context::<DialogContext>();
-	let mut attributes = props.attributes.clone();
-	if !attributes.iter().any(|x| x.name == "title") {
-		attributes.push(Attribute::new("title", "Close popup", None, false));
-	}
-	if !attributes.iter().any(|x| x.name == "aria-label") {
-		attributes.push(Attribute::new("aria-label", "Close popup", None, false));
-	}
-	if !attributes.iter().any(|x| x.name == "aria-role") {
-		attributes.push(Attribute::new("aria-role", "button", None, false));
-	}
+
 	rsx! {
 		Button {
 			r#type: "button",
+			aria_label: "Close popup",
 			onclick: move |_| context.toggle(false),
-			additional_attributes: attributes.clone(),
+			extra_attributes: props.attributes.clone(),
 			{props.children}
 		}
 	}

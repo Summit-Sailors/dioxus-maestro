@@ -10,6 +10,8 @@ use {
 pub struct SwitchProps {
 	#[props(default = ReadOnlySignal::new(Signal::new("on".to_string())))]
 	pub value: ReadOnlySignal<String>,
+	#[props(default = "switch".to_string())]
+	pub name: String,
 
 	#[props(default = ReadOnlySignal::new(Signal::new(None)))]
 	pub checked: ReadOnlySignal<Option<bool>>,
@@ -41,56 +43,58 @@ pub struct SwitchProps {
 
 	#[props(extends = GlobalAttributes, extends = button)]
 	pub attributes: Vec<Attribute>,
-	#[props(default = Vec::new())]
-	pub additional_attributes: Vec<Attribute>,
 	pub children: Option<Element>,
 }
 
 #[component]
 pub fn Switch(props: SwitchProps) -> Element {
-	let SwitchProps { value, disabled, required, attributes, additional_attributes, on_toggle_change, checked, default_checked, children, .. } = props;
+	let SwitchProps { value, disabled, required, attributes, on_toggle_change, checked, default_checked, children, .. } = props;
 	let is_controlled = use_hook(move || checked().is_some());
 	let (checked, set_checked) =
 		use_controllable_state(UseControllableStateParams { is_controlled, prop: checked, default_prop: default_checked, on_change: on_toggle_change });
-	let mut attributes = attributes.clone();
 	use_context_provider::<Memo<Option<bool>>>(|| checked);
 
-	attributes.extend(additional_attributes);
-	attributes.push(Attribute::new("aria-pressed", checked(), None, false));
-	attributes.push(Attribute::new("aria-disabled", disabled(), None, false));
-	attributes.push(Attribute::new("data-state", if checked().unwrap_or_default() { "on" } else { "off" }, None, false));
-	if !attributes.iter().any(|x| x.name == "aria-role") {
-		attributes.push(Attribute::new("aria-role", "radio", None, false));
-	}
-
 	rsx! {
-		Button {
-			value: value(),
-			r#type: "button",
-			disabled: disabled(),
-			role: "switch",
-			aria_checked: checked().unwrap_or_default(),
-			aria_required: required,
-			"data-state": if checked().unwrap_or_default() { "checked" } else { "unchecked" },
-			aria_disabled: disabled(),
-			onclick: move |_| {
-					if !disabled() {
-							let new_checked = !checked.peek().unwrap_or_default();
-							set_checked(Some(new_checked));
-					}
-			},
-			onblur: props.onblur,
-			onfocus: props.onfocus,
-			onkeydown: props.onkeydown,
-			onkeyup: props.onkeyup,
-			onmousedown: props.onmousedown,
-			onmouseenter: props.onmouseenter,
-			onmouseleave: props.onmouseleave,
-			onmouseup: props.onmouseup,
-			additional_attributes: attributes.clone(),
-
-			{children}
-
+		div { position: "relative",
+			input {
+				position: "absolute",
+				width: 0,
+				height: 0,
+				opacity: 0,
+				margin: 0,
+				tabindex: -1,
+				r#type: "radio",
+				value: value.clone(),
+				checked: checked().unwrap_or_default(),
+				name: props.name.clone(),
+				disabled: disabled(),
+				required,
+				aria_hidden: true,
+			}
+			Button {
+				role: "switch",
+				tabindex: if disabled() { "-1" } else { "0" },
+				aria_disabled: disabled(),
+				aria_required: required,
+				aria_checked: checked(),
+				"data-state": if checked().unwrap_or_default() { "checked" } else { "unchecked" },
+				onclick: move |_| {
+						match !checked().unwrap_or_default() {
+								true => set_checked(Some(true)),
+								false => set_checked(None),
+						};
+				},
+				onmousedown: props.onmousedown,
+				onkeydown: props.onkeydown,
+				onkeyup: props.onkeyup,
+				onmouseup: props.onmouseup,
+				onmouseenter: props.onmouseenter,
+				onmouseleave: props.onmouseleave,
+				onfocus: props.onfocus,
+				onblur: props.onblur,
+				extra_attributes: attributes,
+				{children}
+			}
 		}
 	}
 }

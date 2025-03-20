@@ -38,17 +38,18 @@ pub fn use_arrow_key_navigation(
 
 			if let Some(active_element) = active_element {
 				if let Some(active_index) = item_elements.iter().position(|el| *el == active_element) {
+					let elements_count = item_elements.len();
 					let next_index = match orientation {
 						EGroupOrientation::Vertical => match event.key() {
 							Key::ArrowDown =>
-								if active_index + 1 >= item_elements.len() {
+								if active_index + 1 >= elements_count {
 									0
 								} else {
 									active_index + 1
 								},
 							Key::ArrowUp =>
 								if active_index == 0 {
-									item_elements.len().saturating_sub(1)
+									elements_count.saturating_sub(1)
 								} else {
 									active_index - 1
 								},
@@ -56,18 +57,18 @@ pub fn use_arrow_key_navigation(
 						},
 						EGroupOrientation::Horizontal => match event.key() {
 							Key::ArrowRight =>
-								if active_index + 1 >= item_elements.len() {
+								if active_index + 1 >= elements_count {
 									0
 								} else {
 									active_index + 1
 								},
 							Key::ArrowLeft =>
 								if active_index == 0 {
-									item_elements.len().saturating_sub(1)
+									elements_count.saturating_sub(1)
 								} else {
 									active_index - 1
 								},
-							_ => return, // Ignore other keys in horizontal mode
+							_ => return,
 						},
 					};
 

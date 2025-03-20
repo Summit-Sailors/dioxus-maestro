@@ -1,7 +1,7 @@
 use {
 	crate::{
 		checkbox::Checkbox,
-		hooks::{InteractionStateContext, UseControllableStateParams, use_arrow_key_navigation, use_controllable_state, use_interaction_state},
+		hooks::{UseControllableStateParams, use_arrow_key_navigation, use_controllable_state, use_interaction_state},
 		utils::EGroupOrientation,
 	},
 	dioxus::prelude::*,
@@ -14,11 +14,18 @@ pub struct CheckboxGroupContext {
 	pub value: Memo<Option<Vec<String>>>,
 	pub set_value: Callback<Option<Vec<String>>>,
 	pub orientation: ReadOnlySignal<EGroupOrientation>,
+	pub disabled: ReadOnlySignal<bool>,
 }
 
 impl CheckboxGroupContext {
-	pub fn new(value: Memo<Option<Vec<String>>>, set_value: Callback<Option<Vec<String>>>, orientation: ReadOnlySignal<EGroupOrientation>, name: String) -> Self {
-		Self { value, set_value, orientation, name }
+	pub fn new(
+		value: Memo<Option<Vec<String>>>,
+		set_value: Callback<Option<Vec<String>>>,
+		orientation: ReadOnlySignal<EGroupOrientation>,
+		name: String,
+		disabled: ReadOnlySignal<bool>,
+	) -> Self {
+		Self { value, set_value, orientation, name, disabled }
 	}
 
 	pub fn on_select(&self, value: String) {
@@ -83,42 +90,38 @@ pub fn CheckboxGroup(props: CheckboxGroupProps) -> Element {
 		on_change: on_value_change,
 	});
 
-	use_context_provider::<CheckboxGroupContext>(|| CheckboxGroupContext::new(value, set_value, orientation, name));
+	use_context_provider::<CheckboxGroupContext>(|| CheckboxGroupContext::new(value, set_value, orientation, name, disabled));
 
 	let mut container_ref = use_signal(|| None::<Rc<MountedData>>);
 
 	let handle_key_down = use_arrow_key_navigation(container_ref, Some("[role='radio']:not([tabindex='-1'])".to_string()), orientation());
-	let mut interaction_state = use_interaction_state(ReadOnlySignal::new(Signal::new(false)), disabled);
+	let mut interaction_state = use_interaction_state();
 
 	rsx! {
 		div {
 			role: "group",
-			aria_disabled: *interaction_state.disabled.read(),
-			"data-pressed": *interaction_state.is_pressed.read(),
+			aria_disabled: disabled,
+			"data-disabled": disabled(),
 			"data-hovered": *interaction_state.is_hovered.read(),
 			"data-focused": *interaction_state.is_focused.read(),
 			"data-focuse-visible": *interaction_state.is_focused.read(),
 			onmousedown: move |event| {
-					interaction_state.onmousedown();
 					if let Some(handler) = props.onmousedown {
 							handler.call(event);
 					}
 			},
 			onkeydown: move |event| {
-					interaction_state.onkeydown();
 					handle_key_down(event.clone());
 					if let Some(handler) = props.onkeydown {
 							handler.call(event);
 					}
 			},
 			onkeyup: move |event| {
-					interaction_state.onkeyup();
 					if let Some(handler) = props.onkeyup {
 							handler.call(event);
 					}
 			},
 			onmouseup: move |event| {
-					interaction_state.onmouseup();
 					if let Some(handler) = props.onmouseup {
 							handler.call(event);
 					}
@@ -162,24 +165,7 @@ pub struct CheckboxGroupItemProps {
 	#[props(default = String::default())]
 	pub class: String,
 
-	#[props(default = None)]
-	pub onkeydown: Option<EventHandler<Event<KeyboardData>>>,
-	#[props(default = None)]
-	pub onkeyup: Option<EventHandler<Event<KeyboardData>>>,
-	#[props(default = None)]
-	pub onfocus: Option<EventHandler<Event<FocusData>>>,
-	#[props(default = None)]
-	pub onblur: Option<EventHandler<Event<FocusData>>>,
-	#[props(default = None)]
-	pub onmousedown: Option<EventHandler<Event<MouseData>>>,
-	#[props(default = None)]
-	pub onmouseup: Option<EventHandler<Event<MouseData>>>,
-	#[props(default = None)]
-	pub onmouseenter: Option<EventHandler<Event<MouseData>>>,
-	#[props(default = None)]
-	pub onmouseleave: Option<EventHandler<Event<MouseData>>>,
-
-	#[props(extends = label, extends = GlobalAttributes)]
+	#[props(extends = button, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
 	pub children: Element,
 }
@@ -188,9 +174,8 @@ pub struct CheckboxGroupItemProps {
 pub fn CheckboxGroupItem(props: CheckboxGroupItemProps) -> Element {
 	let context = use_context::<CheckboxGroupContext>();
 	let checked = use_memo(move || context.value.read().clone().unwrap_or_default().contains(&*props.value.read()));
-	let interaction_state = use_context::<InteractionStateContext>();
 
-	let is_disabled = use_memo(move || *interaction_state.disabled.read() || *props.disabled.read());
+	let is_disabled = use_memo(move || *context.disabled.read() || *props.disabled.read());
 	use_context_provider::<Memo<bool>>(|| is_disabled);
 
 	rsx! {
@@ -198,7 +183,6 @@ pub fn CheckboxGroupItem(props: CheckboxGroupItemProps) -> Element {
 			name: context.name.clone(),
 			value: props.value,
 			class: props.class.clone(),
-			tabindex: if is_disabled() { -1 } else { 0 },
 			disabled: is_disabled(),
 			checked: checked(),
 			on_change: move |checked: Option<bool>| {
@@ -208,14 +192,7 @@ pub fn CheckboxGroupItem(props: CheckboxGroupItemProps) -> Element {
 							context.on_deselect(props.value.read().clone());
 					}
 			},
-			onblur: props.onblur,
-			onfocus: props.onfocus,
-			onkeydown: props.onkeydown,
-			onkeyup: props.onkeyup,
-			onmousedown: props.onmousedown,
-			onmouseenter: props.onmouseenter,
-			onmouseleave: props.onmouseleave,
-			onmouseup: props.onmouseup,
+			extra_attributes: props.attributes.clone(),
 			{props.children}
 		}
 	}

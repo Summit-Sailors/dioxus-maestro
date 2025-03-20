@@ -13,12 +13,14 @@ use {
 	maestro_headless::{
 		accordion::{Accordion, AccordionContent, AccordionHeader, AccordionItem, AccordionTrigger, AccordionVariant},
 		button::Button,
-		checkbox::{Checkbox, CheckboxIndicator, CheckboxInput},
+		checkbox::{Checkbox, CheckboxIndicator},
 		collapsible::{Collapsible, CollapsibleContent, CollapsibleTrigger},
 		dialog::{Dialog, DialogClose, DialogContent, DialogDescription, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger},
-		select::{Select, SelectDropdown, SelectOption, SelectTrigger, SelectValue},
+		popover::{Popover, PopoverArrow, PopoverContent, PopoverTrigger},
+		switch::{Switch, SwitchIndicator},
 		toggle::Toggle,
 		toggle_group::{ToggleGroup, ToggleGroupItem},
+		utils::{EAlign, ESide},
 	},
 	maestro_toast::{ctx::use_toast, toast_info::ToastInfo, toast_position::EToastPosition},
 	std::time::Duration,
@@ -33,15 +35,16 @@ pub fn HeadlessDemo() -> Element {
 	let mut toggle = use_signal(|| false);
 	let mut group_toggle_value = use_signal(|| String::from("1"));
 	let mut checked = use_signal(|| true);
+	let mut is_open = use_signal(|| false);
 
-	let options = Vec::from([
-		SelectOption { value: 1, label: "Apple".into(), disabled: false },
-		SelectOption { value: 2, label: "Banana".into(), disabled: false },
-		SelectOption { value: 3, label: "Ice-Cream".into(), disabled: false },
-		SelectOption { value: 4, label: "Coffee".into(), disabled: false },
-		SelectOption { value: 5, label: "Salt".into(), disabled: true },
-		SelectOption { value: 6, label: "Chocolate".into(), disabled: false },
-	]);
+	// let options = Vec::from([
+	// 	SelectOption { value: 1, label: "Apple".into(), disabled: false },
+	// 	SelectOption { value: 2, label: "Banana".into(), disabled: false },
+	// 	SelectOption { value: 3, label: "Ice-Cream".into(), disabled: false },
+	// 	SelectOption { value: 4, label: "Coffee".into(), disabled: false },
+	// 	SelectOption { value: 5, label: "Salt".into(), disabled: true },
+	// 	SelectOption { value: 6, label: "Chocolate".into(), disabled: false },
+	// ]);
 	let mut selected = use_signal::<Option<i32>>(|| None);
 
 	let mut handle_button_click = move |button_message: String| {
@@ -222,23 +225,23 @@ pub fn HeadlessDemo() -> Element {
 			}
 		}
 		div {
-			Select {
-				options,
-				value: selected,
-				is_searchable: true,
-				class: "relative w-fit",
-				SelectTrigger::<i32> { class: "rounded border border-slate-300 bg-slate-900 text-slate-100 min-w-36 flex justify-between items-center gap-4 px-3 py-2 min-h-12 ",
-					SelectValue::<i32> {
-						placeholder: "Chose something...",
-						class: "data-[state=selected]:text-slate-100 data-[state=placeholder]:text-slate-500",
-					}
+						// Select {
+						// 	options,
+						// 	value: selected,
+						// 	is_searchable: true,
+						// 	class: "relative w-fit",
+						// 	SelectTrigger::<i32> { class: "rounded border border-slate-300 bg-slate-900 text-slate-100 min-w-36 flex justify-between items-center gap-4 px-3 py-2 min-h-12 ",
+						// 		SelectValue::<i32> {
+						// 			placeholder: "Chose something...",
+						// 			class: "data-[state=selected]:text-slate-100 data-[state=placeholder]:text-slate-500",
+						// 		}
+						// 	}
+						// 	SelectDropdown::<i32> {
+						// 		class: "absolute top-[100%] mt-2 rounded bg-slate-900 text-slate-200 border border-slate-700 z-10 px-2 py-4 [&_*]:transition-all",
+						// 		option_class: "data-[role=option]:flex data-[role=opçtion]:items-center data-[role=option]:justify-between data-[role=option]:gap-4 data-[role=option]:px-2 data-[role=option]:py-3 data-[role=option]:hover:bg-slate-700 data-[role=option]:focus-visible::bg-slate-700 data-[role=search-container]:relative [&>[data-role=search]]:px-6 [&>[data-role=search]]:h-10 [&>[data-role=search]]:text-slate-800 [&>[data-role=search-icon]]:text-slate-500 [&>[data-role=search-icon]]:h-fit [&>[data-role=search-icon]]:m-auto [&>[data-role=search-icon]]:absolute [&>[data-role=search-icon]]:top-0 [&>[data-role=search-icon]]:bottom-0 [&>[data-role=search-icon]]:left-1 [&_[aria-hidden=true]]:opacity-0 [&_[data-role=clear]]:absolute [&_[data-role=clear]]:top-0 [&_[data-role=clear]]:bottom-0 [&_[data-role=clear]]:right-1 ",
+						// 	}
+						// }
 				}
-				SelectDropdown::<i32> {
-					class: "absolute top-[100%] mt-2 rounded bg-slate-900 text-slate-200 border border-slate-700 z-10 px-2 py-4 [&_*]:transition-all",
-					option_class: "data-[role=option]:flex data-[role=opçtion]:items-center data-[role=option]:justify-between data-[role=option]:gap-4 data-[role=option]:px-2 data-[role=option]:py-3 data-[role=option]:hover:bg-slate-700 data-[role=option]:focus-visible::bg-slate-700 data-[role=search-container]:relative [&>[data-role=search]]:px-6 [&>[data-role=search]]:h-10 [&>[data-role=search]]:text-slate-800 [&>[data-role=search-icon]]:text-slate-500 [&>[data-role=search-icon]]:h-fit [&>[data-role=search-icon]]:m-auto [&>[data-role=search-icon]]:absolute [&>[data-role=search-icon]]:top-0 [&>[data-role=search-icon]]:bottom-0 [&>[data-role=search-icon]]:left-1 [&_[aria-hidden=true]]:opacity-0 [&_[data-role=clear]]:absolute [&_[data-role=clear]]:top-0 [&_[data-role=clear]]:bottom-0 [&_[data-role=clear]]:right-1 ",
-				}
-			}
-		}
 		div { class: "flex gap-6",
 			Accordion {
 				collapsible: false,
@@ -362,28 +365,27 @@ pub fn HeadlessDemo() -> Element {
 			}
 		}
 		div { class: "flex gap-6",
-			Checkbox { class: "", value: group_toggle_value(), name: "box",
-				div { class: "flex justify-center items-center gap-3",
-					CheckboxInput { class: "w-10 h-10 rounded flex items-center justify-center border border-slate-100",
-						CheckboxIndicator { class: "text-slate-100 " }
-					}
-					span { class: "text-slate-100", "Check" }
+			div { class: "flex justify-center items-center gap-3",
+				Checkbox {
+					class: "w-10 h-10 rounded flex items-center justify-center border border-slate-100",
+					value: group_toggle_value(),
+					name: "box",
+					CheckboxIndicator { class: "text-slate-100 " }
 				}
+				span { class: "text-slate-100", "Check" }
 			}
-			Checkbox {
-				class: "",
-				value: 1_i32.to_string(),
-				name: "box",
-				checked: checked(),
-				on_change: move |v: Option<bool>| {
-						checked.set(v.unwrap_or_default());
-				},
-				div { class: "flex justify-center items-center gap-3",
-					CheckboxInput { class: "w-10 h-10 rounded flex items-center justify-center border border-slate-100",
-						CheckboxIndicator { class: "text-slate-100 " }
-					}
-					span { class: "text-slate-100", "Check" }
+			div { class: "flex justify-center items-center gap-3",
+				Checkbox {
+					class: "w-10 h-10 rounded flex items-center justify-center border border-slate-100",
+					value: 1_i32.to_string(),
+					name: "box",
+					checked: checked(),
+					on_change: move |v: Option<bool>| {
+							checked.set(v.unwrap_or_default());
+					},
+					CheckboxIndicator { class: "text-slate-100 " }
 				}
+				span { class: "text-slate-100", "Check" }
 			}
 		}
 		div { class: "flex gap-6",
@@ -396,6 +398,36 @@ pub fn HeadlessDemo() -> Element {
 				}
 				CollapsibleContent { class: "overflow-hidden transition-all ease-linear data-[state=closed]:h-0 data-[state=]:h-fit",
 					span { class: "text-slate-100", "Content of collapsible" }
+				}
+			}
+		}
+		div { class: "flex gap-6",
+			Switch { class: "flex items-center px-1 py-1 rounded-full h-6 w-12 bg-teal-200 data-[state=checked]:bg-teal-400 border border-teal-600",
+				SwitchIndicator { class: "relative translate-x-0.5 data-[state=checked]:translate-x-5 transition ease-linear rounded-full w-5 h-5 bg-teal-600" }
+			}
+		}
+		div { class: "pb-44",
+			Popover {
+				class: "mx-auto w-64",
+				open: is_open(),
+				on_open_change: move |value: Option<bool>| {
+						is_open.set(value.unwrap_or_default());
+				},
+				is_arrow_hidden: true,
+				PopoverTrigger {
+					class: "w-full",
+					style: "background: #007bff; color: white; padding: 8px 16px; border-radius: 4px; cursor: pointer;",
+					"Click to toggle popper"
+				}
+				PopoverContent {
+					side: ESide::Bottom,
+					side_offset: 8.0,
+					align: EAlign::Center,
+					class: "content bg-white text-slate-900 rounded-sm w-56 p-4",
+
+					"This is popper content"
+
+					PopoverArrow { width: 16.0, height: 8.0, style: "color: white;" }
 				}
 			}
 		}

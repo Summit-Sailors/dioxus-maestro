@@ -1,6 +1,6 @@
 use {
 	crate::{
-		hooks::{InteractionStateContext, UseControllableStateParams, use_arrow_key_navigation, use_controllable_state, use_interaction_state},
+		hooks::{UseControllableStateParams, use_arrow_key_navigation, use_controllable_state, use_interaction_state},
 		toggle::Toggle,
 		utils::EGroupOrientation,
 	},
@@ -13,11 +13,17 @@ pub struct ToggleGroupContext {
 	pub value: Memo<Option<String>>,
 	pub set_value: Callback<Option<String>>,
 	pub orientation: ReadOnlySignal<EGroupOrientation>,
+	pub disabled: ReadOnlySignal<bool>,
 }
 
 impl ToggleGroupContext {
-	pub fn new(value: Memo<Option<String>>, set_value: Callback<Option<String>>, orientation: ReadOnlySignal<EGroupOrientation>) -> Self {
-		Self { value, set_value, orientation }
+	pub fn new(
+		value: Memo<Option<String>>,
+		set_value: Callback<Option<String>>,
+		orientation: ReadOnlySignal<EGroupOrientation>,
+		disabled: ReadOnlySignal<bool>,
+	) -> Self {
+		Self { value, set_value, orientation, disabled }
 	}
 
 	pub fn onselect(&self, value: String) {
@@ -76,44 +82,39 @@ pub fn ToggleGroup(props: ToggleGroupProps) -> Element {
 		on_change: on_value_chenge,
 	});
 
-	use_context_provider::<ToggleGroupContext>(|| ToggleGroupContext::new(value, set_value, orientation));
+	use_context_provider::<ToggleGroupContext>(|| ToggleGroupContext::new(value, set_value, orientation, disabled));
 
 	let mut container_ref = use_signal(|| None::<Rc<MountedData>>);
 
-	let on_key_down = use_arrow_key_navigation(container_ref, Some("[role='radio']:not([tabindex='-1'])".to_string()), orientation());
-	let mut interaction_state = use_interaction_state(ReadOnlySignal::new(Signal::new(false)), disabled);
+	let on_key_down = use_arrow_key_navigation(container_ref, Some("[role='radio'][data-focusable='true']".to_string()), orientation());
+	let mut interaction_state = use_interaction_state();
 
 	rsx! {
 		div {
 			role: "group",
-			aria_disabled: *interaction_state.disabled.read(),
-			"data-pressed": *interaction_state.is_pressed.read(),
+			aria_disabled: disabled(),
 			"data-hovered": *interaction_state.is_hovered.read(),
 			"data-focused": *interaction_state.is_focused.read(),
 			"data-focuse-visible": *interaction_state.is_focused.read(),
 			aria_orientation: &*orientation.read().to_string(),
 
 			onmousedown: move |event| {
-					interaction_state.onmousedown();
 					if let Some(handler) = props.onmousedown {
 							handler.call(event);
 					}
 			},
 			onkeydown: move |event| {
-					interaction_state.onkeydown();
 					on_key_down(event.clone());
 					if let Some(handler) = props.onkeydown {
 							handler.call(event);
 					}
 			},
 			onkeyup: move |event| {
-					interaction_state.onkeyup();
 					if let Some(handler) = props.onkeyup {
 							handler.call(event);
 					}
 			},
 			onmouseup: move |event| {
-					interaction_state.onmouseup();
 					if let Some(handler) = props.onmouseup {
 							handler.call(event);
 					}
@@ -181,19 +182,18 @@ pub struct ToggleGroupItemProps {
 pub fn ToggleGroupItem(props: ToggleGroupItemProps) -> Element {
 	let context = use_context::<ToggleGroupContext>();
 	let pressed = use_memo(move || *context.value.read().clone().unwrap_or_default() == *props.value.read());
-	let interaction_state = use_context::<InteractionStateContext>();
 
-	let is_disabled = use_memo(move || *interaction_state.disabled.read() || *props.disabled.read());
+	let is_disabled = use_memo(move || *context.disabled.read() || *props.disabled.read());
 	use_context_provider::<Memo<bool>>(|| is_disabled);
 
 	rsx! {
 		Toggle {
 			value: context.value.read().clone().unwrap_or("on".into()),
 			pressed: pressed(),
-			role: "radio",
-			tabindex: if is_disabled() { -1 } else { 0 },
+			tabindex: if is_disabled() || !pressed() { -1 } else { 0 },
 			disabled: is_disabled(),
-			aria_orientation: &*context.orientation.read().to_string(),
+			aria_orientation: &*context.orientation.clone().read().to_string(),
+			"data-focusable": !is_disabled(),
 			on_toggle_change: move |pressed: Option<bool>| {
 					if pressed.is_some() {
 							context.onselect(props.value.read().clone());
@@ -209,7 +209,7 @@ pub fn ToggleGroupItem(props: ToggleGroupItemProps) -> Element {
 			onmouseenter: props.onmouseenter,
 			onmouseleave: props.onmouseleave,
 			onmouseup: props.onmouseup,
-			additional_attributes: props.attributes.clone(),
+			extra_attributes: props.attributes.clone(),
 			{props.children}
 		}
 	}
