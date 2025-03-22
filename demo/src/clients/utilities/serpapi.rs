@@ -1,9 +1,8 @@
-use {
-	dioxus::prelude::*,
-	maestro_serpapi::{
-		request_type::{ETimeFrame, Engine, SafeSearch, SearchType},
-		response_type::{OrganicResult, SearchResponse},
-	},
+use dioxus::prelude::*;
+#[cfg(feature = "server")]
+use maestro_serpapi::{
+	request_type::{ETimeFrame, Engine, SafeSearch, SearchType},
+	response_type::{OrganicResult, SearchResponse},
 };
 
 #[derive(Clone, Debug)]
@@ -46,65 +45,65 @@ fn SerpApiDemo() -> Element {
 	};
 
 	rsx! {
-		div { class: "w-4/5 mx-auto p-4",
-			h1 { class: "text-2xl font-bold mb-4", "Maestro-SerpAPI Demo" }
-			p { class: "mb-4", "Search for any topic using the power of SerpAPI!" }
+    div { class: "w-4/5 mx-auto p-4",
+      h1 { class: "text-2xl font-bold mb-4", "Maestro-SerpAPI Demo" }
+      p { class: "mb-4", "Search for any topic using the power of SerpAPI!" }
 
-			form { onsubmit: on_submit, class: "flex mb-6",
-				input {
-					r#type: "text",
-					placeholder: "Enter search query...",
-					value: "{state().query}",
-					oninput: on_query_change,
-					class: "flex-grow p-2 border rounded-l",
-				}
-				button {
-					r#type: "submit",
-					disabled: state().loading,
-					class: "bg-blue-500 text-white p-2 rounded-r hover:bg-blue-700 disabled:bg-blue-300",
-					if state().loading {
-						"Searching..."
-					} else {
-						"Search"
-					}
-				}
-			}
+      form { onsubmit: on_submit, class: "flex mb-6",
+        input {
+          r#type: "text",
+          placeholder: "Enter search query...",
+          value: "{state().query}",
+          oninput: on_query_change,
+          class: "flex-grow p-2 border rounded-l",
+        }
+        button {
+          r#type: "submit",
+          disabled: state().loading,
+          class: "bg-blue-500 text-white p-2 rounded-r hover:bg-blue-700 disabled:bg-blue-300",
+          if state().loading {
+            "Searching..."
+          } else {
+            "Search"
+          }
+        }
+      }
 
-			if state().loading {
-				div { class: "text-center p-4", "Loading results..." }
-			} else if let Some(error) = &state().error {
-				div { class: "bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded",
-					"{error}"
-				}
-			} else if !state().results.is_empty() {
-				div {
-					h2 { class: "text-xl font-semibold mb-4", "Search Results" }
-					div { class: "space-y-4",
-						{
-								state()
-										.results
-										.iter()
-										.enumerate()
-										.map(|(index, result)| {
-												rsx! {
-													div { key: "{index}", class: "border p-4 rounded",
-														h3 { class: "text-lg font-medium text-blue-600",
-															a { href: "{result.link}", target: "_blank", "{result.title}" }
-														}
-														p { class: "text-sm text-gray-600", "{result.displayed_link}" }
-														if let Some(snippet) = &result.snippet {
-															p { class: "mt-2", "{snippet}" }
-														}
-														p { class: "text-sm text-gray-500 mt-2", "Position: {result.position}" }
-													}
-												}
-										})
-						}
-					}
-				}
-			}
-		}
-	}
+      if state().loading {
+        div { class: "text-center p-4", "Loading results..." }
+      } else if let Some(error) = &state().error {
+        div { class: "bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded",
+          "{error}"
+        }
+      } else if !state().results.is_empty() {
+        div {
+          h2 { class: "text-xl font-semibold mb-4", "Search Results" }
+          div { class: "space-y-4",
+            {
+                state()
+                    .results
+                    .iter()
+                    .enumerate()
+                    .map(|(index, result)| {
+                        rsx! {
+                          div { key: "{index}", class: "border p-4 rounded",
+                            h3 { class: "text-lg font-medium text-blue-600",
+                              a { href: "{result.link}", target: "_blank", "{result.title}" }
+                            }
+                            p { class: "text-sm text-gray-600", "{result.displayed_link}" }
+                            if let Some(snippet) = &result.snippet {
+                              p { class: "mt-2", "{snippet}" }
+                            }
+                            p { class: "text-sm text-gray-500 mt-2", "Position: {result.position}" }
+                          }
+                        }
+                    })
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 // server function to perform the search
@@ -152,7 +151,7 @@ async fn advanced_search(
 
 // how to use the Dioxus server function for fetching content from URLs
 #[server]
-async fn fetch_and_extract_content() -> Result<Vec<api::prompt_preset::models::SerpapiDTO>, ServerFnError> {
+async fn fetch_and_extract_content() -> Result<Vec<SerpapiDTO>, ServerFnError> {
 	// uses functions.rs implementation to handle fetching and processing URLs
 	let results = maestro_serpapi::functions::serpapi_server_request("Rust programming".to_string()).await?;
 	Ok(results)

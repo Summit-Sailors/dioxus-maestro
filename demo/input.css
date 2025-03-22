@@ -1,6 +1,17 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@keyframes highlight {
+  0% {
+    background: #8f8;
+  }
+  100% {
+    background: auto;
+  }
+}
+
+.highlight {
+  animation: highlight 1s;
+}
 
 /* base styles */
 html {
@@ -10,7 +21,13 @@ html {
 }
 
 body {
-  @apply bg-slate-900 text-slate-100 font-poppins flex flex-col max-h-screen h-full [&>div]:h-full;
+  --font-poppins: "Poppins", serif;
+  --color-primary-light: #4f46e5;
+  --color-primary-default: #3b82f6;
+  --color-primary-dark: #2563eb;
+  --color-danger: tomato;
+  @apply bg-slate-900 text-slate-100 flex flex-col max-h-screen h-full [&>div]:h-full;
+  font-family: var(--font-poppins);
 }
 
 /* toast styles - simplified */
@@ -38,35 +55,60 @@ body {
   }
 }
 
-@layer components {
-  @screen sm {
-    .container {
-      max-width: 584px;
-      padding: 0;
-    }
-  }
+.container {
+  @apply mx-auto px-4;
+}
 
-  @screen lg {
-    .container {
-      max-width: 854px;
-    }
+@media (min-width: 640px) {
+  .container {
+    max-width: 584px;
+    padding: 0;
   }
+}
 
-  @screen xl {
-    .container {
-      max-width: 1066px;
-    }
+@media (min-width: 768px) {
+  .container {
+    max-width: 768px;
   }
+}
 
-  @screen 2xl {
-    .container {
-      max-width: 1260px;
-    }
+@media (min-width: 1024px) {
+  .container {
+    max-width: 854px;
   }
+}
 
-  @screen 3xl {
-    .container {
-      max-width: 1440px;
-    }
+@media (min-width: 1280px) {
+  .container {
+    max-width: 1066px;
   }
+}
+
+@media (min-width: 1536px) {
+  .container {
+    max-width: 1260px;
+  }
+}
+
+@media (min-width: 1728px) {
+  .container {
+    max-width: 1440px;
+  }
+}
+
+/* Example of using the new colors */
+.bg-primary-light {
+  background-color: var(--color-primary-light);
+}
+
+.bg-primary-default {
+  background-color: var(--color-primary-default);
+}
+
+.bg-primary-dark {
+  background-color: var(--color-primary-dark);
+}
+
+.bg-danger {
+  background-color: var(--color-danger);
 }

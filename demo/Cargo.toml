@@ -1,6 +1,6 @@
 [package]
 authors = ["Stephen <oketchs702@gmail.com>"]
-edition = "2021"
+edition = { workspace = true }
 name = "demo"
 version = "0.1.0"
 
@@ -8,10 +8,10 @@ version = "0.1.0"
 # local deps
 
 # clients
-# api = { workspace = true, features = ["server"], optional = true }
+api = { workspace = true, features = ["server"], optional = true }
 chrome-fastapi = { workspace = true }
-maestro-diesel = { path = "../clients/maestro-diesel", features = ["async", "server", "sync"], optional = true }
-# maestro-serpapi = { path = "../clients/maestro-serpapi", features = ["dioxus", "server"], optional = true }
+maestro-diesel = { path = "../clients/maestro-diesel", features = ["async", "dioxus", "server", "sync"], optional = true }
+maestro-serpapi = { path = "../clients/maestro-serpapi", features = ["dioxus", "server"], optional = true }
 maestro-sqlx = { path = "../clients/maestro-sqlx", features = ["acreate", "create"], optional = true }
 
 # components and utilities
@@ -27,11 +27,10 @@ maestro-ui = { path = "../frontend/maestro-ui" }
 # thrird party deps
 apalis = { version = "0.5.5", features = ["cron", "postgres"], optional = true }
 apalis-core = { version = "0.5.5", optional = true }
-async-std = "1.13.0"
+async-std = "1.13.1"
 chrono = { workspace = true }
 dioxus = { version = "0.6.3", features = ["fullstack", "router"] }
 dioxus-free-icons.workspace = true
-dioxus-logger = "0.6.2"
 instant = { version = "0.1.13", features = ["wasm-bindgen"] }
 js-sys = "0.3.77"
 log = "0.4.26"
@@ -48,7 +47,7 @@ plotters = { version = "0.3.7", default-features = false, features = [
   "image",
   "svg_backend",
 ] }
-serde = { version = "1.0.218", features = ["derive"] }
+serde = { version = "1.0.219", features = ["derive"] }
 serde_json = "1.0.140"
 strum = "0.27.1"
 strum_macros = "0.27.1"
@@ -57,9 +56,9 @@ tailwind_fuse = { version = "0.3.2", features = ["variant"] }
 validator = { version = "0.20.0", features = ["derive"] }
 web-sys = "0.3.77"
 
-tokio = { version = "1.43.0", features = ["full"], optional = true }
+tokio = { version = "1.44.1", features = ["full"], optional = true }
 tokio-stream = { version = "0.1.17", optional = true }
-tokio-util = { version = "0.7.13", features = ["full", "tracing"], optional = true }
+tokio-util = { version = "0.7.14", features = ["full", "tracing"], optional = true }
 
 sqlx = { version = "0.8.3", features = ["runtime-tokio", "tls-native-tls"], optional = true }
 
@@ -75,12 +74,12 @@ desktop = ["apalis", "dioxus/desktop"]
 mobile = ["apalis", "dioxus/mobile"]
 server = [
   "dep:apalis-core",
-  # "dep:api",
+  "dep:api",
   "dep:diesel",
   "dep:diesel-async",
   "dep:diesel-derive-enum",
   "dep:maestro-diesel",
-  # "dep:maestro-serpapi",
+  "dep:maestro-serpapi",
   "dep:maestro-sqlx",
   "dep:sqlx",
   "dep:tokio",

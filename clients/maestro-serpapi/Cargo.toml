@@ -1,14 +1,14 @@
 [package]
 authors = []
 description = ""
-edition = "2021"
+edition = { workspace = true }
 license = ""
 name = "maestro-serpapi"
 repository = ""
 
 [dependencies]
 
-# api = { workspace = true, features = ["server"] }
+api = { workspace = true, features = ["server"] }
 chrome-fastapi = { workspace = true }
 
 bon = { workspace = true }

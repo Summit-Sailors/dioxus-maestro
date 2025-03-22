@@ -15,7 +15,7 @@ asset_dir = "assets"
 reload_html = true
 
 # Which files or dirs will be monitored
-watch_path = ["src", "assets"]
+watch_path = ["assets", "src"]
 
 index_on_404 = true
 
@@ -24,21 +24,6 @@ index_on_404 = true
 # HTML title tag content
 title = "demo"
 
-# include `assets` in web platform
-[web.resource]
-
-# Additional CSS style files
-style = [
-  "./assets/main.css",
-]
-
-# Additional JavaScript files
-script = []
-
-[web.resource.dev]
-
-# Javascript code file
-# serve: [dev-server] only
 script = []
 
 [bundle]

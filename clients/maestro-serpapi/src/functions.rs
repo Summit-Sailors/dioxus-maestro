@@ -1,7 +1,7 @@
 #[cfg(feature = "server")]
 use {
-	crate::client::serpapi_request, chrome_fastapi::codegen::types::UrlRequest, chrome_fastapi::codegen::Client as ChromeClient, futures::future::join_all,
-	readability::ExtractOptions, std::io::Cursor, tokio_retry2::strategy::ExponentialBackoff, tokio_retry2::Retry, url::Url,
+	crate::client::serpapi_request, chrome_fastapi::codegen::Client as ChromeClient, chrome_fastapi::codegen::types::UrlRequest, futures::future::join_all,
+	readability::ExtractOptions, std::io::Cursor, tokio_retry2::Retry, tokio_retry2::strategy::ExponentialBackoff, url::Url,
 };
 use {
 	api::prompt_preset::models,
@@ -9,7 +9,23 @@ use {
 		logger::tracing::{debug, error},
 		prelude::*,
 	},
+	readability::Readable,
+	serde::{Deserialize, Serialize},
 };
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SerpapiDTO {
+	pub title: String,
+	pub content: String,
+	pub url: String,
+	pub query: String,
+}
+
+impl From<(Readable, url::Url, String)> for SerpapiDTO {
+	fn from(value: (Readable, url::Url, String)) -> Self {
+		SerpapiDTO { title: value.0.title.clone(), content: value.0.content.clone(), url: value.1.to_string(), query: value.2 }
+	}
+}
 
 #[cfg(feature = "server")]
 async fn process_url(client: ChromeClient, url: Url, query: String) -> Result<SerpapiDTO, anyhow::Error> {

@@ -1,4 +1,4 @@
-// pub mod clients;
+pub mod clients;
 pub mod components;
 pub mod layout;
 pub mod models;

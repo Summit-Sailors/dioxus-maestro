@@ -1,7 +1,7 @@
 [workspace.package]
 authors = []
 description = ""
-edition = "2021"
+edition = "2024"
 license = ""
 repository = ""
 
@@ -40,7 +40,7 @@ inherits = "dev"
 
 [workspace.dependencies]
 
-# api = { path = "../PromptCraft/crates/api" }
+api = { path = "../PromptCraft/crates/api" }
 chrome-fastapi = { path = "../services/crates/chrome-fastapi" }
 
 # frontend

@@ -1,13 +1,17 @@
 #![allow(non_snake_case)]
-use {demo::router::Route, dioxus::prelude::*, dioxus_logger::tracing::Level};
+use {
+	demo::router::Route,
+	dioxus::{logger::tracing::Level, prelude::*},
+};
 
 fn App() -> Element {
 	rsx! {
-		Router::<Route> {}
-	}
+    document::Stylesheet { href: asset!("./assets/main.css") }
+    Router::<Route> {}
+  }
 }
 
 fn main() {
-	dioxus_logger::init(Level::INFO).expect("logger failed to initialize");
+	dioxus::logger::init(Level::INFO).expect("logger failed to initialize");
 	dioxus::LaunchBuilder::new().launch(App);
 }

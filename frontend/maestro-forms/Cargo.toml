@@ -1,7 +1,7 @@
 [package]
 authors = []
 description = ""
-edition = "2021"
+edition = { workspace = true }
 license = ""
 name = "maestro-forms"
 repository = ""
@@ -28,8 +28,8 @@ dioxus-sdk = { workspace = true }
 tailwind_fuse = { workspace = true }
 
 tracing-wasm = { version = "0.2.1", optional = true }
-wasm-bindgen-futures = { version = "0.4.49", optional = true }
-web-sys = { version = "0.3.76", features = ["Clipboard", "Navigator", "Window"], optional = true }
+wasm-bindgen-futures = { version = "0.4.50", optional = true }
+web-sys = { version = "0.3.77", features = ["Clipboard", "Navigator", "Window"], optional = true }
 
 
 [features]
