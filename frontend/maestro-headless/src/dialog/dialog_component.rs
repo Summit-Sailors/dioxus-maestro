@@ -3,9 +3,10 @@ use {
 		button::Button,
 		focus_trap::FocusTrap,
 		hooks::{UseControllableStateParams, use_controllable_state, use_escape},
+		presence::Presence,
 	},
 	dioxus::prelude::*,
-	std::fmt::Debug,
+	std::{fmt::Debug, rc::Rc},
 	uuid::Uuid,
 	web_sys::window,
 };
@@ -104,21 +105,6 @@ pub fn DialogTrigger(props: DialogTriggerProps) -> Element {
 	}
 }
 
-#[component]
-pub fn DialogPortal(children: Element) -> Element {
-	let context = use_context::<DialogContext>();
-
-	if context.open.read().unwrap_or_default() {
-		rsx! {
-			Fragment { {children} }
-		}
-	} else {
-		rsx! {
-			Fragment {}
-		}
-	}
-}
-
 #[derive(Clone, PartialEq, Props)]
 pub struct DialogOverlayProps {
 	#[props(extends = GlobalAttributes)]
@@ -129,19 +115,19 @@ pub struct DialogOverlayProps {
 #[component]
 pub fn DialogOverlay(props: DialogOverlayProps) -> Element {
 	let mut context = use_context::<DialogContext>();
+	let mut node_ref = use_signal(|| None::<Rc<MountedData>>);
 
-	if context.open.read().unwrap_or_default() {
-		rsx! {
+	rsx! {
+		Presence { node_ref, present: context.open.read().unwrap_or_default(),
 			div {
 				"data-state": if context.open.peek().unwrap_or_default() { "open" } else { "closed" },
 				pointer_events: "auto",
+				onmounted: move |event| node_ref.set(Some(event.data())),
 				onclick: move |_| context.toggle(false),
 				..props.attributes,
 				{props.children}
 			}
 		}
-	} else {
-		rsx! {}
 	}
 }
 
@@ -155,14 +141,18 @@ pub struct DialogContentProps {
 #[component]
 pub fn DialogContent(props: DialogContentProps) -> Element {
 	let mut context = use_context::<DialogContext>();
+	let mut node_ref = use_signal(|| None::<Rc<MountedData>>);
+
 	let handle_close = use_callback(move |()| {
 		context.toggle(false);
 	});
 
 	use_escape(handle_close, context.open);
 
-	if context.open.read().unwrap_or_default() {
-		rsx! {
+	rsx! {
+		Presence {
+			node_ref,
+			present: context.open.read().unwrap_or_default(),
 			FocusTrap {
 				div {
 					role: "dialog",
@@ -170,13 +160,12 @@ pub fn DialogContent(props: DialogContentProps) -> Element {
 					aria_modal: true,
 					aria_labelledby: context.trigger_id.to_string(),
 					"data-state": if context.open.read().unwrap_or_default() { "open" } else { "closed" },
+					onmounted: move |event| node_ref.set(Some(event.data())),
 					..props.attributes,
 					{props.children}
 				}
 			}
 		}
-	} else {
-		rsx! {}
 	}
 }
 

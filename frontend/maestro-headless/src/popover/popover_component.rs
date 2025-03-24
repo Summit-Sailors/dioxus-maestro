@@ -3,6 +3,7 @@ use {
 		button::Button,
 		hooks::{UseControllableStateParams, use_controllable_state, use_escape, use_outside_click},
 		popper::{Popper, PopperAnchor, PopperArrow, PopperContent},
+		presence::Presence,
 		utils::{EAlign, ESide},
 	},
 	dioxus::prelude::*,
@@ -58,6 +59,7 @@ pub fn Popover(props: PopoverProps) -> Element {
 		Popper {
 			position: "relative",
 			is_arrow_hidden,
+			"data-state": if open().unwrap_or_default() { "open" } else { "closed" },
 			onmounted: move |event: Event<MountedData>| current_ref.set(Some(event.data())),
 			extra_attributes: attributes,
 			{children}
@@ -84,6 +86,7 @@ pub fn PopoverTrigger(props: PopoverTriggerProps) -> Element {
 	rsx! {
 		PopperAnchor { extra_attributes: container_attributes,
 			Button {
+				role: "button",
 				id: context.trigger_id.to_string(),
 				r#type: "button",
 				onclick: move |_| {
@@ -136,10 +139,12 @@ pub fn PopoverContent(props: PopoverContentProps) -> Element {
 
 	use_escape(handle_close, context.open);
 
-	if context.open.read().unwrap_or_default() {
-		rsx! {
+	rsx! {
+		Presence {
+			node_ref: current_ref,
+			present: context.open.read().unwrap_or_default(),
 			PopperContent {
-				role: "dialog",
+				role: "popup",
 				id: context.content_id.to_string(),
 				side: props.side,
 				side_offset: props.side_offset,
@@ -148,16 +153,14 @@ pub fn PopoverContent(props: PopoverContentProps) -> Element {
 				arrow_padding: props.arrow_padding,
 				avoid_collisions: props.avoid_collisions,
 				collision_padding: props.collision_padding,
-				aria_modal: true,
 				aria_labelledby: context.trigger_id.to_string(),
+				aria_hidden: !context.open.read().unwrap_or_default(),
 				"data-state": if context.open.read().unwrap_or_default() { "open" } else { "closed" },
 				onmounted: move |event: Event<MountedData>| current_ref.set(Some(event.data())),
 				extra_attributes: props.attributes,
 				{props.children}
 			}
 		}
-	} else {
-		rsx! {}
 	}
 }
 
@@ -184,7 +187,7 @@ pub fn PopoverClose(props: PopoverCloseProps) -> Element {
 }
 
 #[derive(Clone, PartialEq, Props)]
-pub struct PopperArrowProps {
+pub struct PopoverArrowProps {
 	#[props(default = 10.0)]
 	width: f32,
 	#[props(default = 5.0)]
@@ -196,7 +199,7 @@ pub struct PopperArrowProps {
 }
 
 #[component]
-pub fn PopoverArrow(props: PopperArrowProps) -> Element {
+pub fn PopoverArrow(props: PopoverArrowProps) -> Element {
 	rsx! {
 		PopperArrow {
 			width: props.width,

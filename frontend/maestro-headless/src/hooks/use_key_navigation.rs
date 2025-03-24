@@ -1,5 +1,5 @@
 use {
-	crate::utils::EGroupOrientation,
+	crate::utils::EOrientation,
 	dioxus::{prelude::*, web::WebEventExt},
 	std::rc::Rc,
 	web_sys::{HtmlElement, wasm_bindgen::JsCast},
@@ -8,7 +8,7 @@ use {
 pub fn use_arrow_key_navigation(
 	current_ref: Signal<Option<Rc<MountedData>>>,
 	selector: Option<String>,
-	orientation: EGroupOrientation,
+	orientation: EOrientation,
 ) -> Callback<Event<KeyboardData>> {
 	let handle_key_down = use_callback(move |event: Event<KeyboardData>| {
 		let get_tabbable_candidates = move |node: &Rc<MountedData>, selector: Option<String>| {
@@ -40,7 +40,7 @@ pub fn use_arrow_key_navigation(
 				if let Some(active_index) = item_elements.iter().position(|el| *el == active_element) {
 					let elements_count = item_elements.len();
 					let next_index = match orientation {
-						EGroupOrientation::Vertical => match event.key() {
+						EOrientation::Vertical => match event.key() {
 							Key::ArrowDown =>
 								if active_index + 1 >= elements_count {
 									0
@@ -55,7 +55,7 @@ pub fn use_arrow_key_navigation(
 								},
 							_ => return,
 						},
-						EGroupOrientation::Horizontal => match event.key() {
+						EOrientation::Horizontal => match event.key() {
 							Key::ArrowRight =>
 								if active_index + 1 >= elements_count {
 									0

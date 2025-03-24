@@ -10,8 +10,31 @@ use {
 
 #[derive(Props, PartialEq, Clone)]
 pub struct FocusTrapProps {
+	#[props(default = None)]
+	pub onclick: Option<EventHandler<Event<MouseData>>>,
+	#[props(default = None)]
+	pub onkeydown: Option<EventHandler<Event<KeyboardData>>>,
+	#[props(default = None)]
+	pub onkeyup: Option<EventHandler<Event<KeyboardData>>>,
+	#[props(default = None)]
+	pub onfocus: Option<EventHandler<Event<FocusData>>>,
+	#[props(default = None)]
+	pub onblur: Option<EventHandler<Event<FocusData>>>,
+	#[props(default = None)]
+	pub onmousedown: Option<EventHandler<Event<MouseData>>>,
+	#[props(default = None)]
+	pub onmouseup: Option<EventHandler<Event<MouseData>>>,
+	#[props(default = None)]
+	pub onmouseenter: Option<EventHandler<Event<MouseData>>>,
+	#[props(default = None)]
+	pub onmouseleave: Option<EventHandler<Event<MouseData>>>,
+	#[props(optional, default = None)]
+	pub onmounted: Option<EventHandler<Event<MountedData>>>,
+
 	#[props(extends = div, extends = GlobalAttributes)]
 	attributes: Vec<Attribute>,
+	#[props(optional, default = Vec::new())]
+	extra_attributes: Vec<Attribute>,
 	children: Element,
 }
 
@@ -21,6 +44,8 @@ pub fn FocusTrap(props: FocusTrapProps) -> Element {
 	let mut closure_focus_in_ref = use_signal(|| None::<Closure<dyn FnMut(web_sys::FocusEvent)>>);
 	let mut closure_focus_out_ref = use_signal(|| None::<Closure<dyn FnMut(web_sys::FocusEvent)>>);
 	let mut closure_keyboard_ref = use_signal(|| None::<Closure<dyn FnMut(web_sys::KeyboardEvent)>>);
+	let mut attributes = props.attributes.clone();
+	attributes.extend(props.extra_attributes);
 
 	let get_tabbable_candidates = use_callback(move |()| {
 		if let Some(node) = current_ref.read().as_ref() {
@@ -178,14 +203,64 @@ pub fn FocusTrap(props: FocusTrapProps) -> Element {
 	rsx! {
 		div {
 			tabindex: "0",
+			onclick: move |event| {
+					if let Some(handler) = props.onclick {
+							handler.call(event);
+					}
+			},
+			onmousedown: move |event| {
+					if let Some(handler) = props.onmousedown {
+							handler.call(event);
+					}
+			},
+			onkeydown: move |event| {
+					if let Some(handler) = props.onkeydown {
+							handler.call(event);
+					}
+			},
+
+			onkeyup: move |event| {
+					if let Some(handler) = props.onkeyup {
+							handler.call(event);
+					}
+			},
+			onmouseup: move |event| {
+					if let Some(handler) = props.onmouseup {
+							handler.call(event);
+					}
+			},
+
+			onmouseenter: move |event| {
+					if let Some(handler) = props.onmouseenter {
+							handler.call(event);
+					}
+			},
+			onmouseleave: move |event| {
+					if let Some(handler) = props.onmouseleave {
+							handler.call(event);
+					}
+			},
+			onfocus: move |event| {
+					if let Some(handler) = props.onfocus {
+							handler.call(event);
+					}
+			},
+			onblur: move |event| {
+					if let Some(handler) = props.onblur {
+							handler.call(event);
+					}
+			},
 			onmounted: move |event| {
 					current_ref.set(Some(event.data()));
 					let tabbables = get_tabbable_candidates(());
 					if !tabbables.is_empty() {
 							tabbables[0].focus().ok();
 					}
+					if let Some(handler) = props.onmounted {
+							handler.call(event);
+					}
 			},
-			..props.attributes,
+			..attributes,
 			{props.children}
 		}
 	}

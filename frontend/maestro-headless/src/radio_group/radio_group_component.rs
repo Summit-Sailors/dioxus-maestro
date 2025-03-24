@@ -2,7 +2,7 @@ use {
 	crate::{
 		hooks::{UseControllableStateParams, use_arrow_key_navigation, use_controllable_state, use_interaction_state},
 		radio::Radio,
-		utils::EGroupOrientation,
+		utils::EOrientation,
 	},
 	dioxus::prelude::*,
 	std::{fmt::Debug, rc::Rc},
@@ -13,7 +13,7 @@ pub struct RadioGroupContext {
 	pub name: String,
 	pub value: Memo<Option<String>>,
 	pub set_value: Callback<Option<String>>,
-	pub orientation: ReadOnlySignal<EGroupOrientation>,
+	pub orientation: ReadOnlySignal<EOrientation>,
 	pub disabled: ReadOnlySignal<bool>,
 }
 
@@ -21,7 +21,7 @@ impl RadioGroupContext {
 	pub fn new(
 		value: Memo<Option<String>>,
 		set_value: Callback<Option<String>>,
-		orientation: ReadOnlySignal<EGroupOrientation>,
+		orientation: ReadOnlySignal<EOrientation>,
 		name: String,
 		disabled: ReadOnlySignal<bool>,
 	) -> Self {
@@ -48,8 +48,8 @@ pub struct RadioGroupProps {
 	pub on_value_change: Option<Callback<Option<String>>>,
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]
 	pub disabled: ReadOnlySignal<bool>,
-	#[props(optional, default = ReadOnlySignal::new(Signal::new(EGroupOrientation::Horizontal)))]
-	pub orientation: ReadOnlySignal<EGroupOrientation>,
+	#[props(optional, default = ReadOnlySignal::new(Signal::new(EOrientation::Horizontal)))]
+	pub orientation: ReadOnlySignal<EOrientation>,
 
 	#[props(default = None)]
 	pub onkeydown: Option<EventHandler<Event<KeyboardData>>>,

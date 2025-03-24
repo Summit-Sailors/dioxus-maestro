@@ -2,7 +2,7 @@ use {
 	crate::{
 		button::Button,
 		hooks::{UseControllableStateParams, use_arrow_key_navigation, use_controllable_state, use_interaction_state},
-		utils::EGroupOrientation,
+		utils::EOrientation,
 	},
 	dioxus::prelude::*,
 	std::rc::Rc,
@@ -88,8 +88,8 @@ pub struct AccordionProps {
 	#[props(optional)]
 	pub on_value_change: Option<Callback<Option<Vec<String>>>>,
 
-	#[props(optional, default = ReadOnlySignal::new(Signal::new(EGroupOrientation::Vertical)))]
-	pub orientation: ReadOnlySignal<EGroupOrientation>,
+	#[props(optional, default = ReadOnlySignal::new(Signal::new(EOrientation::Vertical)))]
+	pub orientation: ReadOnlySignal<EOrientation>,
 	#[props(optional, default = true)]
 	pub collapsible: bool,
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]

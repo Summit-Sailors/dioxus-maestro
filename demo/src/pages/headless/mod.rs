@@ -15,15 +15,19 @@ use {
 		button::Button,
 		checkbox::{Checkbox, CheckboxIndicator},
 		collapsible::{Collapsible, CollapsibleContent, CollapsibleTrigger},
-		dialog::{Dialog, DialogClose, DialogContent, DialogDescription, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger},
+		dialog::{Dialog, DialogClose, DialogContent, DialogDescription, DialogOverlay, DialogTitle, DialogTrigger},
+		hover_card::{HoverCard, HoverCardArrow, HoverCardContent, HoverCardTrigger},
 		popover::{Popover, PopoverArrow, PopoverContent, PopoverTrigger},
 		switch::{Switch, SwitchIndicator},
+		tabs::{Tabs, TabsContent, TabsList, TabsTrigger},
 		toggle::Toggle,
 		toggle_group::{ToggleGroup, ToggleGroupItem},
+		tooltip::{Tooltip, TooltipArrow, TooltipContent, TooltipProvider, TooltipTrigger},
 		utils::{EAlign, ESide},
 	},
 	maestro_toast::{ctx::use_toast, toast_info::ToastInfo, toast_position::EToastPosition},
 	std::time::Duration,
+	tailwind_fuse::tw_merge,
 };
 
 #[component]
@@ -36,6 +40,7 @@ pub fn HeadlessDemo() -> Element {
 	let mut group_toggle_value = use_signal(|| String::from("1"));
 	let mut checked = use_signal(|| true);
 	let mut is_open = use_signal(|| false);
+	let mut is_open_2 = use_signal(|| false);
 
 	// let options = Vec::from([
 	// 	SelectOption { value: 1, label: "Apple".into(), disabled: false },
@@ -171,22 +176,18 @@ pub fn HeadlessDemo() -> Element {
 					DialogTrigger { class: "rounded-full w-fit px-3 py-2 h-12 focus-visible:ring-2 focus-visible:ring-offset-2 outline-none transition-colors bg-slate-200 border border-slate-200 text-slate-900 hover:bg-slate-900 hover:text-slate-200 focus-visible:ring-slate-200 focus-visible:ring-offset-black focus-visible:bg-slate-200 focus-visible:text-slate-900 aria-[disabled=true]:opacity-50 aria-[disabled=true]:pointer-events-none data-[pending=true]:bg-slate-500",
 						"Open Dialog"
 					}
-					DialogPortal {
-						DialogOverlay { class: "w-full h-full fixed top-0 left-0 bottom-0 right-0 bg-slate-900/20 inset-0 backdrop-blur-sm z-[100]" }
-						DialogContent { class: "w-full h-96 max-w-lg max-h-[95vh] fixed z-[110] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded bg-slate-100 shadow border border-slate-600 flex flex-col gap-6 px-6 py-8",
-							div { class: "flex justify-between gap-4",
-								DialogTitle { class: "font-medium text-2xl text-slate-900",
-									"Uncontrolled dialog"
-								}
-								DialogClose {
-									title: "Close my popup",
-									class: "text-slate-500 hover:text-slate-900 transition-colors w-fit h-fit",
-									Icon { width: 16, height: 16, icon: LdX }
-								}
+					DialogOverlay { class: "w-full h-full fixed top-0 left-0 bottom-0 right-0 bg-slate-900/20 inset-0 backdrop-blur-sm z-[100]" }
+					DialogContent { class: "w-full h-96 max-w-lg max-h-[95vh] fixed z-[110] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded bg-slate-100 shadow border border-slate-600 flex flex-col gap-6 px-6 py-8",
+						div { class: "flex justify-between gap-4",
+							DialogTitle { class: "font-medium text-2xl text-slate-900", "Uncontrolled dialog" }
+							DialogClose {
+								title: "Close my popup",
+								class: "text-slate-500 hover:text-slate-900 transition-colors w-fit h-fit",
+								Icon { width: 16, height: 16, icon: LdX }
 							}
-							DialogDescription { class: "text-slate-600",
-								"This dialog is controlled by dialog component itself"
-							}
+						}
+						DialogDescription { class: "text-slate-600",
+							"This dialog is controlled by dialog component itself"
 						}
 					}
 				}
@@ -197,28 +198,24 @@ pub fn HeadlessDemo() -> Element {
 					DialogTrigger { class: "rounded-full w-fit px-3 py-2 h-12 focus-visible:ring-2 focus-visible:ring-offset-2 outline-none transition-colors bg-orange-600 border border-slate-200 text-slate-100 hover:bg-orange-800  focus-visible:ring-orange-200 focus-visible:ring-offset-black focus-visible:bg-orange-800 aria-[disabled=true]:opacity-50 aria-[disabled=true]:pointer-events-none data-[pending=true]:bg-slate-500",
 						"Open Dialog"
 					}
-					DialogPortal {
-						DialogOverlay { class: "w-full h-full fixed top-0 left-0 bottom-0 right-0 z-[100] bg-slate-900/20 inset-0 backdrop-blur-sm" }
-						DialogContent { class: "w-full h-96  max-w-lg fixed z-[110] max-h-[95vh] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded bg-slate-100 shadow border border-slate-600 flex flex-col gap-6 px-6 py-8",
-							div { class: "flex justify-between gap-4",
-								DialogTitle { class: "font-medium text-2xl text-slate-900",
-									"Controlled dialog"
-								}
-								DialogClose {
-									title: "Close my popup",
-									class: "text-slate-500 hover:text-slate-900 transition-colors",
-									Icon { icon: FaFaceSmile }
-								}
+					DialogOverlay { class: "w-full h-full fixed top-0 left-0 bottom-0 right-0 z-[100] bg-slate-900/20 inset-0 backdrop-blur-sm data-[state=closed]:animate-fade-out data-[state=closed]:duration-300 data-[state=open]:animate-fade-in data-[state=open]:duration-100" }
+					DialogContent { class: "w-full h-96  max-w-lg fixed z-[110] max-h-[95vh] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded bg-slate-100 shadow border border-slate-600 flex flex-col gap-6 px-6 py-8 data-[state=closed]:animate-fade-out data-[state=closed]:duration-300 data-[state=open]:animate-fade-in data-[state=open]:duration-100",
+						div { class: "flex justify-between gap-4",
+							DialogTitle { class: "font-medium text-2xl text-slate-900", "Controlled dialog" }
+							DialogClose {
+								title: "Close my popup",
+								class: "text-slate-500 hover:text-slate-900 transition-colors",
+								Icon { icon: FaFaceSmile }
 							}
-							DialogDescription { class: "text-slate-600",
-								"This dialog is controlled by user. Props 'open' and 'on_open_change' passed. Also used custom close Icon. The button below has onclick handler and closes dialog in 5 seconds"
-							}
-							Button {
-								pending,
-								class: "rounded-full w-fit px-3 py-2 h-12 focus-visible:ring-2 focus-visible:ring-offset-2 outline-none transition-colors bg-slate-200 border border-slate-200 text-slate-900 hover:bg-slate-900 hover:text-slate-200 focus-visible:ring-slate-200 focus-visible:ring-offset-black focus-visible:bg-slate-200 focus-visible:text-slate-900 aria-[disabled=true]:opacity-50 aria-[disabled=true]:pointer-events-none data-[pending=true]:bg-slate-500",
-								onclick: dialog_close,
-								"Close"
-							}
+						}
+						DialogDescription { class: "text-slate-600",
+							"This dialog is controlled by user. Props 'open' and 'on_open_change' passed. Also used custom close Icon. The button below has onclick handler and closes dialog in 5 seconds"
+						}
+						Button {
+							pending,
+							class: "rounded-full w-fit px-3 py-2 h-12 focus-visible:ring-2 focus-visible:ring-offset-2 outline-none transition-colors bg-slate-200 border border-slate-200 text-slate-900 hover:bg-slate-900 hover:text-slate-200 focus-visible:ring-slate-200 focus-visible:ring-offset-black focus-visible:bg-slate-200 focus-visible:text-slate-900 aria-[disabled=true]:opacity-50 aria-[disabled=true]:pointer-events-none data-[pending=true]:bg-slate-500",
+							onclick: dialog_close,
+							"Close"
 						}
 					}
 				}
@@ -413,21 +410,95 @@ pub fn HeadlessDemo() -> Element {
 				on_open_change: move |value: Option<bool>| {
 						is_open.set(value.unwrap_or_default());
 				},
-				is_arrow_hidden: true,
+				// is_arrow_hidden: true,
 				PopoverTrigger {
 					class: "w-full",
 					style: "background: #007bff; color: white; padding: 8px 16px; border-radius: 4px; cursor: pointer;",
 					"Click to toggle popper"
 				}
 				PopoverContent {
-					side: ESide::Bottom,
+					side: ESide::Top,
+					side_offset: 8.0,
+					align: EAlign::Center,
+					class: "content bg-white text-slate-900 rounded-sm w-56 p-4 data-[state=open]:animate-fade-in data-[state=closed]:duration-500 data-[state=closed]:animate-fade-out",
+
+					"This is popper content"
+
+					PopoverArrow { width: 16.0, height: 8.0, style: "color: white;" }
+				}
+			}
+		}
+		div { class: "py-6",
+			Tabs { default_value: "1", class: "flex flex-col gap-4",
+
+				TabsList { class: "w-full flex items-center gap-6",
+					TabsTrigger {
+						value: "1",
+						class: "text-orange-500 data-[state=active]:text-orange-700 data-[state=active]:underline",
+						"One"
+					}
+					TabsTrigger {
+						value: "2",
+						class: "text-orange-500 data-[state=active]:text-orange-700 data-[state=active]:underline",
+						"Two"
+					}
+					TabsTrigger {
+						value: "3",
+						class: "text-orange-500 data-[state=active]:text-orange-700 data-[state=active]:underline disabled:opacity-50",
+						disabled: true,
+						"Three"
+					}
+					TabsTrigger {
+						value: "4",
+						class: "text-orange-500 data-[state=active]:text-orange-700 data-[state=active]:underline disabled:opacity-50",
+						"Four"
+					}
+				}
+				TabsContent { value: "1", "Content-1" }
+				TabsContent { value: "2", "Content-2" }
+				TabsContent { value: "3", "Content-3" }
+				TabsContent { value: "4", "Content-4" }
+			}
+		}
+
+		div { class: "pb-20",
+			TooltipProvider { class: "w-fit mx-auto",
+				Tooltip { class: "w-fit group",
+					TooltipTrigger { class: "mx-auto w-12 h-12 bg-slate-200 text-slate-800 rounded-full",
+						"+"
+					}
+					TooltipContent {
+						side: ESide::Top,
+						side_offset: 8.0,
+						align: EAlign::Center,
+						class: "group-data-[state=open]:opacity-100 group-data-[state=closed]:opacity-0 bg-white text-slate-900 rounded-sm w-56 p-4  transition-opacity ease-linear",
+
+						"This is popper content"
+
+						TooltipArrow {
+							width: 16.0,
+							height: 8.0,
+							style: "color: white;",
+						}
+					}
+				}
+			}
+		}
+
+		div { class: "",
+			HoverCard { class: "w-fit",
+				HoverCardTrigger { class: "mx-auto w-12 h-12 bg-slate-200 text-slate-800 rounded-full",
+					"*"
+				}
+				HoverCardContent {
+					side: ESide::Top,
 					side_offset: 8.0,
 					align: EAlign::Center,
 					class: "content bg-white text-slate-900 rounded-sm w-56 p-4",
 
 					"This is popper content"
 
-					PopoverArrow { width: 16.0, height: 8.0, style: "color: white;" }
+					HoverCardArrow { width: 16.0, height: 8.0, style: "color: white;" }
 				}
 			}
 		}

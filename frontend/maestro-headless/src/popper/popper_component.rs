@@ -3,7 +3,7 @@ use {
 		focus_trap::FocusTrap,
 		utils::{EAlign, ESide},
 	},
-	dioxus::{prelude::*, web::WebEventExt},
+	dioxus::{dioxus_core::AttributeValue, prelude::*, web::WebEventExt},
 	serde::{Deserialize, Serialize},
 	std::rc::Rc,
 	web_sys::{
@@ -134,12 +134,16 @@ fn calculate_position(
 
 	let (arrow_x, arrow_y) = match side {
 		ESide::Top | ESide::Bottom => {
-			let x = floating_rect.width / 2.0 - arrow_width / 2.0;
-			(Some(x), None)
+			let reference_center = reference_rect.width / 2.0;
+			let arrow_x = reference_center - left;
+			let constrained_x = arrow_x.max(arrow_width).min(floating_rect.width - arrow_width);
+			(Some(constrained_x), None)
 		},
 		ESide::Right | ESide::Left => {
-			let y = floating_rect.height / 2.0 - arrow_width / 2.0;
-			(None, Some(y))
+			let reference_center = reference_rect.height / 2.0;
+			let y = reference_center - top - (arrow_width / 2.0);
+			let constrained_y = y.max(arrow_width).min(floating_rect.height - arrow_width);
+			(None, Some(constrained_y))
 		},
 	};
 
@@ -195,6 +199,22 @@ pub fn Popper(props: PopperProps) -> Element {
 pub struct PopperAnchorProps {
 	#[props(optional, default = None)]
 	onclick: Option<EventHandler<MouseEvent>>,
+	#[props(default = None)]
+	pub onkeydown: Option<EventHandler<Event<KeyboardData>>>,
+	#[props(default = None)]
+	pub onkeyup: Option<EventHandler<Event<KeyboardData>>>,
+	#[props(default = None)]
+	pub onfocus: Option<EventHandler<Event<FocusData>>>,
+	#[props(default = None)]
+	pub onblur: Option<EventHandler<Event<FocusData>>>,
+	#[props(default = None)]
+	pub onmousedown: Option<EventHandler<Event<MouseData>>>,
+	#[props(default = None)]
+	pub onmouseup: Option<EventHandler<Event<MouseData>>>,
+	#[props(default = None)]
+	pub onmouseenter: Option<EventHandler<Event<MouseData>>>,
+	#[props(default = None)]
+	pub onmouseleave: Option<EventHandler<Event<MouseData>>>,
 	#[props(extends = div, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
 	#[props(default = Vec::new())]
@@ -209,9 +229,51 @@ pub fn PopperAnchor(props: PopperAnchorProps) -> Element {
 
 	rsx! {
 		div {
+			max_width: "max-content",
+			width: "max-content",
 			onclick: move |event| {
 					if let Some(onclick) = props.onclick {
 							onclick.call(event);
+					}
+			},
+			onmousedown: move |event| {
+					if let Some(handler) = props.onmousedown {
+							handler.call(event);
+					}
+			},
+			onkeydown: move |event| {
+					if let Some(handler) = props.onkeydown {
+							handler.call(event);
+					}
+			},
+			onkeyup: move |event| {
+					if let Some(handler) = props.onkeyup {
+							handler.call(event);
+					}
+			},
+			onmouseup: move |event| {
+					if let Some(handler) = props.onmouseup {
+							handler.call(event);
+					}
+			},
+			onmouseenter: move |event| {
+					if let Some(handler) = props.onmouseenter {
+							handler.call(event);
+					}
+			},
+			onmouseleave: move |event| {
+					if let Some(handler) = props.onmouseleave {
+							handler.call(event);
+					}
+			},
+			onfocus: move |event| {
+					if let Some(handler) = props.onfocus {
+							handler.call(event);
+					}
+			},
+			onblur: move |event| {
+					if let Some(handler) = props.onblur {
+							handler.call(event);
 					}
 			},
 			onmounted: move |event| context.anchor.set(Some(event.data())),
@@ -238,12 +300,28 @@ pub struct PopperContentProps {
 	avoid_collisions: bool,
 	#[props(default = 4.0)]
 	collision_padding: f32,
-	// #[props(default = false)]
-	// hide_when_detached: bool,
 	#[props(optional, default = None)]
 	pub onmounted: Option<EventHandler<Event<MountedData>>>,
 	#[props(optional)]
 	onplaced: Option<EventHandler<()>>,
+
+	#[props(default = None)]
+	pub onkeydown: Option<EventHandler<Event<KeyboardData>>>,
+	#[props(default = None)]
+	pub onkeyup: Option<EventHandler<Event<KeyboardData>>>,
+	#[props(default = None)]
+	pub onfocus: Option<EventHandler<Event<FocusData>>>,
+	#[props(default = None)]
+	pub onblur: Option<EventHandler<Event<FocusData>>>,
+	#[props(default = None)]
+	pub onmousedown: Option<EventHandler<Event<MouseData>>>,
+	#[props(default = None)]
+	pub onmouseup: Option<EventHandler<Event<MouseData>>>,
+	#[props(default = None)]
+	pub onmouseenter: Option<EventHandler<Event<MouseData>>>,
+	#[props(default = None)]
+	pub onmouseleave: Option<EventHandler<Event<MouseData>>>,
+
 	#[props(extends = div, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
 	#[props(default = Vec::new())]
@@ -371,7 +449,6 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 			window.remove_event_listener_with_callback("resize", closure_fn.as_ref().unchecked_ref()).unwrap();
 			window.remove_event_listener_with_callback("scroll", closure_fn.as_ref().unchecked_ref()).unwrap();
 		}
-		// closure.set(None);
 	});
 
 	let placed_side = new_placement().side;
@@ -381,9 +458,15 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 		None => EAlign::Center,
 	};
 
+	let mut attributes = props.attributes.clone();
+	attributes.extend(props.extra_attributes);
+	if !is_positioned() {
+		attributes.push(Attribute { name: "animation", value: AttributeValue::Text("none".into()), namespace: Some("style"), volatile: false });
+	}
+
 	rsx! {
 		FocusTrap {
-			position: floating_styles().style_position(),
+			position: "absolute",
 			top: floating_styles().style_top(),
 			left: floating_styles().style_left(),
 			transform: floating_styles()
@@ -395,21 +478,57 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 									"translate(0, -200%)".to_string()
 							}
 					}),
-			transform_origin: "{transform_origin().x} {transform_origin().y}",
 			min_width: "max-content",
-			z_index: 100,
+			"data-side": format!("{:?}", placed_side).to_lowercase(),
+			"data-align": format!("{:?}", placed_align).to_lowercase(),
+			onmousedown: move |event| {
+					if let Some(handler) = props.onmousedown {
+							handler.call(event);
+					}
+			},
+			onkeydown: move |event| {
+					if let Some(handler) = props.onkeydown {
+							handler.call(event);
+					}
+			},
+			onkeyup: move |event| {
+					if let Some(handler) = props.onkeyup {
+							handler.call(event);
+					}
+			},
+			onmouseup: move |event| {
+					if let Some(handler) = props.onmouseup {
+							handler.call(event);
+					}
+			},
+			onmouseenter: move |event| {
+					if let Some(handler) = props.onmouseenter {
+							handler.call(event);
+					}
+			},
+			onmouseleave: move |event| {
+					if let Some(handler) = props.onmouseleave {
+							handler.call(event);
+					}
+			},
+			onfocus: move |event| {
+					if let Some(handler) = props.onfocus {
+							handler.call(event);
+					}
+			},
+			onblur: move |event| {
+					if let Some(handler) = props.onblur {
+							handler.call(event);
+					}
+			},
 			div {
-				"data-side": format!("{:?}", placed_side).to_lowercase(),
-				"data-align": format!("{:?}", placed_align).to_lowercase(),
-				style: if !is_positioned() { "animation: none".to_string() } else { "".to_string() },
-				onmounted: move |event| {
+				onmounted: move |event: Event<MountedData>| {
 						content.set(Some(event.data()));
 						if let Some(callback) = props.onmounted {
 								callback.call(event)
 						}
 				},
-				..props.attributes,
-				..props.extra_attributes,
+				..attributes,
 				{props.children.clone()}
 			}
 		}
@@ -438,26 +557,23 @@ pub fn PopperArrow(props: PopperArrowProps) -> Element {
 	let arrow_data = content_context.arrow_data.read().clone();
 
 	let arrow_transform = match new_placement().side() {
-		ESide::Top => "rotate(0)",
-		ESide::Right => "rotate(90deg) translateY(50%) translateX(0)",
-		ESide::Bottom => "rotate(180deg)",
-		ESide::Left => "rotate(-90deg) translateY(-50%) translateX(-50%)",
+		ESide::Top => "rotate(0) translateX(-50%)",
+		ESide::Right => "rotate(90deg) translateY(50%) translateX(-50%)",
+		ESide::Bottom => "rotate(180deg) translateX(50%)",
+		ESide::Left => "rotate(-90deg) translateY(-50%)",
 	};
 
 	let (left, top) = match new_placement().side() {
-		ESide::Top => (arrow_data.x.map(|x| format!("{}px", x - props.width / 2.0)).unwrap_or_else(|| "50%".to_string()), "100%".to_string()),
-		ESide::Right => ("0%".to_string(), arrow_data.y.map(|y| format!("{}px", y - props.width / 2.0)).unwrap_or_else(|| "50%".to_string())),
-		ESide::Bottom => {
-			let x = arrow_data.x.unwrap_or_else(|| props.width / 2.0);
-			(format!("{}px", x - props.width / 2.0), "0".to_string())
-		},
-		ESide::Left => ("100%".to_string(), arrow_data.y.map(|y| format!("{}px", y - props.width / 2.0)).unwrap_or_else(|| "50%".to_string())),
+		ESide::Top => (arrow_data.x.map(|x| format!("{}px", x)).unwrap_or_else(|| "50%".to_string()), "100%".to_string()),
+		ESide::Right => ("0%".to_string(), arrow_data.y.map(|y| format!("{}px", y)).unwrap_or_else(|| "50%".to_string())),
+		ESide::Bottom => (arrow_data.x.map(|x| format!("{}px", x)).unwrap_or_else(|| "50%".to_string()), "0".to_string()),
+		ESide::Left => ("100%".to_string(), arrow_data.y.map(|y| format!("{}px", y)).unwrap_or_else(|| "50%".to_string())),
 	};
 
 	let arrow_transform_origin = match new_placement().side() {
-		ESide::Top => "0 0",
-		ESide::Right => "0 50%",
-		ESide::Bottom => "center 0",
+		ESide::Top => "center bottom",
+		ESide::Right => "0 center",
+		ESide::Bottom => "center top",
 		ESide::Left => "center center",
 	};
 

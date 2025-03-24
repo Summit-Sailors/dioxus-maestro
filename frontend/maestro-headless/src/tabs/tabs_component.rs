@@ -2,7 +2,8 @@ use {
 	crate::{
 		button::Button,
 		hooks::{UseControllableStateParams, use_arrow_key_navigation, use_controllable_state},
-		utils::EGroupOrientation,
+		presence::use_presence,
+		utils::EOrientation,
 	},
 	dioxus::prelude::*,
 	std::rc::Rc,
@@ -12,11 +13,11 @@ use {
 struct TabsContext {
 	pub value: Memo<Option<String>>,
 	pub set_value: Callback<Option<String>>,
-	pub orientation: ReadOnlySignal<EGroupOrientation>,
+	pub orientation: ReadOnlySignal<EOrientation>,
 }
 
 impl TabsContext {
-	pub fn new(value: Memo<Option<String>>, set_value: Callback<Option<String>>, orientation: ReadOnlySignal<EGroupOrientation>) -> Self {
+	pub fn new(value: Memo<Option<String>>, set_value: Callback<Option<String>>, orientation: ReadOnlySignal<EOrientation>) -> Self {
 		Self { value, set_value, orientation }
 	}
 }
@@ -30,8 +31,8 @@ pub struct TabsProps {
 	#[props(optional)]
 	pub on_value_change: Option<Callback<Option<String>>>,
 
-	#[props(optional, default = ReadOnlySignal::new(Signal::new(EGroupOrientation::Vertical)))]
-	pub orientation: ReadOnlySignal<EGroupOrientation>,
+	#[props(optional, default = ReadOnlySignal::new(Signal::new(EOrientation::Horizontal)))]
+	pub orientation: ReadOnlySignal<EOrientation>,
 
 	#[props(extends = div, extends = GlobalAttributes)]
 	attributes: Vec<Attribute>,
@@ -86,7 +87,7 @@ pub fn TabsList(props: TabsListProps) -> Element {
 	let context = use_context::<TabsContext>();
 
 	let mut current_ref = use_signal(|| None::<Rc<MountedData>>);
-	let handle_key_down = use_arrow_key_navigation(current_ref, Some(String::from("[role='radio'][data-focusable='true']")), *context.orientation.read());
+	let handle_key_down = use_arrow_key_navigation(current_ref, Some(String::from("[role='tab'][data-focusable='true']")), *context.orientation.read());
 
 	rsx! {
 		div {
@@ -180,14 +181,18 @@ pub struct TabsContentProps {
 pub fn TabsContent(props: TabsContentProps) -> Element {
 	let context = use_context::<TabsContext>();
 	let is_active = use_memo(move || *props.value.read() == context.value.read().clone().unwrap_or_default());
+	let mut current_ref = use_signal(|| None::<Rc<MountedData>>);
+
+	let is_present = use_presence(is_active, current_ref);
+
 	rsx! {
 		div {
 			id: "{*props.value.peek().clone()}-content".to_string(),
 			aria_labelledby: "{*props.value.peek().clone()}-trigger".to_string(),
 			role: "tabpannel",
-			"data-state": if is_active() { "active" } else { "inactive" },
-			tabindex: 0,
-			hidden: !is_active(),
+			"data-state": if is_present() { "active" } else { "inactive" },
+			hidden: !is_present(),
+			onmounted: move |event: Event<MountedData>| current_ref.set(Some(event.data())),
 			..props.attributes,
 			{props.children}
 		}

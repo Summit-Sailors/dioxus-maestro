@@ -2,7 +2,7 @@ use {
 	crate::{
 		hooks::{UseControllableStateParams, use_arrow_key_navigation, use_controllable_state, use_interaction_state},
 		toggle::Toggle,
-		utils::EGroupOrientation,
+		utils::EOrientation,
 	},
 	dioxus::prelude::*,
 	std::{fmt::Debug, rc::Rc},
@@ -12,7 +12,7 @@ use {
 pub struct ToggleGroupContext {
 	pub value: Memo<Option<String>>,
 	pub set_value: Callback<Option<String>>,
-	pub orientation: ReadOnlySignal<EGroupOrientation>,
+	pub orientation: ReadOnlySignal<EOrientation>,
 	pub disabled: ReadOnlySignal<bool>,
 }
 
@@ -20,7 +20,7 @@ impl ToggleGroupContext {
 	pub fn new(
 		value: Memo<Option<String>>,
 		set_value: Callback<Option<String>>,
-		orientation: ReadOnlySignal<EGroupOrientation>,
+		orientation: ReadOnlySignal<EOrientation>,
 		disabled: ReadOnlySignal<bool>,
 	) -> Self {
 		Self { value, set_value, orientation, disabled }
@@ -46,8 +46,8 @@ pub struct ToggleGroupProps {
 
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]
 	pub disabled: ReadOnlySignal<bool>,
-	#[props(optional, default = ReadOnlySignal::new(Signal::new(EGroupOrientation::Horizontal)))]
-	pub orientation: ReadOnlySignal<EGroupOrientation>,
+	#[props(optional, default = ReadOnlySignal::new(Signal::new(EOrientation::Horizontal)))]
+	pub orientation: ReadOnlySignal<EOrientation>,
 
 	#[props(default = None)]
 	pub onkeydown: Option<EventHandler<Event<KeyboardData>>>,

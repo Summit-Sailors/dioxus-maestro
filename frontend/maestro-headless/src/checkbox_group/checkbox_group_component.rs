@@ -2,7 +2,7 @@ use {
 	crate::{
 		checkbox::Checkbox,
 		hooks::{UseControllableStateParams, use_arrow_key_navigation, use_controllable_state, use_interaction_state},
-		utils::EGroupOrientation,
+		utils::EOrientation,
 	},
 	dioxus::prelude::*,
 	std::{fmt::Debug, rc::Rc},
@@ -13,7 +13,7 @@ pub struct CheckboxGroupContext {
 	pub name: String,
 	pub value: Memo<Option<Vec<String>>>,
 	pub set_value: Callback<Option<Vec<String>>>,
-	pub orientation: ReadOnlySignal<EGroupOrientation>,
+	pub orientation: ReadOnlySignal<EOrientation>,
 	pub disabled: ReadOnlySignal<bool>,
 }
 
@@ -21,7 +21,7 @@ impl CheckboxGroupContext {
 	pub fn new(
 		value: Memo<Option<Vec<String>>>,
 		set_value: Callback<Option<Vec<String>>>,
-		orientation: ReadOnlySignal<EGroupOrientation>,
+		orientation: ReadOnlySignal<EOrientation>,
 		name: String,
 		disabled: ReadOnlySignal<bool>,
 	) -> Self {
@@ -54,8 +54,8 @@ pub struct CheckboxGroupProps {
 	pub on_value_change: Option<Callback<Option<Vec<String>>>>,
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]
 	pub disabled: ReadOnlySignal<bool>,
-	#[props(optional, default = ReadOnlySignal::new(Signal::new(EGroupOrientation::Horizontal)))]
-	pub orientation: ReadOnlySignal<EGroupOrientation>,
+	#[props(optional, default = ReadOnlySignal::new(Signal::new(EOrientation::Horizontal)))]
+	pub orientation: ReadOnlySignal<EOrientation>,
 
 	#[props(default = None)]
 	pub onkeydown: Option<EventHandler<Event<KeyboardData>>>,
