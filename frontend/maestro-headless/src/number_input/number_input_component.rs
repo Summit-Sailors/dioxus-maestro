@@ -68,12 +68,7 @@ pub fn NumberInput(props: NumberInputProps) -> Element {
 		}
 	};
 
-	let decrement = move || {
-		let new_val = value().unwrap_or_default() - step();
-		if new_val >= min() {
-			set_value.call(Some(new_val));
-		}
-	};
+	let decrement = move || {};
 
 	let oninput = move |event: Event<FormData>| {
 		let new_val = event.value().parse::<f32>().ok().unwrap_or(value().unwrap_or_default());
