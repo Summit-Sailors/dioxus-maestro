@@ -1,6 +1,6 @@
 use {
 	crate::{
-		hooks::{UseControllableStateParams, use_arrow_key_navigation, use_controllable_state},
+		hooks::{use_arrow_key_navigation, use_controllable_state, UseControllableStateParams},
 		radio::Radio,
 		utils::EOrientation,
 	},
@@ -13,7 +13,6 @@ pub struct RadioGroupContext {
 	pub name: String,
 	pub value: Memo<Option<String>>,
 	pub set_value: Callback<Option<String>>,
-
 	pub orientation: ReadOnlySignal<EOrientation>,
 	pub disabled: ReadOnlySignal<bool>,
 }

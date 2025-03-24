@@ -2,8 +2,8 @@ use {
 	dioxus::{prelude::*, web::WebEventExt},
 	std::rc::Rc,
 	web_sys::{
+		wasm_bindgen::{prelude::Closure, JsCast},
 		AnimationEvent, CssStyleDeclaration, HtmlElement, TransitionEvent,
-		wasm_bindgen::{JsCast, prelude::Closure},
 	},
 };
 
