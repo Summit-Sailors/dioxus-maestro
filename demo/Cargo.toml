@@ -10,7 +10,7 @@ version = "0.1.0"
 # clients
 api = { workspace = true, features = ["server"], optional = true }
 chrome-fastapi = { workspace = true }
-maestro-diesel = { path = "../clients/maestro-diesel", features = ["async", "dioxus", "server", "sync"], optional = true }
+maestro-diesel = { path = "../clients/maestro-diesel" }
 maestro-serpapi = { path = "../clients/maestro-serpapi", features = ["dioxus", "server"], optional = true }
 maestro-sqlx = { path = "../clients/maestro-sqlx", features = ["acreate", "create"], optional = true }
 
@@ -33,7 +33,7 @@ dioxus = { version = "0.6.3", features = ["fullstack", "router"] }
 dioxus-free-icons.workspace = true
 instant = { version = "0.1.13", features = ["wasm-bindgen"] }
 js-sys = "0.3.77"
-log = "0.4.26"
+log = "0.4.27"
 plotters = { version = "0.3.7", default-features = false, features = [
   "all_elements",
   "all_series",
@@ -62,9 +62,11 @@ tokio-util = { version = "0.7.14", features = ["full", "tracing"], optional = tr
 
 sqlx = { version = "0.8.3", features = ["runtime-tokio", "tls-native-tls"], optional = true }
 
-diesel = { version = "2.2.8", features = ["chrono", "postgres", "serde_json", "uuid"], optional = true }
+diesel = { version = "2.2.8", features = ["chrono", "numeric", "postgres", "serde_json", "uuid"], optional = true }
 diesel-async = { version = "0.5.2", features = ["postgres"], optional = true }
 diesel-derive-enum = { version = "2.1.0", features = ["postgres"], optional = true }
+
+uuid = { version = "1.16.0", features = ["serde", "v4"] }
 
 [build-dependencies]
 dotenvy = { git = "https://github.com/allan2/dotenvy.git", features = ["macros"] }
@@ -78,7 +80,6 @@ server = [
   "dep:diesel",
   "dep:diesel-async",
   "dep:diesel-derive-enum",
-  "dep:maestro-diesel",
   "dep:maestro-serpapi",
   "dep:maestro-sqlx",
   "dep:sqlx",
@@ -86,5 +87,9 @@ server = [
   "dep:tokio-stream",
   "dep:tokio-util",
   "dioxus/server",
+  "maestro-diesel/async",
+  "maestro-diesel/dioxus",
+  "maestro-diesel/server",
+  "maestro-diesel/sync",
 ]
 web = ["dioxus/web"]

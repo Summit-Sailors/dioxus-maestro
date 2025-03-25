@@ -5,11 +5,11 @@ use {
 	},
 	dioxus::prelude::*,
 	dioxus_free_icons::{
+		Icon,
 		icons::{
 			bs_icons::{BsLayoutSidebar, BsLayoutSidebarReverse},
 			io_icons::IoLogoGithub,
 		},
-		Icon,
 	},
 	maestro_toast::{init::use_init_toast_ctx, toast_frame_component::ToastFrame},
 	maestro_ui::button::{Button, ButtonSize, ButtonVariant},
@@ -195,6 +195,9 @@ fn get_source_code(route: &Route) -> HashMap<String, String> {
 		},
 		Route::CalendarDemo {} => {
 			code_map.insert("calendar".to_string(), String::from(include_str!("pages/calendar.rs")));
+		},
+		Route::DieselDemo {} => {
+			code_map.insert("diesel".to_string(), String::from(include_str!("clients/db/diesel_demo.rs")));
 		},
 	}
 

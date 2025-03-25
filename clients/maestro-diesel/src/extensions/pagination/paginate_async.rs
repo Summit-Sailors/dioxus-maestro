@@ -2,7 +2,7 @@ use {
 	super::{dtos::PaginatedResultDTO, paginate::Paginated},
 	crate::async_client::AsyncDieselPool,
 	diesel::QueryResult,
-	diesel_async::{methods::LoadQuery, AsyncPgConnection},
+	diesel_async::{AsyncPgConnection, methods::LoadQuery},
 };
 
 pub trait PaginateAsync: Sized {

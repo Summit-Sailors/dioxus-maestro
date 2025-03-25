@@ -4,7 +4,6 @@ use {
 	readability::ExtractOptions, std::io::Cursor, tokio_retry2::Retry, tokio_retry2::strategy::ExponentialBackoff, url::Url,
 };
 use {
-	api::prompt_preset::models,
 	dioxus::{
 		logger::tracing::{debug, error},
 		prelude::*,
