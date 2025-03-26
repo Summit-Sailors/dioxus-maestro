@@ -1,6 +1,6 @@
 use {
 	crate::{
-		clients::db::diesel_demo::DieselDemo,
+		clients::db::{diesel_demo::DieselDemo, sqlx_demo::SqlxDemo},
 		layout::Layout,
 		pages::{
 			calendar::CalendarDemo, form::FormsDemo, home::HomePage, hooks::HooksDemo, plotters::PlottersDemo, query::CompleteQueryDemo, radio::RadioDemo,
@@ -34,6 +34,8 @@ pub enum Route {
 	CalendarDemo {},
 	#[route("/diesel")]
 	DieselDemo {},
+	#[route("/sqlx")]
+	SqlxDemo {},
 }
 
 impl Route {
@@ -49,6 +51,7 @@ impl Route {
 			Route::UIDemo {} => "UI",
 			Route::CalendarDemo {} => "Calendar",
 			Route::DieselDemo {} => "Diesel",
+			Route::SqlxDemo {} => "Sqlx",
 		}
 	}
 
@@ -66,7 +69,8 @@ impl Route {
 			Route::UIDemo {} =>
 				"A comprehensive, type-safe, and highly customizable UI component library for Dioxus, designed to provide developers with powerful, flexible, and elegant UI building blocks.",
 			Route::CalendarDemo {} => "A  highly customizable UI calendar and date picker utility.",
-			Route::DieselDemo {} => "Diesel Demo",
+			Route::DieselDemo {} => "A diesel utility equipped with both sync and async database connection/pool creation and an extension for paginated queries",
+			Route::SqlxDemo {} => "A sqlx utility equipped with both sync and async database connection/pool creation",
 		}
 	}
 }
