@@ -1,7 +1,7 @@
 use {
 	crate::{
 		button::Button,
-		hooks::{use_controllable_state, UseControllableStateParams},
+		hooks::{UseControllableStateParams, use_controllable_state},
 		popper::{Popper, PopperAnchor, PopperArrow, PopperContent},
 		presence::Presence,
 		utils::{EAlign, ESide},
@@ -10,7 +10,7 @@ use {
 	std::{fmt::Debug, rc::Rc},
 	uuid::Uuid,
 	web_sys::{
-		wasm_bindgen::{prelude::Closure, JsCast},
+		wasm_bindgen::{JsCast, prelude::Closure},
 		window,
 	},
 };

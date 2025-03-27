@@ -1,6 +1,6 @@
 use {
 	crate::{
-		hooks::{use_arrow_key_navigation, use_controllable_state, UseControllableStateParams},
+		hooks::{UseControllableStateParams, use_arrow_key_navigation, use_controllable_state},
 		radio::Radio,
 		utils::EOrientation,
 	},
