@@ -7,7 +7,7 @@ repository = ""
 
 
 [workspace]
-members = ["clients/*", "demo", "demo-extension", "frontend/*"]
+members = ["clients/*", "demo", "frontend/*"]
 resolver = "2"
 
 [profile.dev.package."*"]

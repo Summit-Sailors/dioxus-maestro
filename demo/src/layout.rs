@@ -176,17 +176,6 @@ fn get_source_code(route: &Route) -> HashMap<String, String> {
 		Route::PlottersDemo {} => {
 			code_map.insert("plotters".to_string(), String::from(include_str!("pages/plotters.rs")));
 		},
-		Route::CompleteQueryDemo {} => {
-			code_map.insert("query".to_string(), String::from(include_str!("pages/query.rs")));
-			code_map.insert("basic query demo".to_string(), String::from(include_str!("components/query/basic_query.rs")));
-			code_map.insert("batch query demo".to_string(), String::from(include_str!("components/query/batch.rs")));
-			code_map.insert("cache query demo".to_string(), String::from(include_str!("components/query/cache.rs")));
-			code_map.insert("mutation query demo".to_string(), String::from(include_str!("components/query/mutation.rs")));
-			code_map.insert("parallel query demo".to_string(), String::from(include_str!("components/query/parallel_query.rs")));
-		},
-		Route::RadioDemo {} => {
-			code_map.insert("radio".to_string(), String::from(include_str!("pages/radio.rs")));
-		},
 		Route::ToastDemo {} => {
 			code_map.insert("toast".to_string(), String::from(include_str!("pages/toast.rs")));
 		},

@@ -9,20 +9,16 @@ use {
 
 #[derive(Props, PartialEq, Debug, Clone)]
 pub struct ToggleProps {
-	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]
-	pub disabled: ReadOnlySignal<bool>,
-	#[props(extends = GlobalAttributes, extends = button)]
-	pub attributes: Vec<Attribute>,
-	#[props(default = Vec::new())]
-	pub additional_attributes: Vec<Attribute>,
-	#[props(default = None)]
-	pub on_toggle_change: Option<Callback<Option<bool>>>,
+	pub value: ReadOnlySignal<String>,
 	#[props(default = ReadOnlySignal::new(Signal::new(None)))]
 	pub pressed: ReadOnlySignal<Option<bool>>,
 	#[props(default = false)]
 	pub default_pressed: bool,
 	#[props(default = None)]
-	pub children: Option<Element>,
+	pub on_toggle_change: Option<Callback<Option<bool>>>,
+	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]
+	pub disabled: ReadOnlySignal<bool>,
+
 	#[props(default = None)]
 	pub onkeydown: Option<EventHandler<Event<KeyboardData>>>,
 	#[props(default = None)]
@@ -39,35 +35,38 @@ pub struct ToggleProps {
 	pub onmouseenter: Option<EventHandler<Event<MouseData>>>,
 	#[props(default = None)]
 	pub onmouseleave: Option<EventHandler<Event<MouseData>>>,
+
+	#[props(extends = GlobalAttributes, extends = button)]
+	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
+	#[props(default = None)]
+	pub children: Option<Element>,
 }
 
 #[component]
 pub fn Toggle(props: ToggleProps) -> Element {
-	let ToggleProps { disabled, attributes, additional_attributes, on_toggle_change, pressed, default_pressed, children, .. } = props;
+	let ToggleProps { value, disabled, attributes, extra_attributes, on_toggle_change, pressed, default_pressed, children, .. } = props;
 	let is_controlled = use_hook(move || pressed().is_some());
 	let (pressed, set_pressed) =
 		use_controllable_state(UseControllableStateParams { is_controlled, prop: pressed, default_prop: default_pressed, on_change: on_toggle_change });
 	let mut attributes = attributes.clone();
 
-	attributes.extend(additional_attributes);
-	attributes.push(Attribute::new("aria-pressed", pressed(), None, false));
-	attributes.push(Attribute::new("aria-disabled", disabled(), None, false));
-	attributes.push(Attribute::new("data-state", if pressed().unwrap_or_default() { "on" } else { "off" }, None, false));
-	attributes.push(Attribute::new("data-disabled", disabled(), None, false));
-	if !attributes.iter().any(|x| x.name == "aria-role") {
-		attributes.push(Attribute::new("aria-role", "radio", None, false));
-	}
+	attributes.extend(extra_attributes);
 
 	rsx! {
 		Button {
+			value: value(),
 			r#type: "button",
+			disabled,
+			role: "radio",
+			aria_pressed: pressed(),
 			onclick: move |_| {
 					if !disabled() {
 							let new_toggle = !pressed.peek().unwrap_or_default();
 							set_pressed(Some(new_toggle));
 					}
 			},
-			disabled,
 			onblur: props.onblur,
 			onfocus: props.onfocus,
 			onkeydown: props.onkeydown,
@@ -76,7 +75,8 @@ pub fn Toggle(props: ToggleProps) -> Element {
 			onmouseenter: props.onmouseenter,
 			onmouseleave: props.onmouseleave,
 			onmouseup: props.onmouseup,
-			additional_attributes: attributes.clone(),
+			extra_attributes: attributes.clone(),
+			"data-state": if pressed().unwrap_or_default() { "on" } else { "off" },
 			if let Some(children) = children {
 				{children}
 			} else {

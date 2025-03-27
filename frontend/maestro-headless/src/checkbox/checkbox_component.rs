@@ -1,254 +1,100 @@
 use {
-	crate::hooks::{InteractionStateContext, UseControllableStateParams, use_controllable_state, use_interaction_state},
+	crate::{
+		button::Button,
+		hooks::{UseControllableStateParams, use_controllable_state},
+	},
 	dioxus::prelude::*,
 	dioxus_free_icons::{Icon, icons::bs_icons::BsCheck},
 	std::fmt::Debug,
 };
 
 #[derive(Clone, PartialEq, Debug)]
-pub struct CheckboxContext<T>
-where
-	T: Clone + PartialEq + Debug + 'static,
-{
-	pub value: T,
+pub struct CheckboxContext {
+	pub value: ReadOnlySignal<String>,
 	pub name: String,
-	pub onchange: Callback<Option<bool>>,
 	pub checked: Memo<Option<bool>>,
 	pub required: bool,
+	pub disabled: ReadOnlySignal<bool>,
+	pub on_change: Callback<Option<bool>>,
 }
 
-impl<T> CheckboxContext<T>
-where
-	T: Clone + PartialEq + Debug + 'static,
-{
-	pub fn new(value: T, onchange: Callback<Option<bool>>, checked: Memo<Option<bool>>, name: String, required: bool) -> Self {
-		Self { value, onchange, checked, name, required }
+impl CheckboxContext {
+	pub fn new(
+		value: ReadOnlySignal<String>,
+		on_change: Callback<Option<bool>>,
+		checked: Memo<Option<bool>>,
+		name: String,
+		required: bool,
+		disabled: ReadOnlySignal<bool>,
+	) -> Self {
+		Self { value, on_change, checked, name, required, disabled }
 	}
 }
 
 #[derive(Props, PartialEq, Debug, Clone)]
-pub struct CheckboxProps<T>
-where
-	T: Clone + PartialEq + Debug + 'static,
-{
-	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]
-	pub disabled: ReadOnlySignal<bool>,
-	pub value: T,
-	pub name: String,
+pub struct CheckboxProps {
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
 	pub checked: ReadOnlySignal<Option<bool>>,
 	#[props(optional, default = false)]
 	pub default_checked: bool,
-	#[props(extends = GlobalAttributes, extends = label)]
-	pub attributes: Vec<Attribute>,
 	#[props(default = None)]
-	pub onchange: Option<Callback<Option<bool>>>,
-	pub children: Element,
+	pub on_change: Option<Callback<Option<bool>>>,
+
+	pub value: ReadOnlySignal<String>,
+	pub name: String,
+	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]
+	pub disabled: ReadOnlySignal<bool>,
 	#[props(default = false)]
 	pub required: bool,
-	#[props(default = None)]
-	pub onkeydown: Option<EventHandler<Event<KeyboardData>>>,
-	#[props(default = None)]
-	pub onkeyup: Option<EventHandler<Event<KeyboardData>>>,
-	#[props(default = None)]
-	pub onfocus: Option<EventHandler<Event<FocusData>>>,
-	#[props(default = None)]
-	pub onblur: Option<EventHandler<Event<FocusData>>>,
-	#[props(default = None)]
-	pub onmousedown: Option<EventHandler<Event<MouseData>>>,
-	#[props(default = None)]
-	pub onmouseup: Option<EventHandler<Event<MouseData>>>,
-	#[props(default = None)]
-	pub onmouseenter: Option<EventHandler<Event<MouseData>>>,
-	#[props(default = None)]
-	pub onmouseleave: Option<EventHandler<Event<MouseData>>>,
-}
 
-#[component]
-pub fn Checkbox<T: Clone + PartialEq + Debug + 'static>(props: CheckboxProps<T>) -> Element {
-	let CheckboxProps { disabled, value, name, checked, default_checked, attributes, onchange, children, required, .. } = props;
-	let is_controlled = use_hook(move || checked().is_some());
-	let (checked, set_checked) =
-		use_controllable_state(UseControllableStateParams { is_controlled, prop: checked, default_prop: default_checked, on_change: onchange });
-	let checkbox_context = use_context_provider::<CheckboxContext<T>>(|| CheckboxContext::new(value, set_checked, checked, name, required));
-	let mut interaction_state = use_interaction_state(ReadOnlySignal::new(Signal::new(false)), disabled);
-
-	rsx! {
-		label {
-			style: "position:relative;",
-			onmousedown: move |event| {
-					interaction_state.onmousedown();
-					if let Some(handler) = props.onmousedown {
-							handler.call(event);
-					}
-			},
-			onkeydown: move |event| {
-					interaction_state.onkeydown();
-					if let Some(handler) = props.onkeydown {
-							handler.call(event);
-					}
-			},
-			onkeyup: move |event| {
-					interaction_state.onkeyup();
-					if let Some(handler) = props.onkeyup {
-							handler.call(event);
-					}
-			},
-			onmouseup: move |event| {
-					interaction_state.onmouseup();
-					if let Some(handler) = props.onmouseup {
-							handler.call(event);
-					}
-			},
-			onmouseenter: move |event| {
-					interaction_state.onmouseenter();
-					if let Some(handler) = props.onmouseenter {
-							handler.call(event);
-					}
-			},
-			onmouseleave: move |event| {
-					interaction_state.onmouseleave();
-					if let Some(handler) = props.onmouseleave {
-							handler.call(event);
-					}
-			},
-			onfocus: move |event| {
-					interaction_state.onfocus();
-					if let Some(handler) = props.onfocus {
-							handler.call(event);
-					}
-			},
-			onblur: move |event| {
-					interaction_state.onblur();
-					if let Some(handler) = props.onblur {
-							handler.call(event);
-					}
-			},
-			"data-pressed": *interaction_state.is_pressed.read(),
-			"data-hovered": *interaction_state.is_hovered.read(),
-			"data-focused": *interaction_state.is_focused.read(),
-			"data-focuse-visible": *interaction_state.is_focused.read(),
-			aria_checked: *checkbox_context.checked.read(),
-			aria_required: *checkbox_context.checked.peek(),
-			"data-state": if checkbox_context.checked.read().unwrap_or_default() { "checked" } else { "unchecked" },
-			"data-disabled": *interaction_state.disabled.read(),
-			aria_disabled: *interaction_state.disabled.read(),
-			..attributes,
-			{children}
-		}
-	}
-}
-
-#[derive(Props, PartialEq, Debug, Clone)]
-pub struct CheckboxInputProps {
-	#[props(extends = GlobalAttributes, extends = input)]
+	#[props(extends = GlobalAttributes, extends = button)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	pub children: Element,
-	#[props(default = String::default())]
-	pub class: String,
-	#[props(default = None)]
-	pub onkeydown: Option<EventHandler<Event<KeyboardData>>>,
-	#[props(default = None)]
-	pub onkeyup: Option<EventHandler<Event<KeyboardData>>>,
-	#[props(default = None)]
-	pub onfocus: Option<EventHandler<Event<FocusData>>>,
-	#[props(default = None)]
-	pub onblur: Option<EventHandler<Event<FocusData>>>,
-	#[props(default = None)]
-	pub onmousedown: Option<EventHandler<Event<MouseData>>>,
-	#[props(default = None)]
-	pub onmouseup: Option<EventHandler<Event<MouseData>>>,
-	#[props(default = None)]
-	pub onmouseenter: Option<EventHandler<Event<MouseData>>>,
-	#[props(default = None)]
-	pub onmouseleave: Option<EventHandler<Event<MouseData>>>,
 }
 
 #[component]
-pub fn CheckboxInput<T: Clone + PartialEq + Debug + 'static>(props: CheckboxInputProps) -> Element {
-	let checkbox_context = use_context::<CheckboxContext<T>>();
-	let mut interaction_state = use_context::<InteractionStateContext>();
+pub fn Checkbox(props: CheckboxProps) -> Element {
+	let CheckboxProps { disabled, value, name, checked, default_checked, attributes, extra_attributes, on_change, children, required, .. } = props;
+	let is_controlled = use_hook(move || checked().is_some());
+	let (checked, set_checked) = use_controllable_state(UseControllableStateParams { is_controlled, prop: checked, default_prop: default_checked, on_change });
+	let context = use_context_provider::<CheckboxContext>(|| CheckboxContext::new(value, set_checked, checked, name, required, disabled));
+	let mut attributes = attributes.clone();
+	attributes.extend(extra_attributes);
 
 	rsx! {
-		input {
-			style: "position:absolute;width:0px;height:0px;margin:0px;opacity:0;z-index:-20",
-			tabindex: -1,
-			r#type: "checkbox",
-			checked: *checkbox_context.checked.read(),
-			name: *checkbox_context.checked.peek(),
-			disabled: *interaction_state.disabled.read(),
-			aria_hidden: true,
-			onchange: move |_| {
-					match !checkbox_context.checked.peek().unwrap_or_default() {
-							true => checkbox_context.onchange.call(Some(true)),
-							false => checkbox_context.onchange.call(None),
-					};
-			},
-			..props.attributes,
-		}
-		div {
-			tabindex: if !*interaction_state.disabled.read() { "0" } else { "-1" },
-			onmousedown: move |event| {
-					interaction_state.onmousedown();
-					if let Some(handler) = props.onmousedown {
-							handler.call(event);
-					}
-			},
-			onkeydown: move |event| {
-					interaction_state.onkeydown();
-					if let Some(handler) = props.onkeydown {
-							handler.call(event);
-					}
-			},
-			onkeyup: move |event| {
-					interaction_state.onkeyup();
-					if let Some(handler) = props.onkeyup {
-							handler.call(event);
-					}
-			},
-			onmouseup: move |event| {
-					interaction_state.onmouseup();
-					if let Some(handler) = props.onmouseup {
-							handler.call(event);
-					}
-			},
-			onmouseenter: move |event| {
-					interaction_state.onmouseenter();
-					if let Some(handler) = props.onmouseenter {
-							handler.call(event);
-					}
-			},
-			onmouseleave: move |event| {
-					interaction_state.onmouseleave();
-					if let Some(handler) = props.onmouseleave {
-							handler.call(event);
-					}
-			},
-			onfocus: move |event| {
-					interaction_state.onfocus();
-					if let Some(handler) = props.onfocus {
-							handler.call(event);
-					}
-			},
-			onblur: move |event| {
-					interaction_state.onblur();
-					if let Some(handler) = props.onblur {
-							handler.call(event);
-					}
-			},
-			class: props.class.clone(),
-			role: "checkbox",
-			aria_checked: *checkbox_context.checked.read(),
-			aria_selected: *checkbox_context.checked.read(),
-			aria_required: checkbox_context.required,
-			"data-state": if checkbox_context.checked.read().unwrap_or_default() { "checked" } else { "unchecked" },
-			"data-disabled": *interaction_state.disabled.read(),
-			aria_disabled: *interaction_state.disabled.read(),
-			"data-pressed": *interaction_state.is_pressed.read(),
-			"data-hovered": *interaction_state.is_hovered.read(),
-			"data-focused": *interaction_state.is_focused.read(),
-			"data-focuse-visible": *interaction_state.is_focused.read(),
-			{props.children}
+		div { position: "relative",
+			input {
+				position: "absolute",
+				width: 0,
+				height: 0,
+				opacity: 0,
+				margin: 0,
+				tabindex: -1,
+				r#type: "checkbox",
+				checked: *context.checked.read(),
+				name: context.name.clone(),
+				disabled: disabled(),
+				required: context.required,
+				aria_hidden: true,
+			}
+			Button {
+				tabindex: if disabled() { "-1" } else { "0" },
+				role: "checkbox",
+				disabled,
+				aria_checked: *context.checked.read(),
+				aria_required: context.required,
+				"data-state": if context.checked.read().unwrap_or_default() { "checked" } else { "unchecked" },
+				onclick: move |_| {
+						match !context.checked.peek().unwrap_or_default() {
+								true => context.on_change.call(Some(true)),
+								false => context.on_change.call(None),
+						};
+				},
+				extra_attributes: attributes,
+				{children}
+			}
 		}
 	}
 }
@@ -262,17 +108,22 @@ pub struct CheckboxIndicatorProps {
 }
 
 #[component]
-pub fn CheckboxIndicator<T: Clone + PartialEq + Debug + 'static>(props: CheckboxIndicatorProps) -> Element {
-	let checkbox_context = use_context::<CheckboxContext<T>>();
-	let interaction_state = use_context::<InteractionStateContext>();
+pub fn CheckboxIndicator(props: CheckboxIndicatorProps) -> Element {
+	let context = use_context::<CheckboxContext>();
 
 	rsx! {
 		span {
-			"data-state": if checkbox_context.checked.read().unwrap_or_default() { "checked" } else { "unchecked" },
-			"data-disabled": *interaction_state.disabled.read(),
-			style: "pointer-events:none;position:relative;display:flex;justify-content:center;align-items:center",
+			aria_disabled: *context.disabled.read(),
+			aria_checked: *context.checked.read(),
+			"data-disabled": *context.disabled.read(),
+			"data-state": if context.checked.read().unwrap_or_default() { "checked" } else { "unchecked" },
+			pointer_events: "none",
+			position: "relative",
+			display: "flex",
+			justify_content: "center",
+			align_items: "center",
 			..props.attributes,
-			if checkbox_context.checked.read().unwrap_or_default() {
+			if context.checked.read().unwrap_or_default() {
 				if let Some(children) = props.children {
 					{children}
 				} else {

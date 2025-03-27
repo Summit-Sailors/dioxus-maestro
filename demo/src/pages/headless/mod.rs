@@ -13,14 +13,23 @@ use {
 	maestro_headless::{
 		accordion::{Accordion, AccordionContent, AccordionHeader, AccordionItem, AccordionTrigger, AccordionVariant},
 		button::Button,
-		checkbox::{Checkbox, CheckboxIndicator, CheckboxInput},
-		dialog::{Dialog, DialogClose, DialogContent, DialogDescription, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger},
-		select::{Select, SelectDropdown, SelectOption, SelectTrigger, SelectValue},
+		checkbox::{Checkbox, CheckboxIndicator},
+		collapsible::{Collapsible, CollapsibleContent, CollapsibleTrigger},
+		dialog::{Dialog, DialogClose, DialogContent, DialogDescription, DialogOverlay, DialogTitle, DialogTrigger},
+		hover_card::{HoverCard, HoverCardArrow, HoverCardContent, HoverCardTrigger},
+		popover::{Popover, PopoverArrow, PopoverContent, PopoverTrigger},
+		range::{Range, RangeThumb, RangeTrack, RangeTrackWrapper},
+		select::{OptionSelectedIndicator, Select, SelectDropdown, SelectIcon, SelectOption, SelectTrigger, SelectValue},
+		switch::{Switch, SwitchIndicator},
+		tabs::{Tabs, TabsContent, TabsList, TabsTrigger},
 		toggle::Toggle,
 		toggle_group::{ToggleGroup, ToggleGroupItem},
+		tooltip::{Tooltip, TooltipArrow, TooltipContent, TooltipProvider, TooltipTrigger},
+		utils::{EAlign, EOrientation, ESide},
 	},
 	maestro_toast::{ctx::use_toast, toast_info::ToastInfo, toast_position::EToastPosition},
 	std::time::Duration,
+	tailwind_fuse::tw_merge,
 };
 
 #[component]
@@ -32,16 +41,13 @@ pub fn HeadlessDemo() -> Element {
 	let mut toggle = use_signal(|| false);
 	let mut group_toggle_value = use_signal(|| String::from("1"));
 	let mut checked = use_signal(|| true);
-
-	let options = Vec::from([
-		SelectOption { value: 1, label: "Apple".into(), disabled: false },
-		SelectOption { value: 2, label: "Banana".into(), disabled: false },
-		SelectOption { value: 3, label: "Ice-Cream".into(), disabled: false },
-		SelectOption { value: 4, label: "Coffee".into(), disabled: false },
-		SelectOption { value: 5, label: "Salt".into(), disabled: true },
-		SelectOption { value: 6, label: "Chocolate".into(), disabled: false },
-	]);
-	let mut selected = use_signal::<Option<i32>>(|| None);
+	let mut is_open = use_signal(|| false);
+	let mut is_open_2 = use_signal(|| false);
+	let mut selected = use_signal::<Vec<String>>(|| Vec::new());
+	let mut multi_selected = use_signal::<Vec<String>>(|| Vec::new());
+	let mut range_1: Signal<Vec<f32>> = use_signal(|| Vec::from([0.0]));
+	let mut range_2: Signal<Vec<f32>> = use_signal(|| Vec::from([5.0]));
+	let mut range_3: Signal<Vec<f32>> = use_signal(|| Vec::from([0.0, 15.0]));
 
 	let mut handle_button_click = move |button_message: String| {
 		let info = ToastInfo {
@@ -167,22 +173,18 @@ pub fn HeadlessDemo() -> Element {
 					DialogTrigger { class: "rounded-full w-fit px-3 py-2 h-12 focus-visible:ring-2 focus-visible:ring-offset-2 outline-none transition-colors bg-slate-200 border border-slate-200 text-slate-900 hover:bg-slate-900 hover:text-slate-200 focus-visible:ring-slate-200 focus-visible:ring-offset-black focus-visible:bg-slate-200 focus-visible:text-slate-900 aria-[disabled=true]:opacity-50 aria-[disabled=true]:pointer-events-none data-[pending=true]:bg-slate-500",
 						"Open Dialog"
 					}
-					DialogPortal {
-						DialogOverlay { class: "w-full h-full fixed top-0 left-0 bottom-0 right-0 bg-slate-900/20 inset-0 backdrop-blur-sm z-[100]" }
-						DialogContent { class: "w-full h-96 max-w-lg max-h-[95vh] fixed z-[110] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded bg-slate-100 shadow border border-slate-600 flex flex-col gap-6 px-6 py-8",
-							div { class: "flex justify-between gap-4",
-								DialogTitle { class: "font-medium text-2xl text-slate-900",
-									"Uncontrolled dialog"
-								}
-								DialogClose {
-									title: "Close my popup",
-									class: "text-slate-500 hover:text-slate-900 transition-colors w-fit h-fit",
-									Icon { width: 16, height: 16, icon: LdX }
-								}
+					DialogOverlay { class: "w-full h-full fixed top-0 left-0 bottom-0 right-0 bg-slate-900/20 inset-0 backdrop-blur-sm z-[100]" }
+					DialogContent { class: "w-full h-96 max-w-lg max-h-[95vh] fixed z-[110] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded bg-slate-100 shadow border border-slate-600 flex flex-col gap-6 px-6 py-8",
+						div { class: "flex justify-between gap-4",
+							DialogTitle { class: "font-medium text-2xl text-slate-900", "Uncontrolled dialog" }
+							DialogClose {
+								title: "Close my popup",
+								class: "text-slate-500 hover:text-slate-900 transition-colors w-fit h-fit",
+								Icon { width: 16, height: 16, icon: LdX }
 							}
-							DialogDescription { class: "text-slate-600",
-								"This dialog is controlled by dialog component itself"
-							}
+						}
+						DialogDescription { class: "text-slate-600",
+							"This dialog is controlled by dialog component itself"
 						}
 					}
 				}
@@ -193,48 +195,161 @@ pub fn HeadlessDemo() -> Element {
 					DialogTrigger { class: "rounded-full w-fit px-3 py-2 h-12 focus-visible:ring-2 focus-visible:ring-offset-2 outline-none transition-colors bg-orange-600 border border-slate-200 text-slate-100 hover:bg-orange-800  focus-visible:ring-orange-200 focus-visible:ring-offset-black focus-visible:bg-orange-800 aria-[disabled=true]:opacity-50 aria-[disabled=true]:pointer-events-none data-[pending=true]:bg-slate-500",
 						"Open Dialog"
 					}
-					DialogPortal {
-						DialogOverlay { class: "w-full h-full fixed top-0 left-0 bottom-0 right-0 z-[100] bg-slate-900/20 inset-0 backdrop-blur-sm" }
-						DialogContent { class: "w-full h-96  max-w-lg fixed z-[110] max-h-[95vh] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded bg-slate-100 shadow border border-slate-600 flex flex-col gap-6 px-6 py-8",
-							div { class: "flex justify-between gap-4",
-								DialogTitle { class: "font-medium text-2xl text-slate-900",
-									"Controlled dialog"
-								}
-								DialogClose {
-									title: "Close my popup",
-									class: "text-slate-500 hover:text-slate-900 transition-colors",
-									Icon { icon: FaFaceSmile }
-								}
+					DialogOverlay { class: "w-full h-full fixed top-0 left-0 bottom-0 right-0 z-[100] bg-slate-900/20 inset-0 backdrop-blur-sm data-[state=closed]:animate-fade-out data-[state=closed]:duration-300 data-[state=open]:animate-fade-in data-[state=open]:duration-100" }
+					DialogContent { class: "w-full h-96  max-w-lg fixed z-[110] max-h-[95vh] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded bg-slate-100 shadow border border-slate-600 flex flex-col gap-6 px-6 py-8 data-[state=closed]:animate-fade-out data-[state=closed]:duration-300 data-[state=open]:animate-fade-in data-[state=open]:duration-100",
+						div { class: "flex justify-between gap-4",
+							DialogTitle { class: "font-medium text-2xl text-slate-900", "Controlled dialog" }
+							DialogClose {
+								title: "Close my popup",
+								class: "text-slate-500 hover:text-slate-900 transition-colors",
+								Icon { icon: FaFaceSmile }
 							}
-							DialogDescription { class: "text-slate-600",
-								"This dialog is controlled by user. Props 'open' and 'on_open_change' passed. Also used custom close Icon. The button below has onclick handler and closes dialog in 5 seconds"
-							}
-							Button {
-								pending,
-								class: "rounded-full w-fit px-3 py-2 h-12 focus-visible:ring-2 focus-visible:ring-offset-2 outline-none transition-colors bg-slate-200 border border-slate-200 text-slate-900 hover:bg-slate-900 hover:text-slate-200 focus-visible:ring-slate-200 focus-visible:ring-offset-black focus-visible:bg-slate-200 focus-visible:text-slate-900 aria-[disabled=true]:opacity-50 aria-[disabled=true]:pointer-events-none data-[pending=true]:bg-slate-500",
-								onclick: dialog_close,
-								"Close"
-							}
+						}
+						DialogDescription { class: "text-slate-600",
+							"This dialog is controlled by user. Props 'open' and 'on_open_change' passed. Also used custom close Icon. The button below has onclick handler and closes dialog in 5 seconds"
+						}
+						Button {
+							pending,
+							class: "rounded-full w-fit px-3 py-2 h-12 focus-visible:ring-2 focus-visible:ring-offset-2 outline-none transition-colors bg-slate-200 border border-slate-200 text-slate-900 hover:bg-slate-900 hover:text-slate-200 focus-visible:ring-slate-200 focus-visible:ring-offset-black focus-visible:bg-slate-200 focus-visible:text-slate-900 aria-[disabled=true]:opacity-50 aria-[disabled=true]:pointer-events-none data-[pending=true]:bg-slate-500",
+							onclick: dialog_close,
+							"Close"
 						}
 					}
 				}
 			}
 		}
-		div {
+
+		div { class: "flex gap-6",
 			Select {
-				options,
-				value: selected,
-				is_searchable: true,
+				value: selected(),
+				on_value_change: move |value: Option<Vec<String>>| { selected.set(value.unwrap_or_default()) },
 				class: "relative w-fit",
-				SelectTrigger::<i32> { class: "rounded border border-slate-300 bg-slate-900 text-slate-100 min-w-36 flex justify-between items-center gap-4 px-3 py-2 min-h-12 ",
-					SelectValue::<i32> {
+				SelectTrigger { class: "rounded border border-slate-300 bg-slate-900 text-slate-100 w-36 flex justify-between items-center gap-4 px-3 py-2 min-h-12 ",
+					SelectValue {
 						placeholder: "Chose something...",
-						class: "data-[state=selected]:text-slate-100 data-[state=placeholder]:text-slate-500",
+						class: "data-[state=selected]:text-slate-100 data-[state=placeholder]:text-slate-500 overflow-ellipsis",
+					}
+					SelectIcon {}
+				}
+				SelectDropdown {
+					side: ESide::Bottom,
+					side_offset: 10.0,
+					class: "rounded bg-slate-900 text-slate-200 border border-slate-700 z-10 px-2 py-4 [&_*]:transition-all  w-60",
+					SelectOption {
+						key: 1,
+						value: "apple",
+						selected: selected().contains(&"apple".to_string()),
+						class: "flex items-center justify-between gap-4 px-2 py-3 hover:bg-slate-700 focus-visible::bg-slate-700 ",
+						"Apple"
+						OptionSelectedIndicator { class: "w-4 h-4" }
+					}
+					SelectOption {
+						key: 2,
+						value: "banana",
+						selected: selected().contains(&"banana".to_string()),
+						class: "flex items-center justify-between gap-4 px-2 py-3 hover:bg-slate-700 focus-visible::bg-slate-700 ",
+						"Banana"
+						OptionSelectedIndicator { class: "w-4 h-4" }
+					}
+					SelectOption {
+						key: 3,
+						value: "ice-cream",
+						selected: selected().contains(&"ice-cream".to_string()),
+						class: "flex items-center justify-between gap-4 px-2 py-3 hover:bg-slate-700 focus-visible::bg-slate-700 ",
+						"Ice-Cream"
+						OptionSelectedIndicator { class: "w-4 h-4" }
+					}
+					SelectOption {
+						key: 4,
+						selected: selected().contains(&"coffee".to_string()),
+						value: "coffee",
+						class: "flex items-center justify-between gap-4 px-2 py-3 hover:bg-slate-700 focus-visible::bg-slate-700 ",
+						"Coffee"
+						OptionSelectedIndicator { class: "w-4 h-4" }
+					}
+					SelectOption {
+						key: 5,
+						selected: selected().contains(&"salt".to_string()),
+						value: "salt",
+						disabled: true,
+						class: "flex items-center justify-between gap-4 px-2 py-3 hover:bg-slate-700 focus-visible::bg-slate-700 ",
+						"Salt"
+						OptionSelectedIndicator { class: "w-4 h-4" }
+					}
+					SelectOption {
+						key: 6,
+						selected: selected().contains(&"chocolatte".to_string()),
+						value: "chocolatte",
+						class: "flex items-center justify-between gap-4 px-2 py-3 hover:bg-slate-700 focus-visible::bg-slate-700 ",
+						"Chocolatte"
+						OptionSelectedIndicator { class: "w-4 h-4" }
 					}
 				}
-				SelectDropdown::<i32> {
-					class: "absolute top-[100%] mt-2 rounded bg-slate-900 text-slate-200 border border-slate-700 z-10 px-2 py-4 [&_*]:transition-all",
-					option_class: "data-[role=option]:flex data-[role=opçtion]:items-center data-[role=option]:justify-between data-[role=option]:gap-4 data-[role=option]:px-2 data-[role=option]:py-3 data-[role=option]:hover:bg-slate-700 data-[role=option]:focus-visible::bg-slate-700 data-[role=search-container]:relative [&>[data-role=search]]:px-6 [&>[data-role=search]]:h-10 [&>[data-role=search]]:text-slate-800 [&>[data-role=search-icon]]:text-slate-500 [&>[data-role=search-icon]]:h-fit [&>[data-role=search-icon]]:m-auto [&>[data-role=search-icon]]:absolute [&>[data-role=search-icon]]:top-0 [&>[data-role=search-icon]]:bottom-0 [&>[data-role=search-icon]]:left-1 [&_[aria-hidden=true]]:opacity-0 [&_[data-role=clear]]:absolute [&_[data-role=clear]]:top-0 [&_[data-role=clear]]:bottom-0 [&_[data-role=clear]]:right-1 ",
+			}
+			Select {
+				multi: true,
+				value: multi_selected(),
+				on_value_change: move |value: Option<Vec<String>>| { multi_selected.set(value.unwrap_or_default()) },
+				class: "relative w-fit",
+				SelectTrigger { class: "rounded border border-slate-300 bg-slate-900 text-slate-100 w-60 flex justify-between items-center gap-4 px-3 py-2 min-h-12 ",
+					SelectValue {
+						placeholder: "Chose something...",
+						class: "data-[state=selected]:text-slate-100 data-[state=placeholder]:text-slate-500 overflow-ellipsis line-clamp-1",
+					}
+					SelectIcon {}
+				}
+				SelectDropdown {
+					side: ESide::Bottom,
+					side_offset: 10.0,
+					class: "rounded bg-slate-900 text-slate-200 border border-slate-700 z-10 px-2 py-4 [&_*]:transition-all w-60",
+					SelectOption {
+						value: "apple",
+						selected: multi_selected().contains(&"apple".to_string()),
+						class: "flex items-center justify-between gap-4 px-2 py-3 hover:bg-slate-700 focus-visible::bg-slate-700 ",
+						"Apple"
+						OptionSelectedIndicator { class: "w-4 h-4" }
+					}
+					SelectOption {
+						key: 1,
+						value: "banana",
+						selected: multi_selected().contains(&"banana".to_string()),
+						class: "flex items-center justify-between gap-4 px-2 py-3 hover:bg-slate-700 focus-visible::bg-slate-700 ",
+						"Banana"
+						OptionSelectedIndicator { class: "w-4 h-4" }
+					}
+					SelectOption {
+						key: 2,
+						value: "ice-cream",
+						selected: multi_selected().contains(&"ice-cream".to_string()),
+						class: "flex items-center justify-between gap-4 px-2 py-3 hover:bg-slate-700 focus-visible::bg-slate-700 ",
+						"Ice-Cream"
+						OptionSelectedIndicator { class: "w-4 h-4" }
+					}
+					SelectOption {
+						key: 3,
+						selected: multi_selected().contains(&"coffee".to_string()),
+						value: "coffee",
+						class: "flex items-center justify-between gap-4 px-2 py-3 hover:bg-slate-700 focus-visible::bg-slate-700 ",
+						"Coffee"
+						OptionSelectedIndicator { class: "w-4 h-4" }
+					}
+					SelectOption {
+						key: 4,
+						selected: multi_selected().contains(&"salt".to_string()),
+						value: "salt",
+						disabled: true,
+						class: "flex items-center justify-between gap-4 px-2 py-3 hover:bg-slate-700 focus-visible::bg-slate-700 ",
+						"Salt"
+						OptionSelectedIndicator { class: "w-4 h-4" }
+					}
+					SelectOption {
+						key: 5,
+						selected: multi_selected().contains(&"chocolatte".to_string()),
+						value: "chocolatte",
+						class: "flex items-center justify-between gap-4 px-2 py-3 hover:bg-slate-700 focus-visible::bg-slate-700 ",
+						"Chocolatte"
+						OptionSelectedIndicator { class: "w-4 h-4" }
+					}
 				}
 			}
 		}
@@ -328,9 +443,11 @@ pub fn HeadlessDemo() -> Element {
 			Toggle {
 				class: "aria-[pressed=true]:bg-orange-700 bg-orange-500 text-slate-50 flex justify-center items-center p-3 w-12 h-12 rounded",
 				pressed: toggle(),
+				value: "on",
 				on_toggle_change: move |value: Option<bool>| toggle.set(value.unwrap_or_default()),
 			}
 			Toggle {
+				value: "on",
 				class: "aria-[pressed=true]:bg-orange-700 text-slate-50  bg-orange-500 flex justify-center items-center p-3 w-12 h-12 rounded",
 				default_pressed: toggle(),
 				Icon { icon: LdSmile }
@@ -340,18 +457,18 @@ pub fn HeadlessDemo() -> Element {
 			ToggleGroup {
 				class: "flex justify-center items-center rounded overflow-hidden border border-slate-700",
 				value: group_toggle_value(),
-				on_value_change: move |value: Option<String>| group_toggle_value.set(value.unwrap_or_default()),
-				ToggleGroupItem::<String> {
+				on_value_chenge: move |value: Option<String>| group_toggle_value.set(value.unwrap_or_default()),
+				ToggleGroupItem {
 					class: "data-[state=on]:bg-slate-200  data-[state=on]:text-slate-900 border-r border-r-slate-700 bg-slate-600 text-slate-50 flex justify-center items-center p-3 w-12 h-12",
 					value: "1",
 					Icon { icon: LdAlignRight }
 				}
-				ToggleGroupItem::<String> {
+				ToggleGroupItem {
 					class: "data-[state=on]:bg-slate-200 data-[state=on]:text-slate-900 bg-slate-600 text-slate-50 flex justify-center items-center p-3 w-12 h-12",
 					value: "2",
 					Icon { icon: LdAlignCenter }
 				}
-				ToggleGroupItem::<String> {
+				ToggleGroupItem {
 					class: "data-[state=on]:bg-slate-200  data-[state=on]:text-slate-900 border-l border-l-slate-700 bg-slate-600 text-slate-50 flex justify-center items-center p-3 w-12 h-12",
 					value: "3",
 					Icon { icon: LdAlignLeft }
@@ -359,29 +476,192 @@ pub fn HeadlessDemo() -> Element {
 			}
 		}
 		div { class: "flex gap-6",
-			Checkbox { class: "", value: group_toggle_value(), name: "box",
-				div { class: "flex justify-center items-center gap-3",
-					CheckboxInput::<String> { class: "w-10 h-10 rounded flex items-center justify-center border border-slate-100",
-						CheckboxIndicator::<String> { class: "text-slate-100 " }
+			div { class: "flex justify-center items-center gap-3",
+				Checkbox {
+					class: "w-10 h-10 rounded flex items-center justify-center border border-slate-100",
+					value: group_toggle_value(),
+					name: "box",
+					CheckboxIndicator { class: "text-slate-100 " }
+				}
+				span { class: "text-slate-100", "Check" }
+			}
+			div { class: "flex justify-center items-center gap-3",
+				Checkbox {
+					class: "w-10 h-10 rounded flex items-center justify-center border border-slate-100",
+					value: 1_i32.to_string(),
+					name: "box",
+					checked: checked(),
+					on_change: move |v: Option<bool>| {
+							checked.set(v.unwrap_or_default());
+					},
+					CheckboxIndicator { class: "text-slate-100 " }
+				}
+				span { class: "text-slate-100", "Check" }
+			}
+		}
+		div { class: "flex gap-6",
+			Collapsible { class: "flex flex-col data-[state=open]:gap-4 gap-0",
+				div { class: "flex justify-between items-center gap-3 px-6 py-3",
+					span { class: "text-slate-100", "Collapsible" }
+					CollapsibleTrigger { class: "w-10 h-10 rounded-full flex items-center justify-center border border-slate-300 text-slate-300",
+						Icon { icon: LdSmile }
 					}
-					span { class: "text-slate-100", "Check" }
+				}
+				CollapsibleContent { class: "overflow-hidden transition-all ease-linear data-[state=closed]:h-0 data-[state=]:h-fit",
+					span { class: "text-slate-100", "Content of collapsible" }
 				}
 			}
-			Checkbox {
-				class: "",
-				value: 1_i32,
-				name: "box",
-				checked: checked(),
-				onchange: move |v: Option<bool>| {
-						checked.set(v.unwrap_or_default());
+		}
+		div { class: "flex gap-6",
+			Switch { class: "flex items-center px-1 py-1 rounded-full h-6 w-12 bg-teal-200 data-[state=checked]:bg-teal-400 border border-teal-600",
+				SwitchIndicator { class: "relative translate-x-0.5 data-[state=checked]:translate-x-5 transition ease-linear rounded-full w-5 h-5 bg-teal-600" }
+			}
+		}
+		div { class: "pb-44 flex gap-6",
+			Popover {
+				class: "mx-auto w-64",
+				open: is_open(),
+				on_open_change: move |value: Option<bool>| {
+						is_open.set(value.unwrap_or_default());
 				},
-				div { class: "flex justify-center items-center gap-3",
-					CheckboxInput::<i32> { class: "w-10 h-10 rounded flex items-center justify-center border border-slate-100",
-						CheckboxIndicator::<i32> { class: "text-slate-100 " }
-					}
-					span { class: "text-slate-100", "Check" }
+				// is_arrow_hidden: true,
+				PopoverTrigger {
+					class: "w-full",
+					style: "background: #007bff; color: white; padding: 8px 16px; border-radius: 4px; cursor: pointer;",
+					"Click to toggle popper"
+				}
+				PopoverContent {
+					side: ESide::Top,
+					side_offset: 8.0,
+					align: EAlign::Center,
+					class: "content bg-white text-slate-900 rounded-sm w-56 p-4 data-[state=open]:animate-fade-in data-[state=closed]:duration-500 data-[state=closed]:animate-fade-out",
+
+					"This is popper content"
+
+					PopoverArrow { width: 16.0, height: 8.0, style: "color: white;" }
 				}
 			}
+		}
+		div { class: "py-6",
+			Tabs { default_value: "1", class: "flex flex-col gap-4",
+
+				TabsList { class: "w-full flex items-center gap-6",
+					TabsTrigger {
+						value: "1",
+						class: "text-orange-500 data-[state=active]:text-orange-700 data-[state=active]:underline",
+						"One"
+					}
+					TabsTrigger {
+						value: "2",
+						class: "text-orange-500 data-[state=active]:text-orange-700 data-[state=active]:underline",
+						"Two"
+					}
+					TabsTrigger {
+						value: "3",
+						class: "text-orange-500 data-[state=active]:text-orange-700 data-[state=active]:underline disabled:opacity-50",
+						disabled: true,
+						"Three"
+					}
+					TabsTrigger {
+						value: "4",
+						class: "text-orange-500 data-[state=active]:text-orange-700 data-[state=active]:underline disabled:opacity-50",
+						"Four"
+					}
+				}
+				TabsContent { value: "1", "Content-1" }
+				TabsContent { value: "2", "Content-2" }
+				TabsContent { value: "3", "Content-3" }
+				TabsContent { value: "4", "Content-4" }
+			}
+		}
+
+		div { class: "pb-20",
+			TooltipProvider { class: "w-fit mx-auto",
+				Tooltip { class: "w-fit group",
+					TooltipTrigger { class: "mx-auto w-12 h-12 bg-slate-200 text-slate-800 rounded-full",
+						"+"
+					}
+					TooltipContent {
+						side: ESide::Top,
+						side_offset: 8.0,
+						align: EAlign::Center,
+						class: "group-data-[state=open]:opacity-100 group-data-[state=closed]:opacity-0 bg-white text-slate-900 rounded-sm w-56 p-4  transition-opacity ease-linear",
+
+						"This is popper content"
+
+						TooltipArrow {
+							width: 16.0,
+							height: 8.0,
+							style: "color: white;",
+						}
+					}
+				}
+			}
+		}
+
+		div { class: "",
+			HoverCard { class: "w-fit",
+				HoverCardTrigger { class: "mx-auto w-12 h-12 bg-slate-200 text-slate-800 rounded-full",
+					"*"
+				}
+				HoverCardContent {
+					side: ESide::Bottom,
+					side_offset: 8.0,
+					align: EAlign::Center,
+					class: "content bg-white text-slate-900 rounded-sm w-56 p-4",
+
+					"This is popper content"
+
+					HoverCardArrow { width: 16.0, height: 8.0, style: "color: white;" }
+				}
+			}
+		}
+
+		div { class: "py-10 flex flex-col gap-8",
+			Range {
+				class: "w-52 flex items-center",
+				value: range_1(),
+				on_value_change: move |v| {
+						if let Some(v) = v {
+								range_1.set(v)
+						}
+				},
+				RangeTrackWrapper { class: "flex-1 bg-slate-600 rounded-full h-1",
+					RangeTrack { class: "flex-1 bg-slate-300 rounded-full h-1" }
+					RangeThumb { class: "w-5 h-5 rounded-full bg-slate-100" }
+				}
+			}
+			Range {
+				class: "w-1 flex items-center",
+				orientation: EOrientation::Vertical,
+				max: 200.0,
+				step: 10.0,
+				default_value: Vec::from([40.0]),
+				RangeTrackWrapper { class: "flex-1 bg-slate-600 rounded-full h-52",
+					RangeTrack { class: "flex-1 bg-slate-300 rounded-full" }
+					RangeThumb { class: "w-5 h-5 rounded-full bg-slate-100" }
+				}
+			}
+
+			Range {
+				class: "w-52 flex items-center",
+				value: range_3(),
+				on_value_change: move |v| {
+						if let Some(v) = v {
+								range_3.set(v)
+						}
+				},
+				min_steps_between_thumbs: 10.0,
+				RangeTrackWrapper { class: "flex-1 bg-slate-600 rounded-full h-[3px]",
+					RangeTrack { class: "flex-1 bg-slate-300 rounded-full h-1" }
+					RangeThumb { class: "w-3 h-3 rounded-full bg-slate-100" }
+					RangeThumb { class: "w-3 h-3 rounded-full bg-blue-100" }
+				}
+			}
+
+			p { "{range_1().get(0).unwrap_or(&0.0_f32)}" }
+
+			p { "{range_3().get(0).unwrap_or(&0.0_f32)} - {range_3().get(1).unwrap_or(&0.0_f32)}" }
 		}
 	}
 }

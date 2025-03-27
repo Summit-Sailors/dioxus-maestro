@@ -1,59 +1,54 @@
 use {
 	crate::{
-		hooks::{InteractionStateContext, UseControllableStateParams, use_arrow_key_navigation, use_controllable_state, use_interaction_state},
+		hooks::{UseControllableStateParams, use_arrow_key_navigation, use_controllable_state},
 		toggle::Toggle,
-		utils::GroupOrientation,
+		utils::EOrientation,
 	},
 	dioxus::prelude::*,
-	dioxus_logger::tracing::info,
 	std::{fmt::Debug, rc::Rc},
 };
 
-#[derive(Clone, PartialEq, Debug)]
-pub struct ToggleGroupContext<T>
-where
-	T: Clone + PartialEq + Debug + Default + 'static,
-{
-	pub value: Memo<Option<T>>,
-	pub on_value_change: Callback<Option<T>>,
-	pub orientation: ReadOnlySignal<GroupOrientation>,
+#[derive(Clone, PartialEq, Debug, Copy)]
+pub struct ToggleGroupContext {
+	pub value: Memo<Option<String>>,
+	pub set_value: Callback<Option<String>>,
+	pub orientation: ReadOnlySignal<EOrientation>,
+	pub disabled: ReadOnlySignal<bool>,
 }
 
-impl<T> ToggleGroupContext<T>
-where
-	T: Clone + PartialEq + Debug + Default + 'static,
-{
-	pub fn new(value: Memo<Option<T>>, on_value_change: Callback<Option<T>>, orientation: ReadOnlySignal<GroupOrientation>) -> Self {
-		Self { value, on_value_change, orientation }
+impl ToggleGroupContext {
+	pub fn new(
+		value: Memo<Option<String>>,
+		set_value: Callback<Option<String>>,
+		orientation: ReadOnlySignal<EOrientation>,
+		disabled: ReadOnlySignal<bool>,
+	) -> Self {
+		Self { value, set_value, orientation, disabled }
 	}
 
-	pub fn onselect(&self, value: T) {
-		self.on_value_change.call(Some(value));
+	pub fn onselect(&self, value: String) {
+		self.set_value.call(Some(value));
 	}
 
 	pub fn ondeselect(&self) {
-		self.on_value_change.call(None);
+		self.set_value.call(None);
 	}
 }
 
 #[derive(Props, Clone, PartialEq)]
-pub struct ToggleGroupProps<T>
-where
-	T: Clone + PartialEq + Debug + Default + 'static,
-{
+pub struct ToggleGroupProps {
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
-	pub value: ReadOnlySignal<Option<T>>,
+	pub value: ReadOnlySignal<Option<String>>,
 	#[props(optional, default = None)]
-	default_value: Option<T>,
+	default_value: Option<String>,
 	#[props(optional)]
-	pub on_value_change: Option<Callback<Option<T>>>,
+	pub on_value_chenge: Option<Callback<Option<String>>>,
+
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]
 	pub disabled: ReadOnlySignal<bool>,
-	#[props(optional, default = ReadOnlySignal::new(Signal::new(GroupOrientation::Horizontal)))]
-	pub orientation: ReadOnlySignal<GroupOrientation>,
-	#[props(extends = div, extends = GlobalAttributes)]
-	pub attributes: Vec<Attribute>,
-	pub children: Element,
+	#[props(optional, default = ReadOnlySignal::new(Signal::new(EOrientation::Horizontal)))]
+	pub orientation: ReadOnlySignal<EOrientation>,
+
 	#[props(default = None)]
 	pub onkeydown: Option<EventHandler<Event<KeyboardData>>>,
 	#[props(default = None)]
@@ -70,85 +65,36 @@ where
 	pub onmouseenter: Option<EventHandler<Event<MouseData>>>,
 	#[props(default = None)]
 	pub onmouseleave: Option<EventHandler<Event<MouseData>>>,
+
+	#[props(extends = div, extends = GlobalAttributes)]
+	pub attributes: Vec<Attribute>,
+	pub children: Element,
 }
 
 #[component]
-pub fn ToggleGroup<T: Clone + PartialEq + Debug + Default + 'static>(props: ToggleGroupProps<T>) -> Element {
-	let ToggleGroupProps { value, default_value, on_value_change, disabled, orientation, children, attributes, .. } = props;
+pub fn ToggleGroup(props: ToggleGroupProps) -> Element {
+	let ToggleGroupProps { value, default_value, on_value_chenge, disabled, orientation, children, attributes, .. } = props;
 	let is_controlled = use_hook(move || value().is_some());
 	let (value, set_value) = use_controllable_state(UseControllableStateParams {
 		is_controlled,
 		prop: value,
 		default_prop: default_value.unwrap_or_default(),
-		on_change: on_value_change,
+		on_change: on_value_chenge,
 	});
 
-	use_context_provider::<ToggleGroupContext<T>>(|| ToggleGroupContext::new(value, set_value, orientation));
+	use_context_provider::<ToggleGroupContext>(|| ToggleGroupContext::new(value, set_value, orientation, disabled));
 
 	let mut container_ref = use_signal(|| None::<Rc<MountedData>>);
 
-	let handle_key_down = use_arrow_key_navigation(container_ref, Some("[role='radio']:not([tabindex='-1'])".to_string()));
-	let mut interaction_state = use_interaction_state(ReadOnlySignal::new(Signal::new(false)), disabled);
+	let on_key_down = use_arrow_key_navigation(container_ref, Some("[role='radio'][data-focusable='true']".to_string()), orientation());
 
 	rsx! {
 		div {
 			role: "group",
-			aria_disabled: *interaction_state.disabled.read(),
-			"data-disabled": *interaction_state.disabled.read(),
-			onmousedown: move |event| {
-					interaction_state.onmousedown();
-					if let Some(handler) = props.onmousedown {
-							handler.call(event);
-					}
-			},
-			onkeydown: move |event| {
-					interaction_state.onkeydown();
-					handle_key_down(event.clone());
-					if let Some(handler) = props.onkeydown {
-							handler.call(event);
-					}
-			},
-			onkeyup: move |event| {
-					interaction_state.onkeyup();
-					if let Some(handler) = props.onkeyup {
-							handler.call(event);
-					}
-			},
-			onmouseup: move |event| {
-					interaction_state.onmouseup();
-					if let Some(handler) = props.onmouseup {
-							handler.call(event);
-					}
-			},
-			onmouseenter: move |event| {
-					interaction_state.onmouseenter();
-					if let Some(handler) = props.onmouseenter {
-							handler.call(event);
-					}
-			},
-			onmouseleave: move |event| {
-					interaction_state.onmouseleave();
-					if let Some(handler) = props.onmouseleave {
-							handler.call(event);
-					}
-			},
-			onfocus: move |event| {
-					interaction_state.onfocus();
-					if let Some(handler) = props.onfocus {
-							handler.call(event);
-					}
-			},
-			onblur: move |event| {
-					interaction_state.onblur();
-					if let Some(handler) = props.onblur {
-							handler.call(event);
-					}
-			},
+			aria_disabled: disabled(),
+			aria_orientation: &*orientation.read().to_string(),
+			onkeydown: on_key_down,
 			onmounted: move |event| container_ref.set(Some(event.data())),
-			"data-pressed": *interaction_state.is_pressed.read(),
-			"data-hovered": *interaction_state.is_hovered.read(),
-			"data-focused": *interaction_state.is_focused.read(),
-			"data-focuse-visible": *interaction_state.is_focused.read(),
 			..attributes,
 			{children}
 		}
@@ -156,16 +102,11 @@ pub fn ToggleGroup<T: Clone + PartialEq + Debug + Default + 'static>(props: Togg
 }
 
 #[derive(Props, Clone, PartialEq)]
-pub struct ToggleGroupItemProps<T>
-where
-	T: Clone + PartialEq + Debug + Default + 'static,
-{
-	pub value: ReadOnlySignal<T>,
+pub struct ToggleGroupItemProps {
+	pub value: ReadOnlySignal<String>,
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]
 	pub disabled: ReadOnlySignal<bool>,
-	#[props(extends = button, extends = GlobalAttributes)]
-	pub attributes: Vec<Attribute>,
-	pub children: Element,
+
 	#[props(default = None)]
 	pub onkeydown: Option<EventHandler<Event<KeyboardData>>>,
 	#[props(default = None)]
@@ -182,31 +123,35 @@ where
 	pub onmouseenter: Option<EventHandler<Event<MouseData>>>,
 	#[props(default = None)]
 	pub onmouseleave: Option<EventHandler<Event<MouseData>>>,
+
+	#[props(extends = button, extends = GlobalAttributes)]
+	pub attributes: Vec<Attribute>,
+	pub children: Element,
 }
 
 #[component]
-pub fn ToggleGroupItem<T: Clone + PartialEq + Debug + Default + 'static>(props: ToggleGroupItemProps<T>) -> Element {
-	let toggle_group_context = use_context::<ToggleGroupContext<T>>();
-	let pressed = use_memo(move || toggle_group_context.value.read().clone().unwrap_or_default() == *props.value.read());
-	let state_context = use_context::<InteractionStateContext>();
+pub fn ToggleGroupItem(props: ToggleGroupItemProps) -> Element {
+	let context = use_context::<ToggleGroupContext>();
+	let pressed = use_memo(move || *context.value.read().clone().unwrap_or_default() == *props.value.read());
 
-	let is_disabled = use_memo(move || *state_context.disabled.read() || *props.disabled.read());
+	let is_disabled = use_memo(move || *context.disabled.read() || *props.disabled.read());
 	use_context_provider::<Memo<bool>>(|| is_disabled);
 
 	rsx! {
 		Toggle {
-			role: "radio",
-			tabindex: if is_disabled() { -1 } else { 0 },
-			disabled: is_disabled(),
+			value: context.value.read().clone().unwrap_or("on".into()),
 			pressed: pressed(),
+			tabindex: if is_disabled() || !pressed() { -1 } else { 0 },
+			disabled: is_disabled(),
+			aria_orientation: &*context.orientation.clone().read().to_string(),
+			"data-focusable": !is_disabled(),
 			on_toggle_change: move |pressed: Option<bool>| {
 					if pressed.is_some() {
-							toggle_group_context.onselect(props.value.read().clone());
+							context.onselect(props.value.read().clone());
 					} else {
-							toggle_group_context.ondeselect();
+							context.ondeselect();
 					}
 			},
-			additional_attributes: props.attributes.clone(),
 			onblur: props.onblur,
 			onfocus: props.onfocus,
 			onkeydown: props.onkeydown,
@@ -215,6 +160,7 @@ pub fn ToggleGroupItem<T: Clone + PartialEq + Debug + Default + 'static>(props: 
 			onmouseenter: props.onmouseenter,
 			onmouseleave: props.onmouseleave,
 			onmouseup: props.onmouseup,
+			extra_attributes: props.attributes.clone(),
 			{props.children}
 		}
 	}

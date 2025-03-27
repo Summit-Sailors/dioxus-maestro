@@ -17,8 +17,20 @@ module.exports = {
           "0%": { background: "#8f8" },
           "100%": { background: "auto" },
         },
+        "fade-in": {
+          from: { opacity: 0 },
+          to: { opacity: 100 },
+        },
+        "fade-out": {
+          from: { opacity: 100 },
+          to: { opacity: 0 },
+        },
       },
-      animation: { highlight: "highlight 1s" },
+      animation: {
+        highlight: "highlight 1s",
+        "fade-in": "fade-in 1s linear",
+        "fade-out": "fade-out 1s linear",
+      },
       colors: {
         primary: {
           light: "#4f46e5",

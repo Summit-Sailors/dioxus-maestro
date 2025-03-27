@@ -1,80 +1,63 @@
 use {
 	crate::{
-		hooks::{InteractionStateContext, UseControllableStateParams, use_arrow_key_navigation, use_controllable_state, use_interaction_state},
+		hooks::{UseControllableStateParams, use_arrow_key_navigation, use_controllable_state},
 		radio::Radio,
-		utils::GroupOrientation,
+		utils::EOrientation,
 	},
 	dioxus::prelude::*,
 	std::{fmt::Debug, rc::Rc},
 };
 
 #[derive(Clone, PartialEq, Debug)]
-pub struct RadioGroupContext<T>
-where
-	T: Clone + PartialEq + Debug + Default + 'static,
-{
+pub struct RadioGroupContext {
 	pub name: String,
-	pub value: Memo<Option<T>>,
-	pub on_value_change: Callback<Option<T>>,
-	pub orientation: ReadOnlySignal<GroupOrientation>,
+	pub value: Memo<Option<String>>,
+	pub set_value: Callback<Option<String>>,
+	pub orientation: ReadOnlySignal<EOrientation>,
+	pub disabled: ReadOnlySignal<bool>,
 }
 
-impl<T> RadioGroupContext<T>
-where
-	T: Clone + PartialEq + Debug + Default + 'static,
-{
-	pub fn new(value: Memo<Option<T>>, on_value_change: Callback<Option<T>>, orientation: ReadOnlySignal<GroupOrientation>, name: String) -> Self {
-		Self { value, on_value_change, orientation, name }
+impl RadioGroupContext {
+	pub fn new(
+		value: Memo<Option<String>>,
+		set_value: Callback<Option<String>>,
+		orientation: ReadOnlySignal<EOrientation>,
+		name: String,
+		disabled: ReadOnlySignal<bool>,
+	) -> Self {
+		Self { value, set_value, orientation, name, disabled }
 	}
 
-	pub fn onselect(&self, value: T) {
-		self.on_value_change.call(Some(value));
+	pub fn on_select(&self, value: String) {
+		self.set_value.call(Some(value));
 	}
 
-	pub fn ondeselect(&self) {
-		self.on_value_change.call(None);
+	pub fn on_deselect(&self) {
+		self.set_value.call(None);
 	}
 }
 
 #[derive(Props, Clone, PartialEq)]
-pub struct RadioGroupProps<T>
-where
-	T: Clone + PartialEq + Debug + Default + 'static,
-{
+pub struct RadioGroupProps {
 	pub name: String,
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
-	pub value: ReadOnlySignal<Option<T>>,
+	pub value: ReadOnlySignal<Option<String>>,
 	#[props(optional, default = None)]
-	default_value: Option<T>,
+	default_value: Option<String>,
 	#[props(optional)]
-	pub on_value_change: Option<Callback<Option<T>>>,
+	pub on_value_change: Option<Callback<Option<String>>>,
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]
 	pub disabled: ReadOnlySignal<bool>,
-	#[props(optional, default = ReadOnlySignal::new(Signal::new(GroupOrientation::Horizontal)))]
-	pub orientation: ReadOnlySignal<GroupOrientation>,
+	#[props(optional, default = ReadOnlySignal::new(Signal::new(EOrientation::Horizontal)))]
+	pub orientation: ReadOnlySignal<EOrientation>,
+
 	#[props(extends = div, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
 	pub children: Element,
-	#[props(default = None)]
-	pub onkeydown: Option<EventHandler<Event<KeyboardData>>>,
-	#[props(default = None)]
-	pub onkeyup: Option<EventHandler<Event<KeyboardData>>>,
-	#[props(default = None)]
-	pub onfocus: Option<EventHandler<Event<FocusData>>>,
-	#[props(default = None)]
-	pub onblur: Option<EventHandler<Event<FocusData>>>,
-	#[props(default = None)]
-	pub onmousedown: Option<EventHandler<Event<MouseData>>>,
-	#[props(default = None)]
-	pub onmouseup: Option<EventHandler<Event<MouseData>>>,
-	#[props(default = None)]
-	pub onmouseenter: Option<EventHandler<Event<MouseData>>>,
-	#[props(default = None)]
-	pub onmouseleave: Option<EventHandler<Event<MouseData>>>,
 }
 
 #[component]
-pub fn RadioGroup<T: Clone + PartialEq + Debug + Default + 'static>(props: RadioGroupProps<T>) -> Element {
+pub fn RadioGroup(props: RadioGroupProps) -> Element {
 	let RadioGroupProps { name, value, default_value, on_value_change, disabled, orientation, children, attributes, .. } = props;
 	let is_controlled = use_hook(move || value().is_some());
 	let (value, set_value) = use_controllable_state(UseControllableStateParams {
@@ -84,72 +67,19 @@ pub fn RadioGroup<T: Clone + PartialEq + Debug + Default + 'static>(props: Radio
 		on_change: on_value_change,
 	});
 
-	use_context_provider::<RadioGroupContext<T>>(|| RadioGroupContext::new(value, set_value, orientation, name));
+	use_context_provider::<RadioGroupContext>(|| RadioGroupContext::new(value, set_value, orientation, name, disabled));
 
 	let mut container_ref = use_signal(|| None::<Rc<MountedData>>);
 
-	let handle_key_down = use_arrow_key_navigation(container_ref, Some("[role='radio']:not([tabindex='-1'])".to_string()));
-	let mut interaction_state = use_interaction_state(ReadOnlySignal::new(Signal::new(false)), disabled);
+	let handle_key_down = use_arrow_key_navigation(container_ref, Some("[role='radio'][data-focusable='true']".to_string()), orientation());
 
 	rsx! {
 		div {
 			role: "group",
-			aria_disabled: *interaction_state.disabled.read(),
-			"data-disabled": *interaction_state.disabled.read(),
-			onmousedown: move |event| {
-					interaction_state.onmousedown();
-					if let Some(handler) = props.onmousedown {
-							handler.call(event);
-					}
-			},
-			onkeydown: move |event| {
-					interaction_state.onkeydown();
-					handle_key_down(event.clone());
-					if let Some(handler) = props.onkeydown {
-							handler.call(event);
-					}
-			},
-			onkeyup: move |event| {
-					interaction_state.onkeyup();
-					if let Some(handler) = props.onkeyup {
-							handler.call(event);
-					}
-			},
-			onmouseup: move |event| {
-					interaction_state.onmouseup();
-					if let Some(handler) = props.onmouseup {
-							handler.call(event);
-					}
-			},
-			onmouseenter: move |event| {
-					interaction_state.onmouseenter();
-					if let Some(handler) = props.onmouseenter {
-							handler.call(event);
-					}
-			},
-			onmouseleave: move |event| {
-					interaction_state.onmouseleave();
-					if let Some(handler) = props.onmouseleave {
-							handler.call(event);
-					}
-			},
-			onfocus: move |event| {
-					interaction_state.onfocus();
-					if let Some(handler) = props.onfocus {
-							handler.call(event);
-					}
-			},
-			onblur: move |event| {
-					interaction_state.onblur();
-					if let Some(handler) = props.onblur {
-							handler.call(event);
-					}
-			},
+			aria_disabled: disabled(),
+			"data-disabled": disabled(),
+			onkeydown: handle_key_down,
 			onmounted: move |event| container_ref.set(Some(event.data())),
-			"data-pressed": *interaction_state.is_pressed.read(),
-			"data-hovered": *interaction_state.is_hovered.read(),
-			"data-focused": *interaction_state.is_focused.read(),
-			"data-focuse-visible": *interaction_state.is_focused.read(),
 			..attributes,
 			{children}
 		}
@@ -157,69 +87,40 @@ pub fn RadioGroup<T: Clone + PartialEq + Debug + Default + 'static>(props: Radio
 }
 
 #[derive(Props, Clone, PartialEq)]
-pub struct RadioGroupItemProps<T>
-where
-	T: Clone + PartialEq + Debug + Default + 'static,
-{
-	#[props(default = String::default())]
-	pub class: String,
-	pub value: ReadOnlySignal<T>,
+pub struct RadioGroupItemProps {
+	pub value: ReadOnlySignal<String>,
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]
 	pub disabled: ReadOnlySignal<bool>,
+
 	#[props(extends = button, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
 	pub children: Element,
-	#[props(default = None)]
-	pub onkeydown: Option<EventHandler<Event<KeyboardData>>>,
-	#[props(default = None)]
-	pub onkeyup: Option<EventHandler<Event<KeyboardData>>>,
-	#[props(default = None)]
-	pub onfocus: Option<EventHandler<Event<FocusData>>>,
-	#[props(default = None)]
-	pub onblur: Option<EventHandler<Event<FocusData>>>,
-	#[props(default = None)]
-	pub onmousedown: Option<EventHandler<Event<MouseData>>>,
-	#[props(default = None)]
-	pub onmouseup: Option<EventHandler<Event<MouseData>>>,
-	#[props(default = None)]
-	pub onmouseenter: Option<EventHandler<Event<MouseData>>>,
-	#[props(default = None)]
-	pub onmouseleave: Option<EventHandler<Event<MouseData>>>,
 }
 
 #[component]
-pub fn RadioGroupItem<T: Clone + PartialEq + Debug + Default + 'static>(props: RadioGroupItemProps<T>) -> Element {
-	let radio_group_context = use_context::<RadioGroupContext<T>>();
-	let checked = use_memo(move || radio_group_context.value.read().clone().unwrap_or_default() == *props.value.read());
-	let state_context = use_context::<InteractionStateContext>();
+pub fn RadioGroupItem(props: RadioGroupItemProps) -> Element {
+	let context = use_context::<RadioGroupContext>();
+	let checked = use_memo(move || context.value.read().clone().unwrap_or_default() == *props.value.read());
 
-	let is_disabled = use_memo(move || *state_context.disabled.read() || *props.disabled.read());
-	use_context_provider::<Memo<bool>>(|| is_disabled);
+	let is_disabled = use_memo(move || *props.disabled.read() || *props.disabled.read());
 
 	rsx! {
-		Radio::<T> {
-			class: props.class.clone(),
-			role: "radio",
-			tabindex: if is_disabled() { -1 } else { 0 },
+		Radio {
+			name: context.name.clone(),
+			value: props.value,
 			disabled: is_disabled(),
 			checked: checked(),
-			name: radio_group_context.name.clone(),
-			value: props.value,
-			onchange: move |checked: Option<bool>| {
+			tabindex: if is_disabled() || !checked() { -1 } else { 0 },
+			aria_orientation: &*context.orientation.clone().read().to_string(),
+			"data-focusable": !is_disabled(),
+			on_change: move |checked: Option<bool>| {
 					if checked.is_some() {
-							radio_group_context.onselect(props.value.read().clone());
+							context.on_select(props.value.read().clone());
 					} else {
-							radio_group_context.ondeselect();
+							context.on_deselect();
 					}
 			},
-			onblur: props.onblur,
-			onfocus: props.onfocus,
-			onkeydown: props.onkeydown,
-			onkeyup: props.onkeyup,
-			onmousedown: props.onmousedown,
-			onmouseenter: props.onmouseenter,
-			onmouseleave: props.onmouseleave,
-			onmouseup: props.onmouseup,
+			extra_attributes: props.attributes.clone(),
 			{props.children}
 		}
 	}

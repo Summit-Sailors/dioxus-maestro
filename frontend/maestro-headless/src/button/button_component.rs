@@ -1,4 +1,4 @@
-use {crate::hooks::use_interaction_state, dioxus::prelude::*};
+use dioxus::prelude::*;
 
 #[derive(Props, PartialEq, Debug, Clone)]
 pub struct ButtonProps {
@@ -6,10 +6,7 @@ pub struct ButtonProps {
 	pub pending: ReadOnlySignal<bool>,
 	#[props(default = ReadOnlySignal::new(Signal::new(false)))]
 	pub disabled: ReadOnlySignal<bool>,
-	#[props(extends = GlobalAttributes, extends = button)]
-	pub attributes: Vec<Attribute>,
-	#[props(default = Vec::new())]
-	pub additional_attributes: Vec<Attribute>,
+
 	#[props(default = None)]
 	pub onclick: Option<EventHandler<Event<MouseData>>>,
 	#[props(default = None)]
@@ -30,6 +27,11 @@ pub struct ButtonProps {
 	pub onmouseleave: Option<EventHandler<Event<MouseData>>>,
 	#[props(optional, default = None)]
 	pub onmounted: Option<EventHandler<Event<MountedData>>>,
+
+	#[props(extends = GlobalAttributes, extends = button)]
+	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	#[props(default = None)]
 	pub children: Element,
 }
@@ -37,81 +39,86 @@ pub struct ButtonProps {
 #[component]
 pub fn Button(props: ButtonProps) -> Element {
 	let ButtonProps { pending, disabled, .. } = props;
-	let mut interaction_state = use_interaction_state(pending, disabled);
+	let mut is_pressed = use_signal(|| false);
 	rsx! {
-    button {
-      disabled: "{*interaction_state.disabled.read()}",
-      onclick: move |event| {
-          if interaction_state.is_allowed() {
-              if let Some(handler) = props.onclick {
-                  handler.call(event);
-              }
-          }
-      },
-      onmounted: move |event| {
-          interaction_state.self_ref.set(Some(event.clone()));
-          if let Some(handler) = props.onmounted {
-              handler.call(event);
-          }
-      },
-      onmousedown: move |event| {
-          interaction_state.onmousedown();
-          if let Some(handler) = props.onmousedown {
-              handler.call(event);
-          }
-      },
-      onkeydown: move |event| {
-          interaction_state.onkeydown();
-          if let Some(handler) = props.onkeydown {
-              handler.call(event);
-          }
-      },
-      onkeyup: move |event| {
-          interaction_state.onkeyup();
-          if let Some(handler) = props.onkeyup {
-              handler.call(event);
-          }
-      },
-      onmouseup: move |event| {
-          interaction_state.onmouseup();
-          if let Some(handler) = props.onmouseup {
-              handler.call(event);
-          }
-      },
-      onmouseenter: move |event| {
-          interaction_state.onmouseenter();
-          if let Some(handler) = props.onmouseenter {
-              handler.call(event);
-          }
-      },
-      onmouseleave: move |event| {
-          interaction_state.onmouseleave();
-          if let Some(handler) = props.onmouseleave {
-              handler.call(event);
-          }
-      },
-      onfocus: move |event| {
-          interaction_state.onfocus();
-          if let Some(handler) = props.onfocus {
-              handler.call(event);
-          }
-      },
-      onblur: move |event| {
-          interaction_state.onblur();
-          if let Some(handler) = props.onblur {
-              handler.call(event);
-          }
-      },
-      aria_disabled: "{!interaction_state.is_allowed()}",
-      "data-disabled": *interaction_state.disabled.read(),
-      "data-pressed": *interaction_state.is_pressed.read(),
-      "data-hovered": *interaction_state.is_hovered.read(),
-      "data-focused": *interaction_state.is_focused.read(),
-      "data-focuse-visible": *interaction_state.is_focused.read(),
-      "data-pending": *interaction_state.pending.read(),
-      ..props.attributes,
-      ..props.additional_attributes,
-      {props.children}
-    }
-  }
+		button {
+			disabled: disabled(),
+			aria_disabled: disabled() || pending(),
+			"data-disabled": disabled(),
+			"data-pressed": is_pressed(),
+			"data-pending": pending(),
+			onclick: move |event| {
+					if !disabled() && !pending() {
+							if let Some(handler) = props.onclick {
+									handler.call(event);
+							}
+					}
+			},
+			onmounted: move |event| {
+					if let Some(handler) = props.onmounted {
+							handler.call(event);
+					}
+			},
+			onmousedown: move |event| {
+					if !disabled() && !pending() {
+							is_pressed.set(true);
+							if let Some(handler) = props.onmousedown {
+									handler.call(event);
+							}
+					}
+			},
+			onkeydown: move |event| {
+					if !disabled() && !pending() {
+							is_pressed.set(false);
+							if let Some(handler) = props.onkeydown {
+									handler.call(event);
+							}
+					}
+			},
+
+			onkeyup: move |event| {
+					if !disabled() && !pending() {
+							is_pressed.set(false);
+							if let Some(handler) = props.onkeyup {
+									handler.call(event);
+							}
+					}
+			},
+			onmouseup: move |event| {
+					if !disabled() && !pending() {
+							is_pressed.set(false);
+							if let Some(handler) = props.onmouseup {
+									handler.call(event);
+							}
+					}
+			},
+			onmouseenter: move |event| {
+					if !disabled() && !pending() {
+							if let Some(handler) = props.onmouseenter {
+									handler.call(event);
+							}
+					}
+			},
+			onmouseleave: move |event| {
+					if !disabled() && !pending() {
+							if let Some(handler) = props.onmouseleave {
+									handler.call(event);
+							}
+					}
+			},
+			onfocus: move |event| {
+					if let Some(handler) = props.onfocus {
+							handler.call(event);
+					}
+			},
+			onblur: move |event| {
+					if let Some(handler) = props.onblur {
+							handler.call(event);
+					}
+			},
+			..props.attributes,
+			..props.extra_attributes,
+			{props.children}
+		}
+	}
 }

@@ -1,10 +1,15 @@
 use {
+	crate::utils::EOrientation,
 	dioxus::{prelude::*, web::WebEventExt},
 	std::rc::Rc,
 	web_sys::{HtmlElement, wasm_bindgen::JsCast},
 };
 
-pub fn use_arrow_key_navigation(current_ref: Signal<Option<Rc<MountedData>>>, selector: Option<String>) -> Callback<Event<KeyboardData>> {
+pub fn use_arrow_key_navigation(
+	current_ref: Signal<Option<Rc<MountedData>>>,
+	selector: Option<String>,
+	orientation: EOrientation,
+) -> Callback<Event<KeyboardData>> {
 	let handle_key_down = use_callback(move |event: Event<KeyboardData>| {
 		let get_tabbable_candidates = move |node: &Rc<MountedData>, selector: Option<String>| {
 			let node = node.try_as_web_event();
@@ -33,20 +38,38 @@ pub fn use_arrow_key_navigation(current_ref: Signal<Option<Rc<MountedData>>>, se
 
 			if let Some(active_element) = active_element {
 				if let Some(active_index) = item_elements.iter().position(|el| *el == active_element) {
-					let next_index = match event.key() {
-						Key::ArrowDown | Key::ArrowLeft =>
-							if active_index + 1 >= item_elements.len() {
-								0
-							} else {
-								active_index + 1
-							},
-						Key::ArrowUp | Key::ArrowRight =>
-							if active_index == 0 {
-								item_elements.len().saturating_sub(1)
-							} else {
-								active_index - 1
-							},
-						_ => return,
+					let elements_count = item_elements.len();
+					let next_index = match orientation {
+						EOrientation::Vertical => match event.key() {
+							Key::ArrowDown =>
+								if active_index + 1 >= elements_count {
+									0
+								} else {
+									active_index + 1
+								},
+							Key::ArrowUp =>
+								if active_index == 0 {
+									elements_count.saturating_sub(1)
+								} else {
+									active_index - 1
+								},
+							_ => return,
+						},
+						EOrientation::Horizontal => match event.key() {
+							Key::ArrowRight =>
+								if active_index + 1 >= elements_count {
+									0
+								} else {
+									active_index + 1
+								},
+							Key::ArrowLeft =>
+								if active_index == 0 {
+									elements_count.saturating_sub(1)
+								} else {
+									active_index - 1
+								},
+							_ => return,
+						},
 					};
 
 					if let Some(next_element) = item_elements.get(next_index) {
