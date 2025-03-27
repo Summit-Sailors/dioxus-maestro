@@ -7,6 +7,7 @@ use {
 	serde::{Deserialize, Serialize},
 	std::rc::Rc,
 	web_sys::{
+		HtmlElement,
 		wasm_bindgen::{JsCast, prelude::Closure},
 		window,
 	},
@@ -99,7 +100,10 @@ fn get_element_rect(ref_element: Signal<Option<Rc<MountedData>>>) -> Option<Rect
 	if let Some(data) = ref_element.peek().as_ref() {
 		if let Some(element) = data.try_as_web_event() {
 			let rect = element.get_bounding_client_rect();
-			return Some(Rect { x: rect.left() as f32, y: rect.top() as f32, width: rect.width() as f32, height: rect.height() as f32 });
+			let window = window().expect("should have a window in this context");
+			let scroll_x = window.page_x_offset().unwrap_or(0.0) as f32;
+			let scroll_y = window.page_y_offset().unwrap_or(0.0) as f32;
+			return Some(Rect { x: rect.left() as f32 + scroll_x, y: rect.top() as f32 + scroll_y, width: rect.width() as f32, height: rect.height() as f32 });
 		};
 	}
 	None
@@ -116,38 +120,51 @@ fn calculate_position(
 ) -> (FloatingStyles, ArrowData, TransformOriginData) {
 	let side = placement.side();
 	let alignment = placement.alignment();
+	let window = window().expect("should have a window in this context");
+	let scroll_x = window.page_x_offset().unwrap_or(0.0) as f32;
+	let scroll_y = window.page_y_offset().unwrap_or(0.0) as f32;
 
 	let (left, top) = match side {
-		ESide::Top => ((reference_rect.width / 2.0) - (floating_rect.width / 2.0), -floating_rect.height - offset - arrow_height),
-		ESide::Right => (reference_rect.width + offset + arrow_height, (reference_rect.height / 2.0) - (floating_rect.height / 2.0)),
-		ESide::Bottom => ((reference_rect.width / 2.0) - (floating_rect.width / 2.0), reference_rect.height + offset + arrow_height),
-		ESide::Left => (-floating_rect.width - offset - arrow_height, (reference_rect.height / 2.0) - (floating_rect.height / 2.0)),
+		ESide::Top => (
+			reference_rect.x + (reference_rect.width / 2.0) - (floating_rect.width / 2.0) - scroll_x,
+			reference_rect.y - floating_rect.height - offset - arrow_height - scroll_y,
+		),
+		ESide::Right => (
+			reference_rect.x + reference_rect.width + offset + arrow_height - scroll_x,
+			reference_rect.y + (reference_rect.height / 2.0) - (floating_rect.height / 2.0) - scroll_y,
+		),
+		ESide::Bottom => (
+			reference_rect.x + (reference_rect.width / 2.0) - (floating_rect.width / 2.0) - scroll_x,
+			reference_rect.y + reference_rect.height + offset + arrow_height - scroll_y,
+		),
+		ESide::Left => (
+			reference_rect.x - floating_rect.width - offset - arrow_height - scroll_x,
+			reference_rect.y + (reference_rect.height / 2.0) - (floating_rect.height / 2.0) - scroll_y,
+		),
 	};
 
 	let (left, top) = match (side, alignment) {
-		(ESide::Top | ESide::Bottom, Some(Alignment::Start)) => (align_offset, top),
-		(ESide::Top | ESide::Bottom, Some(Alignment::End)) => (reference_rect.width - floating_rect.width - align_offset, top),
-		(ESide::Right | ESide::Left, Some(Alignment::Start)) => (left, align_offset),
-		(ESide::Right | ESide::Left, Some(Alignment::End)) => (left, reference_rect.height - floating_rect.height - align_offset),
+		(ESide::Top | ESide::Bottom, Some(Alignment::Start)) => (left + align_offset, top),
+		(ESide::Top | ESide::Bottom, Some(Alignment::End)) => (left + reference_rect.width - floating_rect.width - align_offset, top),
+		(ESide::Right | ESide::Left, Some(Alignment::Start)) => (left, top + align_offset),
+		(ESide::Right | ESide::Left, Some(Alignment::End)) => (left, top + reference_rect.height - floating_rect.height - align_offset),
 		_ => (left, top),
 	};
 
 	let (arrow_x, arrow_y) = match side {
 		ESide::Top | ESide::Bottom => {
-			let reference_center = reference_rect.width / 2.0;
-			let arrow_x = reference_center - left;
+			let arrow_x = floating_rect.width / 2.0;
 			let constrained_x = arrow_x.max(arrow_width).min(floating_rect.width - arrow_width);
 			(Some(constrained_x), None)
 		},
 		ESide::Right | ESide::Left => {
-			let reference_center = reference_rect.height / 2.0;
-			let y = reference_center - top - (arrow_width / 2.0);
-			let constrained_y = y.max(arrow_width).min(floating_rect.height - arrow_width);
+			let arrow_y = floating_rect.height / 2.0;
+			let constrained_y = arrow_y.max(arrow_width).min(floating_rect.height - arrow_width);
 			(None, Some(constrained_y))
 		},
 	};
 
-	let styles = FloatingStyles { position: "absolute".to_string(), top: format!("{}px", top), left: format!("{}px", left), transform: None };
+	let styles = FloatingStyles { position: "fixed".to_string(), top: format!("{}px", top), left: format!("{}px", left), transform: None };
 
 	let arrow_data = ArrowData { x: arrow_x, y: arrow_y, center_offset: 0.0 };
 
@@ -337,6 +354,9 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 	let mut content = use_signal(|| None::<Rc<MountedData>>);
 	let arrow = use_signal(|| None::<Rc<MountedData>>);
 	let mut closure = use_signal(|| None::<Closure<dyn FnMut()>>);
+	let mut parents = use_signal::<Vec<web_sys::Element>>(Vec::new);
+
+	let mut last_update = use_signal(|| 0.0);
 
 	let placement = use_signal(|| Placement {
 		side: props.side,
@@ -368,7 +388,6 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 				(0.0, 0.0)
 			};
 
-			let init_placement: Placement = placement.peek().clone();
 			let current_placement = new_placement.peek().clone();
 			let window = window().expect("should have a window in this context");
 			let scroll_x = window.page_x_offset().unwrap_or(0.0) as f32;
@@ -376,27 +395,21 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 			let window_width = window.inner_width().unwrap_or(0.into()).as_f64().unwrap_or(0.0) as f32;
 			let window_height = window.inner_height().unwrap_or(0.into()).as_f64().unwrap_or(0.0) as f32;
 
+			let adjusted_reference_rect =
+				Rect { x: reference_rect.x - scroll_x, y: reference_rect.y - scroll_y, width: reference_rect.width, height: reference_rect.height };
+
 			let should_flip = match current_placement.side {
-				ESide::Top => reference_rect.y < floating_rect.height + props.side_offset + arrow_height + props.collision_padding,
+				ESide::Top => adjusted_reference_rect.y < floating_rect.height + props.side_offset + arrow_height + props.collision_padding,
 				ESide::Right =>
-					reference_rect.x + reference_rect.width + floating_rect.width + props.side_offset + arrow_height + props.collision_padding > window_width + scroll_x,
+					adjusted_reference_rect.x + adjusted_reference_rect.width + floating_rect.width + props.side_offset + arrow_height + props.collision_padding
+						> window_width,
 				ESide::Bottom =>
-					reference_rect.y + reference_rect.height + floating_rect.height + props.side_offset + arrow_height + props.collision_padding
-						> window_height + scroll_y,
-				ESide::Left => reference_rect.x < floating_rect.width + props.side_offset + arrow_height + props.collision_padding,
+					adjusted_reference_rect.y + adjusted_reference_rect.height + floating_rect.height + props.side_offset + arrow_height + props.collision_padding
+						> window_height,
+				ESide::Left => adjusted_reference_rect.x < floating_rect.width + props.side_offset + arrow_height + props.collision_padding,
 			};
 
-			let should_flip_back = match init_placement.side {
-				ESide::Top => reference_rect.y < floating_rect.height + props.side_offset + arrow_height + props.collision_padding,
-				ESide::Right =>
-					reference_rect.x + reference_rect.width + floating_rect.width + props.side_offset + arrow_height + props.collision_padding > window_width + scroll_x,
-				ESide::Bottom =>
-					reference_rect.y + reference_rect.height + floating_rect.height + props.side_offset + arrow_height + props.collision_padding
-						> window_height + scroll_y,
-				ESide::Left => reference_rect.x < floating_rect.width + props.side_offset + arrow_height + props.collision_padding,
-			};
-
-			if props.avoid_collisions && ((init_placement.side != current_placement.side && should_flip_back) || should_flip) {
+			if props.avoid_collisions && should_flip {
 				new_placement.with_mut(|state| {
 					state.side = state.side.opposite();
 				});
@@ -424,20 +437,45 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 		}
 	};
 
+	let mut throttled_update_position = move || {
+		let window = window().expect("No window");
+		let performance = window.performance().expect("No Performance");
+		let now = performance.now();
+		if now - *last_update.peek() > 15.0 {
+			update_position();
+			last_update.set(now);
+		}
+	};
+
 	use_effect(move || {
 		let window = window().expect("should have a window in this context");
 
 		if popper_context.anchor.read().as_ref().is_some() && content().is_some() {
 			update_position();
 			if closure.peek().is_none() {
+				let win_clone = window.clone();
 				let closure_fn = Closure::wrap(Box::new(move || {
-					update_position();
+					let inner_closure = Closure::wrap(Box::new(move || {
+						// update_position();
+						throttled_update_position();
+					}) as Box<dyn FnMut()>);
+					let _ = win_clone.request_animation_frame(inner_closure.as_ref().unchecked_ref()).expect("should register request frame");
+					inner_closure.forget();
 				}) as Box<dyn FnMut()>);
 				closure.set(Some(closure_fn));
 			}
 		}
 
+		if let Some(content) = content().as_ref() {
+			let containers = find_scrollable_parents(content);
+			parents.set(containers)
+		}
+
 		if let Some(closure_fn) = &*closure.read() {
+			for parent in parents() {
+				parent.add_event_listener_with_callback("resize", closure_fn.as_ref().unchecked_ref()).expect("should register event listener");
+				parent.add_event_listener_with_callback("scroll", closure_fn.as_ref().unchecked_ref()).expect("should register event listener");
+			}
 			window.add_event_listener_with_callback("resize", closure_fn.as_ref().unchecked_ref()).expect("should register event listener");
 			window.add_event_listener_with_callback("scroll", closure_fn.as_ref().unchecked_ref()).expect("should register event listener");
 		}
@@ -448,10 +486,16 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 		if let Some(closure_fn) = &*closure.read() {
 			window.remove_event_listener_with_callback("resize", closure_fn.as_ref().unchecked_ref()).unwrap();
 			window.remove_event_listener_with_callback("scroll", closure_fn.as_ref().unchecked_ref()).unwrap();
+
+			for parent in parents() {
+				parent.remove_event_listener_with_callback("resize", closure_fn.as_ref().unchecked_ref()).expect("should register event listener");
+				parent.remove_event_listener_with_callback("scroll", closure_fn.as_ref().unchecked_ref()).expect("should register event listener");
+			}
 		}
 	});
 
 	let placed_side = new_placement().side;
+
 	let placed_align = match placement().alignment {
 		Some(Alignment::Start) => EAlign::Start,
 		Some(Alignment::End) => EAlign::End,
@@ -466,7 +510,7 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 
 	rsx! {
 		FocusTrap {
-			position: "absolute",
+			position: "fixed",
 			top: floating_styles().style_top(),
 			left: floating_styles().style_left(),
 			transform: floating_styles()
@@ -479,6 +523,7 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 							}
 					}),
 			min_width: "max-content",
+			will_change: "transform",
 			"data-side": format!("{:?}", placed_side).to_lowercase(),
 			"data-align": format!("{:?}", placed_align).to_lowercase(),
 			onmousedown: move |event| {
@@ -521,16 +566,16 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 							handler.call(event);
 					}
 			},
-			div {
-				onmounted: move |event: Event<MountedData>| {
-						content.set(Some(event.data()));
-						if let Some(callback) = props.onmounted {
-								callback.call(event)
-						}
-				},
-				..attributes,
-				{props.children.clone()}
-			}
+			// div {
+			onmounted: move |event: Event<MountedData>| {
+					content.set(Some(event.data()));
+					if let Some(callback) = props.onmounted {
+							callback.call(event)
+					}
+			},
+			extra_attributes: attributes.clone(),
+			{props.children.clone()}
+				// }
 		}
 	}
 }
@@ -602,4 +647,24 @@ pub fn PopperArrow(props: PopperArrowProps) -> Element {
 			}
 		}
 	}
+}
+
+fn find_scrollable_parents(element: &Rc<MountedData>) -> Vec<web_sys::Element> {
+	let mut elements: Vec<web_sys::Element> = Vec::new();
+	let overflow_values = ["auto", "scroll", "overlay", "hidden", "clip"];
+	if let Some(element) = element.try_as_web_event().and_then(|x| x.dyn_into::<HtmlElement>().ok()) {
+		let mut current_element = element.clone();
+
+		while let Some(parent) = current_element.parent_element() {
+			if let Some(computed_style) = web_sys::window().and_then(|w| w.get_computed_style(&parent).ok()).unwrap_or(None) {
+				if let (Ok(overflow), Ok(overflow_y)) = (computed_style.get_property_value("overflow"), computed_style.get_property_value("overflow-y")) {
+					if overflow_values.contains(&overflow.as_str()) || overflow_values.contains(&overflow_y.as_str()) {
+						elements.push(parent.clone());
+					}
+				}
+			}
+			current_element = parent.dyn_into::<HtmlElement>().ok().expect("Error");
+		}
+	}
+	elements
 }

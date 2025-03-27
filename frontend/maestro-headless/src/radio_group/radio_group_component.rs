@@ -1,6 +1,6 @@
 use {
 	crate::{
-		hooks::{UseControllableStateParams, use_arrow_key_navigation, use_controllable_state, use_interaction_state},
+		hooks::{UseControllableStateParams, use_arrow_key_navigation, use_controllable_state},
 		radio::Radio,
 		utils::EOrientation,
 	},
@@ -51,23 +51,6 @@ pub struct RadioGroupProps {
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(EOrientation::Horizontal)))]
 	pub orientation: ReadOnlySignal<EOrientation>,
 
-	#[props(default = None)]
-	pub onkeydown: Option<EventHandler<Event<KeyboardData>>>,
-	#[props(default = None)]
-	pub onkeyup: Option<EventHandler<Event<KeyboardData>>>,
-	#[props(default = None)]
-	pub onfocus: Option<EventHandler<Event<FocusData>>>,
-	#[props(default = None)]
-	pub onblur: Option<EventHandler<Event<FocusData>>>,
-	#[props(default = None)]
-	pub onmousedown: Option<EventHandler<Event<MouseData>>>,
-	#[props(default = None)]
-	pub onmouseup: Option<EventHandler<Event<MouseData>>>,
-	#[props(default = None)]
-	pub onmouseenter: Option<EventHandler<Event<MouseData>>>,
-	#[props(default = None)]
-	pub onmouseleave: Option<EventHandler<Event<MouseData>>>,
-
 	#[props(extends = div, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
 	pub children: Element,
@@ -89,61 +72,13 @@ pub fn RadioGroup(props: RadioGroupProps) -> Element {
 	let mut container_ref = use_signal(|| None::<Rc<MountedData>>);
 
 	let handle_key_down = use_arrow_key_navigation(container_ref, Some("[role='radio'][data-focusable='true']".to_string()), orientation());
-	let mut interaction_state = use_interaction_state();
 
 	rsx! {
 		div {
 			role: "group",
 			aria_disabled: disabled(),
 			"data-disabled": disabled(),
-			"data-hovered": *interaction_state.is_hovered.read(),
-			"data-focused": *interaction_state.is_focused.read(),
-			"data-focuse-visible": *interaction_state.is_focused.read(),
-			onmousedown: move |event| {
-					if let Some(handler) = props.onmousedown {
-							handler.call(event);
-					}
-			},
-			onkeydown: move |event| {
-					handle_key_down(event.clone());
-					if let Some(handler) = props.onkeydown {
-							handler.call(event);
-					}
-			},
-			onkeyup: move |event| {
-					if let Some(handler) = props.onkeyup {
-							handler.call(event);
-					}
-			},
-			onmouseup: move |event| {
-					if let Some(handler) = props.onmouseup {
-							handler.call(event);
-					}
-			},
-			onmouseenter: move |event| {
-					interaction_state.onmouseenter();
-					if let Some(handler) = props.onmouseenter {
-							handler.call(event);
-					}
-			},
-			onmouseleave: move |event| {
-					interaction_state.onmouseleave();
-					if let Some(handler) = props.onmouseleave {
-							handler.call(event);
-					}
-			},
-			onfocus: move |event| {
-					interaction_state.onfocus();
-					if let Some(handler) = props.onfocus {
-							handler.call(event);
-					}
-			},
-			onblur: move |event| {
-					interaction_state.onblur();
-					if let Some(handler) = props.onblur {
-							handler.call(event);
-					}
-			},
+			onkeydown: handle_key_down,
 			onmounted: move |event| container_ref.set(Some(event.data())),
 			..attributes,
 			{children}
@@ -156,23 +91,6 @@ pub struct RadioGroupItemProps {
 	pub value: ReadOnlySignal<String>,
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]
 	pub disabled: ReadOnlySignal<bool>,
-
-	#[props(default = None)]
-	pub onkeydown: Option<EventHandler<Event<KeyboardData>>>,
-	#[props(default = None)]
-	pub onkeyup: Option<EventHandler<Event<KeyboardData>>>,
-	#[props(default = None)]
-	pub onfocus: Option<EventHandler<Event<FocusData>>>,
-	#[props(default = None)]
-	pub onblur: Option<EventHandler<Event<FocusData>>>,
-	#[props(default = None)]
-	pub onmousedown: Option<EventHandler<Event<MouseData>>>,
-	#[props(default = None)]
-	pub onmouseup: Option<EventHandler<Event<MouseData>>>,
-	#[props(default = None)]
-	pub onmouseenter: Option<EventHandler<Event<MouseData>>>,
-	#[props(default = None)]
-	pub onmouseleave: Option<EventHandler<Event<MouseData>>>,
 
 	#[props(extends = button, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
@@ -202,14 +120,6 @@ pub fn RadioGroupItem(props: RadioGroupItemProps) -> Element {
 							context.on_deselect();
 					}
 			},
-			onblur: props.onblur,
-			onfocus: props.onfocus,
-			onkeydown: props.onkeydown,
-			onkeyup: props.onkeyup,
-			onmousedown: props.onmousedown,
-			onmouseenter: props.onmouseenter,
-			onmouseleave: props.onmouseleave,
-			onmouseup: props.onmouseup,
 			extra_attributes: props.attributes.clone(),
 			{props.children}
 		}

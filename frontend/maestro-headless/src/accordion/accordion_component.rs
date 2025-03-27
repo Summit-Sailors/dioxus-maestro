@@ -1,7 +1,7 @@
 use {
 	crate::{
 		button::Button,
-		hooks::{UseControllableStateParams, use_arrow_key_navigation, use_controllable_state, use_interaction_state},
+		hooks::{UseControllableStateParams, use_arrow_key_navigation, use_controllable_state},
 		utils::EOrientation,
 	},
 	dioxus::prelude::*,
@@ -97,23 +97,6 @@ pub struct AccordionProps {
 	#[props(optional, default = AccordionVariant::Single)]
 	variant: AccordionVariant,
 
-	#[props(default = None)]
-	pub onkeydown: Option<EventHandler<Event<KeyboardData>>>,
-	#[props(default = None)]
-	pub onkeyup: Option<EventHandler<Event<KeyboardData>>>,
-	#[props(default = None)]
-	pub onfocus: Option<EventHandler<Event<FocusData>>>,
-	#[props(default = None)]
-	pub onblur: Option<EventHandler<Event<FocusData>>>,
-	#[props(default = None)]
-	pub onmousedown: Option<EventHandler<Event<MouseData>>>,
-	#[props(default = None)]
-	pub onmouseup: Option<EventHandler<Event<MouseData>>>,
-	#[props(default = None)]
-	pub onmouseenter: Option<EventHandler<Event<MouseData>>>,
-	#[props(default = None)]
-	pub onmouseleave: Option<EventHandler<Event<MouseData>>>,
-
 	#[props(extends = ul, extends = GlobalAttributes)]
 	attributes: Vec<Attribute>,
 	pub children: Element,
@@ -127,10 +110,9 @@ pub fn Accordion(props: AccordionProps) -> Element {
 		use_controllable_state(UseControllableStateParams { is_controlled, prop: value, default_prop: default_value, on_change: on_value_change });
 
 	use_context_provider::<AccordionContext>(|| AccordionContext::new(value, set_value, collapsible, variant, disabled));
-	let mut interaction_state = use_interaction_state();
 
 	let mut current_ref = use_signal(|| None::<Rc<MountedData>>);
-	let handle_key_down = use_arrow_key_navigation(current_ref, Some(String::from("li[role='presentation']:not([tabindex='-1'])")), orientation());
+	let handle_key_down = use_arrow_key_navigation(current_ref, Some(String::from("button[role='button']:not([tabindex='-1'])")), orientation());
 
 	rsx! {
 		ul {
@@ -138,59 +120,11 @@ pub fn Accordion(props: AccordionProps) -> Element {
 			aria_disabled: disabled(),
 			aria_orientation: orientation.read().to_string(),
 			"data-disabled": disabled(),
-			"data-hovered": *interaction_state.is_hovered.read(),
-			"data-focused": *interaction_state.is_focused.read(),
-			"data-focuse-visible": *interaction_state.is_focused.read(),
 			"data-orientation": orientation.read().to_string(),
 			onmounted: move |event| {
-					interaction_state.self_ref.set(Some(event.clone()));
 					current_ref.set(Some(event.data()));
 			},
-			onmousedown: move |event| {
-					if let Some(handler) = props.onmousedown {
-							handler.call(event);
-					}
-			},
-			onkeydown: move |event| {
-					handle_key_down(event.clone());
-					if let Some(handler) = props.onkeydown {
-							handler.call(event);
-					}
-			},
-			onkeyup: move |event| {
-					if let Some(handler) = props.onkeyup {
-							handler.call(event);
-					}
-			},
-			onmouseup: move |event| {
-					if let Some(handler) = props.onmouseup {
-							handler.call(event);
-					}
-			},
-			onmouseenter: move |event| {
-					interaction_state.onmouseenter();
-					if let Some(handler) = props.onmouseenter {
-							handler.call(event);
-					}
-			},
-			onmouseleave: move |event| {
-					interaction_state.onmouseleave();
-					if let Some(handler) = props.onmouseleave {
-							handler.call(event);
-					}
-			},
-			onfocus: move |event| {
-					interaction_state.onfocus();
-					if let Some(handler) = props.onfocus {
-							handler.call(event);
-					}
-			},
-			onblur: move |event| {
-					interaction_state.onblur();
-					if let Some(handler) = props.onblur {
-							handler.call(event);
-					}
-			},
+			onkeydown: handle_key_down,
 			..attributes,
 			{children}
 		}
@@ -224,7 +158,9 @@ pub fn AccordionItem(props: AccordionItemProps) -> Element {
 	rsx! {
 		li {
 			role: "presentation",
+			aria_disabled: is_disabled(),
 			"data-state": if *accordion_item_context.open.read() { "open" } else { "closed" },
+			"data-disabled": is_disabled(),
 			..props.attributes,
 			{props.children}
 		}
@@ -233,23 +169,6 @@ pub fn AccordionItem(props: AccordionItemProps) -> Element {
 
 #[derive(Clone, PartialEq, Props)]
 pub struct AccordionTriggerProps {
-	#[props(default = None)]
-	pub onkeydown: Option<EventHandler<Event<KeyboardData>>>,
-	#[props(default = None)]
-	pub onkeyup: Option<EventHandler<Event<KeyboardData>>>,
-	#[props(default = None)]
-	pub onfocus: Option<EventHandler<Event<FocusData>>>,
-	#[props(default = None)]
-	pub onblur: Option<EventHandler<Event<FocusData>>>,
-	#[props(default = None)]
-	pub onmousedown: Option<EventHandler<Event<MouseData>>>,
-	#[props(default = None)]
-	pub onmouseup: Option<EventHandler<Event<MouseData>>>,
-	#[props(default = None)]
-	pub onmouseenter: Option<EventHandler<Event<MouseData>>>,
-	#[props(default = None)]
-	pub onmouseleave: Option<EventHandler<Event<MouseData>>>,
-
 	#[props(extends = GlobalAttributes, extends = button)]
 	pub attributes: Vec<Attribute>,
 	pub children: Element,
@@ -264,6 +183,7 @@ pub fn AccordionTrigger(props: AccordionTriggerProps) -> Element {
 	rsx! {
 		Button {
 			id: accordion_item_context.trigger_id.to_string(),
+			role: "button",
 			r#type: "button",
 			pointer_events: if is_disabled() { "none" } else { "auto" },
 			cursor: if is_disabled() { "" } else { "pointer" },
@@ -271,7 +191,9 @@ pub fn AccordionTrigger(props: AccordionTriggerProps) -> Element {
 			disabled: is_disabled(),
 			aria_controls: accordion_item_context.content_id.to_string(),
 			aria_expanded: *accordion_item_context.open.read(),
+			aria_disabled: is_disabled(),
 			"data-state": if *accordion_item_context.open.read() { "open" } else { "closed" },
+			"ata-disabled": is_disabled(),
 			onclick: move |_| {
 					if is_disabled() {
 							return;
@@ -299,14 +221,6 @@ pub fn AccordionTrigger(props: AccordionTriggerProps) -> Element {
 							}
 					}
 			},
-			onmousedown: props.onmousedown,
-			onkeydown: props.onkeydown,
-			onkeyup: props.onkeyup,
-			onmouseup: props.onmouseup,
-			onmouseenter: props.onmouseenter,
-			onmouseleave: props.onmouseleave,
-			onfocus: props.onfocus,
-			onblur: props.onblur,
 			extra_attributes: props.attributes.clone(),
 			{props.children}
 		}
@@ -346,6 +260,7 @@ pub fn AccordionContent(props: AccordionContentProps) -> Element {
 		div {
 			id: accordion_item_context.content_id.to_string(),
 			role: "region",
+			aria_labelledby: accordion_item_context.trigger_id.to_string(),
 			"data-state": if *accordion_item_context.open.read() { "open" } else { "closed" },
 			..props.attributes,
 			{props.children}

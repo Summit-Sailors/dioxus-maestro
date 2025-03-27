@@ -46,23 +46,6 @@ pub struct RadioProps {
 	#[props(default = false)]
 	pub required: bool,
 
-	#[props(default = None)]
-	pub onkeydown: Option<EventHandler<Event<KeyboardData>>>,
-	#[props(default = None)]
-	pub onkeyup: Option<EventHandler<Event<KeyboardData>>>,
-	#[props(default = None)]
-	pub onfocus: Option<EventHandler<Event<FocusData>>>,
-	#[props(default = None)]
-	pub onblur: Option<EventHandler<Event<FocusData>>>,
-	#[props(default = None)]
-	pub onmousedown: Option<EventHandler<Event<MouseData>>>,
-	#[props(default = None)]
-	pub onmouseup: Option<EventHandler<Event<MouseData>>>,
-	#[props(default = None)]
-	pub onmouseenter: Option<EventHandler<Event<MouseData>>>,
-	#[props(default = None)]
-	pub onmouseleave: Option<EventHandler<Event<MouseData>>>,
-
 	#[props(extends = GlobalAttributes, extends = button)]
 	pub attributes: Vec<Attribute>,
 	#[props(default = Vec::new())]
@@ -100,9 +83,7 @@ pub fn Radio(props: RadioProps) -> Element {
 				role: "radio",
 				aria_checked: *context.checked.read(),
 				aria_required: context.required,
-				aria_disabled: disabled(),
 				"data-state": if context.checked.read().unwrap_or_default() { "checked" } else { "unchecked" },
-				"data-disabled": disabled(),
 				disabled,
 				onclick: move |_| {
 						match !context.checked.peek().unwrap_or_default() {
@@ -110,14 +91,6 @@ pub fn Radio(props: RadioProps) -> Element {
 								false => context.on_change.call(None),
 						};
 				},
-				onmousedown: props.onmousedown,
-				onkeydown: props.onkeydown,
-				onkeyup: props.onkeyup,
-				onmouseup: props.onmouseup,
-				onmouseenter: props.onmouseenter,
-				onmouseleave: props.onmouseleave,
-				onfocus: props.onfocus,
-				onblur: props.onblur,
 				extra_attributes: attributes,
 				{children}
 			}

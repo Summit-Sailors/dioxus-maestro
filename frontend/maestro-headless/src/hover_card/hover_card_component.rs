@@ -1,7 +1,7 @@
 use {
 	crate::{
 		button::Button,
-		hooks::{UseControllableStateParams, use_controllable_state, use_interaction_state},
+		hooks::{UseControllableStateParams, use_controllable_state},
 		popper::{Popper, PopperAnchor, PopperArrow, PopperContent},
 		presence::Presence,
 		utils::{EAlign, ESide},
@@ -140,7 +140,6 @@ pub struct HoverCardTriggerProps {
 #[component]
 pub fn HoverCardTrigger(props: HoverCardTriggerProps) -> Element {
 	let context = use_context::<HoverCardContext>();
-	let mut interaction_state = use_interaction_state();
 
 	rsx! {
 		PopperAnchor { extra_attributes: props.container_attributes.clone(),
@@ -152,41 +151,34 @@ pub fn HoverCardTrigger(props: HoverCardTriggerProps) -> Element {
 				aria_controls: context.content_id.to_string(),
 				extra_attributes: props.attributes.clone(),
 				"data-state": if context.open.read().unwrap_or_default() { "open" } else { "closed" },
-				"data-hovered": *interaction_state.is_hovered.read(),
-				"data-focused": *interaction_state.is_focused.read(),
-				"data-focuse-visible": *interaction_state.is_focused.read(),
 				tabindex: 0,
 				onmouseenter: move |event| {
-						interaction_state.onmouseenter();
 						context.on_open.call(());
-						if let Some(on_pointer_enter) = props.onmouseenter.as_ref() {
-								on_pointer_enter.call(event);
+						if let Some(handler) = props.onmouseenter.as_ref() {
+								handler.call(event);
 						}
 				},
 				onmouseleave: move |event| {
-						interaction_state.onmouseleave();
 						context.on_close.call(());
 						if let Some(handler) = props.onmouseleave {
 								handler.call(event);
 						}
 				},
 				onfocus: move |event| {
-						interaction_state.onfocus();
 						context.on_open.call(());
 						if let Some(handler) = props.onfocus {
 								handler.call(event);
 						}
 				},
 				onblur: move |event| {
-						interaction_state.onblur();
 						context.on_close.call(());
 						if let Some(handler) = props.onblur {
 								handler.call(event);
 						}
 				},
 				onclick: move |event| {
-						if let Some(callback) = props.onclick {
-								callback.call(event);
+						if let Some(handler) = props.onclick {
+								handler.call(event);
 						}
 				},
 				{props.children}

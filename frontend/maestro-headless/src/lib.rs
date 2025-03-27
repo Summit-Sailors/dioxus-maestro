@@ -20,6 +20,7 @@ pub mod presence;
 pub mod progress;
 pub mod radio;
 pub mod radio_group;
+pub mod range;
 pub mod select;
 pub mod separator;
 pub mod switch;

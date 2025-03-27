@@ -1,5 +1,5 @@
 use {
-	crate::hooks::{UseControllableStateParams, use_controllable_state, use_interaction_state},
+	crate::hooks::{UseControllableStateParams, use_controllable_state},
 	dioxus::prelude::*,
 	dioxus_sdk::utils::timing::use_debounce,
 	std::time::Duration,
@@ -25,22 +25,6 @@ pub struct TextareaProps {
 	pub oninput: Option<EventHandler<Event<FormData>>>,
 	#[props(default = None)]
 	pub onchange: Option<EventHandler<Event<FormData>>>,
-	#[props(default = None)]
-	pub onkeydown: Option<EventHandler<Event<KeyboardData>>>,
-	#[props(default = None)]
-	pub onkeyup: Option<EventHandler<Event<KeyboardData>>>,
-	#[props(default = None)]
-	pub onfocus: Option<EventHandler<Event<FocusData>>>,
-	#[props(default = None)]
-	pub onblur: Option<EventHandler<Event<FocusData>>>,
-	#[props(default = None)]
-	pub onmousedown: Option<EventHandler<Event<MouseData>>>,
-	#[props(default = None)]
-	pub onmouseup: Option<EventHandler<Event<MouseData>>>,
-	#[props(default = None)]
-	pub onmouseenter: Option<EventHandler<Event<MouseData>>>,
-	#[props(default = None)]
-	pub onmouseleave: Option<EventHandler<Event<MouseData>>>,
 
 	#[props(extends = textarea, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
@@ -50,7 +34,6 @@ pub struct TextareaProps {
 #[component]
 pub fn Textarea(props: TextareaProps) -> Element {
 	let TextareaProps { value, default_value, on_value_change, debounce_ms, disabled, invalid, attributes, children, .. } = props;
-	let mut interaction_state = use_interaction_state();
 	let is_controlled = use_hook(move || value().is_some());
 	let (value, set_value) =
 		use_controllable_state(UseControllableStateParams { is_controlled, prop: value, default_prop: default_value, on_change: on_value_change });
@@ -69,9 +52,6 @@ pub fn Textarea(props: TextareaProps) -> Element {
 			aria_invalid: invalid(),
 			"data-disabled": disabled(),
 			"data-invalid": invalid(),
-			"data-hovered": *interaction_state.is_hovered.read(),
-			"data-focused": *interaction_state.is_focused.read(),
-			"data-focuse-visible": *interaction_state.is_focused.read(),
 			value: value().unwrap_or_default(),
 			onchange: move |event| {
 					if let Some(handler) = props.onchange {
@@ -82,54 +62,6 @@ pub fn Textarea(props: TextareaProps) -> Element {
 			oninput: move |event| {
 					on_input.action(event);
 			},
-			onmounted: move |event| {
-					interaction_state.self_ref.set(Some(event.clone()));
-			},
-			onmousedown: move |event| {
-					if let Some(handler) = props.onmousedown {
-							handler.call(event);
-					}
-			},
-			onkeydown: move |event| {
-					if let Some(handler) = props.onkeydown {
-							handler.call(event);
-					}
-			},
-			onkeyup: move |event| {
-					if let Some(handler) = props.onkeyup {
-							handler.call(event);
-					}
-			},
-			onmouseup: move |event| {
-					if let Some(handler) = props.onmouseup {
-							handler.call(event);
-					}
-			},
-			onmouseenter: move |event| {
-					interaction_state.onmouseenter();
-					if let Some(handler) = props.onmouseenter {
-							handler.call(event);
-					}
-			},
-			onmouseleave: move |event| {
-					interaction_state.onmouseleave();
-					if let Some(handler) = props.onmouseleave {
-							handler.call(event);
-					}
-			},
-			onfocus: move |event| {
-					interaction_state.onfocus();
-					if let Some(handler) = props.onfocus {
-							handler.call(event);
-					}
-			},
-			onblur: move |event| {
-					interaction_state.onblur();
-					if let Some(handler) = props.onblur {
-							handler.call(event);
-					}
-			},
-
 			..attributes,
 			{children}
 		}

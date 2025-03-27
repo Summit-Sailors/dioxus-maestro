@@ -100,7 +100,7 @@ pub fn CollapsibleTrigger(props: CollapsibleTriggerProps) -> Element {
 			disabled: *context.disabled.read(),
 			aria_controls: context.content_id.to_string(),
 			aria_disabled: *context.disabled.read(),
-			aria_expanded: *context.open.read(),
+			aria_expanded: context.open.read().unwrap_or_default(),
 			"data-state": if context.open.read().unwrap_or_default() { "open" } else { "closed" },
 			"data-disabled": *context.disabled.read(),
 			onclick: move |_| {

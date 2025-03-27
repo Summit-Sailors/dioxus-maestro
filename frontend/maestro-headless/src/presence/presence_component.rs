@@ -78,16 +78,6 @@ pub fn use_presence(present: Memo<bool>, node_ref: Signal<Option<Rc<MountedData>
 					state.set(EMountState::Unmounted);
 				} else if anim_state.has_transition {
 					state.set(EMountState::UnmountSuspend);
-
-					// if let Some(window) = web_sys::window() {
-					// 	let closure = Closure::once_into_js(move || {
-					// 		if !present() && *state.peek() == EMountState::UnmountSuspend {
-					// 			state.set(EMountState::Unmounted);
-					// 		}
-					// 	});
-
-					// 	window.set_timeout_with_callback_and_timeout_and_arguments_0(closure.as_ref().unchecked_ref(), 700).unwrap();
-					// }
 				} else {
 					state.set(EMountState::Unmounted);
 				}

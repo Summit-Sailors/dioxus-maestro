@@ -1,4 +1,4 @@
-use {crate::hooks::use_interaction_state, dioxus::prelude::*};
+use dioxus::prelude::*;
 
 #[derive(Props, PartialEq, Debug, Clone)]
 pub struct ButtonProps {
@@ -39,7 +39,6 @@ pub struct ButtonProps {
 #[component]
 pub fn Button(props: ButtonProps) -> Element {
 	let ButtonProps { pending, disabled, .. } = props;
-	let mut interaction_state = use_interaction_state();
 	let mut is_pressed = use_signal(|| false);
 	rsx! {
 		button {
@@ -47,9 +46,6 @@ pub fn Button(props: ButtonProps) -> Element {
 			aria_disabled: disabled() || pending(),
 			"data-disabled": disabled(),
 			"data-pressed": is_pressed(),
-			"data-hovered": *interaction_state.is_hovered.read(),
-			"data-focused": *interaction_state.is_focused.read(),
-			"data-focuse-visible": *interaction_state.is_focused.read(),
 			"data-pending": pending(),
 			onclick: move |event| {
 					if !disabled() && !pending() {
@@ -59,7 +55,6 @@ pub fn Button(props: ButtonProps) -> Element {
 					}
 			},
 			onmounted: move |event| {
-					interaction_state.self_ref.set(Some(event.clone()));
 					if let Some(handler) = props.onmounted {
 							handler.call(event);
 					}
@@ -97,10 +92,8 @@ pub fn Button(props: ButtonProps) -> Element {
 							}
 					}
 			},
-
 			onmouseenter: move |event| {
 					if !disabled() && !pending() {
-							interaction_state.onmouseenter();
 							if let Some(handler) = props.onmouseenter {
 									handler.call(event);
 							}
@@ -108,20 +101,17 @@ pub fn Button(props: ButtonProps) -> Element {
 			},
 			onmouseleave: move |event| {
 					if !disabled() && !pending() {
-							interaction_state.onmouseleave();
 							if let Some(handler) = props.onmouseleave {
 									handler.call(event);
 							}
 					}
 			},
 			onfocus: move |event| {
-					interaction_state.onfocus();
 					if let Some(handler) = props.onfocus {
 							handler.call(event);
 					}
 			},
 			onblur: move |event| {
-					interaction_state.onblur();
 					if let Some(handler) = props.onblur {
 							handler.call(event);
 					}
