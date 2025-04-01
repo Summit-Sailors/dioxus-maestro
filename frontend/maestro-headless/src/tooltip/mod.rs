@@ -1,3 +1,3 @@
-mod tooltip_component;
+mod component;
 
-pub use tooltip_component::*;
+pub use component::*;

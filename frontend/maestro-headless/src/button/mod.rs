@@ -1,3 +1,3 @@
-mod button_component;
+mod component;
 
-pub use button_component::*;
+pub use component::*;

@@ -1,3 +1,3 @@
-mod select_component;
+mod component;
 
-pub use select_component::*;
+pub use component::*;

@@ -1,3 +1,3 @@
-mod range_component;
+mod component;
 
-pub use range_component::*;
+pub use component::range::*;

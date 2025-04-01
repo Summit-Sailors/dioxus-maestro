@@ -1,3 +1,3 @@
-mod radio_component;
+mod component;
 
-pub use radio_component::*;
+pub use component::*;

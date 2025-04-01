@@ -1,0 +1,42 @@
+[application]
+
+# App (Project) Name
+name = "headless-demo"
+
+# `build` & `serve` output path
+out_dir = "dist"
+
+# The static resource path
+asset_dir = "assets"
+
+[web.watcher]
+
+# When watcher is triggered, regenerate the `index.html`
+reload_html = true
+
+# Which files or dirs will be monitored
+watch_path = ["assets", "src"]
+
+index_on_404 = true
+
+[web.app]
+
+# HTML title tag content
+title = "headless-demo"
+
+# include `assets` in web platform
+[web.resource]
+
+# Additional CSS style files
+style = ["./assets/tailwind.css"]
+
+# Additional JavaScript files
+script = []
+
+[web.resource.dev]
+
+# Javascript code file
+# serve: [dev-server] only
+script = []
+
+[bundle]

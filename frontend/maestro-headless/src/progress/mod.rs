@@ -1,3 +1,3 @@
-mod progress_component;
+mod component;
 
-pub use progress_component::*;
+pub use component::*;

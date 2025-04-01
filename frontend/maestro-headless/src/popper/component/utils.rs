@@ -1,0 +1,180 @@
+use {
+	crate::shared::ESide,
+	dioxus::{prelude::*, web::WebEventExt},
+	serde::{Deserialize, Serialize},
+	std::rc::Rc,
+	web_sys::{HtmlElement, wasm_bindgen::JsCast, window},
+};
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct Rect {
+	pub x: f32,
+	pub y: f32,
+	pub width: f32,
+	pub height: f32,
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct Placement {
+	pub side: ESide,
+	pub alignment: Option<Alignment>,
+}
+
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+pub enum Alignment {
+	Start,
+	End,
+}
+
+impl Placement {
+	pub fn side(&self) -> ESide {
+		self.side
+	}
+
+	pub fn alignment(&self) -> Option<Alignment> {
+		self.alignment
+	}
+}
+
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct FloatingStyles {
+	pub position: String,
+	pub top: String,
+	pub left: String,
+	pub transform: Option<String>,
+}
+
+impl FloatingStyles {
+	pub fn style_position(&self) -> String {
+		self.position.clone()
+	}
+
+	pub fn style_top(&self) -> String {
+		self.top.clone()
+	}
+
+	pub fn style_left(&self) -> String {
+		self.left.clone()
+	}
+
+	pub fn style_transform(&self) -> Option<String> {
+		self.transform.clone()
+	}
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct ArrowData {
+	pub x: Option<f32>,
+	pub y: Option<f32>,
+	pub center_offset: f32,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct TransformOriginData {
+	pub x: String,
+	pub y: String,
+}
+
+pub fn get_element_rect(ref_element: Signal<Option<Rc<MountedData>>>) -> Option<Rect> {
+	if let Some(data) = ref_element.peek().as_ref() {
+		if let Some(element) = data.try_as_web_event() {
+			let rect = element.get_bounding_client_rect();
+			let window = window().expect("should have a window in this context");
+			let scroll_x = window.page_x_offset().unwrap_or(0.0) as f32;
+			let scroll_y = window.page_y_offset().unwrap_or(0.0) as f32;
+			return Some(Rect { x: rect.left() as f32 + scroll_x, y: rect.top() as f32 + scroll_y, width: rect.width() as f32, height: rect.height() as f32 });
+		};
+	}
+	None
+}
+
+pub fn calculate_position(
+	reference_rect: &Rect,
+	floating_rect: &Rect,
+	placement: &Placement,
+	arrow_width: f32,
+	arrow_height: f32,
+	offset: f32,
+	align_offset: f32,
+) -> (FloatingStyles, ArrowData, TransformOriginData) {
+	let side = placement.side();
+	let alignment = placement.alignment();
+	let window = window().expect("should have a window in this context");
+	let scroll_x = window.page_x_offset().unwrap_or(0.0) as f32;
+	let scroll_y = window.page_y_offset().unwrap_or(0.0) as f32;
+
+	let (left, top) = match side {
+		ESide::Top => (
+			reference_rect.x + (reference_rect.width / 2.0) - (floating_rect.width / 2.0) - scroll_x,
+			reference_rect.y - floating_rect.height - offset - arrow_height - scroll_y,
+		),
+		ESide::Right => (
+			reference_rect.x + reference_rect.width + offset + arrow_height - scroll_x,
+			reference_rect.y + (reference_rect.height / 2.0) - (floating_rect.height / 2.0) - scroll_y,
+		),
+		ESide::Bottom => (
+			reference_rect.x + (reference_rect.width / 2.0) - (floating_rect.width / 2.0) - scroll_x,
+			reference_rect.y + reference_rect.height + offset + arrow_height - scroll_y,
+		),
+		ESide::Left => (
+			reference_rect.x - floating_rect.width - offset - arrow_height - scroll_x,
+			reference_rect.y + (reference_rect.height / 2.0) - (floating_rect.height / 2.0) - scroll_y,
+		),
+	};
+
+	let (left, top) = match (side, alignment) {
+		(ESide::Top | ESide::Bottom, Some(Alignment::Start)) => (left + align_offset, top),
+		(ESide::Top | ESide::Bottom, Some(Alignment::End)) => (left + reference_rect.width - floating_rect.width - align_offset, top),
+		(ESide::Right | ESide::Left, Some(Alignment::Start)) => (left, top + align_offset),
+		(ESide::Right | ESide::Left, Some(Alignment::End)) => (left, top + reference_rect.height - floating_rect.height - align_offset),
+		_ => (left, top),
+	};
+
+	let (arrow_x, arrow_y) = match side {
+		ESide::Top | ESide::Bottom => {
+			let arrow_x = floating_rect.width / 2.0;
+			let constrained_x = arrow_x.max(arrow_width).min(floating_rect.width - arrow_width);
+			(Some(constrained_x), None)
+		},
+		ESide::Right | ESide::Left => {
+			let arrow_y = floating_rect.height / 2.0;
+			let constrained_y = arrow_y.max(arrow_width).min(floating_rect.height - arrow_width);
+			(None, Some(constrained_y))
+		},
+	};
+
+	let styles = FloatingStyles { position: "fixed".to_string(), top: format!("{}px", top), left: format!("{}px", left), transform: None };
+
+	let arrow_data = ArrowData { x: arrow_x, y: arrow_y, center_offset: 0.0 };
+
+	let (origin_x, origin_y) = match side {
+		ESide::Top => (format!("{}px", arrow_x.unwrap_or(floating_rect.width / 2.0)), format!("{}px", floating_rect.height)),
+		ESide::Right => ("0px".to_string(), format!("{}px", arrow_y.unwrap_or(floating_rect.height / 2.0))),
+		ESide::Bottom => (format!("{}px", arrow_x.unwrap_or(floating_rect.width / 2.0)), "0px".to_string()),
+		ESide::Left => (format!("{}px", floating_rect.width), format!("{}px", arrow_y.unwrap_or(floating_rect.height / 2.0))),
+	};
+
+	let transform_origin = TransformOriginData { x: origin_x, y: origin_y };
+
+	(styles, arrow_data, transform_origin)
+}
+
+pub fn find_scrollable_parents(element: &Rc<MountedData>) -> Vec<web_sys::Element> {
+	let mut elements: Vec<web_sys::Element> = Vec::new();
+	let overflow_values = ["auto", "scroll", "overlay", "hidden", "clip"];
+	if let Some(element) = element.try_as_web_event().and_then(|x| x.dyn_into::<HtmlElement>().ok()) {
+		let mut current_element = element.clone();
+
+		while let Some(parent) = current_element.parent_element() {
+			if let Some(computed_style) = web_sys::window().and_then(|w| w.get_computed_style(&parent).ok()).unwrap_or(None) {
+				if let (Ok(overflow), Ok(overflow_y)) = (computed_style.get_property_value("overflow"), computed_style.get_property_value("overflow-y")) {
+					if overflow_values.contains(&overflow.as_str()) || overflow_values.contains(&overflow_y.as_str()) {
+						elements.push(parent.clone());
+					}
+				}
+			}
+			current_element = parent.dyn_into::<HtmlElement>().ok().expect("Error");
+		}
+	}
+	elements
+}

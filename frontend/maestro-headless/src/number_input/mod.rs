@@ -1,3 +1,3 @@
-mod number_input_component;
+mod component;
 
-pub use number_input_component::*;
+pub use component::*;

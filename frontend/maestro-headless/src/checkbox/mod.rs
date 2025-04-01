@@ -1,3 +1,3 @@
-mod checkbox_component;
+mod component;
 
-pub use checkbox_component::*;
+pub use component::*;

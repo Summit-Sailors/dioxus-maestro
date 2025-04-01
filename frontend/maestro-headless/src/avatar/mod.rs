@@ -1,3 +1,3 @@
-mod avatar_component;
+mod component;
 
-pub use avatar_component::*;
+pub use component::*;

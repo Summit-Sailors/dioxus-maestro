@@ -1,20 +1,59 @@
-@tailwind base;
+/* @tailwind base;
 @tailwind components;
-@tailwind utilities;
+@tailwind utilities; */
+@import "tailwindcss";
 
-/* base styles */
-html {
-  scroll-behavior: smooth;
-  height: 100%;
-  min-height: 100vh;
+@theme {
+  --font-poppins: Poppins, sans-serif;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+  --breakpoint-3xl: 1728px;
+
+  --animate-fade-in: fade-in 0.5s linear;
+  --animate-fade-out: fade-out 0.3s linear;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 100;
+    }
+  }
+
+  @keyframes fade-out {
+    from {
+      opacity: 100;
+    }
+    to {
+      opacity: 0;
+    }
+  }
 }
 
-body {
-  @apply bg-slate-900 text-slate-100 font-poppins flex flex-col max-h-screen h-full [&>div]:h-full;
+/* base styles */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    height: 100%;
+    min-height: 100vh;
+  }
+
+  body {
+    @apply bg-slate-900 text-slate-100 font-poppins flex flex-col max-h-screen h-full [&>div]:h-full;
+  }
+}
+
+@utility container {
+  margin-inline: auto;
+  padding-inline: 2rem;
 }
 
 /* toast styles - simplified */
-.maestro-toast {
+@utility maestro-toast {
   @apply transition-all duration-200 ease-in-out relative p-4 rounded-lg;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   width: max-content;
@@ -39,32 +78,32 @@ body {
 }
 
 @layer components {
-  @screen sm {
+  @media (min-width: 640px) {
     .container {
       max-width: 584px;
       padding: 0;
     }
   }
 
-  @screen lg {
+  @media (min-width: 1024px) {
     .container {
       max-width: 854px;
     }
   }
 
-  @screen xl {
+  @media (min-width: 1280px) {
     .container {
       max-width: 1066px;
     }
   }
 
-  @screen 2xl {
+  @media (min-width: 1536px) {
     .container {
       max-width: 1260px;
     }
   }
 
-  @screen 3xl {
+  @media (min-width: 1728px) {
     .container {
       max-width: 1440px;
     }

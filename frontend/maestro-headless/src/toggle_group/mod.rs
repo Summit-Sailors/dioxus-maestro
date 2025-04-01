@@ -1,3 +1,3 @@
-mod toggle_group_component;
+mod component;
 
-pub use toggle_group_component::*;
+pub use component::*;

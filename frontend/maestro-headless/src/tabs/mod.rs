@@ -1,3 +1,3 @@
-mod tabs_component;
+mod component;
 
-pub use tabs_component::*;
+pub use component::*;

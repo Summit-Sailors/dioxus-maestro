@@ -1,3 +1,3 @@
-mod presence_component;
+mod component;
 
-pub use presence_component::*;
+pub use component::presence::*;

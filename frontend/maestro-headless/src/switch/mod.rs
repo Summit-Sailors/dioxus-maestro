@@ -1,3 +1,3 @@
-mod switch_component;
+mod component;
 
-pub use switch_component::*;
+pub use component::*;

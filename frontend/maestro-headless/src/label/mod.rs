@@ -1,3 +1,3 @@
-mod label_component;
+mod component;
 
-pub use label_component::*;
+pub use component::*;

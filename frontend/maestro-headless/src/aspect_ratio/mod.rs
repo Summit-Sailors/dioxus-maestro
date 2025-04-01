@@ -1,3 +1,3 @@
-mod aspect_ratio_component;
+mod component;
 
-pub use aspect_ratio_component::*;
+pub use component::*;

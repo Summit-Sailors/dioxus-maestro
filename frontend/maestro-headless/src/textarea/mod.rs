@@ -1,3 +1,3 @@
-mod textarea_component;
+mod component;
 
-pub use textarea_component::*;
+pub use component::*;

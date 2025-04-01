@@ -8,27 +8,24 @@ repository = ""
 
 
 [dependencies]
-bon = { workspace = true }
-chrono = { workspace = true }
-num-traits = { workspace = true }
+
+dioxus = { workspace = true }
+dioxus-logger = { workspace = true }
+dioxus-sdk = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 strum = { workspace = true }
 strum_macros = { workspace = true }
 uuid = { workspace = true }
 
-dioxus = { workspace = true }
-dioxus-free-icons = { workspace = true }
-dioxus-logger = { workspace = true }
-dioxus-sdk = { workspace = true }
-
 async-std = "1.13.0"
 tailwind_fuse = { workspace = true }
 
 tracing-wasm = { version = "0.2.1", optional = true }
-web-sys = { version = "0.3.76", features = [
+web-sys = { version = "0.3.77", features = [
   "CssStyleDeclaration",
   "Document",
+  "HtmlImageElement",
   "MutationObserver",
   "MutationObserverInit",
   "MutationRecord",
@@ -40,5 +37,4 @@ web-sys = { version = "0.3.76", features = [
 
 [features]
 default = []
-desktop = ["dioxus/desktop"]
-web = ["chrono/wasmbind", "dep:tracing-wasm", "dioxus/web", "uuid/js"]
+web = ["dep:tracing-wasm", "dioxus/web", "uuid/js"]
