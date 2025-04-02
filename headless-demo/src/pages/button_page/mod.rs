@@ -1,9 +1,13 @@
 use {
 	crate::components::{
 		description_section::DescriptionSection,
-		props_table::{PropsTable, TableBody},
+		example_code::ExampleCodeCollapsible,
+		features_list::Features,
+		tables::{AttrsStruct, PropsStruct},
+		tabs::PageTabs,
 	},
 	async_std::task::sleep,
+	consts::EXAMPLE,
 	dioxus::prelude::*,
 	dioxus_free_icons::{
 		Icon,
@@ -17,9 +21,12 @@ use {
 	std::time::Duration,
 };
 
+mod consts;
+
 #[component]
 pub fn ButtonPage() -> Element {
 	let mut is_pending = use_signal(|| false);
+	let features_list: Vec<&str> = Vec::from(["Wide list of event handlers", "Disabled/pending state", "Accepts any type of children"]);
 
 	rsx! {
 		DescriptionSection {
@@ -51,63 +58,12 @@ pub fn ButtonPage() -> Element {
 						}
 					}
 				}
-				div { class: "py-3 w-full px-6 border-t border-neutral-800 bg-neutral-950 overflow-hidden",
-					Collapsible { class: "flex flex-col  max-h-[640px] h-full ",
-						div { class: "flex items-center gap-3 py-3",
-							CollapsibleTrigger { class: "flex items-center justify-center px-3 py-2 font-medium rounded bg-orange-600 border-2 border-transparent hover:border-orange-600 text-neutral-50 hover:bg-neutral-950 focus-visible:ring-2 ring-orange-600 ring-offset-neutral-950 focus-visible:ring-offset-2 focus-visible:outline-none transition-colors ease-linear",
-								"Open Code"
-							}
-						}
-						CollapsibleContent { class: "data-[state=closed]:animate-slide-out data-[state=open]:animate-slide-in overflow-auto",
-							code { class: "font-mono whitespace-pre text-xs text-neutral-300",
-								pre {
-									"use dioxus::prelude::*;
-use maestro_headless::button::Button;
+				ExampleCodeCollapsible { code: EXAMPLE }
 
-let mut is_pending = use_signal(|| false);
-
-rsx! {{
-  Button {{
-    pending: is_pending,,
-    class: 'h-10 px-3 py-2 rounded-md flex items-center justify-center gap-3 transition-all ease-linear bg-neutral-900 text-neutral-100 border border-neutral-100 hover:border-orange-600 focus-visible:border-orange-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-600 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 disabled:opacity-50 data-[pending=true]:opacity-50',
-    onclick: move |_| {{
-      is_pending.set(true);
-      spawn(async move {{
-        sleep(Duration::from_millis(1000)).await;
-        is_pending.set(false);
-      }});
-    }},
-    if is_pending() {{
-      {{
-        rsx! {{
-          'Pending'
-          Icon {{ icon: LdLoader, class: 'animate-spin ease-linear' }}			
-          }}
-        }} else {{'Active'}}
-  }}
-}}"
-								}
-							}
-						}
-					}
-				}
 			}
 		}
 		DescriptionSection { title: "Supports",
-			ul { class: "flex flex-col gap-2 *:flex *:items-center *:gap-2",
-				li {
-					Icon { icon: BsCheckLg {}, class: "text-orange-600" }
-					"Wide list of event handlers"
-				}
-				li {
-					Icon { icon: BsCheckLg {}, class: "text-orange-600" }
-					"Disabled/pending state"
-				}
-				li {
-					Icon { icon: BsCheckLg {}, class: "text-orange-600" }
-					"Accepts any type of children"
-				}
-			}
+			Features { features: features_list.clone() }
 		}
 		DescriptionSection { title: "Usage and Anatomy",
 			div { class: "grow flex flex-col rounded-md border border-neutral-800 bg-neutral-950 p-6",
@@ -134,104 +90,125 @@ rsx! {{
 						span { class: "font-medium", "pending" }
 						" is usefull for indicating long tasks."
 					}
-					div { class: "overflow-hidden rounded-sm border border-neutral-700",
-						PropsTable {
-							content: Vec::from([
-									TableBody {
-											prop: "pending".into(),
-											prop_default: "false".into(),
-											prop_type: "bool".into(),
-											tooltip_text: None,
-									},
-									TableBody {
-											prop: "disabled".into(),
-											prop_default: "false".into(),
-											prop_type: "bool".into(),
-											tooltip_text: None,
-									},
-									TableBody {
-											prop: "onclick".into(),
-											prop_default: "None".into(),
-											prop_type: "Option<EventHandler<Event<MouseData>>>".into(),
-											tooltip_text: None,
-									},
-									TableBody {
-											prop: "onkeydown".into(),
-											prop_default: "None".into(),
-											prop_type: "Option<EventHandler<Event<KeyboardData>>>".into(),
-											tooltip_text: None,
-									},
-									TableBody {
-											prop: "onkeyup".into(),
-											prop_default: "None".into(),
-											prop_type: "Option<EventHandler<Event<KeyboardData>>>".into(),
-											tooltip_text: None,
-									},
-									TableBody {
-											prop: "onfocus".into(),
-											prop_default: "None".into(),
-											prop_type: "Option<EventHandler<Event<FocusData>>>".into(),
-											tooltip_text: None,
-									},
-									TableBody {
-											prop: "onblur".into(),
-											prop_default: "None".into(),
-											prop_type: "Option<EventHandler<Event<FocusData>>>".into(),
-											tooltip_text: None,
-									},
-									TableBody {
-											prop: "onmousedown".into(),
-											prop_default: "None".into(),
-											prop_type: "Option<EventHandler<Event<MouseData>>>".into(),
-											tooltip_text: None,
-									},
-									TableBody {
-											prop: "onmouseup".into(),
-											prop_default: "None".into(),
-											prop_type: "Option<EventHandler<Event<MouseData>>>".into(),
-											tooltip_text: None,
-									},
-									TableBody {
-											prop: "onmouseenter".into(),
-											prop_default: "None".into(),
-											prop_type: "Option<EventHandler<Event<MouseData>>>".into(),
-											tooltip_text: None,
-									},
-									TableBody {
-											prop: "onmouseleave".into(),
-											prop_default: "None".into(),
-											prop_type: "Option<EventHandler<Event<MouseData>>>".into(),
-											tooltip_text: None,
-									},
-									TableBody {
-											prop: "onmounted".into(),
-											prop_default: "None".into(),
-											prop_type: "Option<EventHandler<Event<MountedData>>>".into(),
-											tooltip_text: None,
-									},
-									TableBody {
-											prop: "attributes".into(),
-											prop_default: "[]".into(),
-											prop_type: "Vec<Attribute>".into(),
-											tooltip_text: Some("Extends 'global' and 'button' attribules".into()),
-									},
-									TableBody {
-											prop: "extra_attributes".into(),
-											prop_default: "[]".into(),
-											prop_type: "Vec<Attribute>".into(),
-											tooltip_text: Some(
-													"Helps provide attributes to the button if it is nested into other components"
-															.into(),
-											),
-									},
-									TableBody {
-											prop: "children".into(),
-											prop_default: "-".into(),
-											prop_type: "Element".into(),
-											tooltip_text: Some("Required".into()),
-									},
-							]),
-						}
+
+					PageTabs {
+						props_list: Vec::from([
+								PropsStruct {
+										prop: "pending".into(),
+										prop_default: "false".into(),
+										prop_type: "bool".into(),
+										tooltip_text: None,
+								},
+								PropsStruct {
+										prop: "disabled".into(),
+										prop_default: "false".into(),
+										prop_type: "bool".into(),
+										tooltip_text: None,
+								},
+								PropsStruct {
+										prop: "onclick".into(),
+										prop_default: "None".into(),
+										prop_type: "Option<EventHandler<Event<MouseData>>>".into(),
+										tooltip_text: None,
+								},
+								PropsStruct {
+										prop: "onkeydown".into(),
+										prop_default: "None".into(),
+										prop_type: "Option<EventHandler<Event<KeyboardData>>>".into(),
+										tooltip_text: None,
+								},
+								PropsStruct {
+										prop: "onkeyup".into(),
+										prop_default: "None".into(),
+										prop_type: "Option<EventHandler<Event<KeyboardData>>>".into(),
+										tooltip_text: None,
+								},
+								PropsStruct {
+										prop: "onfocus".into(),
+										prop_default: "None".into(),
+										prop_type: "Option<EventHandler<Event<FocusData>>>".into(),
+										tooltip_text: None,
+								},
+								PropsStruct {
+										prop: "onblur".into(),
+										prop_default: "None".into(),
+										prop_type: "Option<EventHandler<Event<FocusData>>>".into(),
+										tooltip_text: None,
+								},
+								PropsStruct {
+										prop: "onmousedown".into(),
+										prop_default: "None".into(),
+										prop_type: "Option<EventHandler<Event<MouseData>>>".into(),
+										tooltip_text: None,
+								},
+								PropsStruct {
+										prop: "onmouseup".into(),
+										prop_default: "None".into(),
+										prop_type: "Option<EventHandler<Event<MouseData>>>".into(),
+										tooltip_text: None,
+								},
+								PropsStruct {
+										prop: "onmouseenter".into(),
+										prop_default: "None".into(),
+										prop_type: "Option<EventHandler<Event<MouseData>>>".into(),
+										tooltip_text: None,
+								},
+								PropsStruct {
+										prop: "onmouseleave".into(),
+										prop_default: "None".into(),
+										prop_type: "Option<EventHandler<Event<MouseData>>>".into(),
+										tooltip_text: None,
+								},
+								PropsStruct {
+										prop: "onmounted".into(),
+										prop_default: "None".into(),
+										prop_type: "Option<EventHandler<Event<MountedData>>>".into(),
+										tooltip_text: None,
+								},
+								PropsStruct {
+										prop: "attributes".into(),
+										prop_default: "[]".into(),
+										prop_type: "Vec<Attribute>".into(),
+										tooltip_text: Some("Extends 'global' and 'button' attribules".into()),
+								},
+								PropsStruct {
+										prop: "extra_attributes".into(),
+										prop_default: "[]".into(),
+										prop_type: "Vec<Attribute>".into(),
+										tooltip_text: Some(
+												"Helps provide attributes to the button if it is nested into other components"
+														.into(),
+										),
+								},
+								PropsStruct {
+										prop: "children".into(),
+										prop_default: "-".into(),
+										prop_type: "Element".into(),
+										tooltip_text: Some("Required".into()),
+								},
+						]),
+						attrs_list: Vec::from([
+								AttrsStruct {
+										attr: "aria-disabled".into(),
+										value: "true".into(),
+										description: "Appears only if props 'disabled' or 'pending' is true".into(),
+								},
+								AttrsStruct {
+										attr: "data-pressed".into(),
+										value: "true".into(),
+										description: "Indicates pressed state".into(),
+								},
+								AttrsStruct {
+										attr: "data-disabled".into(),
+										value: "true".into(),
+										description: "Appears only if props 'disabled' or 'pending' is true".into(),
+								},
+								AttrsStruct {
+										attr: "data-pending".into(),
+										value: "true".into(),
+										description: "Indicates pending state".into(),
+								},
+						]),
 					}
 				}
 			}

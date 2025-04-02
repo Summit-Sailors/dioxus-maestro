@@ -8,18 +8,25 @@ use {
 };
 
 #[derive(Debug, Clone, PartialEq, Default)]
-pub struct TableBody {
+pub struct PropsStruct {
 	pub prop: String,
 	pub prop_type: String,
 	pub prop_default: String,
 	pub tooltip_text: Option<String>,
 }
 
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct AttrsStruct {
+	pub attr: String,
+	pub description: String,
+	pub value: String,
+}
+
 #[derive(Clone, PartialEq, Props)]
 pub struct TableProps {
 	#[props(extends = table, extends = GlobalAttributes)]
 	attributes: Vec<Attribute>,
-	pub content: Vec<TableBody>,
+	pub content: Vec<PropsStruct>,
 }
 
 pub fn PropsTable(props: TableProps) -> Element {
@@ -33,7 +40,7 @@ pub fn PropsTable(props: TableProps) -> Element {
 				}
 			}
 			tbody { class: "*:not-last:border-b *:not-last:border-b-neutral-700",
-				for TableBody { prop , prop_type , prop_default , tooltip_text } in props.content.iter() {
+				for PropsStruct { prop , prop_type , prop_default , tooltip_text } in props.content.iter() {
 					tr { class: "*:px-3 *:py-2 *:not-last:border-r *:not-last:border-r-neutral-800",
 						td { class: "flex items-center gap-2",
 							"{prop}"
@@ -67,6 +74,41 @@ pub fn PropsTable(props: TableProps) -> Element {
 								"{prop_default}"
 							}
 						}
+					}
+				}
+
+			}
+		}
+	}
+}
+
+#[derive(Clone, PartialEq, Props)]
+pub struct AttrsProps {
+	#[props(extends = table, extends = GlobalAttributes)]
+	attributes: Vec<Attribute>,
+	pub content: Vec<AttrsStruct>,
+}
+
+pub fn AttrsTable(props: AttrsProps) -> Element {
+	rsx! {
+		table { class: "w-full overflow-auto",
+			thead {
+				tr { class: "border-b border-b-neutral-700 bg-neutral-800/40 *:py-2 *:not-last:border-r *:not-last:border-r-neutral-800 *:px-3 *:font-medium *:text-base",
+					th { "Attribute" }
+					th { "Value" }
+					th { "Description" }
+				}
+			}
+			tbody { class: "*:not-last:border-b *:not-last:border-b-neutral-700",
+				for AttrsStruct { attr , description, value } in props.content.iter() {
+					tr { class: "*:px-3 *:py-2 *:not-last:border-r *:not-last:border-r-neutral-800",
+						td { class: "flex items-center gap-2", "{attr}" }
+						td {
+							span { class: "px-1 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-800 inline-flex items-center justify-center",
+								"{value}"
+							}
+						}
+						td { class: "flex items-center gap-2", "{description}" }
 					}
 				}
 

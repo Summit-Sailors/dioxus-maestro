@@ -1028,6 +1028,13 @@
       }
     }
   }
+  .hover\:border-b-neutral-500 {
+    &:hover {
+      @media (hover: hover) {
+        border-bottom-color: var(--color-neutral-500);
+      }
+    }
+  }
   .hover\:border-b-orange-600\/50 {
     &:hover {
       @media (hover: hover) {
@@ -1130,6 +1137,11 @@
       border-color: var(--color-orange-600);
     }
   }
+  .focus-visible\:border-b-neutral-100 {
+    &:focus-visible {
+      border-bottom-color: var(--color-neutral-100);
+    }
+  }
   .focus-visible\:border-b-orange-600 {
     &:focus-visible {
       border-bottom-color: var(--color-orange-600);
@@ -1138,6 +1150,11 @@
   .focus-visible\:bg-slate-200 {
     &:focus-visible {
       background-color: var(--color-slate-200);
+    }
+  }
+  .focus-visible\:text-neutral-100 {
+    &:focus-visible {
+      color: var(--color-neutral-100);
     }
   }
   .focus-visible\:text-orange-600 {
@@ -1271,6 +1288,11 @@
   .data-\[state\=\]\:h-fit {
     &[data-state=""] {
       height: fit-content;
+    }
+  }
+  .data-\[state\=active\]\:border-b-neutral-100 {
+    &[data-state="active"] {
+      border-bottom-color: var(--color-neutral-100);
     }
   }
   .data-\[state\=active\]\:border-b-orange-600 {

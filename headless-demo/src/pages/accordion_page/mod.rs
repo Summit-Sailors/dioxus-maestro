@@ -1,20 +1,29 @@
 use {
-	crate::components::{
-		description_section::DescriptionSection,
-		props_table::{PropsTable, TableBody},
+	crate::{
+		components::{
+			description_section::DescriptionSection,
+			example_code::{ExampleCodeAnatomy, ExampleCodeCollapsible},
+			features_list::Features,
+			tables::{AttrsStruct, PropsStruct},
+			tabs::PageTabs,
+		},
+		pages::accordion_page::consts::{EXAMPLE, EXAMPLE_ANATOMY},
 	},
 	dioxus::prelude::*,
 	dioxus_free_icons::{Icon, icons::bs_icons::BsCheckLg},
 	maestro_headless::{
 		accordion::{Accordion, AccordionContent, AccordionHeader, AccordionItem, AccordionTrigger, AccordionVariant},
-		collapsible::{Collapsible, CollapsibleContent, CollapsibleTrigger},
 		shared::EOrientation,
-		tabs::{Tabs, TabsContent, TabsList, TabsTrigger},
 	},
 };
 
+mod consts;
+
 #[component]
 pub fn AccordionPage() -> Element {
+	let features_list: Vec<&str> =
+		Vec::from(["Controlled/uncontrolled state", "Open single or multiple items", "Keyboard navigation", "Horizontal/vertical orientation"]);
+
 	rsx! {
 		DescriptionSection {
 			title: "Accordion",
@@ -78,129 +87,16 @@ pub fn AccordionPage() -> Element {
 						}
 					}
 				}
-				div { class: "py-3 w-full px-6 border-t border-neutral-800 bg-neutral-950 overflow-hidden",
-					Collapsible { class: "flex flex-col  max-h-[640px] h-full ",
-						div { class: "flex items-center gap-3 py-3",
-							CollapsibleTrigger { class: "flex items-center justify-center px-3 py-2 font-medium rounded bg-orange-600 border-2 border-transparent hover:border-orange-600 text-neutral-50 hover:bg-neutral-950 focus-visible:ring-2 ring-orange-600 ring-offset-neutral-950 focus-visible:ring-offset-2 focus-visible:outline-none transition-colors ease-linear",
-								"Open Code"
-							}
-						}
-						CollapsibleContent { class: "data-[state=closed]:animate-slide-out data-[state=open]:animate-slide-in overflow-auto",
-							code { class: "font-mono whitespace-pre text-xs text-neutral-300",
-								pre {
-									"use dioxus::prelude::*;
-use maestro_headless::accordion::{{Accordion, AccordionContent, AccordionHeader, AccordionItem, AccordionTrigger, AccordionVariant}};
-
-rsx! {{
-  Accordion {{
-    default_value: Vec::from(['1'.into()]),
-    class: 'relative w-full max-w-96 flex flex-col rounded-sm bg-neutral-900 text-neutral-100 p-0.5 transition-all ease-linear overflow-hidden',
-    variant: AccordionVariant::Single,
-    AccordionItem {{
-      value: '1',
-      class: 'flex flex-col data-[state=open]:gap-3 data-[disabled=true]:opacity-50 data-[disabled=true]:pointer-events-none border-b border-b-neutral-500',
-      AccordionHeader {{
-        AccordionTrigger {{ 
-          class: 'px-4 py-2 h-full w-full hover:bg-neutral-800 data-[state=open]:border-b border-b-neutral-700 data-[state=open]:text-orange-600 transition-all ease-linear focus-visible:ring-2 focus-visible:ring-orange-600 focus-visible:outline-none line-clamp-1',
-          'Default opened'
-        }}
-      }}
-      AccordionContent {{ 
-        class: 'flex overflow-hidden data-[state=open]:h-fit data-[state=closed]:h-0 transition-all ease-linear px-4 data-[state=open]:py-2',
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
-      }}
-    }}
-    AccordionItem {{
-      value: '2',
-      class: 'flex flex-col data-[state=open]:gap-3 data-[disabled=true]:opacity-50 data-[disabled=true]:pointer-events-none border-b border-b-neutral-500',
-      AccordionHeader {{ 
-        AccordionTrigger {{
-          class:'px-4 py-2 h-full w-full hover:bg-neutral-800 data-[state=open]:border-b border-b-neutral-700 data-[state=open]:text-orange-600 transition-all ease-linear focus-visible:ring-2 focus-visible:ring-orange-600 focus-visible:outline-none line-clamp-1',
-          'Sed ut perspiciatis unde...'
-        }}
-      }}
-      AccordionContent {{
-        class: 'flex overflow-hidden data-[state=open]:h-fit data-[state=closed]:h-0 transition-all ease-linear px-4 data-[state=open]:py-2',
-        'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore
-        veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia
-        consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.'
-      }}
-    }}
-    AccordionItem {{
-      value: '3',
-      disabled: true,
-      class: 'flex flex-col data-[state=open]:gap-3 data-[disabled=true]:opacity-50 data-[disabled=true]:pointer-events-none border-b border-b-neutral-500',
-      AccordionHeader {{ 
-        AccordionTrigger {{
-          class: 'px-4 py-2 h-full w-full hover:bg-neutral-800 data-[state=open]:border-b border-b-neutral-700 data-[state=open]:text-orange-600 transition-all ease-linear focus-visible:ring-2 focus-visible:ring-orange-600 focus-visible:outline-none line-clamp-1',
-          'I\'m disabled :('
-        }}
-      }}
-      AccordionContent {{
-        class: 'flex overflow-hidden data-[state=open]:h-fit data-[state=closed]:h-0 transition-all ease-linear px-4 data-[state=open]:py-2',
-        'Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.'
-      }}
-    }}
-    AccordionItem {{
-      value: '4',
-      class: 'flex flex-col data-[state=open]:gap-3 data-[disabled=true]:opacity-50 data-[disabled=true]:pointer-events-none border-b border-b-neutral-500',
-      AccordionHeader {{ 
-        AccordionTrigger {{
-          class: 'px-4 py-2 h-full w-full hover:bg-neutral-800 data-[state=open]:border-b border-b-neutral-700 data-[state=open]:text-orange-600 transition-all ease-linear focus-visible:ring-2 focus-visible:ring-orange-600 focus-visible:outline-none line-clamp-1',
-          'Ut enim ad minima veniam'
-        }}
-      }}
-      AccordionContent {{
-        class: 'flex overflow-hidden data-[state=open]:h-fit data-[state=closed]:h-0 transition-all ease-linear px-4 data-[state=open]:py-2',
-        'Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur?'
-      }}
-    }}  
-  }}
-}}"
-								}
-							}
-						}
-					}
-				}
+				ExampleCodeCollapsible { code: EXAMPLE }
 			}
 		}
 		DescriptionSection { title: "Supports",
-			ul { class: "flex flex-col gap-2 *:flex *:items-center *:gap-2",
-				li {
-					Icon { icon: BsCheckLg {}, class: "text-orange-600" }
-					"Controlled/uncontrolled state"
-				}
-				li {
-					Icon { icon: BsCheckLg {}, class: "text-orange-600" }
-					"Open single or multiple items"
-				}
-				li {
-					Icon { icon: BsCheckLg {}, class: "text-orange-600" }
-					"Keyboard navigation"
-				}
-				li {
-					Icon { icon: BsCheckLg {}, class: "text-orange-600" }
-					"Horizontal/vertical orientation"
-				}
-			}
+			Features { features: features_list.clone() }
 		}
 		DescriptionSection {
 			title: "Usage and Anatomy",
 			description: "Import all parts and piece them together. Each part may be styled separately, accept own properties and additional attributes, e.g. \"data\" or \"aria\" (althought they are provided by default).",
-			div { class: "grow flex flex-col rounded-md border border-neutral-800 bg-neutral-950 p-6",
-				code { class: "font-mono whitespace-pre text-xs text-neutral-300",
-					pre {
-						"Accordion {{
-	AccordionItem {{
-		AccordionTrigger {{ 
-			AccordionHeader {{  }}
-		}}
-		AccordionContent {{  }}
-	}}
-}}"
-					}
-				}
-			}
+			ExampleCodeAnatomy { code: EXAMPLE_ANATOMY }
 		}
 		DescriptionSection { title: "Api Reference",
 			div { class: "flex flex-col space-y-6",
@@ -224,70 +120,100 @@ rsx! {{
 						}
 						"."
 					}
-					div { class: "overflow-hidden rounded-sm border border-neutral-700",
-						PropsTable {
-							content: Vec::from([
-									TableBody {
-											prop: "value".into(),
-											prop_default: "None".into(),
-											prop_type: "Option<Vec<String>>".into(),
-											tooltip_text: Some(
-													"Must be used in pair with on_value_change callback".into(),
-											),
-									},
-									TableBody {
-											prop: "on_value_change".into(),
-											prop_default: "None".into(),
-											prop_type: "Callback<Vec<String>>".into(),
-											tooltip_text: Some("Must be used in pair with value prop".into()),
-									},
-									TableBody {
-											prop: "default_value".into(),
-											prop_default: "[]".into(),
-											prop_type: "Vec<String>".into(),
-											tooltip_text: None,
-									},
-									TableBody {
-											prop: "orientation".into(),
-											prop_default: "EOrientation::Vertical".into(),
-											prop_type: "EOrientation::Vertical | EOrientation::Horizontal".into(),
-											tooltip_text: None,
-									},
-									TableBody {
-											prop: "collapsible".into(),
-											prop_default: "true".into(),
-											prop_type: "bool".into(),
-											tooltip_text: Some(
-													"If false and variant 'single', at least one item will always be opened"
-															.into(),
-											),
-									},
-									TableBody {
-											prop: "disabled".into(),
-											prop_default: "false".into(),
-											prop_type: "bool".into(),
-											tooltip_text: Some("Prevents toggling all items".into()),
-									},
-									TableBody {
-											prop: "variant".into(),
-											prop_default: "AccordionVariant::Single".into(),
-											prop_type: "AccordionVariant::Single | AccordionVariant::Multiple".into(),
-											tooltip_text: None,
-									},
-									TableBody {
-											prop: "attributes".into(),
-											prop_default: "[]".into(),
-											prop_type: "Vec<Attribute>".into(),
-											tooltip_text: Some("Extends 'global' and 'ul' attribules".into()),
-									},
-									TableBody {
-											prop: "children".into(),
-											prop_default: "-".into(),
-											prop_type: "Element".into(),
-											tooltip_text: Some("Required".into()),
-									},
-							]),
-						}
+					PageTabs {
+						props_list: Vec::from([
+								PropsStruct {
+										prop: "value".into(),
+										prop_default: "None".into(),
+										prop_type: "Option<Vec<String>>".into(),
+										tooltip_text: Some(
+												"Must be used in pair with on_value_change callback".into(),
+										),
+								},
+								PropsStruct {
+										prop: "on_value_change".into(),
+										prop_default: "None".into(),
+										prop_type: "Callback<Vec<String>>".into(),
+										tooltip_text: Some("Must be used in pair with value prop".into()),
+								},
+								PropsStruct {
+										prop: "default_value".into(),
+										prop_default: "[]".into(),
+										prop_type: "Vec<String>".into(),
+										tooltip_text: None,
+								},
+								PropsStruct {
+										prop: "orientation".into(),
+										prop_default: "EOrientation::Vertical".into(),
+										prop_type: "EOrientation::Vertical | EOrientation::Horizontal".into(),
+										tooltip_text: None,
+								},
+								PropsStruct {
+										prop: "collapsible".into(),
+										prop_default: "true".into(),
+										prop_type: "bool".into(),
+										tooltip_text: Some(
+												"If false and variant 'single', at least one item will always be opened"
+														.into(),
+										),
+								},
+								PropsStruct {
+										prop: "disabled".into(),
+										prop_default: "false".into(),
+										prop_type: "bool".into(),
+										tooltip_text: Some("Prevents toggling all items".into()),
+								},
+								PropsStruct {
+										prop: "variant".into(),
+										prop_default: "AccordionVariant::Single".into(),
+										prop_type: "AccordionVariant::Single | AccordionVariant::Multiple".into(),
+										tooltip_text: None,
+								},
+								PropsStruct {
+										prop: "attributes".into(),
+										prop_default: "[]".into(),
+										prop_type: "Vec<Attribute>".into(),
+										tooltip_text: Some("Extends 'global' and 'ul' attribules".into()),
+								},
+								PropsStruct {
+										prop: "children".into(),
+										prop_default: "-".into(),
+										prop_type: "Element".into(),
+										tooltip_text: Some("Required".into()),
+								},
+						]),
+						attrs_list: Vec::from([
+								AttrsStruct {
+										attr: "role".into(),
+										value: "accordion".into(),
+										description: "".into(),
+								},
+								AttrsStruct {
+										attr: "aria-disabled".into(),
+										value: "true".into(),
+										description: "Appears only if the whole accordion is disabled".into(),
+								},
+								AttrsStruct {
+										attr: "aria-orientation".into(),
+										value: "vertical | horizontal".into(),
+										description: "".into(),
+								},
+								AttrsStruct {
+										attr: "data-disabled".into(),
+										value: "true".into(),
+										description: "Appears only if the whole accordion is disabled".into(),
+								},
+								AttrsStruct {
+										attr: "data-orientation".into(),
+										value: "vertical | horizontal".into(),
+										description: "".into(),
+								},
+								AttrsStruct {
+										attr: "data-role".into(),
+										value: "accordion".into(),
+										description: "".into(),
+								},
+						]),
 					}
 				}
 				div { class: "flex flex-col gap-4",
@@ -306,35 +232,60 @@ rsx! {{
 						" item and prevent it from expanding and other interactions."
 
 					}
-					div { class: "overflow-hidden rounded-sm border border-neutral-700",
-						PropsTable {
-							content: Vec::from([
-									TableBody {
-											prop: "value".into(),
-											prop_default: "-".into(),
-											prop_type: "String".into(),
-											tooltip_text: Some("Required".into()),
-									},
-									TableBody {
-											prop: "disabled".into(),
-											prop_default: "false".into(),
-											prop_type: "bool".into(),
-											tooltip_text: Some("Prevents toggling current item".into()),
-									},
-									TableBody {
-											prop: "attributes".into(),
-											prop_default: "[]".into(),
-											prop_type: "Vec<Attribute>".into(),
-											tooltip_text: Some("Extends 'global' and 'li' attribules".into()),
-									},
-									TableBody {
-											prop: "children".into(),
-											prop_default: "-".into(),
-											prop_type: "Element".into(),
-											tooltip_text: Some("Required".into()),
-									},
-							]),
-						}
+					PageTabs {
+						props_list: Vec::from([
+								PropsStruct {
+										prop: "value".into(),
+										prop_default: "-".into(),
+										prop_type: "String".into(),
+										tooltip_text: Some("Required".into()),
+								},
+								PropsStruct {
+										prop: "disabled".into(),
+										prop_default: "false".into(),
+										prop_type: "bool".into(),
+										tooltip_text: Some("Prevents toggling current item".into()),
+								},
+								PropsStruct {
+										prop: "attributes".into(),
+										prop_default: "[]".into(),
+										prop_type: "Vec<Attribute>".into(),
+										tooltip_text: Some("Extends 'global' and 'li' attribules".into()),
+								},
+								PropsStruct {
+										prop: "children".into(),
+										prop_default: "-".into(),
+										prop_type: "Element".into(),
+										tooltip_text: Some("Required".into()),
+								},
+						]),
+						attrs_list: Vec::from([
+								AttrsStruct {
+										attr: "role".into(),
+										value: "presentation".into(),
+										description: "".into(),
+								},
+								AttrsStruct {
+										attr: "aria-disabled".into(),
+										value: "true".into(),
+										description: "Appears only if the current item is disabled".into(),
+								},
+								AttrsStruct {
+										attr: "data-disabled".into(),
+										value: "true".into(),
+										description: "Appears only if the current item is disabled".into(),
+								},
+								AttrsStruct {
+										attr: "data-state".into(),
+										value: "open | closed".into(),
+										description: "".into(),
+								},
+								AttrsStruct {
+										attr: "data-role".into(),
+										value: "accordion-item".into(),
+										description: "".into(),
+								},
+						]),
 					}
 				}
 				div { class: "flex flex-col gap-4",
@@ -346,23 +297,28 @@ rsx! {{
 						}
 						"."
 					}
-					div { class: "overflow-hidden rounded-sm border border-neutral-700",
-						PropsTable {
-							content: Vec::from([
-									TableBody {
-											prop: "attributes".into(),
-											prop_default: "[]".into(),
-											prop_type: "Vec<Attribute>".into(),
-											tooltip_text: Some("Extends 'global' and 'div' attribules".into()),
-									},
-									TableBody {
-											prop: "children".into(),
-											prop_default: "-".into(),
-											prop_type: "Element".into(),
-											tooltip_text: Some("Required".into()),
-									},
-							]),
-						}
+					PageTabs {
+						props_list: Vec::from([
+								PropsStruct {
+										prop: "attributes".into(),
+										prop_default: "[]".into(),
+										prop_type: "Vec<Attribute>".into(),
+										tooltip_text: Some("Extends 'global' and 'div' attribules".into()),
+								},
+								PropsStruct {
+										prop: "children".into(),
+										prop_default: "-".into(),
+										prop_type: "Element".into(),
+										tooltip_text: Some("Required".into()),
+								},
+						]),
+						attrs_list: Vec::from([
+								AttrsStruct {
+										attr: "data-state".into(),
+										value: "open | closed".into(),
+										description: "".into(),
+								},
+						]),
 					}
 				}
 				div { class: "flex flex-col gap-4",
@@ -374,45 +330,85 @@ rsx! {{
 						}
 						"."
 					}
-					div { class: "overflow-hidden rounded-sm border border-neutral-700",
-						PropsTable {
-							content: Vec::from([
-									TableBody {
-											prop: "attributes".into(),
-											prop_default: "[]".into(),
-											prop_type: "Vec<Attribute>".into(),
-											tooltip_text: Some("Extends 'global' and 'button' attribules".into()),
-									},
-									TableBody {
-											prop: "children".into(),
-											prop_default: "-".into(),
-											prop_type: "Element".into(),
-											tooltip_text: Some("Required".into()),
-									},
-							]),
-						}
+					PageTabs {
+						props_list: Vec::from([
+								PropsStruct {
+										prop: "attributes".into(),
+										prop_default: "[]".into(),
+										prop_type: "Vec<Attribute>".into(),
+										tooltip_text: Some("Extends 'global' and 'button' attribules".into()),
+								},
+								PropsStruct {
+										prop: "children".into(),
+										prop_default: "-".into(),
+										prop_type: "Element".into(),
+										tooltip_text: Some("Required".into()),
+								},
+						]),
+						attrs_list: Vec::from([
+								AttrsStruct {
+										attr: "data-state".into(),
+										value: "open | closed".into(),
+										description: "".into(),
+								},
+								AttrsStruct {
+										attr: "aria_expanded".into(),
+										value: "true".into(),
+										description: "Appears if current item is opened".into(),
+								},
+								AttrsStruct {
+										attr: "data-role".into(),
+										value: "accordion-trigger".into(),
+										description: "".into(),
+								},
+						]),
 					}
 				}
 				div { class: "flex flex-col gap-4",
 					h4 { class: "font-medium text-lg text-orange-300", "Content Component" }
 					p { class: "mb-4", "Contains the collapsible content for an item." }
-					div { class: "overflow-hidden rounded-sm border border-neutral-700",
-						PropsTable {
-							content: Vec::from([
-									TableBody {
-											prop: "attributes".into(),
-											prop_default: "[]".into(),
-											prop_type: "Vec<Attribute>".into(),
-											tooltip_text: Some("Extends 'global' and 'div' attribules".into()),
-									},
-									TableBody {
-											prop: "children".into(),
-											prop_default: "-".into(),
-											prop_type: "Element".into(),
-											tooltip_text: Some("Required".into()),
-									},
-							]),
-						}
+					PageTabs {
+						props_list: Vec::from([
+								PropsStruct {
+										prop: "attributes".into(),
+										prop_default: "[]".into(),
+										prop_type: "Vec<Attribute>".into(),
+										tooltip_text: Some("Extends 'global' and 'div' attribules".into()),
+								},
+								PropsStruct {
+										prop: "children".into(),
+										prop_default: "-".into(),
+										prop_type: "Element".into(),
+										tooltip_text: Some("Required".into()),
+								},
+						]),
+						attrs_list: Vec::from([
+								AttrsStruct {
+										attr: "data-state".into(),
+										value: "open | closed".into(),
+										description: "".into(),
+								},
+								AttrsStruct {
+										attr: "data-role".into(),
+										value: "accordion-content".into(),
+										description: "".into(),
+								},
+								AttrsStruct {
+										attr: "aria_expanded".into(),
+										value: "true".into(),
+										description: "".into(),
+								},
+								AttrsStruct {
+										attr: "--maestro-headless-accordion-height".into(),
+										value: "<>px".into(),
+										description: "CSS variable".into(),
+								},
+								AttrsStruct {
+										attr: "--maestro-headless-accordion-height".into(),
+										value: "<>px".into(),
+										description: "CSS variable".into(),
+								},
+						]),
 					}
 				}
 			}

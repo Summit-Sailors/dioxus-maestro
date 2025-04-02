@@ -270,6 +270,8 @@ pub fn AccordionContent(props: AccordionContentProps) -> Element {
 				aria_labelledby: accordion_item_context.trigger_id.to_string(),
 				"data-state": if *accordion_item_context.open.read() { "open" } else { "closed" },
 				"data-role": "accordion-content",
+				aria_expanded: accordion_item_context.open.read().then_some(Some(true)),
+				aria_hidden: !*accordion_item_context.open.read(),
 				onmounted: move |event: Event<MountedData>| current_ref.set(Some(event.data())),
 				..attrs,
 				{props.children}

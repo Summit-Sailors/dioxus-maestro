@@ -1,21 +1,22 @@
 use {
 	crate::components::{
 		description_section::DescriptionSection,
-		props_table::{PropsTable, TableBody},
+		example_code::ExampleCodeCollapsible,
+		features_list::Features,
+		tables::{PropsStruct, PropsTable},
 	},
+	consts::EXAMPLE,
 	dioxus::prelude::*,
-	dioxus_free_icons::{
-		Icon,
-		icons::bs_icons::{BsBrush, BsCheckLg, BsCode, BsCollection, BsEyedropper},
-	},
-	maestro_headless::{
-		aspect_ratio::AspectRatio,
-		collapsible::{Collapsible, CollapsibleContent, CollapsibleTrigger},
-	},
+	dioxus_free_icons::{Icon, icons::bs_icons::BsCheckLg},
+	maestro_headless::aspect_ratio::AspectRatio,
 };
+
+mod consts;
 
 #[component]
 pub fn AspectRatioPage() -> Element {
+	let features_list: Vec<&str> = Vec::from(["Accepts any custom aspect ratio"]);
+
 	rsx! {
 		DescriptionSection {
 			title: "Aspect Ratio",
@@ -34,46 +35,11 @@ pub fn AspectRatioPage() -> Element {
 						}
 					}
 				}
-				div { class: "py-3 w-full px-6 border-t border-neutral-800 bg-neutral-950 overflow-hidden",
-					Collapsible { class: "flex flex-col  max-h-[640px] h-full ",
-						div { class: "flex items-center gap-3 py-3",
-							CollapsibleTrigger { class: "flex items-center justify-center px-3 py-2 font-medium rounded bg-orange-600 border-2 border-transparent hover:border-orange-600 text-neutral-50 hover:bg-neutral-950 focus-visible:ring-2 ring-orange-600 ring-offset-neutral-950 focus-visible:ring-offset-2 focus-visible:outline-none transition-colors ease-linear",
-								"Open Code"
-							}
-						}
-						CollapsibleContent { class: "data-[state=closed]:animate-slide-out data-[state=open]:animate-slide-in overflow-auto",
-							code { class: "font-mono whitespace-pre text-xs text-neutral-300",
-								pre {
-									"use dioxus::prelude::*;
-use maestro_headless::aspect_ratio::AspectRatio;
-
-rsx! {{
-  div {{ 
-    class: 'w-64 overflow-hidden rounded-md',
-    AspectRatio {{
-      ratio: 16.0 / 9.0,
-      img {{
-        class: 'size-full object-cover',
-        src: 'https://ychef.files.bbci.co.uk/1280x720/p01x8qtv.jpg',
-        alt: 'Ocean',
-      }}
-    }}
-  }}
-}}"
-								}
-							}
-						}
-					}
-				}
+				ExampleCodeCollapsible { code: EXAMPLE }
 			}
 		}
 		DescriptionSection { title: "Supports",
-			ul { class: "fflex flex-col gap-2 *:flex *:items-center *:gap-2",
-				li {
-					Icon { icon: BsCheckLg {}, class: "text-orange-600" }
-					"Accepts any custom aspect ratio"
-				}
-			}
+			Features { features: features_list.clone() }
 		}
 		DescriptionSection {
 			title: "Usage and Anatomy",
@@ -92,19 +58,19 @@ rsx! {{
 					div { class: "overflow-hidden rounded-sm border border-neutral-700",
 						PropsTable {
 							content: Vec::from([
-									TableBody {
+									PropsStruct {
 											prop: "ratio".into(),
 											prop_default: "1.0".into(),
 											prop_type: "f32".into(),
 											tooltip_text: None,
 									},
-									TableBody {
+									PropsStruct {
 											prop: "attributes".into(),
 											prop_default: "[]".into(),
 											prop_type: "Vec<Attribute>".into(),
 											tooltip_text: Some("Extends 'global' and 'li' attribules".into()),
 									},
-									TableBody {
+									PropsStruct {
 											prop: "children".into(),
 											prop_default: "-".into(),
 											prop_type: "Element".into(),

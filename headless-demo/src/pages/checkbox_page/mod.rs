@@ -1,8 +1,5 @@
 use {
-	crate::components::{
-		description_section::DescriptionSection,
-		props_table::{PropsTable, TableBody},
-	},
+	crate::components::description_section::DescriptionSection,
 	checkbox_content::CheckboxContent,
 	checkbox_group_content::CheckboxGroupContent,
 	dioxus::prelude::*,
@@ -20,6 +17,7 @@ use {
 
 mod checkbox_content;
 mod checkbox_group_content;
+mod consts;
 
 #[component]
 pub fn CheckboxPage() -> Element {
