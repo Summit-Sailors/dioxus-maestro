@@ -149,7 +149,7 @@ pub fn DialogContent(props: DialogContentProps) -> Element {
 	use_escape(handle_close, context.open);
 
 	rsx! {
-		Presence { node_ref, present: context.open.read().unwrap_or_default(),
+		Presence { node_ref, present: *context.open.read(),
 			FocusTrap {
 				div {
 					role: "dialog",
