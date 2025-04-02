@@ -1,3 +1,3 @@
-mod popover_component;
+mod component;
 
-pub use popover_component::*;
+pub use component::*;

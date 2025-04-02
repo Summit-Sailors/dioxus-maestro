@@ -1,3 +1,3 @@
-mod dialog_component;
+mod component;
 
-pub use dialog_component::*;
+pub use component::*;

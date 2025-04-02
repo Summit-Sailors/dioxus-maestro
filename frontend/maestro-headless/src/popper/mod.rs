@@ -1,3 +1,3 @@
-mod popper_component;
+mod component;
 
-pub use popper_component::*;
+pub use component::popper::*;

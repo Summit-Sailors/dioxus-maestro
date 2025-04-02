@@ -1,3 +1,3 @@
-mod separator_component;
+mod component;
 
-pub use separator_component::*;
+pub use component::*;

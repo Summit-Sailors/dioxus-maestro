@@ -1,0 +1,112 @@
+@import "tailwindcss";
+
+@theme {
+  --font-poppins: Poppins, sans-serif;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+  --breakpoint-3xl: 1728px;
+
+  --animate-fade-in: fade-in 0.5s linear;
+  --animate-fade-out: fade-out 0.3s linear;
+  --animate-slide-in: slide-in 0.5s linear;
+  --animate-slide-out: slide-out 0.3s linear;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 100;
+    }
+  }
+
+  @keyframes fade-out {
+    from {
+      opacity: 100;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+  @keyframes slide-in {
+    from {
+      height: 0px;
+    }
+    to {
+      height: var(--maestro-headless-collapsible-height);
+    }
+  }
+
+  @keyframes slide-out {
+    from {
+      height: var(--maestro-headless-collapsible-height);
+    }
+    to {
+      height: 0px;
+    }
+  }
+}
+
+/* base styles */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    height: 100%;
+    min-height: 100vh;
+  }
+
+  body {
+    @apply bg-neutral-900 text-neutral-100 text-sm font-poppins flex flex-col max-h-screen h-full [&>div]:flex [&>div]:flex-col [&>div]:h-full [&>div]:grow;
+  }
+}
+
+@utility container {
+  @apply w-full mx-auto px-6;
+
+  @media (min-width: 640px) {
+    max-width: 584px;
+  }
+
+  @media (min-width: 1024px) {
+    max-width: 854px;
+  }
+
+  @media (min-width: 1280px) {
+    max-width: 1066px;
+  }
+
+  @media (min-width: 1536px) {
+    max-width: 1260px;
+  }
+
+  @media (min-width: 1728px) {
+    max-width: 1440px;
+  }
+}
+
+/* @utility maestro-toast {
+  @apply transition-all duration-200 ease-in-out relative p-4 rounded-lg;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  width: max-content;
+  max-width: 90vw;
+}
+
+/* responsive toast containers */
+/* .toast-scope [id^="wrap-"] {
+  @apply flex flex-col gap-2 max-h-[calc(100vh-2rem)] overflow-y-auto w-max max-w-[384px] sm:max-w-[90vw];
+} */
+
+/* media queries */
+/* @media (max-width: 640px) {
+  .toast-scope [id^="wrap-"] {
+    max-width: calc(100vw - 2rem);
+  }
+
+  .maestro-toast {
+    width: 100%;
+    max-width: 100%;
+  }
+} */

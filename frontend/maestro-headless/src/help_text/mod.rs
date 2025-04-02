@@ -1,3 +1,3 @@
-mod help_text_component;
+mod component;
 
-pub use help_text_component::*;
+pub use component::*;

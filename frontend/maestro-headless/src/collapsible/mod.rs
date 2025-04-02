@@ -1,3 +1,3 @@
-mod collapsible_component;
+mod component;
 
-pub use collapsible_component::*;
+pub use component::*;

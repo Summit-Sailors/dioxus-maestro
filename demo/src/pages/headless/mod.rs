@@ -20,12 +20,12 @@ use {
 		popover::{Popover, PopoverArrow, PopoverContent, PopoverTrigger},
 		range::{Range, RangeThumb, RangeTrack, RangeTrackWrapper},
 		select::{OptionSelectedIndicator, Select, SelectDropdown, SelectIcon, SelectOption, SelectTrigger, SelectValue},
+		shared::{EAlign, EOrientation, ESide},
 		switch::{Switch, SwitchIndicator},
 		tabs::{Tabs, TabsContent, TabsList, TabsTrigger},
 		toggle::Toggle,
 		toggle_group::{ToggleGroup, ToggleGroupItem},
 		tooltip::{Tooltip, TooltipArrow, TooltipContent, TooltipProvider, TooltipTrigger},
-		utils::{EAlign, EOrientation, ESide},
 	},
 	maestro_toast::{ctx::use_toast, toast_info::ToastInfo, toast_position::EToastPosition},
 	std::time::Duration,
@@ -191,7 +191,7 @@ pub fn HeadlessDemo() -> Element {
 
 				Dialog {
 					open: popup_open(),
-					on_open_change: move |value: Option<bool>| popup_open.set(value.unwrap_or_default()),
+					on_open_change: move |value: bool| popup_open.set(value),
 					DialogTrigger { class: "rounded-full w-fit px-3 py-2 h-12 focus-visible:ring-2 focus-visible:ring-offset-2 outline-none transition-colors bg-orange-600 border border-slate-200 text-slate-100 hover:bg-orange-800  focus-visible:ring-orange-200 focus-visible:ring-offset-black focus-visible:bg-orange-800 aria-[disabled=true]:opacity-50 aria-[disabled=true]:pointer-events-none data-[pending=true]:bg-slate-500",
 						"Open Dialog"
 					}
@@ -222,7 +222,7 @@ pub fn HeadlessDemo() -> Element {
 		div { class: "flex gap-6",
 			Select {
 				value: selected(),
-				on_value_change: move |value: Option<Vec<String>>| { selected.set(value.unwrap_or_default()) },
+				on_value_change: move |value: Vec<String>| { selected.set(value) },
 				class: "relative w-fit",
 				SelectTrigger { class: "rounded border border-slate-300 bg-slate-900 text-slate-100 w-36 flex justify-between items-center gap-4 px-3 py-2 min-h-12 ",
 					SelectValue {
@@ -289,7 +289,7 @@ pub fn HeadlessDemo() -> Element {
 			Select {
 				multi: true,
 				value: multi_selected(),
-				on_value_change: move |value: Option<Vec<String>>| { multi_selected.set(value.unwrap_or_default()) },
+				on_value_change: move |value: Vec<String>| { multi_selected.set(value) },
 				class: "relative w-fit",
 				SelectTrigger { class: "rounded border border-slate-300 bg-slate-900 text-slate-100 w-60 flex justify-between items-center gap-4 px-3 py-2 min-h-12 ",
 					SelectValue {
@@ -444,7 +444,7 @@ pub fn HeadlessDemo() -> Element {
 				class: "aria-[pressed=true]:bg-orange-700 bg-orange-500 text-slate-50 flex justify-center items-center p-3 w-12 h-12 rounded",
 				pressed: toggle(),
 				value: "on",
-				on_toggle_change: move |value: Option<bool>| toggle.set(value.unwrap_or_default()),
+				on_toggle_change: move |value: bool| toggle.set(value),
 			}
 			Toggle {
 				value: "on",
@@ -457,7 +457,7 @@ pub fn HeadlessDemo() -> Element {
 			ToggleGroup {
 				class: "flex justify-center items-center rounded overflow-hidden border border-slate-700",
 				value: group_toggle_value(),
-				on_value_chenge: move |value: Option<String>| group_toggle_value.set(value.unwrap_or_default()),
+				on_value_chenge: move |value: String| group_toggle_value.set(value),
 				ToggleGroupItem {
 					class: "data-[state=on]:bg-slate-200  data-[state=on]:text-slate-900 border-r border-r-slate-700 bg-slate-600 text-slate-50 flex justify-center items-center p-3 w-12 h-12",
 					value: "1",
@@ -482,17 +482,17 @@ pub fn HeadlessDemo() -> Element {
 					value: group_toggle_value(),
 					name: "box",
 					CheckboxIndicator { class: "text-slate-100 " }
-				}
-				span { class: "text-slate-100", "Check" }
-			}
-			div { class: "flex justify-center items-center gap-3",
-				Checkbox {
-					class: "w-10 h-10 rounded flex items-center justify-center border border-slate-100",
+			Checkbox { class: "", value: group_toggle_value(), name: "box",
+				div { class: "flex justify-center items-center gap-3",
+					CheckboxInput { class: "w-10 h-10 rounded flex items-center justify-center border border-slate-100",
+						CheckboxIndicator { class: "text-slate-100 " }
+					}
+					span { class: "text-slate-100", "Check" }
 					value: 1_i32.to_string(),
 					name: "box",
 					checked: checked(),
-					on_change: move |v: Option<bool>| {
-							checked.set(v.unwrap_or_default());
+					on_change: move |v: bool| {
+							checked.set(v);
 					},
 					CheckboxIndicator { class: "text-slate-100 " }
 				}
@@ -521,8 +521,8 @@ pub fn HeadlessDemo() -> Element {
 			Popover {
 				class: "mx-auto w-64",
 				open: is_open(),
-				on_open_change: move |value: Option<bool>| {
-						is_open.set(value.unwrap_or_default());
+				on_open_change: move |value: bool| {
+						is_open.set(value);
 				},
 				// is_arrow_hidden: true,
 				PopoverTrigger {
@@ -621,11 +621,7 @@ pub fn HeadlessDemo() -> Element {
 			Range {
 				class: "w-52 flex items-center",
 				value: range_1(),
-				on_value_change: move |v| {
-						if let Some(v) = v {
-								range_1.set(v)
-						}
-				},
+				on_value_change: move |v| { range_1.set(v) },
 				RangeTrackWrapper { class: "flex-1 bg-slate-600 rounded-full h-1",
 					RangeTrack { class: "flex-1 bg-slate-300 rounded-full h-1" }
 					RangeThumb { class: "w-5 h-5 rounded-full bg-slate-100" }
@@ -646,11 +642,7 @@ pub fn HeadlessDemo() -> Element {
 			Range {
 				class: "w-52 flex items-center",
 				value: range_3(),
-				on_value_change: move |v| {
-						if let Some(v) = v {
-								range_3.set(v)
-						}
-				},
+				on_value_change: move |v| { range_3.set(v) },
 				min_steps_between_thumbs: 10.0,
 				RangeTrackWrapper { class: "flex-1 bg-slate-600 rounded-full h-[3px]",
 					RangeTrack { class: "flex-1 bg-slate-300 rounded-full h-1" }
