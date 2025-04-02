@@ -68,8 +68,8 @@ pub fn use_presence(present: Memo<bool>, node_ref: Signal<Option<Rc<MountedData>
 						let has_animation = check_for_animations(&computed_style);
 						animation_state.set(AnimationState {
 							animation_name: if has_animation { "detected" } else { "none" }.to_string(),
-							has_transition: has_transition || has_animation,
-							is_animating: has_transition || has_animation,
+							has_transition,
+							is_animating: has_animation || has_transition,
 						});
 					}
 				}
@@ -78,7 +78,7 @@ pub fn use_presence(present: Memo<bool>, node_ref: Signal<Option<Rc<MountedData>
 
 				if is_element_effectively_hidden(styles_ref.peek().as_ref()) {
 					state.set(EMountState::Unmounted);
-				} else if anim_state.has_transition {
+				} else if anim_state.is_animating {
 					state.set(EMountState::UnmountSuspend);
 				} else {
 					state.set(EMountState::Unmounted);

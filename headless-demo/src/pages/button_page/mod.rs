@@ -117,7 +117,7 @@ rsx! {{
 			}
 		}
 		DescriptionSection { title: "Api Reference",
-			div { class: "flex flex-col space-y-4",
+			div { class: "flex flex-col space-y-6",
 				div { class: "flex flex-col gap-4",
 					h4 { class: "font-medium text-lg text-orange-300", "Root Component" }
 					p {
@@ -141,76 +141,94 @@ rsx! {{
 											prop: "pending".into(),
 											prop_default: "false".into(),
 											prop_type: "bool".into(),
+											tooltip_text: None,
 									},
 									TableBody {
 											prop: "disabled".into(),
 											prop_default: "false".into(),
 											prop_type: "bool".into(),
+											tooltip_text: None,
 									},
 									TableBody {
 											prop: "onclick".into(),
 											prop_default: "None".into(),
 											prop_type: "Option<EventHandler<Event<MouseData>>>".into(),
+											tooltip_text: None,
 									},
 									TableBody {
 											prop: "onkeydown".into(),
 											prop_default: "None".into(),
 											prop_type: "Option<EventHandler<Event<KeyboardData>>>".into(),
+											tooltip_text: None,
 									},
 									TableBody {
 											prop: "onkeyup".into(),
 											prop_default: "None".into(),
 											prop_type: "Option<EventHandler<Event<KeyboardData>>>".into(),
+											tooltip_text: None,
 									},
 									TableBody {
 											prop: "onfocus".into(),
 											prop_default: "None".into(),
 											prop_type: "Option<EventHandler<Event<FocusData>>>".into(),
+											tooltip_text: None,
 									},
 									TableBody {
 											prop: "onblur".into(),
 											prop_default: "None".into(),
 											prop_type: "Option<EventHandler<Event<FocusData>>>".into(),
+											tooltip_text: None,
 									},
 									TableBody {
 											prop: "onmousedown".into(),
 											prop_default: "None".into(),
 											prop_type: "Option<EventHandler<Event<MouseData>>>".into(),
+											tooltip_text: None,
 									},
 									TableBody {
 											prop: "onmouseup".into(),
 											prop_default: "None".into(),
 											prop_type: "Option<EventHandler<Event<MouseData>>>".into(),
+											tooltip_text: None,
 									},
 									TableBody {
 											prop: "onmouseenter".into(),
 											prop_default: "None".into(),
 											prop_type: "Option<EventHandler<Event<MouseData>>>".into(),
+											tooltip_text: None,
 									},
 									TableBody {
 											prop: "onmouseleave".into(),
 											prop_default: "None".into(),
 											prop_type: "Option<EventHandler<Event<MouseData>>>".into(),
+											tooltip_text: None,
 									},
 									TableBody {
 											prop: "onmounted".into(),
 											prop_default: "None".into(),
 											prop_type: "Option<EventHandler<Event<MountedData>>>".into(),
+											tooltip_text: None,
 									},
 									TableBody {
 											prop: "attributes".into(),
 											prop_default: "[]".into(),
 											prop_type: "Vec<Attribute>".into(),
+											tooltip_text: Some("Extends 'global' and 'button' attribules".into()),
 									},
 									TableBody {
 											prop: "extra_attributes".into(),
 											prop_default: "[]".into(),
 											prop_type: "Vec<Attribute>".into(),
+											tooltip_text: Some(
+													"Helps provide attributes to the button if it is nested into other components"
+															.into(),
+											),
 									},
 									TableBody {
 											prop: "children".into(),
 											prop_default: "-".into(),
 											prop_type: "Element".into(),
+											tooltip_text: Some("Required".into()),
 									},
 							]),
 						}

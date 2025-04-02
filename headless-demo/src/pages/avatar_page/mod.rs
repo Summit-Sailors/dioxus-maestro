@@ -105,7 +105,7 @@ rsx! {{
 			}
 		}
 		DescriptionSection { title: "Api Reference",
-			div { class: "flex flex-col space-y-4",
+			div { class: "flex flex-col space-y-6",
 				div { class: "flex flex-col gap-4",
 					h4 { class: "font-medium text-lg text-orange-300", "Root Component" }
 					p { "Wrapps all parts af the avatar." }
@@ -116,11 +116,13 @@ rsx! {{
 											prop: "attributes".into(),
 											prop_default: "[]".into(),
 											prop_type: "Vec<Attribute>".into(),
+											tooltip_text: Some("Extends 'global' and 'div' attribules".into()),
 									},
 									TableBody {
 											prop: "children".into(),
 											prop_default: "-".into(),
 											prop_type: "Element".into(),
+											tooltip_text: Some("Required".into()),
 									},
 							]),
 						}
@@ -142,16 +144,13 @@ rsx! {{
 											prop: "src".into(),
 											prop_default: "".into(),
 											prop_type: "String".into(),
+											tooltip_text: None,
 									},
 									TableBody {
 											prop: "attributes".into(),
 											prop_default: "[]".into(),
 											prop_type: "Vec<Attribute>".into(),
-									},
-									TableBody {
-											prop: "children".into(),
-											prop_default: "-".into(),
-											prop_type: "Element".into(),
+											tooltip_text: Some("Extends 'global' and 'img' attribules".into()),
 									},
 							]),
 						}
@@ -169,16 +168,19 @@ rsx! {{
 											prop: "delay_ms".into(),
 											prop_default: "None".into(),
 											prop_type: "Option<u32>".into(),
+											tooltip_text: None,
 									},
 									TableBody {
 											prop: "attributes".into(),
 											prop_default: "[]".into(),
 											prop_type: "Vec<Attribute>".into(),
+											tooltip_text: Some("Extends 'global' and 'span' attribules".into()),
 									},
 									TableBody {
 											prop: "children".into(),
 											prop_default: "-".into(),
 											prop_type: "Element".into(),
+											tooltip_text: Some("Required".into()),
 									},
 							]),
 						}

@@ -82,8 +82,8 @@ pub fn CheckboxGroup(props: CheckboxGroupProps) -> Element {
 	rsx! {
 		div {
 			role: "group",
-			aria_disabled: disabled(),
-			"data-disabled": disabled(),
+			aria_disabled: disabled().then_some(Some(true)),
+			"data-disabled": disabled().then_some(Some(true)),
 			onkeydown: handle_key_down,
 			onmounted: move |event| container_ref.set(Some(event.data())),
 			..attributes,

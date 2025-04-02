@@ -1,7 +1,8 @@
 use {
 	crate::{
 		button::Button,
-		shared::{EOrientation, UseControllableStateParams, use_arrow_key_navigation, use_controllable_state},
+		presence::Presence,
+		shared::{EOrientation, UseControllableStateParams, use_arrow_key_navigation, use_controllable_state, use_dimensions},
 	},
 	dioxus::prelude::*,
 	std::rc::Rc,
@@ -110,9 +111,9 @@ pub fn Accordion(props: AccordionProps) -> Element {
 	rsx! {
 		ul {
 			role: "accordion",
-			aria_disabled: disabled(),
+			aria_disabled: disabled().then_some(Some(true)),
 			aria_orientation: orientation.read().to_string(),
-			"data-disabled": disabled(),
+			"data-disabled": disabled().then_some(Some(true)),
 			"data-orientation": orientation.read().to_string(),
 			"data-role": "accordion",
 			onmounted: move |event| {
@@ -153,9 +154,9 @@ pub fn AccordionItem(props: AccordionItemProps) -> Element {
 	rsx! {
 		li {
 			role: "presentation",
-			aria_disabled: is_disabled(),
+			aria_disabled: is_disabled().then_some(Some(true)),
 			"data-state": if *accordion_item_context.open.read() { "open" } else { "closed" },
-			"data-disabled": is_disabled(),
+			"data-disabled": is_disabled().then_some(Some(true)),
 			"data-role": "accordion-item",
 			..attributes,
 			{children}
@@ -182,11 +183,11 @@ pub fn AccordionTrigger(props: AccordionTriggerProps) -> Element {
 			role: "button",
 			r#type: "button",
 			pointer_events: if is_disabled() { "none" } else { "auto" },
-			cursor: if is_disabled() { "" } else { "pointer" },
+			cursor: if is_disabled() { "auto" } else { "pointer" },
 			tabindex: if is_disabled() { -1 } else { 0 },
 			disabled: is_disabled(),
 			aria_controls: accordion_item_context.content_id.to_string(),
-			aria_expanded: *accordion_item_context.open.read(),
+			aria_expanded: accordion_item_context.open.read().then_some(Some(true)),
 			"data-state": if *accordion_item_context.open.read() { "open" } else { "closed" },
 			"data-role": "accordion-trigger",
 			onclick: move |_| {
@@ -251,15 +252,28 @@ pub struct AccordionContentProps {
 #[component]
 pub fn AccordionContent(props: AccordionContentProps) -> Element {
 	let accordion_item_context = use_context::<AccordionItemContext>();
+	let mut current_ref = use_signal(|| None::<Rc<MountedData>>);
+	let (width, height) = use_dimensions(current_ref, *accordion_item_context.open.peek());
+
+	let mut attrs = props.attributes.clone();
+
+	attrs.push(Attribute::new("--maestro-headless-accordion-height", if height() > 0.0 { Some(format!("{}px", height())) } else { None }, Some("style"), false));
+	attrs.push(Attribute::new("--maestro-headless-accordion-width", if width() > 0.0 { Some(format!("{}px", width())) } else { None }, Some("style"), false));
+
 	rsx! {
-		div {
-			id: accordion_item_context.content_id.to_string(),
-			role: "region",
-			aria_labelledby: accordion_item_context.trigger_id.to_string(),
-			"data-state": if *accordion_item_context.open.read() { "open" } else { "closed" },
-			"data-role": "accordion-content",
-			..props.attributes,
-			{props.children}
+		Presence {
+			present: *accordion_item_context.open.read(),
+			node_ref: current_ref,
+			div {
+				id: accordion_item_context.content_id.to_string(),
+				role: "region",
+				aria_labelledby: accordion_item_context.trigger_id.to_string(),
+				"data-state": if *accordion_item_context.open.read() { "open" } else { "closed" },
+				"data-role": "accordion-content",
+				onmounted: move |event: Event<MountedData>| current_ref.set(Some(event.data())),
+				..attrs,
+				{props.children}
+			}
 		}
 	}
 }

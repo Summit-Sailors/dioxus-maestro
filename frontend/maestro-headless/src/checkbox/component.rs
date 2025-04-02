@@ -74,10 +74,10 @@ pub fn Checkbox(props: CheckboxProps) -> Element {
 				tabindex: if disabled() { "-1" } else { "0" },
 				role: "checkbox",
 				disabled,
-				aria_checked: checked(),
-				aria_required: required,
+				aria_checked: checked().then_some(Some(true)),
+				aria_required: required.then_some(Some(true)),
 				"data-state": if checked() { "checked" } else { "unchecked" },
-				pointer_events: if disabled() { "none" } else { "auto" },
+				pointer_events: disabled().then_some(Some("none")),
 				onclick: move |_| set_checked(!checked()),
 				extra_attributes: attributes,
 				{children}
@@ -100,9 +100,9 @@ pub fn CheckboxIndicator(props: CheckboxIndicatorProps) -> Element {
 
 	rsx! {
 		span {
-			aria_disabled: *context.disabled.read(),
-			aria_checked: *context.checked.read(),
-			"data-disabled": *context.disabled.read(),
+			aria_disabled: context.disabled.read().then_some(Some(true)),
+			aria_checked: context.checked.read().then_some(Some(true)),
+			"data-disabled": context.disabled.read().then_some(Some(true)),
 			"data-state": if *context.checked.read() { "checked" } else { "unchecked" },
 			pointer_events: "none",
 			position: "relative",
@@ -112,23 +112,31 @@ pub fn CheckboxIndicator(props: CheckboxIndicatorProps) -> Element {
 			..props.attributes,
 			if *context.checked.read() {
 				if let Some(children) = props.children {
-					{children}
+					{
+							rsx! {
+								{children}
+							}
+					}
 				} else {
-					svg {
-						stroke: "currentColor",
-						fill: "currentColor",
-						stroke_width: "0",
-						view_box: "0 0 512 512",
-						height: "16px",
-						width: "16px",
-						xmlns: "http://www.w3.org/2000/svg",
-						path {
-							fill: "none",
-							stroke_linecap: "round",
-							stroke_linejoin: "round",
-							stroke_width: "32",
-							d: "M416 128 192 384l-96-96",
-						}
+					{
+							rsx! {
+								svg {
+									stroke: "currentColor",
+									fill: "currentColor",
+									stroke_width: "0",
+									view_box: "0 0 512 512",
+									height: "16px",
+									width: "16px",
+									xmlns: "http://www.w3.org/2000/svg",
+									path {
+										fill: "none",
+										stroke_linecap: "round",
+										stroke_linejoin: "round",
+										stroke_width: "32",
+										d: "M416 128 192 384l-96-96",
+									}
+								}
+							}
 					}
 				}
 			}

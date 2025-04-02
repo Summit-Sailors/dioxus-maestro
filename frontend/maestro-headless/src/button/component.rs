@@ -61,11 +61,11 @@ pub fn Button(props: ButtonProps) -> Element {
 	rsx! {
 		button {
 			disabled: disabled(),
-			aria_disabled: disabled() || pending(),
-			"data-disabled": disabled(),
-			"data-pressed": is_pressed(),
-			"data-pending": pending(),
-			pointer_events: if pending() || disabled() { "none" } else { "auto" },
+			aria_disabled: (disabled() || pending()).then_some(Some(true)),
+			"data-disabled": disabled().then_some(Some(true)),
+			"data-pressed": is_pressed().then_some(Some(true)),
+			"data-pending": pending().then_some(Some(true)),
+			pointer_events: (pending() || disabled()).then_some(Some("none")),
 			cursor: "pointer",
 			onclick: move |event| {
 					if !disabled() && !pending() {

@@ -22,10 +22,10 @@ pub fn AccordionPage() -> Element {
 		}
 		section { class: "container flex flex-col px-4 lg:py-6 py-4 ",
 			div { class: "grow flex flex-col justify-center items-center rounded-md border border-neutral-800 bg-neutral-950 overflow-hidden",
-				div { class: "p-6 flex gap-4 items-start",
+				div { class: "p-6 flex gap-4 items-start w-full max-w-96",
 					Accordion {
 						default_value: Vec::from(["1".into()]),
-						class: "relative w-full max-w-96 flex flex-col rounded-sm bg-neutral-900 text-neutral-100 p-0.5 transition-all ease-linear overflow-hidden",
+						class: "relative w-full grow max-w-96 flex flex-col rounded-sm bg-neutral-900 text-neutral-100 p-0.5 transition-all ease-linear overflow-hidden",
 						variant: AccordionVariant::Single,
 						AccordionItem {
 							value: "1",
@@ -203,7 +203,7 @@ rsx! {{
 			}
 		}
 		DescriptionSection { title: "Api Reference",
-			div { class: "flex flex-col space-y-4",
+			div { class: "flex flex-col space-y-6",
 				div { class: "flex flex-col gap-4",
 					h4 { class: "font-medium text-lg text-orange-300", "Root Component" }
 					p {
@@ -231,46 +231,60 @@ rsx! {{
 											prop: "value".into(),
 											prop_default: "None".into(),
 											prop_type: "Option<Vec<String>>".into(),
+											tooltip_text: Some(
+													"Must be used in pair with on_value_change callback".into(),
+											),
 									},
 									TableBody {
 											prop: "on_value_change".into(),
 											prop_default: "None".into(),
 											prop_type: "Callback<Vec<String>>".into(),
+											tooltip_text: Some("Must be used in pair with value prop".into()),
 									},
 									TableBody {
 											prop: "default_value".into(),
 											prop_default: "[]".into(),
 											prop_type: "Vec<String>".into(),
+											tooltip_text: None,
 									},
 									TableBody {
 											prop: "orientation".into(),
 											prop_default: "EOrientation::Vertical".into(),
 											prop_type: "EOrientation::Vertical | EOrientation::Horizontal".into(),
+											tooltip_text: None,
 									},
 									TableBody {
 											prop: "collapsible".into(),
 											prop_default: "true".into(),
 											prop_type: "bool".into(),
+											tooltip_text: Some(
+													"If false and variant 'single', at least one item will always be opened"
+															.into(),
+											),
 									},
 									TableBody {
 											prop: "disabled".into(),
 											prop_default: "false".into(),
 											prop_type: "bool".into(),
+											tooltip_text: Some("Prevents toggling all items".into()),
 									},
 									TableBody {
 											prop: "variant".into(),
 											prop_default: "AccordionVariant::Single".into(),
 											prop_type: "AccordionVariant::Single | AccordionVariant::Multiple".into(),
+											tooltip_text: None,
 									},
 									TableBody {
 											prop: "attributes".into(),
 											prop_default: "[]".into(),
 											prop_type: "Vec<Attribute>".into(),
+											tooltip_text: Some("Extends 'global' and 'ul' attribules".into()),
 									},
 									TableBody {
 											prop: "children".into(),
 											prop_default: "-".into(),
 											prop_type: "Element".into(),
+											tooltip_text: Some("Required".into()),
 									},
 							]),
 						}
@@ -299,21 +313,53 @@ rsx! {{
 											prop: "value".into(),
 											prop_default: "-".into(),
 											prop_type: "String".into(),
+											tooltip_text: Some("Required".into()),
 									},
 									TableBody {
 											prop: "disabled".into(),
 											prop_default: "false".into(),
 											prop_type: "bool".into(),
+											tooltip_text: Some("Prevents toggling current item".into()),
 									},
 									TableBody {
 											prop: "attributes".into(),
 											prop_default: "[]".into(),
 											prop_type: "Vec<Attribute>".into(),
+											tooltip_text: Some("Extends 'global' and 'li' attribules".into()),
 									},
 									TableBody {
 											prop: "children".into(),
 											prop_default: "-".into(),
 											prop_type: "Element".into(),
+											tooltip_text: Some("Required".into()),
+									},
+							]),
+						}
+					}
+				}
+				div { class: "flex flex-col gap-4",
+					h4 { class: "font-medium text-lg text-orange-300", "Header Component" }
+					p { class: "flex gap-1 mb-4",
+						"Wrapps an "
+						span { class: "px-1.5 py-0.5 font-mono text-orange-400 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
+							"AccordionTrigger"
+						}
+						"."
+					}
+					div { class: "overflow-hidden rounded-sm border border-neutral-700",
+						PropsTable {
+							content: Vec::from([
+									TableBody {
+											prop: "attributes".into(),
+											prop_default: "[]".into(),
+											prop_type: "Vec<Attribute>".into(),
+											tooltip_text: Some("Extends 'global' and 'div' attribules".into()),
+									},
+									TableBody {
+											prop: "children".into(),
+											prop_default: "-".into(),
+											prop_type: "Element".into(),
+											tooltip_text: Some("Required".into()),
 									},
 							]),
 						}
@@ -335,43 +381,19 @@ rsx! {{
 											prop: "attributes".into(),
 											prop_default: "[]".into(),
 											prop_type: "Vec<Attribute>".into(),
+											tooltip_text: Some("Extends 'global' and 'button' attribules".into()),
 									},
 									TableBody {
 											prop: "children".into(),
 											prop_default: "-".into(),
 											prop_type: "Element".into(),
+											tooltip_text: Some("Required".into()),
 									},
 							]),
 						}
 					}
 				}
-				div {
-					h4 { class: "font-medium text-lg text-orange-300", "Header Component" }
-					p { class: "flex gap-1 mb-4",
-						"Wrapps an "
-						span { class: "px-1.5 py-0.5 font-mono text-orange-400 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
-							"AccordionTrigger"
-						}
-						"."
-					}
-					div { class: "overflow-hidden rounded-sm border border-neutral-700",
-						PropsTable {
-							content: Vec::from([
-									TableBody {
-											prop: "attributes".into(),
-											prop_default: "[]".into(),
-											prop_type: "Vec<Attribute>".into(),
-									},
-									TableBody {
-											prop: "children".into(),
-											prop_default: "-".into(),
-											prop_type: "Element".into(),
-									},
-							]),
-						}
-					}
-				}
-				div {
+				div { class: "flex flex-col gap-4",
 					h4 { class: "font-medium text-lg text-orange-300", "Content Component" }
 					p { class: "mb-4", "Contains the collapsible content for an item." }
 					div { class: "overflow-hidden rounded-sm border border-neutral-700",
@@ -381,11 +403,13 @@ rsx! {{
 											prop: "attributes".into(),
 											prop_default: "[]".into(),
 											prop_type: "Vec<Attribute>".into(),
+											tooltip_text: Some("Extends 'global' and 'div' attribules".into()),
 									},
 									TableBody {
 											prop: "children".into(),
 											prop_default: "-".into(),
 											prop_type: "Element".into(),
+											tooltip_text: Some("Required".into()),
 									},
 							]),
 						}

@@ -51,7 +51,7 @@ pub fn Popover(props: PopoverProps) -> Element {
 	use_context_provider::<PopoverContext>(|| PopoverContext::new(open, set_open));
 
 	let handle_close = use_callback(move |()| {
-		set_open.call(false);
+		set_open(false);
 	});
 
 	let mut current_ref = use_signal(|| None::<Rc<MountedData>>);

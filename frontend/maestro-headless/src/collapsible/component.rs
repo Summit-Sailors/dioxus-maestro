@@ -2,7 +2,7 @@ use {
 	crate::{
 		button::Button,
 		presence::Presence,
-		shared::{UseControllableStateParams, use_controllable_state},
+		shared::{UseControllableStateParams, use_controllable_state, use_dimensions},
 	},
 	dioxus::prelude::*,
 	std::rc::Rc,
@@ -54,8 +54,8 @@ pub fn Collapsible(props: CollapsibleProps) -> Element {
 	rsx! {
 		div {
 			role: "region",
-			aria_disabled: disabled(),
-			"data_disabled": disabled(),
+			aria_disabled: disabled().then_some(Some(true)),
+			"data_disabled": disabled().then_some(Some(true)),
 			"data-state": if open() { "open" } else { "closed" },
 			..attributes,
 			{children}
@@ -78,12 +78,12 @@ pub fn CollapsibleTrigger(props: CollapsibleTriggerProps) -> Element {
 	rsx! {
 		Button {
 			r#type: "button",
-			pointer_events: if *context.disabled.read() { "none" } else { "auto" },
+			pointer_events: context.disabled.read().then_some(Some("none")),
 			cursor: if *context.disabled.read() { "" } else { "pointer" },
 			tabindex: if *context.disabled.read() { "-1" } else { "0" },
 			disabled: *context.disabled.read(),
 			aria_controls: context.content_id.to_string(),
-			aria_expanded: *context.open.read(),
+			aria_expanded: context.open.read().then_some(Some(true)),
 			"data-state": if *context.open.read() { "open" } else { "closed" },
 			onclick: move |_| {
 					let open = *context.open.peek();
@@ -104,23 +104,34 @@ pub struct CollapsibleContentProps {
 
 #[component]
 pub fn CollapsibleContent(props: CollapsibleContentProps) -> Element {
+	let CollapsibleContentProps { attributes, children } = props;
 	let context = use_context::<CollapsibleContext>();
-
 	let mut current_ref = use_signal(|| None::<Rc<MountedData>>);
+	let (width, height) = use_dimensions(current_ref, *context.open.peek());
+
+	let mut attrs = attributes.clone();
+
+	attrs.push(Attribute::new(
+		"--maestro-headless-collapsible-height",
+		if height() > 0.0 { Some(format!("{}px", height())) } else { None },
+		Some("style"),
+		false,
+	));
+	attrs.push(Attribute::new("--maestro-headless-collapsible-width", if width() > 0.0 { Some(format!("{}px", width())) } else { None }, Some("style"), false));
 
 	rsx! {
 		Presence { present: *context.open.read(), node_ref: current_ref,
 			div {
 				id: context.content_id.to_string(),
 				role: "region",
-				aria_expanded: *context.open.read(),
+				aria_expanded: context.open.read().then_some(Some(true)),
 				aria_hidden: !*context.open.read(),
 				aria_labelledby: context.trigger_id.to_string(),
-				"data-hidden": !*context.open.read(),
 				"data-state": if *context.open.read() { "open" } else { "closed" },
+				"data-disabled": context.disabled.read().then_some(true),
 				onmounted: move |event: Event<MountedData>| current_ref.set(Some(event.data())),
-				..props.attributes,
-				{props.children}
+				..attrs,
+				{children}
 			}
 		}
 	}

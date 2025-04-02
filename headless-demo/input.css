@@ -36,13 +36,13 @@
       height: 0px;
     }
     to {
-      height: 100%;
+      height: var(--maestro-headless-collapsible-height);
     }
   }
 
   @keyframes slide-out {
     from {
-      height: 100%;
+      height: var(--maestro-headless-collapsible-height);
     }
     to {
       height: 0px;

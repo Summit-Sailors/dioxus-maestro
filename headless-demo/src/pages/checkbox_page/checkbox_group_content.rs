@@ -204,7 +204,7 @@ rsx! {{
 			}
 		}
 		DescriptionSection { title: "Api Reference",
-			div { class: "flex flex-col space-y-4",
+			div { class: "flex flex-col space-y-6",
 				div { class: "flex flex-col gap-4",
 					h4 { class: "font-medium text-lg text-orange-300", "Root Component" }
 					p {
@@ -232,36 +232,43 @@ rsx! {{
 											prop: "value".into(),
 											prop_default: "None".into(),
 											prop_type: "Option<Vec<String>>".into(),
+											tooltip_text: Some("Must go in pair with 'on_value_change' callback".into()),
 									},
 									TableBody {
 											prop: "on_value_change".into(),
 											prop_default: "None".into(),
 											prop_type: "Callback<Vec<String>>".into(),
+											tooltip_text: Some("Must go in pair with 'value' prop".into()),
 									},
 									TableBody {
 											prop: "default_value".into(),
 											prop_default: "[]".into(),
 											prop_type: "Vec<String>".into(),
+											tooltip_text: None,
 									},
 									TableBody {
 											prop: "orientation".into(),
 											prop_default: "EOrientation::Vertical".into(),
 											prop_type: "EOrientation::Vertical | EOrientation::Horizontal".into(),
+											tooltip_text: None,
 									},
 									TableBody {
 											prop: "disabled".into(),
 											prop_default: "false".into(),
 											prop_type: "bool".into(),
+											tooltip_text: Some("Prevents from toggling any item in the group".into()),
 									},
 									TableBody {
 											prop: "attributes".into(),
 											prop_default: "[]".into(),
 											prop_type: "Vec<Attribute>".into(),
+											tooltip_text: Some("Extends 'global' and 'div' attribules".into()),
 									},
 									TableBody {
 											prop: "children".into(),
 											prop_default: "-".into(),
 											prop_type: "Element".into(),
+											tooltip_text: Some("Required".into()),
 									},
 							]),
 						}
@@ -277,21 +284,27 @@ rsx! {{
 											prop: "value".into(),
 											prop_default: "-".into(),
 											prop_type: "String".into(),
+											tooltip_text: Some("Required".into()),
 									},
 									TableBody {
 											prop: "disabled".into(),
 											prop_default: "false".into(),
 											prop_type: "bool".into(),
+											tooltip_text: Some(
+													"Prevents checkbox from selecting/deselecting current item".into(),
+											),
 									},
 									TableBody {
 											prop: "attributes".into(),
 											prop_default: "[]".into(),
 											prop_type: "Vec<Attribute>".into(),
+											tooltip_text: Some("Extends 'global' and 'button' attribules".into()),
 									},
 									TableBody {
 											prop: "children".into(),
-											prop_default: "-".into(),
+											prop_default: "None".into(),
 											prop_type: "Element".into(),
+											tooltip_text: Some("Custom checked indicator if specified".into()),
 									},
 							]),
 						}

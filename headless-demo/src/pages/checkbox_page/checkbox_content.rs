@@ -94,7 +94,7 @@ div {{
 			}
 		}
 		DescriptionSection { title: "Api Reference",
-			div { class: "flex flex-col space-y-4",
+			div { class: "flex flex-col space-y-6",
 				div { class: "flex flex-col gap-4",
 					h4 { class: "font-medium text-lg text-orange-300", "Root Component" }
 					p {
@@ -122,51 +122,62 @@ div {{
 											prop: "checked".into(),
 											prop_default: "None".into(),
 											prop_type: "Option<bool>".into(),
+											tooltip_text: Some("Must go in pair with 'on_value_change' callback".into()),
 									},
 									TableBody {
 											prop: "on_value_change".into(),
 											prop_default: "None".into(),
 											prop_type: "Callback<bool>".into(),
+											tooltip_text: Some("Must go in pair with 'checked' prop".into()),
 									},
 									TableBody {
 											prop: "default_checked".into(),
 											prop_default: "false".into(),
 											prop_type: "bool".into(),
+											tooltip_text: None,
 									},
 									TableBody {
 											prop: "disabled".into(),
 											prop_default: "false".into(),
 											prop_type: "bool".into(),
+											tooltip_text: Some("Prevents checkbox from selecting/deselecting".into()),
 									},
 									TableBody {
 											prop: "required".into(),
 											prop_default: "false".into(),
 											prop_type: "bool".into(),
+											tooltip_text: None,
 									},
 									TableBody {
 											prop: "name".into(),
 											prop_default: "-".into(),
 											prop_type: "String".into(),
+											tooltip_text: Some("Required".into()),
 									},
 									TableBody {
 											prop: "value".into(),
 											prop_default: "-".into(),
 											prop_type: "String".into(),
+											tooltip_text: Some("Required".into()),
 									},
 									TableBody {
 											prop: "extra_attributes".into(),
 											prop_default: "[]".into(),
 											prop_type: "Vec<Attribute>".into(),
+											tooltip_text: Some("Helps provide attributes to the checkbox if it is nested into other components"
+													.into()),
 									},
 									TableBody {
 											prop: "attributes".into(),
 											prop_default: "[]".into(),
 											prop_type: "Vec<Attribute>".into(),
+											tooltip_text: Some("Extends 'global' and 'button' attribules".into()),
 									},
 									TableBody {
 											prop: "children".into(),
 											prop_default: "-".into(),
 											prop_type: "Element".into(),
+											tooltip_text: None,
 									},
 							]),
 						}
@@ -182,11 +193,13 @@ div {{
 											prop: "attributes".into(),
 											prop_default: "[]".into(),
 											prop_type: "Vec<Attribute>".into(),
+											tooltip_text: Some("Extends 'global' and 'span' attribules".into()),
 									},
 									TableBody {
 											prop: "children".into(),
-											prop_default: "-".into(),
-											prop_type: "Element".into(),
+											prop_default: "None".into(),
+											prop_type: "Option<Element>".into(),
+											tooltip_text: None,
 									},
 							]),
 						}
