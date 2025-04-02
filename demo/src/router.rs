@@ -3,8 +3,8 @@ use {
 		clients::db::{diesel_demo::DieselDemo, sqlx_demo::SqlxDemo},
 		layout::Layout,
 		pages::{
-			calendar::CalendarDemo, form::FormsDemo, home::HomePage, hooks::HooksDemo, plotters::PlottersDemo, query::CompleteQueryDemo, radio::RadioDemo,
-			toast::ToastDemo, ui::UIDemo,
+			calendar::CalendarDemo, form::FormsDemo, home::HomePage, hooks::HooksDemo, not_found::NotFound, plotters::PlottersDemo, query::CompleteQueryDemo,
+			radio::RadioDemo, toast::ToastDemo, ui::UIDemo,
 		},
 	},
 	dioxus::prelude::*,
@@ -12,30 +12,50 @@ use {
 };
 
 #[derive(Clone, PartialEq, EnumIter, Routable)]
+#[rustfmt::skip]
 pub enum Route {
-	#[layout(Layout)]
-	#[route("/")]
-	HomePage {},
-	#[route("/form")]
-	FormsDemo {},
-	#[route("/hooks")]
-	HooksDemo {},
-	#[route("/plotters")]
-	PlottersDemo {},
-	#[route("/query")]
-	CompleteQueryDemo {},
-	#[route("/radio")]
-	RadioDemo {},
-	#[route("/toast")]
-	ToastDemo {},
-	#[route("/ui")]
-	UIDemo {},
-	#[route("/calendar")]
-	CalendarDemo {},
-	#[route("/diesel")]
-	DieselDemo {},
-	#[route("/sqlx")]
-	SqlxDemo {},
+    #[layout(Layout)]
+        #[route("/")]
+        HomePage {},
+        
+        #[route("/form")]
+        FormsDemo {},
+        
+        #[route("/hooks")]
+        HooksDemo {},
+        
+        #[route("/plotters")]
+        PlottersDemo {},
+        
+        #[route("/query")]
+        CompleteQueryDemo {},
+        
+        #[route("/radio")]
+        RadioDemo {},
+        
+        #[route("/toast")]
+        ToastDemo {},
+        
+        #[route("/ui")]
+        UIDemo {},
+        
+        #[route("/calendar")]
+        CalendarDemo {},
+        // nested routes for clients
+        #[nest("/clients")]
+            #[nest("/db")]
+                #[route("/diesel")]
+                DieselDemo {},
+                
+                #[route("/sqlx")]
+                SqlxDemo {},
+            #[end_nest]
+            // #[nest("/utilities")]
+            // #[end_nest]
+        #[end_nest]
+        
+        #[route("/:..route")]
+        NotFound {route: Vec<String>}
 }
 
 impl Route {
@@ -52,6 +72,7 @@ impl Route {
 			Route::CalendarDemo {} => "Calendar",
 			Route::DieselDemo {} => "Diesel",
 			Route::SqlxDemo {} => "Sqlx",
+			Route::NotFound { route: _ } => "Not Found",
 		}
 	}
 
@@ -71,6 +92,7 @@ impl Route {
 			Route::CalendarDemo {} => "A  highly customizable UI calendar and date picker utility.",
 			Route::DieselDemo {} => "A diesel utility equipped with both sync and async database connection/pool creation and an extension for paginated queries",
 			Route::SqlxDemo {} => "A sqlx utility equipped with both sync and async database connection/pool creation",
+			Route::NotFound { route: _ } => "",
 		}
 	}
 }

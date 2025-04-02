@@ -2,7 +2,7 @@ use {
 	crate::components::icons::{collapse::Collapse, expand::Expand},
 	async_std::task::sleep,
 	dioxus::prelude::*,
-	dioxus_free_icons::{icons::io_icons::IoCopyOutline, Icon},
+	dioxus_free_icons::{Icon, icons::io_icons::IoCopyOutline},
 	maestro_hooks::clipboard::use_clipboard,
 	maestro_ui::{
 		button::{Button, ButtonSize, ButtonVariant},
@@ -12,7 +12,7 @@ use {
 	syntect::{
 		easy::HighlightLines,
 		highlighting::ThemeSet,
-		html::{styled_line_to_highlighted_html, IncludeBackground},
+		html::{IncludeBackground, styled_line_to_highlighted_html},
 		parsing::SyntaxSet,
 	},
 	tailwind_fuse::tw_join,
@@ -161,7 +161,7 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
 							}
 						}
 
-						div { class: "relative flex-1 bg-slate-900 rounded-lg flex flex-col bg-slate-950/20 lg:px-16 sm:px-6 px-2 py-8 h-full overflow-x-auto mt-8",
+						div { class: "relative flex-1 rounded-lg flex flex-col bg-slate-950/20 lg:px-16 sm:px-6 px-2 py-8 h-full overflow-x-auto mt-8",
 
 							div { class: "flex justify-between items-center bg-slate-800 text-slate-300 text-xs px-4 py-2 rounded-t-md",
 								span { class: "font-mono", "{selected_file()}" }

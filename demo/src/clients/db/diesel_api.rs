@@ -1,8 +1,4 @@
-use {
-	crate::clients::db::DieselUser,
-	dioxus::prelude::*,
-	maestro_diesel::extensions::pagination::dtos::PaginatedResultDTO,
-};
+use {crate::clients::db::DieselUser, dioxus::prelude::*, maestro_diesel::extensions::pagination::dtos::PaginatedResultDTO};
 
 #[server(AFetchUsers)]
 pub async fn afetch_users_paginated(page: i32, page_size: i32) -> Result<PaginatedResultDTO<DieselUser>, ServerFnError> {
@@ -13,6 +9,10 @@ pub async fn afetch_users_paginated(page: i32, page_size: i32) -> Result<Paginat
 	};
 
 	let pool = extract_diesel_pool().await?;
+
+	if pool.get().await.is_err() {
+		return Err(ServerFnError::ServerError("An error occurred while getting connection from pool".to_string()));
+	}
 
 	let query = users.select((DieselUser::as_select()));
 
@@ -34,6 +34,9 @@ pub async fn fetch_users_paginated(page: i32, page_size: i32) -> Result<Paginate
 
 	// a synchronous pool
 	let pool = create_db_pool_diesel(&db_url);
+	if pool.get().is_err() {
+		return Err(ServerFnError::ServerError(format!("An error occurred while creating database connection")));
+	}
 	let mut conn = pool.get()?;
 
 	let paginated_results = users.select(DieselUser::as_select()).paginate::<DieselUser>(page, page_size, &mut conn)?;

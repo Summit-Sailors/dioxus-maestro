@@ -4,7 +4,7 @@ use {
 };
 
 pub async fn extract_diesel_pool() -> Result<AsyncDieselPool, ServerFnError> {
-	let FromContext(pool): FromContext<AsyncDieselPool> = extract().await?;
+	let FromContext(pool): FromContext<AsyncDieselPool> = extract().await.expect("There was a problem extracting connection pool from server");
 	Ok(pool)
 }
 
