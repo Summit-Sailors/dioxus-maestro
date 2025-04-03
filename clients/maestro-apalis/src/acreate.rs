@@ -1,7 +1,7 @@
 use {
 	apalis::postgres::PostgresStorage,
 	maestro_sqlx::acreate::acreate_sqlx_pool,
-	serde::{de::DeserializeOwned, Serialize},
+	serde::{Serialize, de::DeserializeOwned},
 };
 
 #[bon::builder]

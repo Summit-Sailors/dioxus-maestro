@@ -10,6 +10,7 @@ version = "0.1.0"
 # clients
 api = { workspace = true, features = ["server"], optional = true }
 chrome-fastapi = { workspace = true }
+maestro-apalis = { path = "../clients/maestro-apalis", features = ["acreate", "create", "dioxus", "server"], optional = true }
 maestro-diesel = { path = "../clients/maestro-diesel" }
 maestro-serpapi = { path = "../clients/maestro-serpapi", features = ["dioxus", "server"], optional = true }
 maestro-sqlx = { path = "../clients/maestro-sqlx" }
@@ -25,7 +26,7 @@ maestro-ui = { path = "../frontend/maestro-ui" }
 
 
 # thrird party deps
-anyhow = "1.0.95"
+anyhow = "1.0.97"
 apalis = { version = "0.5.5", features = ["cron", "postgres"], optional = true }
 apalis-core = { version = "0.5.5", optional = true }
 async-std = "1.13.1"
@@ -73,14 +74,16 @@ uuid = { version = "1.16.0", features = ["serde", "v4"] }
 dotenvy = { git = "https://github.com/allan2/dotenvy.git", features = ["macros"] }
 
 [features]
-desktop = ["apalis", "dioxus/desktop"]
-mobile = ["apalis", "dioxus/mobile"]
+desktop = ["dep:apalis", "dioxus/desktop"]
+mobile = ["dep:apalis", "dioxus/mobile"]
 server = [
+  "dep:apalis",
   "dep:apalis-core",
   "dep:api",
   "dep:diesel",
   "dep:diesel-async",
   "dep:diesel-derive-enum",
+  "dep:maestro-apalis",
   "dep:maestro-serpapi",
   "dep:sqlx",
   "dep:tokio",

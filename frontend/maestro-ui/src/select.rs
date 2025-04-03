@@ -189,7 +189,7 @@ pub fn Select<T: Clone + PartialEq + std::fmt::Display + 'static>(props: SelectP
 						}
 					}
 					{
-							let _ = display_options()
+							display_options
 									.iter()
 									.map(|option| {
 											let option_clone = option.clone();
@@ -210,7 +210,7 @@ pub fn Select<T: Clone + PartialEq + std::fmt::Display + 'static>(props: SelectP
 													},
 													{
 															if let Some(renderer) = props.option_renderer {
-																	renderer(option)
+																	renderer(&*option)
 															} else {
 																	rsx! {
 																	"{option.label}"
@@ -230,7 +230,7 @@ pub fn Select<T: Clone + PartialEq + std::fmt::Display + 'static>(props: SelectP
 													}
 												}
 											}
-									});
+									})
 					}
 				}
 			}

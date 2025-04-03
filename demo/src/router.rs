@@ -14,48 +14,46 @@ use {
 #[derive(Clone, PartialEq, EnumIter, Routable)]
 #[rustfmt::skip]
 pub enum Route {
-    #[layout(Layout)]
-        #[route("/")]
-        HomePage {},
-        
-        #[route("/form")]
-        FormsDemo {},
-        
-        #[route("/hooks")]
-        HooksDemo {},
-        
-        #[route("/plotters")]
-        PlottersDemo {},
-        
-        #[route("/query")]
-        CompleteQueryDemo {},
-        
-        #[route("/radio")]
-        RadioDemo {},
-        
-        #[route("/toast")]
-        ToastDemo {},
-        
-        #[route("/ui")]
-        UIDemo {},
-        
-        #[route("/calendar")]
-        CalendarDemo {},
-        // nested routes for clients
-        #[nest("/clients")]
-            #[nest("/db")]
-                #[route("/diesel")]
-                DieselDemo {},
-                
-                #[route("/sqlx")]
-                SqlxDemo {},
-            #[end_nest]
-            // #[nest("/utilities")]
-            // #[end_nest]
+  #[layout(Layout)]
+    #[route("/")]
+    HomePage {},
+    
+    #[route("/form")]
+    FormsDemo {},
+    
+    #[route("/hooks")]
+    HooksDemo {},
+    
+    #[route("/plotters")]
+    PlottersDemo {},
+    
+    #[route("/query")]
+    CompleteQueryDemo {},
+    
+    #[route("/radio")]
+    RadioDemo {},
+    
+    #[route("/toast")]
+    ToastDemo {},
+    
+    #[route("/ui")]
+    UIDemo {},
+    
+    #[route("/calendar")]
+    CalendarDemo {},
+    #[nest("/clients")]
+        #[nest("/db")]
+            #[route("/diesel")]
+            DieselDemo {},
+            #[route("/sqlx")]
+            SqlxDemo {},
         #[end_nest]
-        
-        #[route("/:..route")]
-        NotFound {route: Vec<String>}
+        // #[nest("/utilities")]
+        // #[end_nest]
+    #[end_nest]
+  #[end_layout]
+  #[route("/:..route")]
+  NotFound {route: Vec<String>}
 }
 
 impl Route {

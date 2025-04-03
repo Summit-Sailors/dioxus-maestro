@@ -197,8 +197,7 @@ pub fn MultiSelect<T: Clone + PartialEq + std::fmt::Display + 'static>(props: Mu
 						}
 					}
 					{
-							let options = display_options();
-							let _ = options
+							display_options
 									.iter()
 									.map(|option| {
 											let option_clone = option.clone();
@@ -224,7 +223,7 @@ pub fn MultiSelect<T: Clone + PartialEq + std::fmt::Display + 'static>(props: Mu
 													},
 													{
 															if let Some(renderer) = props.option_renderer {
-																	renderer(option)
+																	renderer(&*option)
 															} else {
 																	rsx! {
 																	"{option.label}"
@@ -244,7 +243,7 @@ pub fn MultiSelect<T: Clone + PartialEq + std::fmt::Display + 'static>(props: Mu
 													}
 												}
 											}
-									});
+									})
 					}
 				}
 			}

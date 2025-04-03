@@ -59,7 +59,7 @@ pub fn DieselDemo() -> Element {
 						{format!("Page ({})", current_page_idx() + 1)}
 					}
 					// iser list
-					div { class: "w-3/4 max-w-4xl bg-gray-900 p-4 border border-gray-700 rounded-lg mb-4 max-h-96 overflow-y-auto mx-auto",
+					div { class: "w-3/4 max-w-4xl bg-gray-900 p-4 border border-gray-700 rounded-lg mb-4 max-h-screen overflow-y-auto mx-auto",
 						{
 								users
 										.iter()
@@ -68,7 +68,6 @@ pub fn DieselDemo() -> Element {
 													div {
 														class: "border border-slate-700 rounded-md p-3 text-slate-50 bg-gray-800 shadow-md text-center space-y-1",
 														key: "{item.id}",
-														p { class: "text-lg font-semibold", "{users.len()}" }
 														p { class: "text-lg font-semibold", "{item.username}" }
 														p { class: "text-sm text-gray-300", "{item.email:?}" }
 														p { class: "text-sm text-gray-300", "{item.age.unwrap_or(0)}" }

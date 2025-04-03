@@ -116,11 +116,6 @@ pub fn Layout(children: Element) -> Element {
 fn NavigationMenu(close_menu: Signal<bool>) -> Element {
 	let current_route = use_route::<Route>();
 
-	// determine if a route is a client DB route
-	let is_client_db_route = |route: &Route| -> bool { matches!(route, Route::DieselDemo {} | Route::SqlxDemo {}) };
-
-	let is_in_client_db = is_client_db_route(&current_route);
-
 	rsx! {
 		div {
 			id: "maestro-demo-nav",
@@ -136,56 +131,70 @@ fn NavigationMenu(close_menu: Signal<bool>) -> Element {
 				onclick: move |_| close_menu.set(false),
 				Icon { icon: BsLayoutSidebarReverse, class: "w-5 h-5" }
 			}
-			div { class: "w-full flex-1",
-				// primary routes first (excluding the client DB routes)
+
+			div { class: "w-full flex-1 space-y-4",
 				{
-						Route::iter()
-								.filter(|route| !is_client_db_route(route) && route.name() != "Not Found")
-								.map(|route| {
-										let is_current = route == current_route;
-										rsx! {
-											Link {
-												to: route.clone(),
-												class: tw_join!(
-														"block px-4 py-5 transition-colors w-full text-center text-slate-200 font-medium text-xl border-b border-b-slate-600",
-														"hover:bg-slate-800/20 hover:text-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-600",
-														is_current.then_some("bg-slate-800 text-slate-100")
-												),
-												onclick: move |_| close_menu.set(false),
-												"{route.name()}"
-											}
-										}
-								})
+						render_section(
+										"General",
+										&[
+												(Route::HomePage {}, "Home"),
+												(Route::UIDemo {}, "UI"),
+												(Route::FormsDemo {}, "Form"),
+												(Route::HooksDemo {}, "Hooks"),
+										],
+										close_menu,
+								)
+								.unwrap()
 				}
-				// clients section header
-				div { class: "block px-4 py-3 w-full text-center text-slate-300 font-medium text-lg border-b border-b-slate-600 bg-slate-800/50",
-					"Clients"
-				}
-				// DB subsection header
-				div { class: "block px-4 py-2 w-full text-center text-slate-400 font-medium text-base border-b border-b-slate-600 bg-slate-800/30",
-					"Database"
-				}
-				// clients/DB routes
+
 				{
-						Route::iter()
-								.filter(|route| is_client_db_route(route))
-								.map(|route| {
-										let is_current = route == current_route;
-										rsx! {
-											Link {
-												to: route.clone(),
-												class: tw_join!(
-														"block px-4 py-3 transition-colors w-full text-center text-slate-200 font-medium text-lg border-b border-b-slate-600 pl-8",
-														"hover:bg-slate-800/20 hover:text-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-600",
-														is_current.then_some("bg-slate-800 text-slate-100")
-												),
-												onclick: move |_| close_menu.set(false),
-												"{route.name()}"
-											}
-										}
-								})
+						render_section(
+										"Components & Features",
+										&[
+												(Route::CalendarDemo {}, "Calendar"),
+												(Route::PlottersDemo {}, "Plotters"),
+												(Route::CompleteQueryDemo {}, "Query"),
+												(Route::RadioDemo {}, "Radio"),
+												(Route::ToastDemo {}, "Toast"),
+										],
+										close_menu,
+								)
+								.unwrap()
 				}
-						// utilities section (serpapi etc etc)
+
+				{
+						render_section(
+										"Database",
+										&[(Route::DieselDemo {}, "Diesel"), (Route::SqlxDemo {}, "Sqlx")],
+										close_menu,
+								)
+								.unwrap()
+				}
+			}
+
+		}
+	}
+}
+
+fn render_section(title: &str, routes: &[(Route, &str)], mut close_menu: Signal<bool>) -> Element {
+	rsx! {
+		div { class: "border-b border-slate-700 pb-2 mb-2",
+			h3 { class: "text-slate-400 text-sm font-bold uppercase tracking-wide",
+				"{title}"
+			}
+		}
+		div {
+			for (route , name) in routes.iter() {
+				Link {
+					to: route.clone(),
+					class: tw_join!(
+							"block px-4 py-2 transition-colors w-full text-left text-slate-200 font-small text-xl",
+							"hover:bg-slate-800/20 hover:text-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-600",
+							(use_route::< Route > () == * route).then_some("bg-slate-800 text-slate-100")
+					),
+					onclick: move |_| close_menu.set(false),
+					"{name}"
+				}
 			}
 		}
 	}
@@ -233,12 +242,16 @@ fn get_source_code(route: &Route) -> HashMap<String, String> {
 		},
 		Route::DieselDemo {} => {
 			code_map.insert("diesel".to_string(), String::from(include_str!("clients/db/diesel_demo.rs")));
+			code_map.insert("diesel api".to_string(), String::from(include_str!("clients/db/diesel_api.rs")));
+			code_map.insert("schema".to_string(), String::from(include_str!("clients/db/diesel_schema.rs")));
 		},
 		Route::SqlxDemo {} => {
 			code_map.insert("sqlx".to_string(), String::from(include_str!("clients/db/sqlx_demo.rs")));
+			code_map.insert("sqlx api".to_string(), String::from(include_str!("clients/db/sqlx_api.rs")));
+			code_map.insert("mod".to_string(), String::from(include_str!("clients/db/mod.rs")));
 		},
 		Route::NotFound { route: _ } => {
-			code_map.insert("not found".to_string(), String::from(include_str!("clients/db/sqlx_demo.rs")));
+			code_map.insert("not found".to_string(), String::from(""));
 		},
 	}
 
