@@ -16,7 +16,7 @@ pub enum Device {
 	Tablet,
 }
 
-#[derive(Debug, Default, Clone, PartialEq, Eq, Serialize)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum SearchType {
 	#[serde(rename = "")]
 	#[default]

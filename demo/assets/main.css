@@ -14,7 +14,6 @@
     --color-red-500: oklch(0.637 0.237 25.331);
     --color-red-600: oklch(0.577 0.245 27.325);
     --color-red-700: oklch(0.505 0.213 27.518);
-    --color-orange-500: oklch(0.705 0.213 47.604);
     --color-yellow-500: oklch(0.795 0.184 86.047);
     --color-yellow-600: oklch(0.681 0.162 75.834);
     --color-green-500: oklch(0.723 0.219 149.579);
@@ -1015,9 +1014,6 @@
   }
   .text-green-500 {
     color: var(--color-green-500);
-  }
-  .text-orange-500 {
-    color: var(--color-orange-500);
   }
   .text-red-300 {
     color: var(--color-red-300);

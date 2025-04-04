@@ -1,6 +1,9 @@
 use {
 	crate::{
-		clients::db::{diesel_demo::DieselDemo, sqlx_demo::SqlxDemo},
+		clients::{
+			db::{diesel_demo::DieselDemo, sqlx_demo::SqlxDemo},
+			utilities::{apalis_demo::ApalisDemo, serpapi_demo::SerpApiDemo},
+		},
 		layout::Layout,
 		pages::{
 			calendar::CalendarDemo, form::FormsDemo, home::HomePage, hooks::HooksDemo, not_found::NotFound, plotters::PlottersDemo, query::CompleteQueryDemo,
@@ -42,14 +45,18 @@ pub enum Route {
     #[route("/calendar")]
     CalendarDemo {},
     #[nest("/clients")]
-        #[nest("/db")]
-            #[route("/diesel")]
-            DieselDemo {},
-            #[route("/sqlx")]
-            SqlxDemo {},
-        #[end_nest]
-        // #[nest("/utilities")]
-        // #[end_nest]
+      #[nest("/db")]
+        #[route("/diesel")]
+        DieselDemo {},
+        #[route("/sqlx")]
+        SqlxDemo {},
+      #[end_nest]
+      #[nest("/utilities")]
+        #[route("/apalis")]
+        ApalisDemo {},
+        #[route("/serpapi")]
+        SerpApiDemo {},
+      #[end_nest]
     #[end_nest]
   #[end_layout]
   #[route("/:..route")]
@@ -70,6 +77,8 @@ impl Route {
 			Route::CalendarDemo {} => "Calendar",
 			Route::DieselDemo {} => "Diesel",
 			Route::SqlxDemo {} => "Sqlx",
+			Route::SerpApiDemo {} => "SerpAPI",
+			Route::ApalisDemo {} => "Apalis",
 			Route::NotFound { route: _ } => "Not Found",
 		}
 	}
@@ -90,6 +99,8 @@ impl Route {
 			Route::CalendarDemo {} => "A  highly customizable UI calendar and date picker utility.",
 			Route::DieselDemo {} => "A diesel utility equipped with both sync and async database connection/pool creation and an extension for paginated queries",
 			Route::SqlxDemo {} => "A sqlx utility equipped with both sync and async database connection/pool creation",
+			Route::SerpApiDemo {} => "A serpapi utility designed to make your experience pleasant when integrating SerpAPI into your Dioxus app",
+			Route::ApalisDemo {} => "A Apalis utility designed to make integrating Apalis into your Dioxus app easier",
 			Route::NotFound { route: _ } => "",
 		}
 	}

@@ -250,6 +250,15 @@ fn get_source_code(route: &Route) -> HashMap<String, String> {
 			code_map.insert("sqlx api".to_string(), String::from(include_str!("clients/db/sqlx_api.rs")));
 			code_map.insert("mod".to_string(), String::from(include_str!("clients/db/mod.rs")));
 		},
+		Route::SerpApiDemo {} => {
+			code_map.insert("serpapi".to_string(), String::from(include_str!("clients/utilities/serpapi_demo.rs")));
+			code_map.insert("serpapi api".to_string(), String::from(include_str!("clients/utilities/serpapi_api.rs")));
+		},
+		Route::ApalisDemo {} => {
+			code_map.insert("apalis".to_string(), String::from(include_str!("clients/utilities/apalis_demo.rs")));
+			code_map.insert("apalis api".to_string(), String::from(include_str!("clients/utilities/apalis_api.rs")));
+			code_map.insert("mod".to_string(), String::from(include_str!("clients/utilities/mod.rs")));
+		},
 		Route::NotFound { route: _ } => {
 			code_map.insert("not found".to_string(), String::from(""));
 		},

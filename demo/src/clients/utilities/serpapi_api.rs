@@ -1,7 +1,6 @@
 use {
 	dioxus::prelude::*,
 	maestro_serpapi::{
-		functions::SerpapiDTO,
 		request_type::{ETimeFrame, Engine, SafeSearch, SearchType},
 		response_type::{OrganicResult, SearchResponse},
 	},
@@ -21,38 +20,25 @@ pub async fn search_google(query: String) -> Result<Vec<OrganicResult>, ServerFn
 		.safe(SafeSearch::Active) // safe search enabled
 		.num(10) // get 10 results
 		.call() // execute the request
-		.await
-		.expect("SerpAPI request failed");
+		.await?;
 
 	Ok(search_response.organic_results)
 }
 
 // advanced search with additional parameters
 #[server]
-pub async fn advanced_search(
-	query: String,
-	search_type: SearchType,
-	time_frame: Option<ETimeFrame>,
-	location: Option<String>,
-) -> Result<SearchResponse, ServerFnError> {
+pub async fn advanced_search(query: String, search_type: SearchType, time_frame: ETimeFrame, location: String) -> Result<SearchResponse, ServerFnError> {
 	use maestro_serpapi::client::serpapi_request;
 
-	let search_response = serpapi_request()
-		.q(query)
-		.engine(Engine::Google)
-		.search_type(search_type)
-		.tbs(time_frame?)
-		.location(location?)
-		.call()
-		.await
-		.expect("Advanced search failed: {}");
+	let search_response = serpapi_request().q(query).engine(Engine::Google).search_type(search_type).tbs(time_frame).location(location).call().await?;
 
 	Ok(search_response)
 }
 
 // how to use the Dioxus server function for fetching content from URLs
 #[server]
-pub async fn fetch_and_extract_content() -> Result<Vec<SerpapiDTO>, ServerFnError> {
+#[cfg(feature = "dioxus")]
+pub async fn fetch_and_extract_content() -> Result<Vec<maestro_serpapi::functions::SerpapiDTO>, ServerFnError> {
 	// uses functions.rs implementation to handle fetching and processing URLs
 	let results = maestro_serpapi::functions::serpapi_server_request("Rust programming".to_string()).await?;
 	Ok(results)

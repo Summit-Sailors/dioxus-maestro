@@ -8,7 +8,7 @@ repository = ""
 
 [dependencies]
 
-api = { workspace = true, features = ["server"] }
+api = { workspace = true, features = ["server"], optional = true }
 chrome-fastapi = { workspace = true }
 
 bon = { workspace = true }
@@ -18,11 +18,17 @@ strum = { workspace = true }
 strum_macros = { workspace = true }
 
 dioxus = { version = "0.6.3", features = ["fullstack"] }
-reqwest = { version = "0.12.15", features = ["json", "multipart"], optional = true }
+reqwest = { version = "0.12.15", features = [
+  "json",
+  "multipart",
+], optional = true }
 
 readability-rs = "0.5.0"
 
-tokio-retry2 = { version = "0.5.7", features = ["jitter", "tracing"], optional = true }
+tokio-retry2 = { version = "0.5.7", features = [
+  "jitter",
+  "tracing",
+], optional = true }
 
 anyhow = { version = "1.0.97", default-features = false }
 futures = { version = "0.3.31", default-features = false }
@@ -30,4 +36,4 @@ url = { version = "2.5.4", features = ["serde"] }
 
 [features]
 dioxus = []
-server = ["dioxus/server", "reqwest", "tokio-retry2"]
+server = ["dioxus/server", "reqwest", "tokio-retry2", "dep:api"]

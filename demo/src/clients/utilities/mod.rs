@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 
+pub mod alpaca_demo;
 pub mod apalis_api;
 pub mod apalis_demo;
 pub mod serpapi_api;

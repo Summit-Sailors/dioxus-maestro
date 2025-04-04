@@ -1,5 +1,5 @@
 [package]
-authors = ["Stephen <oketchs702@gmail.com>"]
+authors = ["Stephen Oketch"]
 edition = { workspace = true }
 name = "demo"
 version = "0.1.0"
@@ -10,9 +10,10 @@ version = "0.1.0"
 # clients
 api = { workspace = true, features = ["server"], optional = true }
 chrome-fastapi = { workspace = true }
+maestro-alpaca = { path = "../clients/maestro-alpaca", features = ["dioxus"] }
 maestro-apalis = { path = "../clients/maestro-apalis", features = ["acreate", "create", "dioxus", "server"], optional = true }
 maestro-diesel = { path = "../clients/maestro-diesel" }
-maestro-serpapi = { path = "../clients/maestro-serpapi", features = ["dioxus", "server"], optional = true }
+maestro-serpapi = { path = "../clients/maestro-serpapi" }
 maestro-sqlx = { path = "../clients/maestro-sqlx" }
 
 # components and utilities
@@ -64,7 +65,7 @@ tokio-util = { version = "0.7.14", features = ["full", "tracing"], optional = tr
 
 sqlx = { version = "0.8.3", features = ["chrono", "postgres", "runtime-tokio", "tls-native-tls", "uuid"], optional = true }
 
-diesel = { version = "2.2.8", features = ["chrono", "numeric", "postgres", "serde_json", "uuid"], optional = true }
+diesel = { version = "2.2.9", features = ["chrono", "numeric", "postgres", "serde_json", "uuid"], optional = true }
 diesel-async = { version = "0.5.2", features = ["postgres"], optional = true }
 diesel-derive-enum = { version = "2.1.0", features = ["postgres"], optional = true }
 
@@ -75,6 +76,7 @@ dotenvy = { git = "https://github.com/allan2/dotenvy.git", features = ["macros"]
 
 [features]
 desktop = ["dep:apalis", "dioxus/desktop"]
+dioxus = []
 mobile = ["dep:apalis", "dioxus/mobile"]
 server = [
   "dep:apalis",
@@ -84,16 +86,18 @@ server = [
   "dep:diesel-async",
   "dep:diesel-derive-enum",
   "dep:maestro-apalis",
-  "dep:maestro-serpapi",
   "dep:sqlx",
   "dep:tokio",
   "dep:tokio-stream",
   "dep:tokio-util",
   "dioxus/server",
+  "maestro-alpaca/server",
   "maestro-diesel/async",
   "maestro-diesel/dioxus",
   "maestro-diesel/server",
   "maestro-diesel/sync",
+  "maestro-serpapi/dioxus",
+  "maestro-serpapi/server",
   "maestro-sqlx/acreate",
   "maestro-sqlx/create",
 ]

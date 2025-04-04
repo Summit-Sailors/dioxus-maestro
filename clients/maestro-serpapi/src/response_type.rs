@@ -11,7 +11,7 @@ pub struct SearchResponse {
 	pub organic_results: Vec<OrganicResult>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct OrganicResult {
 	pub position: u32,
 	pub title: String,
