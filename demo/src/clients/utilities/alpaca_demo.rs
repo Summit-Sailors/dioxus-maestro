@@ -7,7 +7,7 @@ use {
 };
 
 #[component]
-fn AlpacaDemo() -> Element {
+pub fn AlpacaDemo() -> Element {
 	// stocks to choose from
 	let stock_symbols = use_signal(|| {
 		vec![
@@ -93,7 +93,7 @@ fn AlpacaDemo() -> Element {
 
 			div { class: "grid grid-cols-1 md:grid-cols-2 gap-6 mb-8",
 				// data controls
-				div { class: "bg-white p-4 rounded shadow",
+				div { class: "bg-gray-900 p-4 rounded shadow",
 					h2 { class: "text-xl font-semibold mb-4", "Market Data Controls" }
 					div { class: "grid grid-cols-1 md:grid-cols-2 gap-4 mb-4",
 						div {
@@ -196,7 +196,7 @@ fn AlpacaDemo() -> Element {
 				}
 
 				// trading controls
-				div { class: "bg-white p-4 rounded shadow",
+				div { class: "bg-gray-800 p-4 rounded shadow",
 					h2 { class: "text-xl font-semibold mb-4", "Trading Controls" }
 
 					button {
@@ -269,20 +269,20 @@ fn StockChart(bars: BarsDTO) -> Element {
 	let mut chart_type = use_signal(|| "table");
 
 	rsx! {
-		div { class: "bg-white p-4 rounded shadow",
+		div { class: "bg-gray-800 p-4 rounded shadow w-full",
 			div { class: "flex justify-between items-center mb-4",
 				h2 { class: "text-xl font-semibold", "Price History for {bars.symbol}" }
 
 				div { class: "flex space-x-2",
 					button {
-						class: "px-3 py-1 border rounded hover:bg-gray-100",
-						class: if chart_type() == "table" { "bg-blue-100" } else { "" },
+						class: "px-3 py-1 border rounded hover:bg-gray-400",
+						class: if chart_type() == "table" { "bg-blue-500" } else { "" },
 						onclick: move |_| chart_type.set("table"),
 						"Table View"
 					}
 					button {
-						class: "px-3 py-1 border rounded hover:bg-gray-100",
-						class: if chart_type() == "stats" { "bg-blue-100" } else { "" },
+						class: "px-3 py-1 border rounded hover:bg-gray-400",
+						class: if chart_type() == "stats" { "bg-blue-500" } else { "" },
 						onclick: move |_| chart_type.set("stats"),
 						"Statistics"
 					}
@@ -292,10 +292,10 @@ fn StockChart(bars: BarsDTO) -> Element {
 			{
 					if chart_type() == "table" {
 							rsx! {
-								div { class: "overflow-x-auto",
+								div { class: "overflow-x-auto max-h-96",
 									table { class: "w-full border-collapse",
 										thead {
-											tr { class: "bg-gray-100",
+											tr { class: "bg-gray-500",
 												th { class: "p-2 text-left", "Time" }
 												th { class: "p-2 text-right", "Open" }
 												th { class: "p-2 text-right", "High" }
@@ -321,7 +321,7 @@ fn StockChart(bars: BarsDTO) -> Element {
 																			""
 																	};
 																	rsx! {
-																		tr { class: "border-b hover:bg-gray-50",
+																		tr { class: "border-b hover:bg-gray-400",
 																			td { class: "p-2 text-left", "{time}" }
 																			td { class: "p-2 text-right", "{bar.open:.2}" }
 																			td { class: "p-2 text-right", "{bar.high:.2}" }
@@ -384,20 +384,20 @@ fn ExtendedStockStats(bars: Vec<NewBar>) -> Element {
 		div { class: "space-y-6",
 			div { class: "mt-4 grid grid-cols-1 md:grid-cols-3 gap-4",
 				div { class: "p-4 border rounded",
-					h3 { class: "font-medium text-gray-700", "Period Change" }
+					h3 { class: "font-medium text-gray-600", "Period Change" }
 					p { class: "text-xl {change_class}",
 						"{period_change:.2} ({period_change_percent:.2}%)"
 					}
 				}
 
 				div { class: "p-4 border rounded",
-					h3 { class: "font-medium text-gray-700", "Price Range" }
+					h3 { class: "font-medium text-gray-600", "Price Range" }
 					p { class: "text-xl", "Low: {lowest_price:.2} - High: {highest_price:.2}" }
 					p { class: "text-sm text-gray-500", "Avg: {avg_price:.2}" }
 				}
 
 				div { class: "p-4 border rounded",
-					h3 { class: "font-medium text-gray-700", "Volume" }
+					h3 { class: "font-medium text-gray-600", "Volume" }
 					p { class: "text-xl", "Total: {total_volume}" }
 					p { class: "text-sm text-gray-500", "Avg: {avg_volume}" }
 				}
@@ -406,12 +406,12 @@ fn ExtendedStockStats(bars: Vec<NewBar>) -> Element {
 			// advanced statistics
 			div { class: "mt-4 grid grid-cols-1 md:grid-cols-3 gap-4",
 				div { class: "p-4 border rounded",
-					h3 { class: "font-medium text-gray-700", "Volatility" }
+					h3 { class: "font-medium text-gray-600", "Volatility" }
 					p { class: "text-xl", "{volatility:.4}" }
 				}
 
 				div { class: "p-4 border rounded",
-					h3 { class: "font-medium text-gray-700", "Price Movement" }
+					h3 { class: "font-medium text-gray-600", "Price Movement" }
 					div { class: "flex items-center justify-between",
 						span { class: "text-green-600", "Up: {up_days}" }
 						span { class: "text-red-600", "Down: {down_days}" }
@@ -421,7 +421,7 @@ fn ExtendedStockStats(bars: Vec<NewBar>) -> Element {
 
 
 				div { class: "p-4 border rounded",
-					h3 { class: "font-medium text-gray-700", "Latest Price" }
+					h3 { class: "font-medium text-gray-600", "Latest Price" }
 					p { class: "text-xl {change_class}", "{latest_bar.close:.2}" }
 					p { class: "text-sm text-gray-500",
 						{format!("{}", latest_bar.time.format("%Y-%m-%d %H:%M"))}

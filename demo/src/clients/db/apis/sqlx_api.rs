@@ -1,6 +1,6 @@
-use {super::SqlxUser, dioxus::prelude::*};
+use {crate::clients::db::SqlxUser, dioxus::prelude::*};
 
-#[server]
+#[server(FetchUsersSqlx)]
 // synchronous user fetching with sync pool creation
 pub async fn fetch_users_sync() -> Result<Vec<SqlxUser>, ServerFnError> {
 	use {
@@ -36,7 +36,7 @@ pub async fn fetch_users_sync() -> Result<Vec<SqlxUser>, ServerFnError> {
 	}
 }
 
-#[server]
+#[server(AFetchUsersSqlx)]
 pub async fn fetch_users_async() -> Result<Vec<SqlxUser>, ServerFnError> {
 	use {maestro_sqlx::acreate::acreate_sqlx_pool, sqlx::prelude::*};
 

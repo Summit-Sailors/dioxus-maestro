@@ -1,14 +1,15 @@
 #[cfg(feature = "server")]
 use {crate::clients::db::diesel_schema::sql_types, diesel::prelude::*, std::io::Write};
 use {
-	chrono::Utc, serde::{Deserialize, Serialize}, std::fmt, uuid::Uuid,
+	chrono::Utc,
+	serde::{Deserialize, Serialize},
+	std::fmt,
+	uuid::Uuid,
 };
 
+pub mod apis;
 pub mod diesel_demo;
 pub mod sqlx_demo;
-pub mod sqlx_api;
-
-pub mod diesel_api;
 
 #[cfg(feature = "server")]
 pub mod diesel_schema;
@@ -68,18 +69,17 @@ impl Default for DieselRole {
 	}
 }
 
-
 // Sqlx
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 #[cfg_attr(feature = "server", derive(sqlx::FromRow))]
 pub struct SqlxUser {
-  pub id: Uuid,
+	pub id: Uuid,
 	pub username: String,
 	pub email: String,
 	pub bio: Option<String>,
 	pub age: Option<i32>,
 	pub role: SqlxRole,
-  pub created_at: chrono::DateTime<Utc>,
+	pub created_at: chrono::DateTime<Utc>,
 	pub updated_at: chrono::DateTime<Utc>,
 }
 
@@ -88,16 +88,16 @@ pub struct SqlxUser {
 #[cfg_attr(feature = "server", sqlx(type_name = "user_role", rename_all = "PascalCase"))]
 pub enum SqlxRole {
 	Admin,
-  Moderator,
+	Moderator,
 	User,
 }
 
 impl fmt::Display for SqlxRole {
-  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-    match self {
-      SqlxRole::Admin => write!(f, "Admin"),
-      SqlxRole::Moderator => write!(f, "Moderator"),
-      SqlxRole::User => write!(f, "User"), 
-    }
-  }
+	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+		match self {
+			SqlxRole::Admin => write!(f, "Admin"),
+			SqlxRole::Moderator => write!(f, "Moderator"),
+			SqlxRole::User => write!(f, "User"),
+		}
+	}
 }

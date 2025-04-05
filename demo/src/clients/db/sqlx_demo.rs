@@ -10,7 +10,7 @@ pub fn SqlxDemo() -> Element {
 
 	// 1. using async pool creation
 	// preferred method when in an async context
-	let aresult = use_server_future(move || crate::clients::db::sqlx_api::fetch_users_async())?;
+	let aresult = use_server_future(move || crate::clients::db::apis::sqlx_api::fetch_users_async())?;
 
 	// users onmount - shows both sync and async methods
 	use_effect(move || match aresult.state().cloned() {

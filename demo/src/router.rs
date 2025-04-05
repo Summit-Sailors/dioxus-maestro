@@ -2,7 +2,7 @@ use {
 	crate::{
 		clients::{
 			db::{diesel_demo::DieselDemo, sqlx_demo::SqlxDemo},
-			utilities::{apalis_demo::ApalisDemo, serpapi_demo::SerpApiDemo},
+			utilities::{alpaca_demo::AlpacaDemo, anthropic_demo::AnthropicDemo, apalis_demo::ApalisDemo, serpapi_demo::SerpApiDemo},
 		},
 		layout::Layout,
 		pages::{
@@ -56,6 +56,10 @@ pub enum Route {
         ApalisDemo {},
         #[route("/serpapi")]
         SerpApiDemo {},
+        #[route("/alpaca")]
+        AlpacaDemo {},
+        #[route("/anthropic")]
+        AnthropicDemo {},
       #[end_nest]
     #[end_nest]
   #[end_layout]
@@ -79,6 +83,8 @@ impl Route {
 			Route::SqlxDemo {} => "Sqlx",
 			Route::SerpApiDemo {} => "SerpAPI",
 			Route::ApalisDemo {} => "Apalis",
+			Route::AlpacaDemo {} => "Alpaca",
+			Route::AnthropicDemo {} => "Anthropic",
 			Route::NotFound { route: _ } => "Not Found",
 		}
 	}
@@ -101,7 +107,9 @@ impl Route {
 			Route::SqlxDemo {} => "A sqlx utility equipped with both sync and async database connection/pool creation",
 			Route::SerpApiDemo {} => "A serpapi utility designed to make your experience pleasant when integrating SerpAPI into your Dioxus app",
 			Route::ApalisDemo {} => "A Apalis utility designed to make integrating Apalis into your Dioxus app easier",
-			Route::NotFound { route: _ } => "",
+			Route::AlpacaDemo {} => "A Alpaca utility designed to make connecting to and using Alpaca with your Dioxus apps easier",
+			Route::AnthropicDemo {} => "A utility designed to make connecting to and using Anthropic with your Dioxus apps easier",
+			Route::NotFound { route: _ } => "Page was not Found",
 		}
 	}
 }

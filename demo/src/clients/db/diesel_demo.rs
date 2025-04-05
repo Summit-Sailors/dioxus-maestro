@@ -1,6 +1,6 @@
 #[allow(non_snake_case)]
 use {
-	crate::clients::db::{DieselUser, diesel_api},
+	crate::clients::db::{DieselUser, apis::diesel_api},
 	dioxus::prelude::*,
 	tailwind_fuse::tw_join,
 };

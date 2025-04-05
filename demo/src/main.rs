@@ -16,10 +16,11 @@ fn main() {
 	dioxus::LaunchBuilder::new()
 		.with_context(server_only!(maestro_diesel::async_client::client::acreate_diesel_pool(env!("DATABASE_URL"))))
 		.with_context(server_only!({ dioxus::fullstack::ServeConfig::builder().enable_out_of_order_streaming() }))
-		.with_context(server_only!(maestro_apalis::create::create_apalis_storage_sync::<demo::clients::utilities::EmailJob>().call()))
-		.with_context(server_only!(maestro_alpaca::get_client::get_alpaca_reqwest_client(
-			std::env::var("ALPACA_KEY_ID").unwrap().as_str(),
-			std::env::var("ALPACA_SECRET_KEY").unwrap().as_str()
-		)))
+		.with_context(server_only!(
+			maestro_apalis::create::create_apalis_storage_sync::<demo::clients::utilities::EmailJob>()
+				.maybe_db_url(Some(std::env!("APALIS_DATABASE_URL").to_string().leak()))
+		))
+		.with_context(server_only!(maestro_alpaca::get_client::get_alpaca_reqwest_client(std::env!("ALPACA_KEY_ID"), std::env!("ALPACA_SECRET_KEY"))))
+		.with_context(server_only!(maestro_anthropic::AnthropicClient::new(std::env!("ANTHROPIC_API_KEY"))))
 		.launch(App);
 }

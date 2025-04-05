@@ -13,7 +13,7 @@ pub fn SerpApiDemo() -> Element {
 	let mut state =
 		use_signal(|| SearchState { query: String::new(), results: Vec::<maestro_serpapi::response_type::OrganicResult>::new(), loading: false, error: None });
 
-	let search_result = use_server_future(move || crate::clients::utilities::serpapi_api::search_google(state().query))?;
+	let search_result = use_server_future(move || crate::clients::utilities::apis::serpapi_api::search_google(state().query))?;
 
 	let mut on_search = move |query: String| {
 		state.set(SearchState { query: query.clone(), results: Vec::new(), loading: true, error: None });

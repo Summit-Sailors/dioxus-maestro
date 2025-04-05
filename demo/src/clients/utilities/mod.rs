@@ -1,9 +1,9 @@
 use serde::{Deserialize, Serialize};
 
 pub mod alpaca_demo;
-pub mod apalis_api;
+pub mod anthropic_demo;
 pub mod apalis_demo;
-pub mod serpapi_api;
+pub mod apis;
 pub mod serpapi_demo;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

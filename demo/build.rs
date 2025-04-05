@@ -12,7 +12,7 @@ fn main() {
 
 	#[cfg(feature = "server")]
 	{
-		for key in ["DATABASE_URL", "ANTHROPIC_API_KEY", "SERPAPI_API_KEY", "APALIS_DATABASE_URL"] {
+		for key in ["DATABASE_URL", "ANTHROPIC_API_KEY", "SERPAPI_API_KEY", "APALIS_DATABASE_URL", "ALPACA_KEY_ID", "ALPACA_SECRET_KEY"] {
 			if let Ok(value) = std::env::var(key) {
 				println!("cargo:rustc-env={}={}", key, value);
 			} else {

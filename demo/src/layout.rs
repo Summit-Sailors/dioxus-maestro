@@ -132,7 +132,7 @@ fn NavigationMenu(close_menu: Signal<bool>) -> Element {
 				Icon { icon: BsLayoutSidebarReverse, class: "w-5 h-5" }
 			}
 
-			div { class: "w-full flex-1 space-y-4",
+			div { class: "w-full flex-1 space-y-2 overflow-auto max-h-screen",
 				{
 						render_section(
 										"General",
@@ -166,6 +166,19 @@ fn NavigationMenu(close_menu: Signal<bool>) -> Element {
 						render_section(
 										"Database",
 										&[(Route::DieselDemo {}, "Diesel"), (Route::SqlxDemo {}, "Sqlx")],
+										close_menu,
+								)
+								.unwrap()
+				}
+				{
+						render_section(
+										"Others",
+										&[
+												(Route::ApalisDemo {}, "Apalis"),
+												(Route::SerpApiDemo {}, "SerpaAPI"),
+												(Route::AlpacaDemo {}, "Alpaca"),
+												(Route::AnthropicDemo {}, "Anthropic"),
+										],
 										close_menu,
 								)
 								.unwrap()
@@ -242,22 +255,28 @@ fn get_source_code(route: &Route) -> HashMap<String, String> {
 		},
 		Route::DieselDemo {} => {
 			code_map.insert("diesel".to_string(), String::from(include_str!("clients/db/diesel_demo.rs")));
-			code_map.insert("diesel api".to_string(), String::from(include_str!("clients/db/diesel_api.rs")));
+			code_map.insert("diesel api".to_string(), String::from(include_str!("clients/db/apis/diesel_api.rs")));
 			code_map.insert("schema".to_string(), String::from(include_str!("clients/db/diesel_schema.rs")));
 		},
 		Route::SqlxDemo {} => {
 			code_map.insert("sqlx".to_string(), String::from(include_str!("clients/db/sqlx_demo.rs")));
-			code_map.insert("sqlx api".to_string(), String::from(include_str!("clients/db/sqlx_api.rs")));
+			code_map.insert("sqlx api".to_string(), String::from(include_str!("clients/db/apis/sqlx_api.rs")));
 			code_map.insert("mod".to_string(), String::from(include_str!("clients/db/mod.rs")));
 		},
 		Route::SerpApiDemo {} => {
 			code_map.insert("serpapi".to_string(), String::from(include_str!("clients/utilities/serpapi_demo.rs")));
-			code_map.insert("serpapi api".to_string(), String::from(include_str!("clients/utilities/serpapi_api.rs")));
+			code_map.insert("serpapi api".to_string(), String::from(include_str!("clients/utilities/apis/serpapi_api.rs")));
 		},
 		Route::ApalisDemo {} => {
 			code_map.insert("apalis".to_string(), String::from(include_str!("clients/utilities/apalis_demo.rs")));
-			code_map.insert("apalis api".to_string(), String::from(include_str!("clients/utilities/apalis_api.rs")));
+			code_map.insert("apalis api".to_string(), String::from(include_str!("clients/utilities/apis/apalis_api.rs")));
 			code_map.insert("mod".to_string(), String::from(include_str!("clients/utilities/mod.rs")));
+		},
+		Route::AlpacaDemo {} => {
+			code_map.insert("alpaca".to_string(), String::from(include_str!("clients/utilities/alpaca_demo.rs")));
+		},
+		Route::AnthropicDemo {} => {
+			code_map.insert("anthropic".to_string(), String::from(include_str!("clients/utilities/anthropic_demo.rs")));
 		},
 		Route::NotFound { route: _ } => {
 			code_map.insert("not found".to_string(), String::from(""));
