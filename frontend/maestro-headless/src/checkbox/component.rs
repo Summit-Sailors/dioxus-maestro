@@ -90,6 +90,8 @@ pub fn Checkbox(props: CheckboxProps) -> Element {
 pub struct CheckboxIndicatorProps {
 	#[props(extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	#[props(default = None)]
 	pub children: Option<Element>,
 }
@@ -110,6 +112,7 @@ pub fn CheckboxIndicator(props: CheckboxIndicatorProps) -> Element {
 			justify_content: "center",
 			align_items: "center",
 			..props.attributes,
+			..props.extra_attributes,
 			if *context.checked.read() {
 				if let Some(children) = props.children {
 					{

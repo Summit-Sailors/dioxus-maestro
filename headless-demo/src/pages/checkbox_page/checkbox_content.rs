@@ -144,7 +144,7 @@ pub fn CheckboxContent() -> Element {
 						]),
 						attrs_list: Vec::from([
 								AttrsStruct {
-										attr: "aria_checked".into(),
+										attr: "aria-checked".into(),
 										value: "true".into(),
 										description: "".into(),
 								},
@@ -154,7 +154,7 @@ pub fn CheckboxContent() -> Element {
 										description: "Appears only if the whole accordion is disabled".into(),
 								},
 								AttrsStruct {
-										attr: "aria_required".into(),
+										attr: "aria-required".into(),
 										value: "true".into(),
 										description: "".into(),
 								},
@@ -191,7 +191,7 @@ pub fn CheckboxContent() -> Element {
 						]),
 						attrs_list: Vec::from([
 								AttrsStruct {
-										attr: "aria_checked".into(),
+										attr: "aria-checked".into(),
 										value: "true".into(),
 										description: "".into(),
 								},

@@ -352,7 +352,7 @@ pub fn AccordionPage() -> Element {
 										description: "".into(),
 								},
 								AttrsStruct {
-										attr: "aria_expanded".into(),
+										attr: "aria-expanded".into(),
 										value: "true".into(),
 										description: "Appears if current item is opened".into(),
 								},
@@ -394,7 +394,7 @@ pub fn AccordionPage() -> Element {
 										description: "".into(),
 								},
 								AttrsStruct {
-										attr: "aria_expanded".into(),
+										attr: "aria-expanded".into(),
 										value: "true".into(),
 										description: "".into(),
 								},

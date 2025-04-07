@@ -1,6 +1,6 @@
 use {
 	crate::{
-		radio::Radio,
+		radio::{Radio, RadioIndicator},
 		shared::{EOrientation, UseControllableStateParams, use_arrow_key_navigation, use_controllable_state},
 	},
 	dioxus::prelude::*,
@@ -78,6 +78,8 @@ pub fn RadioGroup(props: RadioGroupProps) -> Element {
 			role: "group",
 			aria_disabled: disabled(),
 			"data-disabled": disabled(),
+			aria_orientation: orientation().to_string(),
+			"data-orientation": orientation().to_string(),
 			onkeydown: handle_key_down,
 			onmounted: move |event| container_ref.set(Some(event.data())),
 			..attributes,
@@ -124,6 +126,27 @@ pub fn RadioGroupItem(props: RadioGroupItemProps) -> Element {
 			},
 			extra_attributes: attributes.clone(),
 			{children}
+		}
+	}
+}
+
+#[derive(Props, PartialEq, Debug, Clone)]
+pub struct RadioGroupIndicatorProps {
+	#[props(extends = GlobalAttributes)]
+	pub attributes: Vec<Attribute>,
+	#[props(default = None)]
+	pub children: Option<Element>,
+}
+
+#[component]
+pub fn RadioGroupIndicator(props: RadioGroupIndicatorProps) -> Element {
+	if let Some(children) = props.children {
+		rsx! {
+			RadioIndicator { extra_attributes: props.attributes.clone(), {children} }
+		}
+	} else {
+		rsx! {
+			RadioIndicator { extra_attributes: props.attributes.clone() }
 		}
 	}
 }

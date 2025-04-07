@@ -6,7 +6,7 @@ use {
 		},
 		shared::{EAlign, ESide},
 	},
-	dioxus::{dioxus_core::AttributeValue, prelude::*, web::WebEventExt},
+	dioxus::{prelude::*, web::WebEventExt},
 	std::rc::Rc,
 	web_sys::{
 		wasm_bindgen::{JsCast, prelude::Closure},
@@ -17,7 +17,6 @@ use {
 #[derive(Clone, Debug, PartialEq)]
 pub struct PopperContext {
 	anchor: Signal<Option<Rc<MountedData>>>,
-	is_arrow_hidden: bool,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -30,9 +29,6 @@ pub struct PopperContentContext {
 
 #[derive(Props, Clone, PartialEq)]
 pub struct PopperProps {
-	#[props(default = false)]
-	pub is_arrow_hidden: bool,
-
 	#[props(optional, default = None)]
 	pub onmounted: Option<EventHandler<Event<MountedData>>>,
 
@@ -45,11 +41,11 @@ pub struct PopperProps {
 
 #[component]
 pub fn Popper(props: PopperProps) -> Element {
-	let PopperProps { is_arrow_hidden, onmounted, attributes, extra_attributes, children } = props;
+	let PopperProps { onmounted, attributes, extra_attributes, children } = props;
 
 	let anchor = use_signal(|| None::<Rc<MountedData>>);
 
-	use_context_provider::<PopperContext>(|| PopperContext { is_arrow_hidden, anchor });
+	use_context_provider::<PopperContext>(|| PopperContext { anchor });
 
 	rsx! {
 		div {
@@ -256,9 +252,14 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 	let mut is_positioned = use_signal(|| false);
 	let mut arrow_data = use_signal(|| ArrowData { x: None, y: None, center_offset: 0.0 });
 	let mut transform_origin = use_signal(|| TransformOriginData { x: "50%".to_string(), y: "50%".to_string() });
+	let mut frame_id = use_signal(|| None::<i32>);
 
 	let context = use_context_provider::<PopperContentContext>(|| PopperContentContext { placement, arrow_data, arrow, content });
 	let mut new_placement = use_context_provider(|| Signal::new(placement()));
+	let mut anchor_width = use_signal(|| None::<f32>);
+	let mut anchor_height = use_signal(|| None::<f32>);
+	let mut floating_width = use_signal(|| None::<f32>);
+	let mut floating_height = use_signal(|| None::<f32>);
 
 	let mut update_position = move || {
 		if let (Some(reference_rect), Some(floating_rect)) = (get_element_rect(popper_context.anchor), get_element_rect(content)) {
@@ -273,7 +274,14 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 				(0.0, 0.0)
 			};
 
+			anchor_width.set(Some(reference_rect.width));
+			anchor_height.set(Some(reference_rect.height));
+			floating_width.set(Some(floating_rect.width));
+			floating_height.set(Some(floating_rect.height));
+
 			let current_placement = new_placement.peek().clone();
+			let init_placement = placement.peek().clone();
+
 			let window = window().expect("should have a window in this context");
 			let scroll_x = window.page_x_offset().unwrap_or(0.0) as f32;
 			let scroll_y = window.page_y_offset().unwrap_or(0.0) as f32;
@@ -292,10 +300,25 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 				ESide::Left => adjusted_reference_rect.x < floating_rect.width + side_offset + arrow_height + collision_padding,
 			};
 
-			if avoid_collisions && should_flip {
-				new_placement.with_mut(|state| {
-					state.side = state.side.opposite();
-				});
+			let has_collision_with_original = match init_placement.side {
+				ESide::Top => adjusted_reference_rect.y < floating_rect.height + side_offset + arrow_height + collision_padding,
+				ESide::Right =>
+					adjusted_reference_rect.x + adjusted_reference_rect.width + floating_rect.width + side_offset + arrow_height + collision_padding > window_width,
+				ESide::Bottom =>
+					adjusted_reference_rect.y + adjusted_reference_rect.height + floating_rect.height + side_offset + arrow_height + collision_padding > window_height,
+				ESide::Left => adjusted_reference_rect.x < floating_rect.width + side_offset + arrow_height + collision_padding,
+			};
+
+			if avoid_collisions {
+				if should_flip {
+					new_placement.with_mut(|state| {
+						state.side = state.side.opposite();
+					});
+				} else if current_placement.side != init_placement.side && !has_collision_with_original {
+					new_placement.with_mut(|state| {
+						state.side = init_placement.side;
+					});
+				}
 			}
 
 			let (styles, arrow, transform) =
@@ -335,7 +358,8 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 						let l_update = *last_update.peek();
 						throttled_update_position(l_update);
 					}) as Box<dyn FnMut()>);
-					let _ = win_clone.request_animation_frame(inner_closure.as_ref().unchecked_ref()).expect("should register request frame");
+					let frame_id_value = win_clone.request_animation_frame(inner_closure.as_ref().unchecked_ref()).expect("should register request frame");
+					frame_id.set(Some(frame_id_value));
 					inner_closure.forget();
 				}) as Box<dyn FnMut()>);
 				closure.set(Some(closure_fn));
@@ -359,13 +383,16 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 
 	use_drop(move || {
 		let window = window().expect("should have a window in this context");
-		if let Some(closure_fn) = &*closure.read() {
-			window.remove_event_listener_with_callback("resize", closure_fn.as_ref().unchecked_ref()).unwrap();
-			window.remove_event_listener_with_callback("scroll", closure_fn.as_ref().unchecked_ref()).unwrap();
+		if let Some(frame_id) = *frame_id.peek() {
+			window.cancel_animation_frame(frame_id).ok();
+		}
+		if let Some(closure_fn) = &*closure.peek() {
+			window.remove_event_listener_with_callback("resize", closure_fn.as_ref().unchecked_ref()).expect("should remove event listener");
+			window.remove_event_listener_with_callback("scroll", closure_fn.as_ref().unchecked_ref()).expect("should remove event listener");
 
 			for parent in parents() {
-				parent.remove_event_listener_with_callback("resize", closure_fn.as_ref().unchecked_ref()).expect("should register event listener");
-				parent.remove_event_listener_with_callback("scroll", closure_fn.as_ref().unchecked_ref()).expect("should register event listener");
+				parent.remove_event_listener_with_callback("resize", closure_fn.as_ref().unchecked_ref()).expect("should remove event listener");
+				parent.remove_event_listener_with_callback("scroll", closure_fn.as_ref().unchecked_ref()).expect("should remove event listener");
 			}
 		}
 	});
@@ -378,10 +405,23 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 		None => EAlign::Center,
 	};
 
-	let mut attributes = attributes.clone();
-	attributes.extend(extra_attributes);
+	let mut attrs = attributes.clone();
+	attrs.extend(extra_attributes.clone());
+
 	if !is_positioned() {
-		attributes.push(Attribute { name: "animation", value: AttributeValue::Text("none".into()), namespace: Some("style"), volatile: false });
+		attrs.push(Attribute::new("animation", "none", Some("style"), false));
+	}
+	if let Some(height) = anchor_height() {
+		attrs.push(Attribute::new("--maestro-popper-anchor-height", format!("{}px", height), Some("style"), false));
+	}
+	if let Some(width) = anchor_width() {
+		attrs.push(Attribute::new("--maestro-popper-anchor-width", format!("{}px", width), Some("style"), false));
+	}
+	if let Some(height) = floating_height() {
+		attrs.push(Attribute::new("--maestro-popper-content-height", format!("{}px", height), Some("style"), false));
+	}
+	if let Some(width) = floating_width() {
+		attrs.push(Attribute::new("--maestro-popper-content-width", format!("{}px", width), Some("style"), false));
 	}
 
 	rsx! {
@@ -448,7 +488,7 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 							callback.call(event)
 					}
 			},
-			extra_attributes: attributes.clone(),
+			extra_attributes: attrs.clone(),
 			{children.clone()}
 		}
 	}
@@ -472,7 +512,6 @@ pub struct PopperArrowProps {
 pub fn PopperArrow(props: PopperArrowProps) -> Element {
 	let PopperArrowProps { width, height, attributes, extra_attributes, children } = props;
 
-	let popper_context = use_context::<PopperContext>();
 	let mut content_context = use_context::<PopperContentContext>();
 	let new_placement = use_context::<Signal<Placement>>();
 	let arrow_data = content_context.arrow_data.read().clone();
@@ -505,7 +544,6 @@ pub fn PopperArrow(props: PopperArrowProps) -> Element {
 			left,
 			top,
 			transform_origin: arrow_transform_origin,
-			hidden: popper_context.is_arrow_hidden,
 			if let Some(children) = children {
 				{children}
 			} else {

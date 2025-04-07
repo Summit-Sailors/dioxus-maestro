@@ -1,96 +1,83 @@
 use {
-	crate::{
-		components::{
-			description_section::DescriptionSection,
-			example_code::{ExampleCodeAnatomy, ExampleCodeCollapsible},
-			features_list::Features,
-			tables::{AttrsStruct, PropsStruct},
-			tabs::PageTabs,
-		},
-		pages::checkbox_page::consts::{EXAMPLE_GROUP, EXAMPLE_GROUP_ANATOMY},
+	crate::components::{
+		description_section::DescriptionSection,
+		example_code::{ExampleCodeAnatomy, ExampleCodeCollapsible},
+		features_list::Features,
+		tables::{AttrsStruct, PropsStruct, PropsTable},
+		tabs::PageTabs,
 	},
+	consts::{EXAMPLE, EXAMPLE_ANATOMY},
 	dioxus::prelude::*,
-	dioxus_free_icons::{Icon, icons::bs_icons::BsCheckLg},
-	dioxus_logger::tracing::info,
+	dioxus_free_icons::{
+		Icon,
+		icons::{
+			bs_icons::{BsCheckLg, BsInfo, BsThreeDots},
+			io_icons::IoLogoGithub,
+			ld_icons::LdX,
+		},
+	},
 	maestro_headless::{
-		accordion::{Accordion, AccordionContent, AccordionHeader, AccordionItem, AccordionTrigger, AccordionVariant},
-		checkbox::{Checkbox, CheckboxIndicator},
-		checkbox_group::{CheckboxGroup, CheckboxGroupIndicator, CheckboxGroupItem},
 		collapsible::{Collapsible, CollapsibleContent, CollapsibleTrigger},
-		shared::EOrientation,
+		dialog::{Dialog, DialogBody, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogTitle, DialogTrigger},
+		popover::{Popover, PopoverArrow, PopoverClose, PopoverContent, PopoverTrigger},
+		radio_group::{RadioGroup, RadioGroupIndicator, RadioGroupItem},
+		shared::{EAlign, EOrientation, ESide},
 		tabs::{Tabs, TabsContent, TabsList, TabsTrigger},
 	},
 };
 
-#[component]
-pub fn CheckboxGroupContent() -> Element {
-	let mut values = use_signal::<Vec<String>>(Vec::new);
+mod consts;
 
-	let features_list: Vec<&str> =
-		Vec::from(["Controlled/uncontrolled state", "Keyboard navigation", "Group manages checked state of each checkbox", "Group manages list of checked values"]);
+#[component]
+pub fn RadioPage() -> Element {
+	let features_list: Vec<&str> = Vec::from([
+		"Controlled/uncontrolled state",
+		"Keyboard navigation",
+		"Group manages checked state of each radio button",
+		"Supports vertical / horizontal orientation",
+	]);
 
 	rsx! {
-		p { class: "container flex flex-col gap-3 lg:py-6 py-4 text-neutral-300",
-			"A group of checkboxes where several items can be checked at a time."
+		DescriptionSection {
+			title: "Radio Group",
+			description: "A group of radio buttons where only one item can be checked at a time.",
 		}
-		div { class: "grow flex flex-col justify-center items-center overflow-hidden rounded-md border border-neutral-800 bg-neutral-950",
-			div { class: "p-6 flex flex-col gap-4 items-start",
-				CheckboxGroup {
-					class: "flex items-center gap-4 md:flex-row flex-col",
-					value: values(),
-					on_value_change: move |v: Vec<String>| {
-							values.set(v);
-					},
-					name: "favorites",
-					div { class: "flex justify-center items-center gap-3",
-						CheckboxGroupItem {
-							id: "chocolate",
-							class: "w-6 h-6 rounded flex items-center justify-center border border-neutral-100 transition-colors hover:border-orange-600 focus-visible:ring-2 ring-orange-600 ring-offset-neutral-950 focus-visible:ring-offset-2 focus-visible:outline-none disabled:opacity-50",
-							value: "chocolate",
-							CheckboxGroupIndicator {}
+		section { class: "container flex flex-col px-4 lg:py-6 py-4 ",
+			div { class: "grow flex flex-col justify-center items-center rounded-md border border-neutral-800 bg-neutral-950 overflow-hidden",
+				div { class: "p-6 flex grow items-center justify-center w-full",
+					RadioGroup { name: "radio", class: "flex items-center gap-4",
+						div { class: "flex items-center gap-2",
+							RadioGroupItem {
+								value: "coffee",
+								id: "maestro-radio-1",
+								class: "w-6 h-6 rounded-full flex items-center justify-center transition-colors border border-orange-400 hover:border-orange-600 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-orange-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 disabled:opacity-50",
+								RadioGroupIndicator { class: "w-3 h-3 rounded-full bg-orange-600" }
+							}
+							label { r#for: "maestro-radio-1", "Coffee" }
 						}
-						label { class: "text-slate-100", r#for: "chocolate", "Chocolate" }
-					}
-					div { class: "flex justify-center items-center gap-3",
-						CheckboxGroupItem {
-							id: "banana",
-							disabled: true,
-							class: "w-6 h-6 rounded flex items-center justify-center border border-neutral-100 transition-colors hover:border-orange-600 focus-visible:ring-2 ring-orange-600 ring-offset-neutral-950 focus-visible:ring-offset-2 focus-visible:outline-none disabled:opacity-50",
-							value: "banana",
-							CheckboxGroupIndicator {}
+						div { class: "flex items-center gap-2",
+							RadioGroupItem {
+								value: "water",
+								id: "maestro-radio-2",
+								class: "w-6 h-6 rounded-full flex items-center justify-center transition-colors border border-orange-400 hover:border-orange-600 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-orange-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 disabled:opacity-50",
+								disabled: true,
+								RadioGroupIndicator { class: "w-3 h-3 rounded-full bg-orange-600" }
+							}
+							label { r#for: "maestro-radio-2", "Water" }
 						}
-						label {
-							class: "text-slate-100 pointer-events-none opacity-50",
-							r#for: "banana",
-							"Banana"
+						div { class: "flex items-center gap-2",
+							RadioGroupItem {
+								value: "juice",
+								id: "maestro-radio-3",
+								class: "w-6 h-6 rounded-full flex items-center justify-center transition-colors border border-orange-400 hover:border-orange-600 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-orange-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 disabled:opacity-50",
+								RadioGroupIndicator { class: "w-3 h-3 rounded-full bg-orange-600" }
+							}
+							label { r#for: "maestro-radio-3", "Juice" }
 						}
-					}
-					div { class: "flex justify-center items-center gap-3",
-						CheckboxGroupItem {
-							id: "coffee",
-							class: "w-6 h-6 rounded flex items-center justify-center border border-neutral-100 transition-colors hover:border-orange-600 focus-visible:ring-2 ring-orange-600 ring-offset-neutral-950 focus-visible:ring-offset-2 focus-visible:outline-none disabled:opacity-50",
-							value: "coffee",
-							CheckboxGroupIndicator {}
-						}
-						label { class: "text-slate-100", r#for: "coffee", "Coffee" }
-					}
-					div { class: "flex justify-center items-center gap-3",
-						CheckboxGroupItem {
-							id: "ice-cream",
-							class: "w-6 h-6 rounded flex items-center justify-center border border-neutral-100 transition-colors hover:border-orange-600 focus-visible:ring-2 ring-orange-600 ring-offset-neutral-950 focus-visible:ring-offset-2 focus-visible:outline-none disabled:opacity-50",
-							value: "ice-cream",
-							CheckboxGroupIndicator {}
-						}
-						label { class: "text-slate-100", r#for: "ice-cream", "Ice-cream" }
 					}
 				}
-				ul { class: "space-y-2 list-disc list-inside",
-					for value in values().iter() {
-						li { "{value}" }
-					}
-				}
+				ExampleCodeCollapsible { code: EXAMPLE }
 			}
-			ExampleCodeCollapsible { code: EXAMPLE_GROUP }
 		}
 		DescriptionSection { title: "Supports",
 			Features { features: features_list.clone() }
@@ -98,14 +85,14 @@ pub fn CheckboxGroupContent() -> Element {
 		DescriptionSection {
 			title: "Usage and Anatomy",
 			description: "Import all parts and piece them together. Each part may be styled separately, accept own properties and additional attributes, e.g. \"data\" or \"aria\" (althought they are provided by default).",
-			ExampleCodeAnatomy { code: EXAMPLE_GROUP_ANATOMY }
+			ExampleCodeAnatomy { code: EXAMPLE_ANATOMY }
 		}
 		DescriptionSection { title: "Api Reference",
 			div { class: "flex flex-col space-y-6",
 				div { class: "flex flex-col gap-4",
 					h4 { class: "font-medium text-lg text-orange-300", "Root Component" }
 					p {
-						"Wrapps all checkboxes af the checkbox group and manages state. Props "
+						"Wrapps all radio buttons of the group and manages state. Props "
 						span { class: "px-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
 							"value"
 						}
@@ -127,19 +114,19 @@ pub fn CheckboxGroupContent() -> Element {
 								PropsStruct {
 										prop: "value".into(),
 										prop_default: "None".into(),
-										prop_type: "Option<Vec<String>>".into(),
+										prop_type: "Option<String>".into(),
 										tooltip_text: Some("Must go in pair with 'on_value_change' callback".into()),
 								},
 								PropsStruct {
 										prop: "on_value_change".into(),
 										prop_default: "None".into(),
-										prop_type: "Callback<Vec<String>>".into(),
+										prop_type: "Callback<String>".into(),
 										tooltip_text: Some("Must go in pair with 'value' prop".into()),
 								},
 								PropsStruct {
 										prop: "default_value".into(),
-										prop_default: "[]".into(),
-										prop_type: "Vec<String>".into(),
+										prop_default: "''".into(),
+										prop_type: "String".into(),
 										tooltip_text: None,
 								},
 								PropsStruct {
@@ -174,9 +161,19 @@ pub fn CheckboxGroupContent() -> Element {
 										description: "Appears only if the whole accordion is disabled".into(),
 								},
 								AttrsStruct {
+										attr: "aria-required".into(),
+										value: "true".into(),
+										description: "".into(),
+								},
+								AttrsStruct {
 										attr: "data-disabled".into(),
 										value: "true".into(),
 										description: "Appears only if the whole accordion is disabled".into(),
+								},
+								AttrsStruct {
+										attr: "data-state".into(),
+										value: "checked | unchecked".into(),
+										description: "".into(),
 								},
 								AttrsStruct {
 										attr: "aria-orientation".into(),
@@ -193,7 +190,7 @@ pub fn CheckboxGroupContent() -> Element {
 				}
 				div { class: "flex flex-col gap-4",
 					h4 { class: "font-medium text-lg text-orange-300", "Item Component" }
-					p { "Indicates checkbox input." }
+					p { "Indicates radio input." }
 					PageTabs {
 						props_list: Vec::from([
 								PropsStruct {
@@ -235,11 +232,6 @@ pub fn CheckboxGroupContent() -> Element {
 										description: "Appears only if the whole accordion is disabled".into(),
 								},
 								AttrsStruct {
-										attr: "aria-required".into(),
-										value: "true".into(),
-										description: "".into(),
-								},
-								AttrsStruct {
 										attr: "data-disabled".into(),
 										value: "true".into(),
 										description: "Appears only if the whole accordion is disabled".into(),
@@ -249,12 +241,22 @@ pub fn CheckboxGroupContent() -> Element {
 										value: "checked | unchecked".into(),
 										description: "".into(),
 								},
+								AttrsStruct {
+										attr: "aria-orientation".into(),
+										value: "horizontal | vartical".into(),
+										description: "".into(),
+								},
+								AttrsStruct {
+										attr: "data-orientation".into(),
+										value: "horizontal | vartical".into(),
+										description: "".into(),
+								},
 						]),
 					}
 				}
 				div { class: "flex flex-col gap-4",
 					h4 { class: "font-medium text-lg text-orange-300", "Indicator Component" }
-					p { "Appears when the checkbox is checked. May accept checked component." }
+					p { "Appears when the radio is checked. May accept checked component." }
 					PageTabs {
 						props_list: Vec::from([
 								PropsStruct {

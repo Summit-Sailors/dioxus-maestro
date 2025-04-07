@@ -33,8 +33,8 @@ pub fn Toggle(props: ToggleProps) -> Element {
 	let is_controlled = use_hook(move || pressed().is_some());
 	let (pressed, set_pressed) =
 		use_controllable_state(UseControllableStateParams { is_controlled, prop: pressed, default_prop: default_pressed, on_change: on_toggle_change });
-	let mut attributes = attributes.clone();
 
+	let mut attributes = attributes.clone();
 	attributes.extend(extra_attributes);
 
 	rsx! {

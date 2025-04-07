@@ -1,6 +1,6 @@
 pub const EXAMPLE_GROUP:&str = "use dioxus::prelude::*;
 use maestro_headless::checkbox::CheckboxIndicator;
-use maestro_headless::checkbox_group::{{CheckboxGroup, CheckboxGroupItem}}
+use maestro_headless::checkbox_group::{{CheckboxGroup, CheckboxGroupItem, CheckboxGroupItemIndicator}}
 
 rsx! {{
   div {{ 
@@ -18,6 +18,7 @@ rsx! {{
           id: 'chocolate',
           class: 'w-6 h-6 rounded flex items-center justify-center border border-neutral-100 transition-colors hover:border-orange-600 focus-visible:ring-2 ring-orange-600 ring-offset-neutral-950 focus-visible:ring-offset-2 focus-visible:outline-none disabled:opacity-50',
           value: 'chocolate',
+          CheckboxGroupItemIndicator {{}}
         }}
         label {{
           class: 'text-slate-100',
@@ -32,6 +33,7 @@ rsx! {{
           disabled: true,
           class: 'w-6 h-6 rounded flex items-center justify-center border border-neutral-100 transition-colors hover:border-orange-600 focus-visible:ring-2 ring-orange-600 ring-offset-neutral-950 focus-visible:ring-offset-2 focus-visible:outline-none disabled:opacity-50',
           value: 'banana',
+          CheckboxGroupItemIndicator {{}}
         }}
         label {{
           class: 'text-slate-100',
@@ -46,6 +48,7 @@ rsx! {{
           disabled: true,
           class: 'w-6 h-6 rounded flex items-center justify-center border border-neutral-100 transition-colors hover:border-orange-600 focus-visible:ring-2 ring-orange-600 ring-offset-neutral-950 focus-visible:ring-offset-2 focus-visible:outline-none disabled:opacity-50',
           value: 'coffee',
+          CheckboxGroupItemIndicator {{}}
         }}
         label {{
           class: 'text-slate-100',
@@ -60,6 +63,7 @@ rsx! {{
           disabled: true,
           class: 'w-6 h-6 rounded flex items-center justify-center border border-neutral-100 transition-colors hover:border-orange-600 focus-visible:ring-2 ring-orange-600 ring-offset-neutral-950 focus-visible:ring-offset-2 focus-visible:outline-none disabled:opacity-50',
           value: 'ice-cream',
+          CheckboxGroupItemIndicator {{}}
         }}
         label {{
           class: 'text-slate-100',
@@ -78,7 +82,9 @@ rsx! {{
 }}";
 
 pub const EXAMPLE_GROUP_ANATOMY: &str = "CheckboxGroup {{
-	CheckboxGroupItem {{ }}
+	CheckboxGroupItem {{ 
+    CheckboxGroupItemIndicator {{}}
+  }}
 }}";
 
 pub const EXAMPLE:&str = "use dioxus::prelude::*;

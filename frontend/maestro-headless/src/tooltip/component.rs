@@ -144,8 +144,6 @@ pub struct TooltipProps {
 	pub default_open: bool,
 	#[props(optional)]
 	pub on_open_change: Option<Callback<bool>>,
-	#[props(optional, default = false)]
-	is_arrow_hidden: bool,
 	#[props(optional)]
 	delay_duration: Option<f32>,
 
@@ -156,7 +154,7 @@ pub struct TooltipProps {
 
 #[component]
 pub fn Tooltip(props: TooltipProps) -> Element {
-	let TooltipProps { open, default_open, on_open_change, is_arrow_hidden, delay_duration, children, attributes } = props;
+	let TooltipProps { open, default_open, on_open_change, delay_duration, children, attributes } = props;
 
 	let is_controlled = use_hook(move || open().is_some());
 	let (open, set_open) =
@@ -233,7 +231,6 @@ pub fn Tooltip(props: TooltipProps) -> Element {
 	rsx! {
 		Popper {
 			position: "relative",
-			is_arrow_hidden,
 			"data-state": if open() { "open" } else { "closed" },
 			extra_attributes: attributes,
 			{children}

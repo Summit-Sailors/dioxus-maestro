@@ -93,7 +93,6 @@ pub fn Select(props: SelectProps) -> Element {
 
 	rsx! {
 		Popper {
-			is_arrow_hidden: true,
 			aria_haspopup: "listbox",
 			aria_expanded: open(),
 			aria_disabled: disabled(),
@@ -125,11 +124,6 @@ pub fn SelectTrigger(props: SelectTriggerProps) -> Element {
 	let SelectTriggerProps { onclick, attributes, container_attributes, children } = props;
 
 	let context = use_context::<SelectContext>();
-
-	let mut attributes = attributes.clone();
-	attributes.push(Attribute::new("aria-haspopup", "listbox", None, false));
-	attributes.push(Attribute::new("aria-expanded", *context.open.read(), None, false));
-	attributes.push(Attribute::new("aria-disabled", *context.disabled.read(), None, false));
 
 	rsx! {
 		PopperAnchor { extra_attributes: container_attributes.clone(),

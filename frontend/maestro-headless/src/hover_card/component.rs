@@ -1,6 +1,5 @@
 use {
 	crate::{
-		button::Button,
 		popper::{Popper, PopperAnchor, PopperArrow, PopperContent},
 		presence::Presence,
 		shared::{EAlign, ESide, UseControllableStateParams, use_controllable_state},
@@ -47,8 +46,7 @@ pub struct HoverCardProps {
 	pub default_open: bool,
 	#[props(optional)]
 	pub on_open_change: Option<Callback<bool>>,
-	#[props(optional, default = false)]
-	pub is_arrow_hidden: bool,
+
 	#[props(default = 700.0)]
 	open_delay: f32,
 	#[props(default = 300.0)]
@@ -61,7 +59,7 @@ pub struct HoverCardProps {
 
 #[component]
 pub fn HoverCard(props: HoverCardProps) -> Element {
-	let HoverCardProps { open, default_open, on_open_change, is_arrow_hidden, open_delay, close_delay, children, attributes } = props;
+	let HoverCardProps { open, default_open, on_open_change, open_delay, close_delay, children, attributes } = props;
 	let is_controlled = use_hook(move || open().is_some());
 	let (open, set_open) =
 		use_controllable_state(UseControllableStateParams { is_controlled, prop: open, default_prop: default_open, on_change: on_open_change });
@@ -107,7 +105,6 @@ pub fn HoverCard(props: HoverCardProps) -> Element {
 	rsx! {
 		Popper {
 			position: "relative",
-			is_arrow_hidden,
 			"data-state": if open() { "open" } else { "closed" },
 			extra_attributes: attributes,
 			{children}
@@ -117,34 +114,29 @@ pub fn HoverCard(props: HoverCardProps) -> Element {
 
 #[derive(Clone, PartialEq, Props)]
 pub struct HoverCardTriggerProps {
-	#[props(optional)]
-	onclick: Option<EventHandler<MouseEvent>>,
-
-	#[props(extends = GlobalAttributes, extends = div)]
+	#[props(extends = GlobalAttributes, extends = a)]
 	pub attributes: Vec<Attribute>,
-	#[props(default = Vec::new())]
-	pub container_attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
 #[component]
 pub fn HoverCardTrigger(props: HoverCardTriggerProps) -> Element {
-	let HoverCardTriggerProps { onclick, attributes, container_attributes, children } = props;
+	let HoverCardTriggerProps { attributes, children } = props;
 
 	let context = use_context::<HoverCardContext>();
 
 	rsx! {
-		PopperAnchor { extra_attributes: container_attributes.clone(),
-			Button {
-				r#type: "button",
+		PopperAnchor {
+			a {
 				id: context.trigger_id.to_string(),
 				aria_describedby: context.content_id.to_string(),
-				aria_haspopup: "dialog",
+				aria_haspopup: "modal",
 				aria_expanded: *context.open.read(),
 				aria_controls: context.content_id.to_string(),
-				extra_attributes: attributes.clone(),
 				"data-state": if *context.open.read() { "open" } else { "closed" },
 				tabindex: 0,
+				rel: "noreferrer noopener",
+				target: "_blank",
 				onmouseenter: move |_| {
 						context.on_open.call(());
 				},
@@ -157,11 +149,7 @@ pub fn HoverCardTrigger(props: HoverCardTriggerProps) -> Element {
 				onblur: move |_| {
 						context.on_close.call(());
 				},
-				onclick: move |event| {
-						if let Some(handler) = onclick {
-								handler.call(event);
-						}
-				},
+				..attributes,
 				{children}
 			}
 		}
@@ -201,10 +189,16 @@ pub fn HoverCardContent(props: HoverCardContentProps) -> Element {
 	let context = use_context::<HoverCardContext>();
 	let mut current_ref = use_signal(|| None::<Rc<MountedData>>);
 
+	let mut attrs = attributes.clone();
+	attrs.push(Attribute::new("--maestro-hover-card-anchor-height", "var(--maestro-popper-anchor-height)", Some("style"), false));
+	attrs.push(Attribute::new("--maestro-hover-card-anchor-width", "var(--maestro-popper-anchor-width)", Some("style"), false));
+	attrs.push(Attribute::new("--maestro-hover-card-content-height", "var(--maestro-popper-content-height)", Some("style"), false));
+	attrs.push(Attribute::new("--maestro-hover-card-content-width", "var(--maestro-popper-content-width)", Some("style"), false));
+
 	rsx! {
 		Presence { node_ref: current_ref, present: *context.open.read(),
 			PopperContent {
-				role: "dialog",
+				role: "modal",
 				id: context.content_id.to_string(),
 				side,
 				side_offset,
@@ -214,8 +208,9 @@ pub fn HoverCardContent(props: HoverCardContentProps) -> Element {
 				collision_padding,
 				aria_labelledby: context.trigger_id.to_string(),
 				aria_hidden: !*context.open.read(),
+				aria_modal: true,
 				"data-state": if *context.open.read() { "open" } else { "closed" },
-				extra_attributes: attributes,
+				extra_attributes: attrs,
 				onmounted: move |event: Event<MountedData>| current_ref.set(Some(event.data())),
 				onmouseenter: move |event| {
 						context.on_open.call(());

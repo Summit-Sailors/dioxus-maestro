@@ -84,6 +84,8 @@ pub fn CheckboxGroup(props: CheckboxGroupProps) -> Element {
 			role: "group",
 			aria_disabled: disabled().then_some(Some(true)),
 			"data-disabled": disabled().then_some(Some(true)),
+			aria_orientation: orientation().to_string(),
+			"data-orientation": orientation().to_string(),
 			onkeydown: handle_key_down,
 			onmounted: move |event| container_ref.set(Some(event.data())),
 			..attributes,
@@ -127,15 +129,28 @@ pub fn CheckboxGroupItem(props: CheckboxGroupItemProps) -> Element {
 					}
 			},
 			extra_attributes: attributes.clone(),
-			if let Some(children) = children {
-				{children}
-			} else {
-				{
-						rsx! {
-							CheckboxIndicator {}
-						}
-				}
-			}
+			{children}
+		}
+	}
+}
+
+#[derive(Props, PartialEq, Debug, Clone)]
+pub struct CheckboxGroupIndicatorProps {
+	#[props(extends = GlobalAttributes)]
+	pub attributes: Vec<Attribute>,
+	#[props(default = None)]
+	pub children: Option<Element>,
+}
+
+#[component]
+pub fn CheckboxGroupIndicator(props: CheckboxGroupIndicatorProps) -> Element {
+	if let Some(children) = props.children {
+		rsx! {
+			CheckboxIndicator { extra_attributes: props.attributes.clone(), {children} }
+		}
+	} else {
+		rsx! {
+			CheckboxIndicator { extra_attributes: props.attributes.clone() }
 		}
 	}
 }

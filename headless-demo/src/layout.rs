@@ -23,7 +23,7 @@ pub fn Layout(children: Element) -> Element {
 
 	rsx! {
 		head {
-			// document::Link { rel: "icon", href: asset!("/assets/favicon.ico") }
+			document::Link { rel: "icon", href: asset!("/assets/favicon.ico") }
 			document::Link { rel: "stylesheet", href: asset!("/assets/tailwind.css") }
 			document::Link { rel: "preconnect", href: "https://fonts.googleapis.com" }
 			document::Link {

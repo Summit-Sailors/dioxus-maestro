@@ -1,7 +1,10 @@
 use {
 	crate::{
 		layout::Layout,
-		pages::{AccordionPage, AspectRatioPage, AvatarPage, ButtonPage, CheckboxPage, CollapsiblePage, DialogPage, Home},
+		pages::{
+			AccordionPage, AspectRatioPage, AvatarPage, ButtonPage, CheckboxPage, CollapsiblePage, DialogPage, Home, HoverCardPage, PopoverPage, ProgressBarPage,
+			RadioPage,
+		},
 	},
 	dioxus::prelude::*,
 	strum_macros::EnumIter,
@@ -27,6 +30,14 @@ pub enum Route {
 	CollapsiblePage {},
 	#[route("/dialog")]
 	DialogPage {},
+	#[route("/hover-card")]
+	HoverCardPage {},
+	#[route("/popover")]
+	PopoverPage {},
+	#[route("/progress")]
+	ProgressBarPage {},
+	#[route("/radion-group")]
+	RadioPage {},
 }
 
 impl Route {
@@ -40,6 +51,10 @@ impl Route {
 			Route::CheckboxPage {} => "Checkbox & CheckboxGroup",
 			Route::CollapsiblePage {} => "Collapsible",
 			Route::DialogPage {} => "Dialog",
+			Route::HoverCardPage {} => "Hover Card",
+			Route::PopoverPage {} => "Popover",
+			Route::ProgressBarPage {} => "Progress Bar",
+			Route::RadioPage {} => "Radio Group",
 		}
 	}
 }

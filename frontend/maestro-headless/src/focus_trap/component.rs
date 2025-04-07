@@ -61,8 +61,8 @@ pub fn FocusTrap(props: FocusTrapProps) -> Element {
 	let mut closure_focus_out_ref = use_signal(|| None::<Closure<dyn FnMut(web_sys::FocusEvent)>>);
 	let mut closure_keyboard_ref = use_signal(|| None::<Closure<dyn FnMut(web_sys::KeyboardEvent)>>);
 
-	let mut attributes = attributes.clone();
-	attributes.extend(extra_attributes);
+	let mut attrs = attributes.clone();
+	attrs.extend(extra_attributes);
 
 	let get_tabbable_candidates = use_callback(move |()| {
 		if let Some(node) = current_ref.read().as_ref() {
@@ -277,7 +277,7 @@ pub fn FocusTrap(props: FocusTrapProps) -> Element {
 							handler.call(event);
 					}
 			},
-			..attributes,
+			..attrs,
 			{children}
 		}
 	}

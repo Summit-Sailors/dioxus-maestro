@@ -206,7 +206,7 @@ pub fn DialogPage() -> Element {
 						]),
 						attrs_list: Vec::from([
 								AttrsStruct {
-										attr: "aria_haspopup".into(),
+										attr: "aria-haspopup".into(),
 										value: "dialog".into(),
 										description: "".into(),
 								},
@@ -216,7 +216,7 @@ pub fn DialogPage() -> Element {
 										description: "".into(),
 								},
 								AttrsStruct {
-										attr: "aria_expanded".into(),
+										attr: "aria-expanded".into(),
 										value: "true".into(),
 										description: "".into(),
 								},
@@ -253,7 +253,7 @@ pub fn DialogPage() -> Element {
 						]),
 						attrs_list: Vec::from([
 								AttrsStruct {
-										attr: "aria_modal".into(),
+										attr: "aria-modal".into(),
 										value: "true".into(),
 										description: "".into(),
 								},

@@ -32,8 +32,6 @@ pub struct PopoverProps {
 	pub default_open: bool,
 	#[props(optional)]
 	pub on_open_change: Option<Callback<bool>>,
-	#[props(optional, default = false)]
-	is_arrow_hidden: bool,
 
 	#[props(extends = div, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
@@ -42,7 +40,7 @@ pub struct PopoverProps {
 
 #[component]
 pub fn Popover(props: PopoverProps) -> Element {
-	let PopoverProps { open, default_open, on_open_change, is_arrow_hidden, children, attributes } = props;
+	let PopoverProps { open, default_open, on_open_change, children, attributes } = props;
 
 	let is_controlled = use_hook(move || open().is_some());
 	let (open, set_open) =
@@ -57,13 +55,14 @@ pub fn Popover(props: PopoverProps) -> Element {
 	let mut current_ref = use_signal(|| None::<Rc<MountedData>>);
 	use_outside_click(current_ref, handle_close, open);
 
+	let mut attrs = attributes.clone();
+	attrs.push(Attribute::new("position", "relative", Some("style"), false));
+
 	rsx! {
 		Popper {
-			position: "relative",
-			is_arrow_hidden,
 			"data-state": if open() { "open" } else { "closed" },
 			onmounted: move |event: Event<MountedData>| current_ref.set(Some(event.data())),
-			extra_attributes: attributes,
+			extra_attributes: attrs,
 			{children}
 		}
 	}
@@ -75,19 +74,17 @@ pub struct PopoverTriggerProps {
 	disabled: ReadOnlySignal<bool>,
 	#[props(extends = GlobalAttributes, extends = button)]
 	pub attributes: Vec<Attribute>,
-	#[props(default = Vec::new())]
-	pub container_attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
 #[component]
 pub fn PopoverTrigger(props: PopoverTriggerProps) -> Element {
-	let PopoverTriggerProps { attributes, disabled, container_attributes, children } = props;
+	let PopoverTriggerProps { attributes, disabled, children } = props;
 
 	let context = use_context::<PopoverContext>();
 
 	rsx! {
-		PopperAnchor { extra_attributes: container_attributes,
+		PopperAnchor {
 			Button {
 				role: "button",
 				id: context.trigger_id.to_string(),
@@ -140,6 +137,12 @@ pub fn PopoverContent(props: PopoverContentProps) -> Element {
 
 	use_escape(handle_close, context.open);
 
+	let mut attrs = attributes.clone();
+	attrs.push(Attribute::new("--maestro-popover-anchor-height", "var(--maestro-popper-anchor-height)", Some("style"), false));
+	attrs.push(Attribute::new("--maestro-popover-anchor-width", "var(--maestro-popper-anchor-width)", Some("style"), false));
+	attrs.push(Attribute::new("--maestro-popover-content-height", "var(--maestro-popper-content-height)", Some("style"), false));
+	attrs.push(Attribute::new("--maestro-popover-content-width", "var(--maestro-popper-content-width)", Some("style"), false));
+
 	rsx! {
 		Presence { node_ref: current_ref, present: *context.open.read(),
 			PopperContent {
@@ -155,7 +158,7 @@ pub fn PopoverContent(props: PopoverContentProps) -> Element {
 				aria_hidden: !*context.open.read(),
 				"data-state": if *context.open.read() { "open" } else { "closed" },
 				onmounted: move |event: Event<MountedData>| current_ref.set(Some(event.data())),
-				extra_attributes: attributes,
+				extra_attributes: attrs.clone(),
 				{children}
 			}
 		}
