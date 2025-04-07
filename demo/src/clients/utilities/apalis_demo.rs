@@ -114,7 +114,7 @@ pub fn JobsList() -> Element {
 #[component]
 pub fn ApalisDemo() -> Element {
 	rsx! {
-		div { class: "min-h-screen bg-gray-900 text-white flex items-center justify-center p-4",
+		div { class: "max-h-screen bg-gray-900 text-white flex items-center justify-center p-4",
 			div { class: "flex flex-col items-center gap-6 w-full max-w-4xl",
 				h1 { class: "text-3xl font-bold text-center", "Maestro-Apalis Demo" }
 				p { class: "text-gray-400 text-center max-w-md",

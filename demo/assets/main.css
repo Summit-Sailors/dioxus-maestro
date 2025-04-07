@@ -55,8 +55,8 @@
     --color-gray-900: oklch(21% 0.034 264.665);
     --color-white: #fff;
     --spacing: 0.25rem;
+    --container-md: 28rem;
     --container-lg: 32rem;
-    --container-xl: 36rem;
     --container-4xl: 56rem;
     --text-xs: 0.75rem;
     --text-xs--line-height: calc(1 / 0.75);
@@ -451,9 +451,6 @@
   .min-h-11 {
     min-height: calc(var(--spacing) * 11);
   }
-  .min-h-screen {
-    min-height: 100vh;
-  }
   .w-2 {
     width: calc(var(--spacing) * 2);
   }
@@ -505,8 +502,8 @@
   .max-w-lg {
     max-width: var(--container-lg);
   }
-  .max-w-xl {
-    max-width: var(--container-xl);
+  .max-w-md {
+    max-width: var(--container-md);
   }
   .flex-1 {
     flex: 1;

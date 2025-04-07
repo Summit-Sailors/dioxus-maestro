@@ -11,6 +11,8 @@ use {
 pub async fn search_google(query: String) -> Result<Vec<OrganicResult>, ServerFnError> {
 	use maestro_serpapi::client::serpapi_request;
 
+	let serpapi_api_key = std::env!("SERPAPI_API_KEY");
+
 	// the SerpAPI request with various parameters to showcase the flexibility
 	let search_response = serpapi_request()
 		.q(query) // search query
@@ -19,6 +21,7 @@ pub async fn search_google(query: String) -> Result<Vec<OrganicResult>, ServerFn
 		.tbs(ETimeFrame::Year) // results from the past year
 		.safe(SafeSearch::Active) // safe search enabled
 		.num(10) // get 10 results
+		.api_key(serpapi_api_key.to_string())
 		.call() // execute the request
 		.await?;
 
@@ -30,7 +33,17 @@ pub async fn search_google(query: String) -> Result<Vec<OrganicResult>, ServerFn
 pub async fn advanced_search(query: String, search_type: SearchType, time_frame: ETimeFrame, location: String) -> Result<SearchResponse, ServerFnError> {
 	use maestro_serpapi::client::serpapi_request;
 
-	let search_response = serpapi_request().q(query).engine(Engine::Google).search_type(search_type).tbs(time_frame).location(location).call().await?;
+	let serpapi_api_key = std::env!("SERPAPI_API_KEY");
+
+	let search_response = serpapi_request()
+		.q(query)
+		.engine(Engine::Google)
+		.search_type(search_type)
+		.tbs(time_frame)
+		.location(location)
+		.api_key(serpapi_api_key.to_string())
+		.call()
+		.await?;
 
 	Ok(search_response)
 }

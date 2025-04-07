@@ -32,7 +32,7 @@ pub fn AlpacaDemo() -> Element {
 
 	// trading related state
 	let mut order_quantity = use_signal(|| "1".to_string());
-	let mut order_price = use_signal(|| "".to_string());
+	let order_price = use_signal(|| "".to_string());
 	let mut order_status = use_signal(|| None::<String>);
 	let mut show_order_form = use_signal(|| false);
 

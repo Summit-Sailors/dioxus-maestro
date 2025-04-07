@@ -10,7 +10,6 @@ use {
 pub fn AnthropicDemo() -> Element {
 	let mut messages = use_signal(|| vec![]);
 	let mut user_input = use_signal(|| String::new());
-	let mut streaming_response = use_signal(|| String::new());
 	let mut is_loading = use_signal(|| false);
 	let mut temperature = use_signal(|| 0.7f32);
 	let mut system_prompt = use_signal(|| String::from("You are Claude, a helpful AI assistant."));

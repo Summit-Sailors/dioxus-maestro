@@ -39,7 +39,6 @@ pub fn DieselDemo() -> Element {
 		UseResourceState::Stopped => {
 			error.set(Some("Server function stopped".to_string()));
 		},
-		_ => error.set(Some("An error occurred while fetching users".to_string())),
 	});
 
 	rsx! {

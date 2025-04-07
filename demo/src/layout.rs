@@ -14,7 +14,6 @@ use {
 	maestro_toast::{init::use_init_toast_ctx, toast_frame_component::ToastFrame},
 	maestro_ui::button::{Button, ButtonSize, ButtonVariant},
 	std::collections::HashMap,
-	strum::IntoEnumIterator,
 	tailwind_fuse::{tw_join, tw_merge},
 };
 
@@ -114,8 +113,6 @@ pub fn Layout(children: Element) -> Element {
 
 #[component]
 fn NavigationMenu(close_menu: Signal<bool>) -> Element {
-	let current_route = use_route::<Route>();
-
 	rsx! {
 		div {
 			id: "maestro-demo-nav",

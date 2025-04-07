@@ -13,8 +13,9 @@ maestro-sqlx = { path = "../maestro-sqlx" }
 bon = { workspace = true }
 serde = { workspace = true }
 
-apalis = { version = "0.5.5", features = ["cron", "postgres"], optional = true }
-tokio = { version = "1.44.1", optional = true }
+apalis = { version = "0.7.0", default-features = false, features = ["limit"], optional = true }
+apalis-sql = { version = "0.7.0", features = ["postgres", "tokio-comp"], optional = true }
+tokio = { version = "1.44.2", optional = true }
 
 dioxus = { workspace = true, features = ["fullstack", "server"], optional = true }
 
@@ -22,4 +23,4 @@ dioxus = { workspace = true, features = ["fullstack", "server"], optional = true
 acreate = ["dep:apalis", "maestro-sqlx/acreate"]
 create = ["acreate", "dep:tokio", "maestro-sqlx/create"]
 dioxus = ["dep:dioxus", "server"]
-server = ["dep:apalis"]
+server = ["dep:apalis", "dep:apalis-sql"]

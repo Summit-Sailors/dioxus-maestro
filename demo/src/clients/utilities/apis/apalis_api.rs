@@ -14,7 +14,7 @@ pub async fn add_email_job(to: String, subject: String, body: String) -> Result<
 #[server]
 pub async fn list_pending_jobs() -> Result<String, ServerFnError> {
 	use maestro_apalis::server_ctx::{Storage, apalis_storage_from_ctx};
-	let storage = apalis_storage_from_ctx::<crate::clients::utilities::EmailJob>().await?;
+	let mut storage = apalis_storage_from_ctx::<crate::clients::utilities::EmailJob>().await?;
 
 	let num_jobs = storage.len().await?;
 

@@ -18,8 +18,3 @@ impl EmailJob {
 		EmailJob { to, subject, body }
 	}
 }
-
-#[cfg(feature = "server")]
-impl maestro_apalis::Job for EmailJob {
-	const NAME: &'static str = "email_job";
-}

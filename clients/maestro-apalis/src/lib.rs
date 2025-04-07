@@ -8,4 +8,4 @@ pub mod create;
 pub mod server_ctx;
 
 #[cfg(feature = "server")]
-pub use apalis::prelude::{Error, Job};
+pub use apalis::prelude::Error;

@@ -18,6 +18,7 @@ pub async fn serpapi_request(
 	start: Option<u32>,
 	num: Option<u32>,
 	output: Option<OutputFormat>,
+	api_key: String,
 	#[builder(default = Engine::Google)] engine: Engine,
 	#[builder(default = Device::Desktop)] device: Device,
 	#[builder(default = SearchType::Regular)] search_type: SearchType,
@@ -25,21 +26,7 @@ pub async fn serpapi_request(
 ) -> Result<SearchResponse, reqwest::Error> {
 	let search_resp = client
 		.get(SerpApiRoute::Search.url_path())
-		.query(&SearchRequest {
-			engine,
-			q,
-			api_key: std::env::var("SERPAPI_API_KEY").expect("SERPAPI_API_KEY env var is missing"),
-			location,
-			tbs,
-			tbm: Some(search_type),
-			start,
-			num,
-			safe,
-			nfpr,
-			filter,
-			device: Some(device),
-			output,
-		})
+		.query(&SearchRequest { engine, q, api_key, location, tbs, tbm: Some(search_type), start, num, safe, nfpr, filter, device: Some(device), output })
 		.send()
 		.await?
 		.json::<SearchResponse>()

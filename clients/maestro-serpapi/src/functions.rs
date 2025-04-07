@@ -40,7 +40,7 @@ async fn process_url(client: ChromeClient, url: Url, query: String) -> Result<Se
 pub async fn serpapi_server_request(query: String) -> Result<Vec<SerpapiDTO>, ServerFnError> {
 	let chrome_client = chrome_fastapi::codegen::Client::new("http://localhost:8231");
 	debug!("calling serp api");
-	match serpapi_request().q(query.clone()).call().await {
+	match serpapi_request().q(query.clone()).api_key(std::env::var("SERPAPI_API_KEY").unwrap()).call().await {
 		Ok(resp) => {
 			debug!("got serp result");
 			let fetch_futures = resp.organic_results.into_iter().filter_map(|result| Url::parse(&result.link).ok()).map(|url| {
