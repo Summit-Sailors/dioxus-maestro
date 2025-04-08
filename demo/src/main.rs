@@ -7,7 +7,16 @@ use {
 fn App() -> Element {
 	rsx! {
 		document::Stylesheet { href: asset!("./assets/main.css") }
-		Router::<Route> {}
+		SuspenseBoundary {
+			fallback: |context: SuspenseContext| rsx! {
+				if let Some(placeholder) = context.suspense_placeholder() {
+					{placeholder}
+				} else {
+					"Getting everything ready for you..."
+				}
+			},
+			Router::<Route> {}
+		}
 	}
 }
 

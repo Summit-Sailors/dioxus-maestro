@@ -6,7 +6,6 @@ license = ""
 name = "maestro-apalis"
 repository = ""
 
-
 [dependencies]
 maestro-sqlx = { path = "../maestro-sqlx" }
 

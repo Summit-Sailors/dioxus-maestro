@@ -1,4 +1,5 @@
 use {
+	crate::components::ui::features::Features,
 	dioxus::prelude::*,
 	maestro_alpaca::data::{
 		bars::bars_dtos::{BarsDTO, BarsSingleRequestDTO, NewBar},
@@ -41,27 +42,19 @@ pub fn AlpacaDemo() -> Element {
 			selected_symbol(),
 			BarsSingleRequestDTO::builder().timeframe(selected_timeframe()).feed(selected_feed()).limit(selected_limit() as usize).build(),
 		)
-	})?;
+	})?
+	.suspend()?;
 
-	let mut fetch_data = move || match server_bars_data.state().cloned() {
-		UseResourceState::Pending => {
-			loading.set(true);
+	let mut fetch_data = move || match &*server_bars_data.read_unchecked() {
+		Ok(data) => {
+			bars_data.set(Some(data.clone()));
 		},
-		UseResourceState::Ready => {
-			if let Some(Ok(data)) = &*server_bars_data.value().read_unchecked() {
-				bars_data.set(Some(data.clone()));
-			} else {
-				error.set(Some("Error fetching data".to_string()));
-			}
-			loading.set(false);
-		},
-		UseResourceState::Paused => {
-			error.set(Some("Error fetching data".to_string()));
-		},
-		UseResourceState::Stopped => {
-			error.set(Some("Error fetching data".to_string()));
+		Err(e) => {
+			error.set(Some(format!("Error fetching data: {}", e)));
 		},
 	};
+
+	let mut fetch_data_clone = fetch_data.clone();
 
 	// submit order function
 	let submit_order = move |_| {
@@ -82,18 +75,31 @@ pub fn AlpacaDemo() -> Element {
 		});
 	};
 
-	// initial data load
-	use_effect(move || {
-		fetch_data();
-	});
+	use_effect(move || fetch_data());
 
 	rsx! {
 		div { class: "container mx-auto p-4",
-			h1 { class: "text-3xl font-bold mb-6", "Alpaca Stock Market Data Viewer" }
+			div { class: "flex flex-col gap-3",
+				h1 { class: "text-slate-100 text-center text-2xl sm:text-3xl lg:text-4xl 2xl:text-5xl font-semibold",
+					"Maestro Alpaca"
+				}
+				p { class: "text-slate-300 text-center text-base lg:text-xl 2xl:text-2xl",
+					"A Alpaca utility designed to make connecting to and using Alpaca with your Dioxus apps easier"
+				}
+			}
 
-			div { class: "grid grid-cols-1 md:grid-cols-2 gap-6 mb-8",
+			div {
+				id: "maestro-alpaca-features",
+				class: "flex space-x-2 mt-4 mb-4",
+				Features {
+					title: "Features".to_string(),
+					features: vec!["Simple integration with Dioxus".to_string(), "Comprehensive DTOs".to_string()],
+				}
+			}
+
+			div { class: "grid grid-cols-1  gap-6 mb-8",
 				// data controls
-				div { class: "bg-gray-900 p-4 rounded shadow",
+				div { class: "bg-gray-800 p-4 rounded shadow",
 					h2 { class: "text-xl font-semibold mb-4", "Market Data Controls" }
 					div { class: "grid grid-cols-1 md:grid-cols-2 gap-4 mb-4",
 						div {
@@ -184,7 +190,7 @@ pub fn AlpacaDemo() -> Element {
 						button {
 							class: "px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600",
 							disabled: loading(),
-							onclick: move |_| fetch_data(),
+							onclick: move |_| fetch_data_clone(),
 
 							if loading() {
 								"Loading..."

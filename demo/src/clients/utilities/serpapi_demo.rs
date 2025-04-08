@@ -1,4 +1,4 @@
-use dioxus::prelude::*;
+use {crate::components::ui::features::Features, dioxus::prelude::*};
 
 #[derive(Clone, Debug)]
 struct SearchState {
@@ -13,32 +13,23 @@ pub fn SerpApiDemo() -> Element {
 	let mut state =
 		use_signal(|| SearchState { query: String::new(), results: Vec::<maestro_serpapi::response_type::OrganicResult>::new(), loading: false, error: None });
 
-	let search_result = use_server_future(move || crate::clients::utilities::apis::serpapi_api::search_google(state().query))?;
-
 	let mut on_search = move |query: String| {
 		state.set(SearchState { query: query.clone(), results: Vec::new(), loading: true, error: None });
 
-		match search_result.state().cloned() {
-			UseResourceState::Pending => {
-				state.set(SearchState { query, results: Vec::new(), loading: true, error: None });
-			},
-			UseResourceState::Ready =>
-				if let Some(Ok(results)) = &*search_result.value().read_unchecked() {
-					state.set(SearchState { query, results: results.clone(), loading: false, error: None });
-				} else {
+		async move {
+			match crate::clients::utilities::apis::serpapi_api::search_google(state().query).await {
+				Ok(results) => {
+					state.set(SearchState { query, results, loading: false, error: None });
+				},
+				Err(e) => {
 					state.set(SearchState {
 						query,
 						results: Vec::new(),
 						loading: false,
-						error: Some(format!("Error: An error occurred while running the search query")),
+						error: Some(format!("Error: An error occurred while running the search query: {}", e)),
 					});
 				},
-			UseResourceState::Paused => {
-				state.set(SearchState { query, results: Vec::new(), loading: false, error: Some(format!("Info: The search was paused")) });
-			},
-			UseResourceState::Stopped => {
-				state.set(SearchState { query, results: Vec::new(), loading: false, error: Some(format!("Info: The search was paused")) });
-			},
+			}
 		}
 	};
 
@@ -48,8 +39,28 @@ pub fn SerpApiDemo() -> Element {
 	};
 
 	rsx! {
-		div { class: "w-4/5 mx-auto p-4",
-			h1 { class: "text-2xl font-bold mb-4", "Maestro-SerpAPI Demo" }
+		div { class: "w-full mx-auto p-4",
+			div { class: "flex flex-col gap-3",
+				h1 { class: "text-slate-100 text-center text-2xl sm:text-3xl lg:text-4xl 2xl:text-5xl font-semibold",
+					"Maestro SerpAPI"
+				}
+				p { class: "text-slate-300 text-center text-base lg:text-xl 2xl:text-2xl",
+					"A serpapi utility designed to make your experience pleasant when integrating SerpAPI into your Dioxus app"
+				}
+			}
+
+			div {
+				id: "maestro-serpaip-features",
+				class: "flex space-x-2 mt-4 mb-4",
+				Features {
+					title: "Features".to_string(),
+					features: vec![
+							"Ready to use Dioxus server function".to_string(),
+							"Comprehensive DTOs".to_string(),
+							"Simple integration with Dioxus".to_string(),
+					],
+				}
+			}
 			p { class: "mb-4", "Search for any topic using the power of SerpAPI!" }
 
 			form {
@@ -107,7 +118,7 @@ pub fn SerpApiDemo() -> Element {
 				}
 			} else {
 				div {
-					p { class: "text-center text-orange-500", "Try searching anything!" }
+					p { class: "text-center text-orange-400", "Try searching anything!" }
 				}
 			}
 		}

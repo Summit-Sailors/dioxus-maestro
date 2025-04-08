@@ -1,4 +1,5 @@
 use {
+	crate::components::ui::features::Features,
 	dioxus::prelude::*,
 	futures::StreamExt,
 	maestro_anthropic::chat_message::{ChatMessage, Role},
@@ -64,8 +65,28 @@ pub fn AnthropicDemo() -> Element {
 
 	rsx! {
 		div { class: "container mx-auto p-4 flex flex-col max-h-screen",
-			header { class: "bg-gray-800 text-white p-4 rounded-t-lg border-b border-gray-700",
-				h1 { class: "text-2xl font-bold", "Maestro Anthropic Demo" }
+			div { class: "flex flex-col gap-3",
+				h1 { class: "text-slate-100 text-center text-2xl sm:text-3xl lg:text-4xl 2xl:text-5xl font-semibold",
+					"Maestro Anthropic"
+				}
+				p { class: "text-slate-300 text-center text-base lg:text-xl 2xl:text-2xl",
+					"A utility designed to make connecting to and using Anthropic with your Dioxus apps easier"
+				}
+			}
+
+			div {
+				id: "maestro-anthropic-features",
+				class: "flex space-x-2 mt-4 mb-4",
+				Features {
+					title: "Features".to_string(),
+					features: vec![
+							"Easy to create and retrieve Anthropic cleint from server context".to_string(),
+							"Ready to use Dioxus server functions".to_string(),
+							"Possible to stream response from server".to_string(),
+							"Comprehensive DTOs with proper typing".to_string(),
+							"Simple integration with Dioxus".to_string(),
+					],
+				}
 			}
 
 			// settings panel

@@ -1,4 +1,4 @@
-use dioxus::prelude::*;
+use {crate::components::ui::features::Features, dioxus::prelude::*};
 
 #[component]
 pub fn JobForm() -> Element {
@@ -116,7 +116,28 @@ pub fn ApalisDemo() -> Element {
 	rsx! {
 		div { class: "max-h-screen bg-gray-900 text-white flex items-center justify-center p-4",
 			div { class: "flex flex-col items-center gap-6 w-full max-w-4xl",
-				h1 { class: "text-3xl font-bold text-center", "Maestro-Apalis Demo" }
+				div { class: "flex flex-col gap-3",
+					h1 { class: "text-slate-100 text-center text-2xl sm:text-3xl lg:text-4xl 2xl:text-5xl font-semibold",
+						"Maestro Apalis"
+					}
+					p { class: "text-slate-300 text-center text-base lg:text-xl 2xl:text-2xl",
+						"A Apalis utility designed to make integrating Apalis into your Dioxus app easier"
+					}
+				}
+
+				div {
+					id: "maestro-apalis-features",
+					class: "flex space-x-2 mt-4 mb-4",
+					Features {
+						title: "Features".to_string(),
+						features: vec![
+								"Synchronous and Asynchronous job storage connection pool creation support"
+										.to_string(),
+								"Storage retrieval from server context".to_string(),
+								"Simple integration with Dioxus".to_string(),
+						],
+					}
+				}
 				p { class: "text-gray-400 text-center max-w-md",
 					"A simple demo of using apalis job scheduling in Dioxus"
 				}

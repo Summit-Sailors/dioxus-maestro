@@ -1,4 +1,7 @@
-use {crate::clients::db::SqlxUser, dioxus::prelude::*};
+use {
+	crate::{clients::db::SqlxUser, components::ui::features::Features},
+	dioxus::prelude::*,
+};
 
 #[component]
 pub fn SqlxDemo() -> Element {
@@ -34,9 +37,27 @@ pub fn SqlxDemo() -> Element {
 	});
 
 	rsx! {
-		div { class: "w-4/5 mx-auto p-4",
+		div { class: "w-full mx-auto p-4",
 
-			h1 { class: "text-2xl font-bold mb-4 text-center", "Maestro-SQLx Demo" }
+			div { class: "flex flex-col gap-3",
+				h1 { class: "text-slate-100 text-center text-2xl sm:text-3xl lg:text-4xl 2xl:text-5xl font-semibold",
+					"Maestro SQLx"
+				}
+				p { class: "text-slate-300 text-center text-base lg:text-xl 2xl:text-2xl",
+					"A sqlx utility equipped with both sync and async database connection/pool creation"
+				}
+			}
+
+			div { id: "maestro-sqlx-features", class: "flex space-x-2 mt-4",
+				Features {
+					title: "Features".to_string(),
+					features: vec![
+							"Asynchronous database connection pool creation".to_string(),
+							"Synchronous database connection pool creation".to_string(),
+							"Simple integration with Dioxus".to_string(),
+					],
+				}
+			}
 
 			if loading() {
 				div { class: "text-blue-500 text-center animate-pulse", "Loading users..." }
@@ -45,18 +66,18 @@ pub fn SqlxDemo() -> Element {
 			} else {
 				div { class: "flex flex-col items-center justify-center mt-4 w-full",
 					span { {format!("{} users fetched", users_len)} }
-					div { class: "w-3/4 max-w-4xl bg-gray-900 p-4 border border-gray-700 rounded-lg mb-4 max-h-96 overflow-y-auto mx-autog",
+					div { class: "w-full max-w-5xl mx-auto bg-gray-900 p-6 border border-gray-700 rounded-2xl shadow-lg mb-6 max-h-[80vh] overflow-y-auto space-y-4",
 						{
 								users
 										.iter()
 										.map(|item| {
 												rsx! {
 													div {
-														class: "border border-slate-700 rounded-md p-4 text-slate-50 bg-gray-800 shadow-md text-center space-y-2 mb-3",
+														class: "border border-slate-700 rounded-xl p-4 bg-gray-800 text-slate-100 shadow transition hover:shadow-lg hover:border-slate-500",
 														key: "{item.id}",
-														p { class: "text-xl font-bold text-gray-100", "Name: {item.username}" }
-														p { class: "text-sm text-gray-300", "Email: {item.email:?}" }
-														p { class: "text-sm text-gray-300", "Age: {item.age.unwrap_or(0)}" }
+														p { class: "text-xl font-bold text-white", "{item.username}" }
+														p { class: "text-sm text-gray-300", "{item.email:?}" }
+														p { class: "text-sm text-gray-300", "{item.age.unwrap_or(0)} years old" }
 														p { class: "text-sm text-gray-400 italic", "Role: {item.role:?}" }
 													}
 												}

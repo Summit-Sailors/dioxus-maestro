@@ -1,6 +1,9 @@
 #[allow(non_snake_case)]
 use {
-	crate::clients::db::{DieselUser, apis::diesel_api},
+	crate::{
+		clients::db::{DieselUser, apis::diesel_api},
+		components::ui::features::Features,
+	},
 	dioxus::prelude::*,
 	tailwind_fuse::tw_join,
 };
@@ -42,8 +45,30 @@ pub fn DieselDemo() -> Element {
 	});
 
 	rsx! {
-		div { class: "w-4/5 mx-auto p-4",
-			h1 { class: "text-2xl font-bold mb-4 text-center", "Users with Pagination" }
+		div { class: "w-full mx-auto p-4",
+			div { class: "flex flex-col gap-3",
+				h1 { class: "text-slate-100 text-center text-2xl sm:text-3xl lg:text-4xl 2xl:text-5xl font-semibold",
+					"Maestro Diesel"
+				}
+				p { class: "text-slate-300 text-center text-base lg:text-xl 2xl:text-2xl",
+					"A diesel utility equipped with both sync and async database connection/pool creation and an extension for paginated queries"
+				}
+			}
+
+			div { id: "maestro-diesel-features", class: "flex space-x-2 mt-4",
+				Features {
+					title: "Features".to_string(),
+					features: vec![
+							"Pagination support. It is possible to fetch paginated resultsfrom the database"
+									.to_string(),
+							"Asynchronous database connection pool creation".to_string(),
+							"Synchronous database connection pool creation".to_string(),
+							"Database pool retrieval from server context".to_string(),
+							"Database connection retrieval from server context".to_string(),
+							"Simple integration with Dioxus".to_string(),
+					],
+				}
+			}
 
 			if loading() {
 				div { class: "text-blue-500 text-center", "Loading users..." }
@@ -58,18 +83,18 @@ pub fn DieselDemo() -> Element {
 						{format!("Page ({})", current_page_idx() + 1)}
 					}
 					// iser list
-					div { class: "w-3/4 max-w-4xl bg-gray-900 p-4 border border-gray-700 rounded-lg mb-4 max-h-screen overflow-y-auto mx-auto",
+					div { class: "w-full max-w-5xl mx-auto bg-gray-900 p-6 border border-gray-700 rounded-2xl shadow-lg mb-6 max-h-[80vh] overflow-y-auto space-y-4",
 						{
 								users
 										.iter()
 										.map(|item| {
 												rsx! {
 													div {
-														class: "border border-slate-700 rounded-md p-3 text-slate-50 bg-gray-800 shadow-md text-center space-y-1",
+														class: "border border-slate-700 rounded-xl p-4 bg-gray-800 text-slate-100 shadow transition hover:shadow-lg hover:border-slate-500",
 														key: "{item.id}",
-														p { class: "text-lg font-semibold", "{item.username}" }
+														p { class: "text-xl font-bold text-white", "{item.username}" }
 														p { class: "text-sm text-gray-300", "{item.email:?}" }
-														p { class: "text-sm text-gray-300", "{item.age.unwrap_or(0)}" }
+														p { class: "text-sm text-gray-300", "{item.age.unwrap_or(0)} years old" }
 														p { class: "text-sm text-gray-400 italic", "Role: {item.role:?}" }
 													}
 												}

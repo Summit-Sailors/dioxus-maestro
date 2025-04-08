@@ -9,8 +9,8 @@ pub async fn fetch_users_sync() -> Result<Vec<SqlxUser>, ServerFnError> {
 		tokio::runtime::{Handle, Runtime},
 	};
 
-	let database_url = std::env::var("DATABASE_URL")?;
-	let pool = create_sqlx_pool(database_url.as_str());
+	let database_url = std::env!("DATABASE_URL");
+	let pool = create_sqlx_pool(database_url);
 
 	let execute_query = async {
 		let users = sqlx::query_as::<_, SqlxUser>(
@@ -18,7 +18,7 @@ pub async fn fetch_users_sync() -> Result<Vec<SqlxUser>, ServerFnError> {
       SELECT id, username, email, bio, age, role, created_at, updated_at
       FROM users
       ORDER BY id
-      LIMIT 10
+      LIMIT 30
       "#,
 		)
 		.fetch_all(&pool)
@@ -41,13 +41,13 @@ pub async fn fetch_users_async() -> Result<Vec<SqlxUser>, ServerFnError> {
 	use {maestro_sqlx::acreate::acreate_sqlx_pool, sqlx::prelude::*};
 
 	// creating a pool asynchronously
-	let pool = acreate_sqlx_pool(std::env::var("DATABASE_URL")?.as_str()).await;
+	let pool = acreate_sqlx_pool(std::env!("DATABASE_URL")).await;
 	let users = sqlx::query_as::<_, SqlxUser>(
 		r#"
     SELECT id, username, email, bio, age, role, created_at, updated_at
     FROM users
     ORDER BY age
-    LIMIT 10
+    LIMIT 30
     "#,
 	)
 	.fetch_all(&pool)
