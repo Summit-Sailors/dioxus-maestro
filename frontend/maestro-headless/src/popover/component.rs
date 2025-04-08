@@ -25,7 +25,7 @@ impl PopoverContext {
 }
 
 #[derive(Props, Clone, PartialEq)]
-pub struct PopoverProps {
+pub struct PopoverRootProps {
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
 	pub open: ReadOnlySignal<Option<bool>>,
 	#[props(optional, default = false)]
@@ -39,8 +39,8 @@ pub struct PopoverProps {
 }
 
 #[component]
-pub fn Popover(props: PopoverProps) -> Element {
-	let PopoverProps { open, default_open, on_open_change, children, attributes } = props;
+pub fn PopoverRoot(props: PopoverRootProps) -> Element {
+	let PopoverRootProps { open, default_open, on_open_change, children, attributes } = props;
 
 	let is_controlled = use_hook(move || open().is_some());
 	let (open, set_open) =
@@ -70,16 +70,15 @@ pub fn Popover(props: PopoverProps) -> Element {
 
 #[derive(Clone, PartialEq, Props)]
 pub struct PopoverTriggerProps {
-	#[props(default = ReadOnlySignal::new(Signal::new(false)))]
-	disabled: ReadOnlySignal<bool>,
 	#[props(extends = GlobalAttributes, extends = button)]
 	pub attributes: Vec<Attribute>,
+	#[props(optional)]
 	pub children: Element,
 }
 
 #[component]
 pub fn PopoverTrigger(props: PopoverTriggerProps) -> Element {
-	let PopoverTriggerProps { attributes, disabled, children } = props;
+	let PopoverTriggerProps { attributes, children } = props;
 
 	let context = use_context::<PopoverContext>();
 
@@ -93,7 +92,6 @@ pub fn PopoverTrigger(props: PopoverTriggerProps) -> Element {
 						let current_open = *context.open.peek();
 						context.set_open.call(!current_open);
 				},
-				disabled,
 				aria_haspopup: "dialog",
 				aria_expanded: *context.open.read(),
 				aria_controls: context.content_id.to_string(),

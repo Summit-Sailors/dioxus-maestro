@@ -38,7 +38,7 @@ impl ProgressContext {
 const DEFAULT_MAX: f32 = 100.0;
 
 #[derive(Props, PartialEq, Clone)]
-pub struct ProgressProps {
+pub struct ProgressRootProps {
 	#[props(default = ReadOnlySignal::new(Signal::new(0.0)))]
 	value: ReadOnlySignal<f32>,
 	#[props(optional, default = DEFAULT_MAX)]
@@ -49,8 +49,8 @@ pub struct ProgressProps {
 }
 
 #[component]
-pub fn Progress(props: ProgressProps) -> Element {
-	let ProgressProps { value, max, attributes, children } = props;
+pub fn ProgressRoot(props: ProgressRootProps) -> Element {
+	let ProgressRootProps { value, max, attributes, children } = props;
 
 	let value = use_memo(move || if value() <= max && value() > 0.0 { value() } else { 0.0 });
 	let context = use_context_provider::<ProgressContext>(|| ProgressContext { value, max });

@@ -30,7 +30,7 @@ impl ToggleGroupContext {
 }
 
 #[derive(Props, Clone, PartialEq)]
-pub struct ToggleGroupProps {
+pub struct ToggleGroupRootProps {
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
 	pub value: ReadOnlySignal<Option<String>>,
 	#[props(optional, default = None)]
@@ -49,8 +49,8 @@ pub struct ToggleGroupProps {
 }
 
 #[component]
-pub fn ToggleGroup(props: ToggleGroupProps) -> Element {
-	let ToggleGroupProps { value, default_value, on_value_chenge, disabled, orientation, children, attributes } = props;
+pub fn ToggleGroupRoot(props: ToggleGroupRootProps) -> Element {
+	let ToggleGroupRootProps { value, default_value, on_value_chenge, disabled, orientation, children, attributes } = props;
 
 	let is_controlled = use_hook(move || value().is_some());
 	let (value, set_value) = use_controllable_state(UseControllableStateParams {
@@ -71,6 +71,8 @@ pub fn ToggleGroup(props: ToggleGroupProps) -> Element {
 			role: "group",
 			aria_disabled: disabled(),
 			aria_orientation: orientation().to_string(),
+			"data-disabled": disabled(),
+			"data-orientation": orientation().to_string(),
 			onkeydown: on_key_down,
 			onmounted: move |event| container_ref.set(Some(event.data())),
 			..attributes,
@@ -107,6 +109,7 @@ pub fn ToggleGroupItem(props: ToggleGroupItemProps) -> Element {
 			tabindex: if is_disabled() || !pressed() { -1 } else { 0 },
 			disabled: is_disabled(),
 			aria_orientation: &*context.orientation.clone().read().to_string(),
+			"data-orientation": &*context.orientation.clone().read().to_string(),
 			"data-focusable": !is_disabled(),
 			on_toggle_change: move |pressed: bool| {
 					if pressed {

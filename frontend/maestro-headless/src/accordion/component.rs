@@ -74,7 +74,7 @@ impl AccordionContext {
 }
 
 #[derive(Props, Clone, PartialEq)]
-pub struct AccordionProps {
+pub struct AccordionRootProps {
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
 	pub value: ReadOnlySignal<Option<Vec<String>>>,
 	#[props(optional, default = Vec::from([String::new()]))]
@@ -97,8 +97,8 @@ pub struct AccordionProps {
 }
 
 #[component]
-pub fn Accordion(props: AccordionProps) -> Element {
-	let AccordionProps { value, default_value, on_value_change, orientation, collapsible, disabled, variant, attributes, children } = props;
+pub fn AccordionRoot(props: AccordionRootProps) -> Element {
+	let AccordionRootProps { value, default_value, on_value_change, orientation, collapsible, disabled, variant, attributes, children } = props;
 	let is_controlled = use_hook(move || value().is_some());
 	let (value, set_value) =
 		use_controllable_state(UseControllableStateParams { is_controlled, prop: value, default_prop: default_value, on_change: on_value_change });

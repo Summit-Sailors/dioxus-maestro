@@ -2,7 +2,7 @@
 
 ## 🌟 Overview
 
- Maestro UI is a comprehensive, type-safe, and highly customizable UI component library for Dioxus, designed to provide developers with powerful, flexible, and elegant UI building blocks.
+Maestro UI is a comprehensive, type-safe, and highly customizable UI component library for Dioxus, designed to provide developers with powerful, flexible, and elegant UI building blocks.
 
 ## 📦 Components
 
@@ -49,18 +49,18 @@ pub fn Label(props: LabelProps) -> Element
 - Custom styling support
 - Easy composition with children elements
 
-### 4. 📋 Multi-Select Component
+### 4. 📋 Multi-RangeRoot Component
 
 ```rust
 #[component]
 pub fn MultiSelect<T: Clone + PartialEq + Display + 'static>(
-    values: Vec<T>, 
-    current_value: Vec<T>, 
+    values: Vec<T>,
+    current_value: Vec<T>,
     callback: EventHandler<T>
 ) -> Element
 ```
 
-#### Multi-Select Component Key Features
+#### Multi-RangeRoot Component Key Features
 
 - Generic type support
 - Dropdown selection
@@ -82,37 +82,37 @@ pub fn Radio(props: RadioProps) -> Element
 - Grouped radio button functionality
 - Responsive design
 
-### 6. 📊 Range Component
+### 6. 📊 RangeRoot Component
 
 ```rust
 #[component]
-pub fn Range(
-  current_value: i32, 
-  callback: EventHandler<i32>, 
-  min_value: i32, 
+pub fn RangeRoot(
+  current_value: i32,
+  callback: EventHandler<i32>,
+  min_value: i32,
   max_value: i32
 ) -> Element
 ```
 
-#### Range Component Key Features
+#### RangeRoot Component Key Features
 
 - Value range selection
 - Customizable min and max values
 - Step configuration
 - Dynamic value display
 
-### 7. 🔽 Select Component
+### 7. 🔽 RangeRoot Component
 
 ```rust
 #[component]
-pub fn Select<T: Clone + PartialEq + Display + 'static>(
+pub fn RangeRoot<T: Clone + PartialEq + Display + 'static>(
     values: Vec<T>,
     current_value: T,
     callback: EventHandler<T>
 ) -> Element
 ```
 
-#### Select Component Key Features
+#### RangeRoot Component Key Features
 
 - Generic type support
 - Dropdown selection
@@ -150,7 +150,7 @@ pub fn Textarea(props: TextareaProps) -> Element
 ```rust
 #[component]
 pub fn ToggleSwitch(
-    state: Signal<bool>, 
+    state: Signal<bool>,
     label_states: Option<ToggleSwitchLabelStatesProp>
 ) -> Element
 ```
@@ -190,7 +190,7 @@ pub enum ECalendarDay {
 ### 2. Reactive State Management
 
 ```rust
-let selected_date = use_memo(move || 
+let selected_date = use_memo(move ||
   NaiveDate::from_ymd_opt(selected_year(), selected_month() as u32, selected_day() as u32)
 );
 ```
@@ -226,7 +226,7 @@ pub struct CalendarSelectProps {
 }
 ```
 
-- **Date Range Limitations**: Easily set minimum and maximum selectable dates
+- **Date RangeRoot Limitations**: Easily set minimum and maximum selectable dates
 - **Dynamic Constraints**: Update constraints programmatically
 - **Prevents Invalid Selections**: Automatically disables out-of-range dates
 
@@ -248,7 +248,7 @@ pub struct CalendarSelectProps {
 fn App() -> Element {
   let display_props = CalendarDisplayProps::builder().build();
   let select_props = CalendarSelectProps::builder().build();
-  
+
   rsx! {
     Calendar {
       display_props,
@@ -293,13 +293,13 @@ use dioxus_maestro::prelude::*;
 #[component]
 fn App() -> Element {
   rsx! {
-    Button { 
+    Button {
       variant: ButtonVariant::Primary,
-      "Click me" 
+      "Click me"
     }
-    Input { 
+    Input {
       input_type: InputType::Text,
-      placeholder: "Enter your name" 
+      placeholder: "Enter your name"
     }
   }
 }

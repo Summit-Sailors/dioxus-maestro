@@ -8,20 +8,10 @@ use {
 	},
 	consts::{EXAMPLE, EXAMPLE_ANATOMY},
 	dioxus::prelude::*,
-	dioxus_free_icons::{
-		Icon,
-		icons::{
-			bs_icons::{BsCheckLg, BsThreeDots},
-			io_icons::IoLogoGithub,
-			ld_icons::LdX,
-		},
-	},
+	dioxus_free_icons::{Icon, icons::io_icons::IoLogoGithub},
 	maestro_headless::{
-		collapsible::{Collapsible, CollapsibleContent, CollapsibleTrigger},
-		dialog::{Dialog, DialogBody, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogTitle, DialogTrigger},
-		hover_card::{HoverCard, HoverCardArrow, HoverCardContent, HoverCardTrigger},
+		hover_card::{HoverCardArrow, HoverCardContent, HoverCardRoot, HoverCardTrigger},
 		shared::{EAlign, EOrientation, ESide},
-		tabs::{Tabs, TabsContent, TabsList, TabsTrigger},
 	},
 };
 
@@ -31,23 +21,19 @@ mod consts;
 pub fn HoverCardPage() -> Element {
 	let mut is_open = use_signal(|| false);
 
-	let features_list: Vec<&str> = Vec::from([
-		"Controlled/uncontrolled state",
-		"Custom side, alignment, offsets",
-		"Optionally render a pointing arrow",
-		"Custom open and close delays",
-		"Hidden from screen readers.",
-	]);
+	let features_list: Vec<&str> =
+		Vec::from(["Controlled/uncontrolled state", "Custom side, alignment, offsets", "Optionally render a pointing arrow", "Custom open and close delays"]);
 
 	rsx! {
 		DescriptionSection {
+			class: "[&>h3]:lg:text-2xl [&>h3]:text-xl",
 			title: "Hover Card",
-			description: "Preview some content behind a link.",
+			description: "A UI component that displays additional information or content when the user hovers over an element, providing a preview or quick details without requiring a click.",
 		}
 		section { class: "container flex flex-col px-4 lg:py-6 py-4 ",
 			div { class: "grow flex flex-col justify-center items-center rounded-md border border-neutral-800 bg-neutral-950 overflow-hidden",
 				div { class: "p-6 flex grow items-center justify-center w-full",
-					HoverCard { class: "w-fit",
+					HoverCardRoot { class: "w-fit",
 						HoverCardTrigger {
 							class: "mx-auto w-10 h-10 flex justify-center items-center bg-neutral-900 hover:bg-neutral-700 border border-orange-600 text-neutral-300 hover:text-neutral-100 rounded-full focus-visible:ring-2 focus-visible:ring-offset-2 outline-none transition-colors focus-visible:ring-orange-600 focus-visible:ring-offset-neutral-900",
 							href: "https://github.com/Summit-Sailors/dioxus-maestro/tree/dev/frontend/maestro-headless",
@@ -83,17 +69,15 @@ pub fn HoverCardPage() -> Element {
 		DescriptionSection { title: "Supports",
 			Features { features: features_list.clone() }
 		}
-		DescriptionSection {
-			title: "Usage and Anatomy",
-			description: "Import all parts and piece them together. Each part may be styled separately, accept own properties and additional attributes, e.g. \"data\" or \"aria\" (althought they are provided by default).",
+		DescriptionSection { title: "Usage and Anatomy",
 			ExampleCodeAnatomy { code: EXAMPLE_ANATOMY }
 		}
 		DescriptionSection { title: "Api Reference",
 			div { class: "flex flex-col space-y-6",
 				div { class: "flex flex-col gap-4",
-					h4 { class: "font-medium text-lg text-orange-300", "Root Component" }
+					h4 { class: "font-medium text-lg text-orange-300", "HoverCardRoot" }
 					p {
-						"Wrapps all parts af the hover card component and manages state. Props "
+						"Wrapps all parts of the hover card component and manages state. Props "
 						span { class: "px-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
 							"open"
 						}
@@ -101,10 +85,10 @@ pub fn HoverCardPage() -> Element {
 						span { class: "px-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
 							"on_open_change"
 						}
-						span { class: "font-medium", "must go in pair" }
-						"if use "
+						span { class: "font-medium", " must go in pair " }
+						"if "
 						span { class: "font-medium", "controllable state" }
-						". In other case may be used "
+						" used. In other case may be used "
 						span { class: "px-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
 							"default_open"
 						}
@@ -173,7 +157,7 @@ pub fn HoverCardPage() -> Element {
 					}
 				}
 				div {
-					h4 { class: "font-medium text-lg text-orange-300", "Trigger Component" }
+					h4 { class: "font-medium text-lg text-orange-300", "HoverCardTrigger" }
 					p { "Opens/closes the hover card content." }
 					PageTabs {
 						props_list: Vec::from([
@@ -185,9 +169,9 @@ pub fn HoverCardPage() -> Element {
 								},
 								PropsStruct {
 										prop: "children".into(),
-										prop_default: "-".into(),
+										prop_default: "None".into(),
 										prop_type: "Element".into(),
-										tooltip_text: Some("Required".into()),
+										tooltip_text: None,
 								},
 						]),
 						attrs_list: Vec::from([
@@ -210,7 +194,7 @@ pub fn HoverCardPage() -> Element {
 					}
 				}
 				div {
-					h4 { class: "font-medium text-lg text-orange-300", "Content Component" }
+					h4 { class: "font-medium text-lg text-orange-300", "HoverCardContent" }
 					p { class: "mb-4", "The component that appears when the hover card is open." }
 					PageTabs {
 						props_list: Vec::from([
@@ -335,13 +319,13 @@ pub fn HoverCardPage() -> Element {
 					}
 				}
 				div {
-					h4 { class: "font-medium text-lg text-orange-300", "Arrow Component" }
+					h4 { class: "font-medium text-lg text-orange-300", "HoverCardArrow" }
 					p { class: "mb-4",
 						"An arrow element to render alongside the hover card. Must be rendered inside of "
 						span { class: "px-1.5 py-0.5 font-mono text-orange-400 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
 							"HoverCardContent"
 						}
-						"."
+						". Optional."
 					}
 					PropsTable {
 						content: Vec::from([

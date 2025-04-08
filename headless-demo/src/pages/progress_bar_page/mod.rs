@@ -12,12 +12,7 @@ use {
 	dioxus_free_icons::{Icon, icons::bs_icons::BsArrowCounterclockwise},
 	maestro_headless::{
 		button::Button,
-		collapsible::{Collapsible, CollapsibleContent, CollapsibleTrigger},
-		dialog::{Dialog, DialogBody, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogTitle, DialogTrigger},
-		popover::{Popover, PopoverArrow, PopoverClose, PopoverContent, PopoverTrigger},
-		progress::{Progress, ProgressIndicator},
-		shared::{EAlign, EOrientation, ESide},
-		tabs::{Tabs, TabsContent, TabsList, TabsTrigger},
+		progress::{ProgressIndicator, ProgressRoot},
 	},
 	std::time::Duration,
 };
@@ -43,13 +38,14 @@ pub fn ProgressBarPage() -> Element {
 
 	rsx! {
 		DescriptionSection {
+			class: "[&>h3]:lg:text-2xl [&>h3]:text-xl",
 			title: "Progress Bar",
 			description: "An indicator showing the completion progress of a task.",
 		}
 		section { class: "container flex flex-col px-4 lg:py-6 py-4 ",
 			div { class: "grow flex flex-col justify-center items-center rounded-md border border-neutral-800 bg-neutral-950 overflow-hidden",
 				div { class: "p-6 flex flex-col grow items-center justify-center gap-4 w-full",
-					Progress {
+					ProgressRoot {
 						class: "w-56 h-2 rounded-md overflow-hidden relative bg-neutral-300",
 						value: progress(),
 						ProgressIndicator { class: "size-full bg-orange-600 rounded-md transition-transform duration-500" }
@@ -66,16 +62,14 @@ pub fn ProgressBarPage() -> Element {
 		DescriptionSection { title: "Supports",
 			Features { features: features_list.clone() }
 		}
-		DescriptionSection {
-			title: "Usage and Anatomy",
-			description: "Import all parts and piece them together. Each part may be styled separately, accept own properties and additional attributes, e.g. \"data\" or \"aria\" (althought they are provided by default).",
+		DescriptionSection { title: "Usage and Anatomy",
 			ExampleCodeAnatomy { code: EXAMPLE_ANATOMY }
 		}
 		DescriptionSection { title: "Api Reference",
 			div { class: "flex flex-col space-y-6",
 				div { class: "flex flex-col gap-4",
-					h4 { class: "font-medium text-lg text-orange-300", "Root Component" }
-					p { "Wrapps all parts af the progress component." }
+					h4 { class: "font-medium text-lg text-orange-300", "ProgressRoot" }
+					p { "Wrapps all parts of the progress component." }
 					PageTabs {
 						props_list: Vec::from([
 								PropsStruct {
@@ -143,8 +137,14 @@ pub fn ProgressBarPage() -> Element {
 					}
 				}
 				div {
-					h4 { class: "font-medium text-lg text-orange-300", "Indicator Component" }
-					p { "Showa the progress visually." }
+					h4 { class: "font-medium text-lg text-orange-300", "ProgressIndicator" }
+					p {
+						"Shows a the progress visually. Must be included in "
+						span { class: "px-1.5 py-0.5 font-mono text-orange-400 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
+							"ProgressRoot"
+						}
+						" component."
+					}
 					PageTabs {
 						props_list: Vec::from([
 								PropsStruct {

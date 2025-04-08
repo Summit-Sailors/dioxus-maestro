@@ -23,20 +23,20 @@ struct AvatarContextValue {
 }
 
 #[derive(Props, PartialEq, Clone)]
-pub struct AvatarProps {
+pub struct AvatarRootProps {
 	#[props(extends = GlobalAttributes, extends = div)]
 	pub attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
 #[component]
-pub fn Avatar(props: AvatarProps) -> Element {
+pub fn AvatarRoot(props: AvatarRootProps) -> Element {
 	let image_loading_status = use_signal(|| ImageLoadingStatus::Idle);
 	use_context_provider::<AvatarContextValue>(|| AvatarContextValue { image_loading_status });
 
 	rsx! {
-		div { ..props.attributes.clone(),{props.children} }
-	}
+    div { ..props.attributes.clone(),{props.children} }
+  }
 }
 
 #[derive(Props, PartialEq, Clone)]
@@ -92,8 +92,8 @@ pub fn AvatarImage(props: AvatarImageProps) -> Element {
 
 	if *context.image_loading_status.read() == ImageLoadingStatus::Loaded {
 		rsx! {
-			img { src: props.src.read().clone(), ..props.attributes.clone() }
-		}
+      img { src: props.src.read().clone(), ..props.attributes.clone() }
+    }
 	} else {
 		rsx! {}
 	}
@@ -127,8 +127,8 @@ pub fn AvatarFallback(props: AvatarFallbackProps) -> Element {
 
 	if can_render() && *context.image_loading_status.read() != ImageLoadingStatus::Loaded {
 		rsx! {
-			span { ..props.attributes.clone(),{props.children} }
-		}
+      span { ..props.attributes.clone(),{props.children} }
+    }
 	} else {
 		rsx! {}
 	}

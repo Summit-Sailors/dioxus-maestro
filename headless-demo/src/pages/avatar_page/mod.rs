@@ -7,8 +7,7 @@ use {
 	},
 	consts::{EXAMPLE, EXAMPLE_ANATOMY},
 	dioxus::prelude::*,
-	dioxus_free_icons::{Icon, icons::bs_icons::BsCheckLg},
-	maestro_headless::avatar::{Avatar, AvatarFallback, AvatarImage},
+	maestro_headless::avatar::{AvatarFallback, AvatarImage, AvatarRoot},
 };
 
 mod consts;
@@ -19,18 +18,22 @@ pub fn AvatarPage() -> Element {
 		Vec::from(["Fallback if image is absent or error while loading", "Fallback may accept any children", "Optional delay fallback rendering"]);
 
 	rsx! {
-		DescriptionSection { title: "Avatar", description: "An image element with a fallback." }
+		DescriptionSection {
+			class: "[&>h3]:lg:text-2xl [&>h3]:text-xl",
+			title: "Avatar",
+			description: "An image element with a fallback.",
+		}
 		section { class: "container flex flex-col px-4 lg:py-6 py-4 ",
 			div { class: "grow flex flex-col justify-center items-center rounded-md border border-neutral-800 bg-neutral-950 overflow-hidden",
 				div { class: "p-6 flex gap-4 items-start",
-					Avatar { class: "rounded-full flex justify-center items-center w-10 h-10 border border-neutral-50 overflow-hidden",
+					AvatarRoot { class: "rounded-full flex justify-center items-center w-10 h-10 border border-neutral-50 overflow-hidden",
 						AvatarImage {
 							class: "object-cover size-full",
 							src: "https://mis.dp.ua/wp-content/uploads/2023/07/pqma3f-c17x11x50px50p-c17x11x50px50p-15f939eddf2b09f7e6c097aad232da37.jpg",
 						}
 						AvatarFallback { class: "text-sm font-medium text-neutral-50", "NA" }
 					}
-					Avatar { class: "rounded-full flex justify-center items-center w-10 h-10 border border-neutral-50 overflow-hidden",
+					AvatarRoot { class: "rounded-full flex justify-center items-center w-10 h-10 border border-neutral-50 overflow-hidden",
 						AvatarFallback {
 							delay_ms: 300,
 							class: "text-sm font-medium text-neutral-50",
@@ -44,16 +47,14 @@ pub fn AvatarPage() -> Element {
 		DescriptionSection { title: "Supports",
 			Features { features: features_list.clone() }
 		}
-		DescriptionSection {
-			title: "Usage and Anatomy",
-			description: "Import all parts and piece them together. Each part may be styled separately, accept own properties and additional attributes",
+		DescriptionSection { title: "Usage and Anatomy",
 			ExampleCodeAnatomy { code: EXAMPLE_ANATOMY }
 		}
 		DescriptionSection { title: "Api Reference",
 			div { class: "flex flex-col space-y-6",
 				div { class: "flex flex-col gap-4",
-					h4 { class: "font-medium text-lg text-orange-300", "Root Component" }
-					p { "Wrapps all parts af the avatar." }
+					h4 { class: "font-medium text-lg text-orange-300", "AvatarRoot" }
+					p { "Wrapps all parts of the avatar." }
 					div { class: "overflow-hidden rounded-sm border border-neutral-700",
 						PropsTable {
 							content: Vec::from([
@@ -74,7 +75,7 @@ pub fn AvatarPage() -> Element {
 					}
 				}
 				div { class: "flex flex-col gap-4",
-					h4 { class: "font-medium text-lg text-orange-300", "Image Component" }
+					h4 { class: "font-medium text-lg text-orange-300", "AvatarImage" }
 					p {
 						"Represents avatar image. It will be rendered only if image has successfully loaded and has "
 						span { class: "px-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
@@ -102,7 +103,7 @@ pub fn AvatarPage() -> Element {
 					}
 				}
 				div { class: "flex flex-col gap-4",
-					h4 { class: "font-medium text-lg text-orange-300", "Fallback Component" }
+					h4 { class: "font-medium text-lg text-orange-300", "AvatarFallback" }
 					p {
 						"Will be rendered when the image hasn't loaded (if an image is loading or has error) or there is no image at all."
 					}
@@ -123,9 +124,9 @@ pub fn AvatarPage() -> Element {
 									},
 									PropsStruct {
 											prop: "children".into(),
-											prop_default: "-".into(),
+											prop_default: "None".into(),
 											prop_type: "Element".into(),
-											tooltip_text: Some("Required".into()),
+											tooltip_text: None,
 									},
 							]),
 						}

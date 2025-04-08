@@ -10,9 +10,8 @@ use {
 		pages::accordion_page::consts::{EXAMPLE, EXAMPLE_ANATOMY},
 	},
 	dioxus::prelude::*,
-	dioxus_free_icons::{Icon, icons::bs_icons::BsCheckLg},
 	maestro_headless::{
-		accordion::{Accordion, AccordionContent, AccordionHeader, AccordionItem, AccordionTrigger, AccordionVariant},
+		accordion::{AccordionContent, AccordionHeader, AccordionItem, AccordionRoot, AccordionTrigger, AccordionVariant},
 		shared::EOrientation,
 	},
 };
@@ -26,13 +25,14 @@ pub fn AccordionPage() -> Element {
 
 	rsx! {
 		DescriptionSection {
+			class: "[&>h3]:lg:text-2xl [&>h3]:text-xl",
 			title: "Accordion",
-			description: "A vertically stacked set of interactive headings that each reveal an associated section of content.",
+			description: "UI component that allows to toggle the visibility of content within sections, one or multiple sections at a time.",
 		}
 		section { class: "container flex flex-col px-4 lg:py-6 py-4 ",
 			div { class: "grow flex flex-col justify-center items-center rounded-md border border-neutral-800 bg-neutral-950 overflow-hidden",
 				div { class: "p-6 flex gap-4 items-start w-full max-w-96",
-					Accordion {
+					AccordionRoot {
 						default_value: Vec::from(["1".into()]),
 						class: "relative w-full grow max-w-96 flex flex-col rounded-sm bg-neutral-900 text-neutral-100 p-0.5 transition-all ease-linear overflow-hidden",
 						variant: AccordionVariant::Single,
@@ -93,17 +93,15 @@ pub fn AccordionPage() -> Element {
 		DescriptionSection { title: "Supports",
 			Features { features: features_list.clone() }
 		}
-		DescriptionSection {
-			title: "Usage and Anatomy",
-			description: "Import all parts and piece them together. Each part may be styled separately, accept own properties and additional attributes, e.g. \"data\" or \"aria\" (althought they are provided by default).",
+		DescriptionSection { title: "Usage and Anatomy",
 			ExampleCodeAnatomy { code: EXAMPLE_ANATOMY }
 		}
 		DescriptionSection { title: "Api Reference",
 			div { class: "flex flex-col space-y-6",
 				div { class: "flex flex-col gap-4",
-					h4 { class: "font-medium text-lg text-orange-300", "Root Component" }
+					h4 { class: "font-medium text-lg text-orange-300", "AccordionRoot" }
 					p {
-						"Wrapps all parts af the accordion and manages state. Props "
+						"Wrapps all parts of the accordion and manages state. Props "
 						span { class: "px-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
 							"value"
 						}
@@ -111,10 +109,9 @@ pub fn AccordionPage() -> Element {
 						span { class: "px-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
 							"on_value_change"
 						}
-						span { class: "font-medium", "must go in pair" }
-						"if use "
+						" in case of "
 						span { class: "font-medium", "controllable state" }
-						". In other case may be used "
+						" must go in pair. In other case may be used "
 						span { class: "px-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
 							"default_value"
 						}
@@ -127,14 +124,14 @@ pub fn AccordionPage() -> Element {
 										prop_default: "None".into(),
 										prop_type: "Option<Vec<String>>".into(),
 										tooltip_text: Some(
-												"Must be used in pair with on_value_change callback".into(),
+												"Must be used in pair with `on_value_change` callback".into(),
 										),
 								},
 								PropsStruct {
 										prop: "on_value_change".into(),
 										prop_default: "None".into(),
 										prop_type: "Callback<Vec<String>>".into(),
-										tooltip_text: Some("Must be used in pair with value prop".into()),
+										tooltip_text: Some("Must be used in pair with `value` prop".into()),
 								},
 								PropsStruct {
 										prop: "default_value".into(),
@@ -145,15 +142,17 @@ pub fn AccordionPage() -> Element {
 								PropsStruct {
 										prop: "orientation".into(),
 										prop_default: "EOrientation::Vertical".into(),
-										prop_type: "EOrientation::Vertical | EOrientation::Horizontal".into(),
-										tooltip_text: None,
+										prop_type: "EOrientation".into(),
+										tooltip_text: Some(
+												"Accepts `EOrientation::Vertical` or `EOrientation::Horizontal`".into(),
+										),
 								},
 								PropsStruct {
 										prop: "collapsible".into(),
 										prop_default: "true".into(),
 										prop_type: "bool".into(),
 										tooltip_text: Some(
-												"If false and variant 'single', at least one item will always be opened"
+												"If false and variant `AccordionVariant::Single`, at least one item will always be opened"
 														.into(),
 										),
 								},
@@ -166,8 +165,11 @@ pub fn AccordionPage() -> Element {
 								PropsStruct {
 										prop: "variant".into(),
 										prop_default: "AccordionVariant::Single".into(),
-										prop_type: "AccordionVariant::Single | AccordionVariant::Multiple".into(),
-										tooltip_text: None,
+										prop_type: "AccordionVariant".into(),
+										tooltip_text: Some(
+												"Accepts `AccordionVariant::Single` or `AccordionVariant::Multiple`"
+														.into(),
+										),
 								},
 								PropsStruct {
 										prop: "attributes".into(),
@@ -183,11 +185,6 @@ pub fn AccordionPage() -> Element {
 								},
 						]),
 						attrs_list: Vec::from([
-								AttrsStruct {
-										attr: "role".into(),
-										value: "accordion".into(),
-										description: "".into(),
-								},
 								AttrsStruct {
 										attr: "aria-disabled".into(),
 										value: "true".into(),
@@ -217,7 +214,7 @@ pub fn AccordionPage() -> Element {
 					}
 				}
 				div { class: "flex flex-col gap-4",
-					h4 { class: "font-medium text-lg text-orange-300", "Item Component" }
+					h4 { class: "font-medium text-lg text-orange-300", "AccordionItem" }
 					p {
 						"Wraps all the parts of a collapsible section. Prop "
 						span { class: "px-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
@@ -261,11 +258,6 @@ pub fn AccordionPage() -> Element {
 						]),
 						attrs_list: Vec::from([
 								AttrsStruct {
-										attr: "role".into(),
-										value: "presentation".into(),
-										description: "".into(),
-								},
-								AttrsStruct {
 										attr: "aria-disabled".into(),
 										value: "true".into(),
 										description: "Appears only if the current item is disabled".into(),
@@ -289,7 +281,7 @@ pub fn AccordionPage() -> Element {
 					}
 				}
 				div { class: "flex flex-col gap-4",
-					h4 { class: "font-medium text-lg text-orange-300", "Header Component" }
+					h4 { class: "font-medium text-lg text-orange-300", "AccordionHeader" }
 					p { class: "flex gap-1 mb-4",
 						"Wrapps an "
 						span { class: "px-1.5 py-0.5 font-mono text-orange-400 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
@@ -322,7 +314,7 @@ pub fn AccordionPage() -> Element {
 					}
 				}
 				div { class: "flex flex-col gap-4",
-					h4 { class: "font-medium text-lg text-orange-300", "Trigger Component" }
+					h4 { class: "font-medium text-lg text-orange-300", "AccordionTrigger" }
 					p {
 						"Opens/closes current accordion item. Must be nested inside of the "
 						span { class: "px-1.5 py-0.5 font-mono text-orange-400 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
@@ -340,9 +332,9 @@ pub fn AccordionPage() -> Element {
 								},
 								PropsStruct {
 										prop: "children".into(),
-										prop_default: "-".into(),
+										prop_default: "None".into(),
 										prop_type: "Element".into(),
-										tooltip_text: Some("Required".into()),
+										tooltip_text: None,
 								},
 						]),
 						attrs_list: Vec::from([
@@ -365,7 +357,7 @@ pub fn AccordionPage() -> Element {
 					}
 				}
 				div { class: "flex flex-col gap-4",
-					h4 { class: "font-medium text-lg text-orange-300", "Content Component" }
+					h4 { class: "font-medium text-lg text-orange-300", "AccordionContent" }
 					p { class: "mb-4", "Contains the collapsible content for an item." }
 					PageTabs {
 						props_list: Vec::from([

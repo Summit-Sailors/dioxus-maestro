@@ -8,21 +8,9 @@ use {
 	},
 	consts::{EXAMPLE, EXAMPLE_ANATOMY},
 	dioxus::prelude::*,
-	dioxus_free_icons::{
-		Icon,
-		icons::{
-			bs_icons::{BsCheckLg, BsInfo, BsThreeDots},
-			io_icons::IoLogoGithub,
-			ld_icons::LdX,
-		},
-	},
 	maestro_headless::{
-		collapsible::{Collapsible, CollapsibleContent, CollapsibleTrigger},
-		dialog::{Dialog, DialogBody, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogTitle, DialogTrigger},
-		popover::{Popover, PopoverArrow, PopoverClose, PopoverContent, PopoverTrigger},
-		radio_group::{RadioGroup, RadioGroupIndicator, RadioGroupItem},
-		shared::{EAlign, EOrientation, ESide},
-		tabs::{Tabs, TabsContent, TabsList, TabsTrigger},
+		radio_group::{RadioGroupIndicator, RadioGroupItem, RadioGroupRoot},
+		shared::EOrientation,
 	},
 };
 
@@ -39,13 +27,14 @@ pub fn RadioPage() -> Element {
 
 	rsx! {
 		DescriptionSection {
+			class: "[&>h3]:lg:text-2xl [&>h3]:text-xl",
 			title: "Radio Group",
 			description: "A group of radio buttons where only one item can be checked at a time.",
 		}
 		section { class: "container flex flex-col px-4 lg:py-6 py-4 ",
 			div { class: "grow flex flex-col justify-center items-center rounded-md border border-neutral-800 bg-neutral-950 overflow-hidden",
 				div { class: "p-6 flex grow items-center justify-center w-full",
-					RadioGroup { name: "radio", class: "flex items-center gap-4",
+					RadioGroupRoot { class: "flex items-center gap-4",
 						div { class: "flex items-center gap-2",
 							RadioGroupItem {
 								value: "coffee",
@@ -82,15 +71,13 @@ pub fn RadioPage() -> Element {
 		DescriptionSection { title: "Supports",
 			Features { features: features_list.clone() }
 		}
-		DescriptionSection {
-			title: "Usage and Anatomy",
-			description: "Import all parts and piece them together. Each part may be styled separately, accept own properties and additional attributes, e.g. \"data\" or \"aria\" (althought they are provided by default).",
+		DescriptionSection { title: "Usage and Anatomy",
 			ExampleCodeAnatomy { code: EXAMPLE_ANATOMY }
 		}
 		DescriptionSection { title: "Api Reference",
 			div { class: "flex flex-col space-y-6",
 				div { class: "flex flex-col gap-4",
-					h4 { class: "font-medium text-lg text-orange-300", "Root Component" }
+					h4 { class: "font-medium text-lg text-orange-300", "RadioGroupRoot" }
 					p {
 						"Wrapps all radio buttons of the group and manages state. Props "
 						span { class: "px-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
@@ -100,9 +87,8 @@ pub fn RadioPage() -> Element {
 						span { class: "px-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
 							"on_value_change"
 						}
-						span { class: "font-medium", "must go in pair" }
-						"if use "
-						span { class: "font-medium", "controllable state" }
+						" in case of usage "
+						span { class: "font-medium", "controllable state must go in pair" }
 						". In other case may be used "
 						span { class: "px-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
 							"default_value"
@@ -132,7 +118,7 @@ pub fn RadioPage() -> Element {
 								PropsStruct {
 										prop: "orientation".into(),
 										prop_default: "EOrientation::Vertical".into(),
-										prop_type: "EOrientation::Vertical | EOrientation::Horizontal".into(),
+										prop_type: "EOrientation".into(),
 										tooltip_text: None,
 								},
 								PropsStruct {
@@ -140,6 +126,12 @@ pub fn RadioPage() -> Element {
 										prop_default: "false".into(),
 										prop_type: "bool".into(),
 										tooltip_text: Some("Prevents from toggling any item in the group".into()),
+								},
+								PropsStruct {
+										prop: "required".into(),
+										prop_default: "false".into(),
+										prop_type: "bool".into(),
+										tooltip_text: None,
 								},
 								PropsStruct {
 										prop: "attributes".into(),
@@ -158,7 +150,7 @@ pub fn RadioPage() -> Element {
 								AttrsStruct {
 										attr: "aria-disabled".into(),
 										value: "true".into(),
-										description: "Appears only if the whole accordion is disabled".into(),
+										description: "Appears only if the group is disabled".into(),
 								},
 								AttrsStruct {
 										attr: "aria-required".into(),
@@ -168,7 +160,12 @@ pub fn RadioPage() -> Element {
 								AttrsStruct {
 										attr: "data-disabled".into(),
 										value: "true".into(),
-										description: "Appears only if the whole accordion is disabled".into(),
+										description: "Appears only if the group is disabled".into(),
+								},
+								AttrsStruct {
+										attr: "data-required".into(),
+										value: "true".into(),
+										description: "".into(),
 								},
 								AttrsStruct {
 										attr: "data-state".into(),
@@ -189,7 +186,7 @@ pub fn RadioPage() -> Element {
 					}
 				}
 				div { class: "flex flex-col gap-4",
-					h4 { class: "font-medium text-lg text-orange-300", "Item Component" }
+					h4 { class: "font-medium text-lg text-orange-300", "RadioGroupItem" }
 					p { "Indicates radio input." }
 					PageTabs {
 						props_list: Vec::from([
@@ -215,9 +212,9 @@ pub fn RadioPage() -> Element {
 								},
 								PropsStruct {
 										prop: "children".into(),
-										prop_default: "None".into(),
+										prop_default: "-".into(),
 										prop_type: "Element".into(),
-										tooltip_text: Some("Custom checked indicator if specified".into()),
+										tooltip_text: None,
 								},
 						]),
 						attrs_list: Vec::from([
@@ -229,12 +226,12 @@ pub fn RadioPage() -> Element {
 								AttrsStruct {
 										attr: "aria-disabled".into(),
 										value: "true".into(),
-										description: "Appears only if the whole accordion is disabled".into(),
+										description: "Appears only if group or current item is disabled".into(),
 								},
 								AttrsStruct {
 										attr: "data-disabled".into(),
 										value: "true".into(),
-										description: "Appears only if the whole accordion is disabled".into(),
+										description: "Appears only if group or current item is disabled".into(),
 								},
 								AttrsStruct {
 										attr: "data-state".into(),
@@ -255,8 +252,14 @@ pub fn RadioPage() -> Element {
 					}
 				}
 				div { class: "flex flex-col gap-4",
-					h4 { class: "font-medium text-lg text-orange-300", "Indicator Component" }
-					p { "Appears when the radio is checked. May accept checked component." }
+					h4 { class: "font-medium text-lg text-orange-300", "RadioGroupIndicator" }
+					p {
+						"Appears when the radio is checked. May accept checked component and must be wrapped by ."
+						span { class: "px-1.5 py-0.5 font-mono text-orange-400 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
+							"RadioGroupItem"
+						}
+						" component."
+					}
 					PageTabs {
 						props_list: Vec::from([
 								PropsStruct {
@@ -281,12 +284,12 @@ pub fn RadioPage() -> Element {
 								AttrsStruct {
 										attr: "aria-disabled".into(),
 										value: "true".into(),
-										description: "Appears only if the whole accordion is disabled".into(),
+										description: "Appears only if the group is disabled".into(),
 								},
 								AttrsStruct {
 										attr: "data-disabled".into(),
 										value: "true".into(),
-										description: "Appears only if the whole accordion is disabled".into(),
+										description: "Appears only if the group is disabled".into(),
 								},
 								AttrsStruct {
 										attr: "data-state".into(),

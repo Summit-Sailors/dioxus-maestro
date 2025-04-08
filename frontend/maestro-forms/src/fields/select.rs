@@ -43,37 +43,37 @@ where
 	let label_to_value_map = use_memo(move || value_to_label_map().clone().into_iter().map(|(k, v)| (v, k)).collect::<HashMap<String, TField>>());
 
 	rsx! {
-    select {
-      name,
-      multiple: false,
-      onchange: move |evt| {
-          let label_to_value_map = label_to_value_map();
-          let value = label_to_value_map.get(&evt.value()).unwrap();
-          field.set_value(value.clone());
-          if let Some(handler) = onchange {
-              handler.call(value.clone());
-          }
-      },
-      onblur: move |evt| {
-          field.set_touched(true);
-          if let Some(handler) = onblur {
-              handler.call(evt);
-          }
-      },
-      ..attributes,
+		select {
+			name,
+			multiple: false,
+			onchange: move |evt| {
+					let label_to_value_map = label_to_value_map();
+					let value = label_to_value_map.get(&evt.value()).unwrap();
+					field.set_value(value.clone());
+					if let Some(handler) = onchange {
+							handler.call(value.clone());
+					}
+			},
+			onblur: move |evt| {
+					field.set_touched(true);
+					if let Some(handler) = onblur {
+							handler.call(evt);
+					}
+			},
+			..attributes,
 
-      {
-          values
-              .clone()
-              .into_iter()
-              .map(|value| {
-                  let map = value_to_label_map();
-                  let label = map.get(&value).unwrap();
-                  rsx! {
-                    option { value: "{label}", selected: field.get_value::<TField>() == value, "{label}" }
-                  }
-              })
-      }
-    }
-  }
+			{
+					values
+							.clone()
+							.into_iter()
+							.map(|value| {
+									let map = value_to_label_map();
+									let label = map.get(&value).unwrap();
+									rsx! {
+										option { value: "{label}", selected: field.get_value::<TField>() == value, "{label}" }
+									}
+							})
+			}
+		}
+	}
 }

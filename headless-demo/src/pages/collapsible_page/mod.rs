@@ -8,12 +8,7 @@ use {
 	},
 	consts::{EXAMPLE, EXAMPLE_ANATOMY},
 	dioxus::prelude::*,
-	dioxus_free_icons::{Icon, icons::bs_icons::BsCheckLg},
-	maestro_headless::{
-		collapsible::{Collapsible, CollapsibleContent, CollapsibleTrigger},
-		shared::EOrientation,
-		tabs::{Tabs, TabsContent, TabsList, TabsTrigger},
-	},
+	maestro_headless::collapsible::{CollapsibleContent, CollapsibleRoot, CollapsibleTrigger},
 };
 mod consts;
 
@@ -25,18 +20,19 @@ pub fn CollapsiblePage() -> Element {
 
 	rsx! {
 		DescriptionSection {
+			class: "[&>h3]:lg:text-2xl [&>h3]:text-xl",
 			title: "Collapsible",
-			description: "An interactive component which expands/collapses a panel.",
+			description: "A component that allows to toggle the visibility of content within a single section, expanding or collapsing it as needed.",
 		}
 		section { class: "container flex flex-col px-4 lg:py-6 py-4 ",
 			div { class: "grow flex flex-col justify-center items-center rounded-md border border-neutral-800 bg-neutral-950 overflow-hidden",
 				div { class: "p-6 flex gap-4 items-start max-w-96 w-full",
-					Collapsible {
+					CollapsibleRoot {
 						class: "flex flex-col space-y-3 w-full",
 						open: is_open(),
 						on_open_change: move |value: bool| is_open.set(value),
 						div { class: "flex justify-between items-center gap-3",
-							span { class: "text-neutral-100", "Collapsible Component" }
+							span { class: "text-neutral-100", "CollapsibleRoot Component" }
 							CollapsibleTrigger { class: "h-8 rounded-md flex items-center justify-center px-3 py-2 border border-neutral-300 text-neutral-300 hover:text-neutral-100 hover:border-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-300 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900",
 								if is_open() {
 									"Collapse"
@@ -58,17 +54,15 @@ pub fn CollapsiblePage() -> Element {
 		DescriptionSection { title: "Supports",
 			Features { features: features_list.clone() }
 		}
-		DescriptionSection {
-			title: "Usage and Anatomy",
-			description: "Import all parts and piece them together. Each part may be styled separately, accept own properties and additional attributes, e.g. \"data\" or \"aria\" (althought they are provided by default).",
+		DescriptionSection { title: "Usage and Anatomy",
 			ExampleCodeAnatomy { code: EXAMPLE_ANATOMY }
 		}
 		DescriptionSection { title: "Api Reference",
 			div { class: "flex flex-col space-y-6",
 				div { class: "flex flex-col gap-4",
-					h4 { class: "font-medium text-lg text-orange-300", "Root Component" }
+					h4 { class: "font-medium text-lg text-orange-300", "CollapsibleRoot" }
 					p {
-						"Wrapps all parts af the collapsible and manages state. Props "
+						"Wrapps all parts of the collapsible and manages state. Props "
 						span { class: "px-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
 							"open"
 						}
@@ -77,7 +71,7 @@ pub fn CollapsiblePage() -> Element {
 							"on_open_change"
 						}
 						span { class: "font-medium", "must go in pair" }
-						"if use "
+						"in case of usage "
 						span { class: "font-medium", "controllable state" }
 						". In other case may be used "
 						span { class: "px-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
@@ -111,13 +105,15 @@ pub fn CollapsiblePage() -> Element {
 										prop: "disabled".into(),
 										prop_default: "false".into(),
 										prop_type: "bool".into(),
-										tooltip_text: Some("Prevents toggling all items".into()),
+										tooltip_text: Some(
+												"Prevents opening/closing a content of the collapsible".into(),
+										),
 								},
 								PropsStruct {
 										prop: "attributes".into(),
 										prop_default: "[]".into(),
 										prop_type: "Vec<Attribute>".into(),
-										tooltip_text: Some("Extends 'global' and 'button' attribules".into()),
+										tooltip_text: Some("Extends 'global' and 'div' attribules".into()),
 								},
 								PropsStruct {
 										prop: "children".into(),
@@ -146,7 +142,7 @@ pub fn CollapsiblePage() -> Element {
 					}
 				}
 				div {
-					h4 { class: "font-medium text-lg text-orange-300", "Trigger Component" }
+					h4 { class: "font-medium text-lg text-orange-300", "CollapsibleTrigger" }
 					p { "Expands/collapces content." }
 					PageTabs {
 						props_list: Vec::from([
@@ -188,7 +184,7 @@ pub fn CollapsiblePage() -> Element {
 					}
 				}
 				div {
-					h4 { class: "font-medium text-lg text-orange-300", "Content Component" }
+					h4 { class: "font-medium text-lg text-orange-300", "CollapsibleContent" }
 					p { class: "mb-4", "Contains the collapsible content." }
 					PageTabs {
 						props_list: Vec::from([

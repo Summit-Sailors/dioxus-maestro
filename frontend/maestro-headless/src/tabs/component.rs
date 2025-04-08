@@ -22,7 +22,7 @@ impl TabsContext {
 }
 
 #[derive(Props, Clone, PartialEq)]
-pub struct TabsProps {
+pub struct TabsRootProps {
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
 	pub value: ReadOnlySignal<Option<String>>,
 	#[props(optional, default = String::new())]
@@ -39,8 +39,8 @@ pub struct TabsProps {
 }
 
 #[component]
-pub fn Tabs(props: TabsProps) -> Element {
-	let TabsProps { value, default_value, on_value_change, children, orientation, attributes } = props;
+pub fn TabsRoot(props: TabsRootProps) -> Element {
+	let TabsRootProps { value, default_value, on_value_change, children, orientation, attributes } = props;
 	let is_controlled = use_hook(move || value().is_some());
 	let (value, set_value) =
 		use_controllable_state(UseControllableStateParams { is_controlled, prop: value, default_prop: default_value, on_change: on_value_change });
@@ -51,6 +51,7 @@ pub fn Tabs(props: TabsProps) -> Element {
 		div {
 			role: "presentation",
 			aria_orientation: orientation().to_string(),
+			"data-orientation": orientation().to_string(),
 			..attributes,
 			{children}
 		}
@@ -117,6 +118,7 @@ pub fn TabsTrigger(props: TabsTriggerProps) -> Element {
 			disabled: disabled(),
 			aria_controls: "{value()}-content".to_string(),
 			aria_selected: is_active(),
+			aria_expanded: is_active(),
 			"data-focusable": !disabled(),
 			"data-state": if is_active() { "active" } else { "inactive" },
 			onclick: move |_| { context.set_value.call(value()) },

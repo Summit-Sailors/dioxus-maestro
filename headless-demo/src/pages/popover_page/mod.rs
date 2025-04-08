@@ -8,20 +8,10 @@ use {
 	},
 	consts::{EXAMPLE, EXAMPLE_ANATOMY},
 	dioxus::prelude::*,
-	dioxus_free_icons::{
-		Icon,
-		icons::{
-			bs_icons::{BsCheckLg, BsInfo, BsThreeDots},
-			io_icons::IoLogoGithub,
-			ld_icons::LdX,
-		},
-	},
+	dioxus_free_icons::{Icon, icons::bs_icons::BsInfo},
 	maestro_headless::{
-		collapsible::{Collapsible, CollapsibleContent, CollapsibleTrigger},
-		dialog::{Dialog, DialogBody, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogTitle, DialogTrigger},
-		popover::{Popover, PopoverArrow, PopoverClose, PopoverContent, PopoverTrigger},
+		popover::{PopoverArrow, PopoverClose, PopoverContent, PopoverRoot, PopoverTrigger},
 		shared::{EAlign, EOrientation, ESide},
-		tabs::{Tabs, TabsContent, TabsList, TabsTrigger},
 	},
 };
 
@@ -37,11 +27,15 @@ pub fn PopoverPage() -> Element {
 	]);
 
 	rsx! {
-		DescriptionSection { title: "Popover", description: "Renders content in a popup" }
+		DescriptionSection {
+			class: "[&>h3]:lg:text-2xl [&>h3]:text-xl",
+			title: "Popover",
+			description: "A UI component that displays content, typically triggered by clicking, providing additional information or options.",
+		}
 		section { class: "container flex flex-col px-4 lg:py-6 py-4 ",
 			div { class: "grow flex flex-col justify-center items-center rounded-md border border-neutral-800 bg-neutral-950 overflow-hidden",
 				div { class: "p-6 flex grow items-center justify-center w-full",
-					Popover { class: "w-fit",
+					PopoverRoot { class: "w-fit",
 						PopoverTrigger { class: "mx-auto w-10 h-10 flex justify-center items-center bg-neutral-900 hover:bg-neutral-700 border border-orange-600 text-neutral-300 hover:text-neutral-100 rounded-full focus-visible:ring-2 focus-visible:ring-offset-2 outline-none transition-colors focus-visible:ring-orange-600 focus-visible:ring-offset-neutral-900",
 							Icon { icon: BsInfo {} }
 						}
@@ -76,17 +70,15 @@ pub fn PopoverPage() -> Element {
 		DescriptionSection { title: "Supports",
 			Features { features: features_list.clone() }
 		}
-		DescriptionSection {
-			title: "Usage and Anatomy",
-			description: "Import all parts and piece them together. Each part may be styled separately, accept own properties and additional attributes, e.g. \"data\" or \"aria\" (althought they are provided by default).",
+		DescriptionSection { title: "Usage and Anatomy",
 			ExampleCodeAnatomy { code: EXAMPLE_ANATOMY }
 		}
 		DescriptionSection { title: "Api Reference",
 			div { class: "flex flex-col space-y-6",
 				div { class: "flex flex-col gap-4",
-					h4 { class: "font-medium text-lg text-orange-300", "Root Component" }
+					h4 { class: "font-medium text-lg text-orange-300", "PopoverRoot" }
 					p {
-						"Wrapps all parts af the hover card component and manages state. Props "
+						"Wrapps all parts of the popover component and manages state. Props "
 						span { class: "px-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
 							"open"
 						}
@@ -94,7 +86,7 @@ pub fn PopoverPage() -> Element {
 						span { class: "px-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
 							"on_open_change"
 						}
-						span { class: "font-medium", "must go in pair" }
+						span { class: "font-medium", " must go in pair " }
 						"if use "
 						span { class: "font-medium", "controllable state" }
 						". In other case may be used "
@@ -148,16 +140,10 @@ pub fn PopoverPage() -> Element {
 					}
 				}
 				div {
-					h4 { class: "font-medium text-lg text-orange-300", "Trigger Component" }
+					h4 { class: "font-medium text-lg text-orange-300", "PopoverTrigger" }
 					p { "Opens/closes the popover content modal." }
 					PageTabs {
 						props_list: Vec::from([
-								PropsStruct {
-										prop: "disabled".into(),
-										prop_default: "false".into(),
-										prop_type: "bool".into(),
-										tooltip_text: None,
-								},
 								PropsStruct {
 										prop: "attributes".into(),
 										prop_default: "[]".into(),
@@ -166,9 +152,9 @@ pub fn PopoverPage() -> Element {
 								},
 								PropsStruct {
 										prop: "children".into(),
-										prop_default: "-".into(),
+										prop_default: "None".into(),
 										prop_type: "Element".into(),
-										tooltip_text: Some("Required".into()),
+										tooltip_text: None,
 								},
 						]),
 						attrs_list: Vec::from([
@@ -191,7 +177,7 @@ pub fn PopoverPage() -> Element {
 					}
 				}
 				div {
-					h4 { class: "font-medium text-lg text-orange-300", "Content Component" }
+					h4 { class: "font-medium text-lg text-orange-300", "PopoverContent" }
 					p { class: "mb-4", "The component that appears when the trigger pressed." }
 					PageTabs {
 						props_list: Vec::from([
@@ -316,13 +302,13 @@ pub fn PopoverPage() -> Element {
 					}
 				}
 				div {
-					h4 { class: "font-medium text-lg text-orange-300", "Arrow Component" }
+					h4 { class: "font-medium text-lg text-orange-300", "PopoverArrow" }
 					p { class: "mb-4",
-						"An arrow element to render alongside the hover card. Must be rendered inside of "
+						"An arrow element to render alongside the popover. Must be rendered inside of "
 						span { class: "px-1.5 py-0.5 font-mono text-orange-400 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
 							"PopoverContent"
 						}
-						"."
+						". Optional."
 					}
 					PropsTable {
 						content: Vec::from([

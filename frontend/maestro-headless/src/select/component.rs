@@ -12,7 +12,7 @@ use {
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct SelectOptionContext {
-	pub selected: ReadOnlySignal<bool>,
+	pub selected: Memo<bool>,
 	pub disabled: ReadOnlySignal<bool>,
 }
 
@@ -44,7 +44,7 @@ impl SelectContext {
 }
 
 #[derive(Clone, PartialEq, Props)]
-pub struct SelectProps {
+pub struct SelectRootProps {
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
 	pub value: ReadOnlySignal<Option<Vec<String>>>,
 	#[props(optional, default = Vec::new())]
@@ -72,8 +72,8 @@ pub struct SelectProps {
 }
 
 #[component]
-pub fn Select(props: SelectProps) -> Element {
-	let SelectProps { open, default_open, on_open_change, disabled, value, default_value, on_value_change, required, multi, attributes, children } = props;
+pub fn SelectRoot(props: SelectRootProps) -> Element {
+	let SelectRootProps { open, default_open, on_open_change, disabled, value, default_value, on_value_change, required, multi, attributes, children } = props;
 	let is_controlled = use_hook(move || value().is_some());
 	let (value, set_value) =
 		use_controllable_state(UseControllableStateParams { is_controlled, prop: value, default_prop: default_value, on_change: on_value_change });
@@ -99,6 +99,7 @@ pub fn Select(props: SelectProps) -> Element {
 			aria_required: required,
 			"data-disabled": disabled(),
 			"data-required": required,
+			"data-role": "select",
 			role: "combobox",
 			onmounted: move |event: Event<MountedData>| current_ref.set(Some(event.data())),
 			extra_attributes: attributes.clone(),
@@ -114,19 +115,17 @@ pub struct SelectTriggerProps {
 
 	#[props(extends = button, extends = GlobalAttributes)]
 	attributes: Vec<Attribute>,
-	#[props(default = Vec::new())]
-	pub container_attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
 #[component]
 pub fn SelectTrigger(props: SelectTriggerProps) -> Element {
-	let SelectTriggerProps { onclick, attributes, container_attributes, children } = props;
+	let SelectTriggerProps { onclick, attributes, children } = props;
 
 	let context = use_context::<SelectContext>();
 
 	rsx! {
-		PopperAnchor { extra_attributes: container_attributes.clone(),
+		PopperAnchor {
 			Button {
 				id: context.trigger_id.to_string(),
 				disabled: *context.disabled.read(),
@@ -236,10 +235,70 @@ pub fn SelectValue(props: SelectValueProps) -> Element {
 }
 
 #[derive(Props, PartialEq, Clone)]
+pub struct SelectDropdownProps {
+	#[props(default = ESide::Bottom)]
+	side: ESide,
+	#[props(default = 0.0)]
+	side_offset: f32,
+	#[props(default = EAlign::Center)]
+	align: EAlign,
+	#[props(default = 0.0)]
+	align_offset: f32,
+	#[props(default = true)]
+	avoid_collisions: bool,
+	#[props(default = 4.0)]
+	collision_padding: f32,
+
+	#[props(extends = div, extends = GlobalAttributes)]
+	attributes: Vec<Attribute>,
+	children: Element,
+}
+
+#[component]
+pub fn SelectDropdown(props: SelectDropdownProps) -> Element {
+	let SelectDropdownProps { side, side_offset, align, align_offset, avoid_collisions, collision_padding, attributes, children } = props;
+
+	let context = use_context::<SelectContext>();
+
+	let handle_close = use_callback(move |()| {
+		context.set_open.call(false);
+	});
+
+	let mut current_ref = use_signal(|| None::<Rc<MountedData>>);
+
+	use_escape(handle_close, context.open);
+
+	let mut attrs = attributes.clone();
+	attrs.push(Attribute::new("--maestro-select-anchor-height", "var(--maestro-popper-anchor-height)", Some("style"), false));
+	attrs.push(Attribute::new("--maestro-select-anchor-width", "var(--maestro-popper-anchor-width)", Some("style"), false));
+	attrs.push(Attribute::new("--maestro-select-content-height", "var(--maestro-popper-content-height)", Some("style"), false));
+	attrs.push(Attribute::new("--maestro-select-content-width", "var(--maestro-popper-content-width)", Some("style"), false));
+
+	rsx! {
+		Presence { node_ref: current_ref, present: *context.open.read(),
+			PopperContent {
+				role: "listbox",
+				id: context.container_id.to_string(),
+				side,
+				side_offset,
+				align,
+				align_offset,
+				avoid_collisions,
+				collision_padding,
+				aria_labelledby: context.trigger_id.to_string(),
+				aria_hidden: !*context.open.read(),
+				"data-state": if *context.open.read() { "open" } else { "closed" },
+				onmounted: move |event: Event<MountedData>| current_ref.set(Some(event.data())),
+				extra_attributes: attrs.clone(),
+				{children}
+			}
+		}
+	}
+}
+
+#[derive(Props, PartialEq, Clone)]
 pub struct SelectOptionProps {
 	pub value: String,
-	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]
-	pub selected: ReadOnlySignal<bool>,
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]
 	pub disabled: ReadOnlySignal<bool>,
 
@@ -251,9 +310,12 @@ pub struct SelectOptionProps {
 
 #[component]
 pub fn SelectOption(props: SelectOptionProps) -> Element {
-	let SelectOptionProps { value, selected, disabled, attributes, children } = props;
+	let SelectOptionProps { value, disabled, attributes, children } = props;
 
 	let context = use_context::<SelectContext>();
+	let current_value = value.clone();
+	let selected = use_memo(move || context.value.read().contains(&current_value.clone()));
+
 	use_context_provider::<SelectOptionContext>(|| SelectOptionContext { selected, disabled });
 
 	let handle_change = use_callback(move |_| {
@@ -348,62 +410,6 @@ pub fn OptionSelectedIndicator(props: OptionSelectedIndicator) -> Element {
 			"data-role": "indicator",
 			..props.attributes,
 			{indicator}
-		}
-	}
-}
-
-#[derive(Props, PartialEq, Clone)]
-pub struct SelectDropdownProps {
-	#[props(default = ESide::Bottom)]
-	side: ESide,
-	#[props(default = 0.0)]
-	side_offset: f32,
-	#[props(default = EAlign::Center)]
-	align: EAlign,
-	#[props(default = 0.0)]
-	align_offset: f32,
-	#[props(default = true)]
-	avoid_collisions: bool,
-	#[props(default = 4.0)]
-	collision_padding: f32,
-
-	#[props(extends = div, extends = GlobalAttributes)]
-	attributes: Vec<Attribute>,
-	children: Element,
-}
-
-#[component]
-pub fn SelectDropdown(props: SelectDropdownProps) -> Element {
-	let SelectDropdownProps { side, side_offset, align, align_offset, avoid_collisions, collision_padding, attributes, children } = props;
-
-	let context = use_context::<SelectContext>();
-
-	let handle_close = use_callback(move |()| {
-		context.set_open.call(false);
-	});
-
-	let mut current_ref = use_signal(|| None::<Rc<MountedData>>);
-
-	use_escape(handle_close, context.open);
-
-	rsx! {
-		Presence { node_ref: current_ref, present: *context.open.read(),
-			PopperContent {
-				role: "listbox",
-				id: context.container_id.to_string(),
-				side,
-				side_offset,
-				align,
-				align_offset,
-				avoid_collisions,
-				collision_padding,
-				aria_labelledby: context.trigger_id.to_string(),
-				aria_hidden: !*context.open.read(),
-				"data-state": if *context.open.read() { "open" } else { "closed" },
-				onmounted: move |event: Event<MountedData>| current_ref.set(Some(event.data())),
-				extra_attributes: attributes.clone(),
-				{children}
-			}
 		}
 	}
 }

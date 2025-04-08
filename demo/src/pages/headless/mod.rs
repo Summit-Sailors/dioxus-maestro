@@ -11,21 +11,21 @@ use {
 	},
 	dioxus_logger::tracing::info,
 	maestro_headless::{
-		accordion::{Accordion, AccordionContent, AccordionHeader, AccordionItem, AccordionTrigger, AccordionVariant},
+		accordion::{AccordionContent, AccordionHeader, AccordionItem, AccordionRoot, AccordionTrigger, AccordionVariant},
 		button::Button,
-		checkbox::{Checkbox, CheckboxIndicator},
-		collapsible::{Collapsible, CollapsibleContent, CollapsibleTrigger},
-		dialog::{Dialog, DialogClose, DialogContent, DialogDescription, DialogOverlay, DialogTitle, DialogTrigger},
-		hover_card::{HoverCard, HoverCardArrow, HoverCardContent, HoverCardTrigger},
-		popover::{Popover, PopoverArrow, PopoverContent, PopoverTrigger},
-		range::{Range, RangeThumb, RangeTrack, RangeTrackWrapper},
-		select::{OptionSelectedIndicator, Select, SelectDropdown, SelectIcon, SelectOption, SelectTrigger, SelectValue},
+		checkbox::{CheckboxIndicator, CheckboxRoot},
+		collapsible::{CollapsibleContent, CollapsibleRoot, CollapsibleTrigger},
+		dialog::{DialogClose, DialogContent, DialogDescription, DialogOverlay, DialogRoot, DialogTitle, DialogTrigger},
+		hover_card::{HoverCardArrow, HoverCardContent, HoverCardRoot, HoverCardTrigger},
+		popover::{PopoverArrow, PopoverContent, PopoverRoot, PopoverTrigger},
+		range::{Range, RangeRoot, RangeThumb, RangeTrack},
+		select::{OptionSelectedIndicator, SelectDropdown, SelectIcon, SelectOption, SelectRoot, SelectTrigger, SelectValue},
 		shared::{EAlign, EOrientation, ESide},
-		switch::{Switch, SwitchIndicator},
-		tabs::{Tabs, TabsContent, TabsList, TabsTrigger},
+		switch::{SwitchIndicator, SwitchRoot},
+		tabs::{TabsContent, TabsList, TabsRoot, TabsTrigger},
 		toggle::Toggle,
-		toggle_group::{ToggleGroup, ToggleGroupItem},
-		tooltip::{Tooltip, TooltipArrow, TooltipContent, TooltipProvider, TooltipTrigger},
+		toggle_group::{ToggleGroupItem, ToggleGroupRoot},
+		tooltip::{Tooltip, TooltipArrow, TooltipContent, TooltipRoot, TooltipTrigger},
 	},
 	maestro_toast::{ctx::use_toast, toast_info::ToastInfo, toast_position::EToastPosition},
 	std::time::Duration,
@@ -164,14 +164,14 @@ pub fn HeadlessDemo() -> Element {
 		}
 
 		// buttons section
-		ComponentSection { title: "Dialog", description: "Dialog states",
+		ComponentSection { title: "DialogRoot", description: "DialogRoot states",
 			div {
 				id: "maestro-ui-buttons",
 				class: "flex flex-wrap gap-6 md:w-4/5 mx-auto w-full",
 
-				Dialog {
+				DialogRoot {
 					DialogTrigger { class: "rounded-full w-fit px-3 py-2 h-12 focus-visible:ring-2 focus-visible:ring-offset-2 outline-none transition-colors bg-slate-200 border border-slate-200 text-slate-900 hover:bg-slate-900 hover:text-slate-200 focus-visible:ring-slate-200 focus-visible:ring-offset-black focus-visible:bg-slate-200 focus-visible:text-slate-900 aria-[disabled=true]:opacity-50 aria-[disabled=true]:pointer-events-none data-[pending=true]:bg-slate-500",
-						"Open Dialog"
+						"Open DialogRoot"
 					}
 					DialogOverlay { class: "w-full h-full fixed top-0 left-0 bottom-0 right-0 bg-slate-900/20 inset-0 backdrop-blur-sm z-[100]" }
 					DialogContent { class: "w-full h-96 max-w-lg max-h-[95vh] fixed z-[110] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded bg-slate-100 shadow border border-slate-600 flex flex-col gap-6 px-6 py-8",
@@ -189,11 +189,11 @@ pub fn HeadlessDemo() -> Element {
 					}
 				}
 
-				Dialog {
+				DialogRoot {
 					open: popup_open(),
 					on_open_change: move |value: bool| popup_open.set(value),
 					DialogTrigger { class: "rounded-full w-fit px-3 py-2 h-12 focus-visible:ring-2 focus-visible:ring-offset-2 outline-none transition-colors bg-orange-600 border border-slate-200 text-slate-100 hover:bg-orange-800  focus-visible:ring-orange-200 focus-visible:ring-offset-black focus-visible:bg-orange-800 aria-[disabled=true]:opacity-50 aria-[disabled=true]:pointer-events-none data-[pending=true]:bg-slate-500",
-						"Open Dialog"
+						"Open DialogRoot"
 					}
 					DialogOverlay { class: "w-full h-full fixed top-0 left-0 bottom-0 right-0 z-[100] bg-slate-900/20 inset-0 backdrop-blur-sm data-[state=closed]:animate-fade-out data-[state=closed]:duration-300 data-[state=open]:animate-fade-in data-[state=open]:duration-100" }
 					DialogContent { class: "w-full h-96  max-w-lg fixed z-[110] max-h-[95vh] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded bg-slate-100 shadow border border-slate-600 flex flex-col gap-6 px-6 py-8 data-[state=closed]:animate-fade-out data-[state=closed]:duration-300 data-[state=open]:animate-fade-in data-[state=open]:duration-100",
@@ -218,9 +218,8 @@ pub fn HeadlessDemo() -> Element {
 				}
 			}
 		}
-
 		div { class: "flex gap-6",
-			Select {
+			RangeRoot {
 				value: selected(),
 				on_value_change: move |value: Vec<String>| { selected.set(value) },
 				class: "relative w-fit",
@@ -238,7 +237,6 @@ pub fn HeadlessDemo() -> Element {
 					SelectOption {
 						key: 1,
 						value: "apple",
-						selected: selected().contains(&"apple".to_string()),
 						class: "flex items-center justify-between gap-4 px-2 py-3 hover:bg-slate-700 focus-visible::bg-slate-700 ",
 						"Apple"
 						OptionSelectedIndicator { class: "w-4 h-4" }
@@ -246,7 +244,6 @@ pub fn HeadlessDemo() -> Element {
 					SelectOption {
 						key: 2,
 						value: "banana",
-						selected: selected().contains(&"banana".to_string()),
 						class: "flex items-center justify-between gap-4 px-2 py-3 hover:bg-slate-700 focus-visible::bg-slate-700 ",
 						"Banana"
 						OptionSelectedIndicator { class: "w-4 h-4" }
@@ -254,14 +251,12 @@ pub fn HeadlessDemo() -> Element {
 					SelectOption {
 						key: 3,
 						value: "ice-cream",
-						selected: selected().contains(&"ice-cream".to_string()),
 						class: "flex items-center justify-between gap-4 px-2 py-3 hover:bg-slate-700 focus-visible::bg-slate-700 ",
 						"Ice-Cream"
 						OptionSelectedIndicator { class: "w-4 h-4" }
 					}
 					SelectOption {
 						key: 4,
-						selected: selected().contains(&"coffee".to_string()),
 						value: "coffee",
 						class: "flex items-center justify-between gap-4 px-2 py-3 hover:bg-slate-700 focus-visible::bg-slate-700 ",
 						"Coffee"
@@ -269,7 +264,6 @@ pub fn HeadlessDemo() -> Element {
 					}
 					SelectOption {
 						key: 5,
-						selected: selected().contains(&"salt".to_string()),
 						value: "salt",
 						disabled: true,
 						class: "flex items-center justify-between gap-4 px-2 py-3 hover:bg-slate-700 focus-visible::bg-slate-700 ",
@@ -278,7 +272,6 @@ pub fn HeadlessDemo() -> Element {
 					}
 					SelectOption {
 						key: 6,
-						selected: selected().contains(&"chocolatte".to_string()),
 						value: "chocolatte",
 						class: "flex items-center justify-between gap-4 px-2 py-3 hover:bg-slate-700 focus-visible::bg-slate-700 ",
 						"Chocolatte"
@@ -286,7 +279,7 @@ pub fn HeadlessDemo() -> Element {
 					}
 				}
 			}
-			Select {
+			SelectRoot {
 				multi: true,
 				value: multi_selected(),
 				on_value_change: move |value: Vec<String>| { multi_selected.set(value) },
@@ -304,7 +297,6 @@ pub fn HeadlessDemo() -> Element {
 					class: "rounded bg-slate-900 text-slate-200 border border-slate-700 z-10 px-2 py-4 [&_*]:transition-all w-60",
 					SelectOption {
 						value: "apple",
-						selected: multi_selected().contains(&"apple".to_string()),
 						class: "flex items-center justify-between gap-4 px-2 py-3 hover:bg-slate-700 focus-visible::bg-slate-700 ",
 						"Apple"
 						OptionSelectedIndicator { class: "w-4 h-4" }
@@ -312,7 +304,6 @@ pub fn HeadlessDemo() -> Element {
 					SelectOption {
 						key: 1,
 						value: "banana",
-						selected: multi_selected().contains(&"banana".to_string()),
 						class: "flex items-center justify-between gap-4 px-2 py-3 hover:bg-slate-700 focus-visible::bg-slate-700 ",
 						"Banana"
 						OptionSelectedIndicator { class: "w-4 h-4" }
@@ -320,14 +311,12 @@ pub fn HeadlessDemo() -> Element {
 					SelectOption {
 						key: 2,
 						value: "ice-cream",
-						selected: multi_selected().contains(&"ice-cream".to_string()),
 						class: "flex items-center justify-between gap-4 px-2 py-3 hover:bg-slate-700 focus-visible::bg-slate-700 ",
 						"Ice-Cream"
 						OptionSelectedIndicator { class: "w-4 h-4" }
 					}
 					SelectOption {
 						key: 3,
-						selected: multi_selected().contains(&"coffee".to_string()),
 						value: "coffee",
 						class: "flex items-center justify-between gap-4 px-2 py-3 hover:bg-slate-700 focus-visible::bg-slate-700 ",
 						"Coffee"
@@ -335,7 +324,6 @@ pub fn HeadlessDemo() -> Element {
 					}
 					SelectOption {
 						key: 4,
-						selected: multi_selected().contains(&"salt".to_string()),
 						value: "salt",
 						disabled: true,
 						class: "flex items-center justify-between gap-4 px-2 py-3 hover:bg-slate-700 focus-visible::bg-slate-700 ",
@@ -344,7 +332,6 @@ pub fn HeadlessDemo() -> Element {
 					}
 					SelectOption {
 						key: 5,
-						selected: multi_selected().contains(&"chocolatte".to_string()),
 						value: "chocolatte",
 						class: "flex items-center justify-between gap-4 px-2 py-3 hover:bg-slate-700 focus-visible::bg-slate-700 ",
 						"Chocolatte"
@@ -354,7 +341,7 @@ pub fn HeadlessDemo() -> Element {
 			}
 		}
 		div { class: "flex gap-6",
-			Accordion {
+			AccordionRoot {
 				collapsible: false,
 				default_value: Vec::from(["1".into()]),
 				class: "relative w-48 flex flex-col px-4 py-2",
@@ -398,7 +385,7 @@ pub fn HeadlessDemo() -> Element {
 				}
 			}
 
-			Accordion {
+			AccordionRoot {
 				default_value: Vec::from(["1".into()]),
 				variant: AccordionVariant::Multiple,
 				class: "relative w-48 flex flex-col",
@@ -454,7 +441,7 @@ pub fn HeadlessDemo() -> Element {
 			}
 		}
 		div { class: "flex gap-6",
-			ToggleGroup {
+			ToggleGroupRoot {
 				class: "flex justify-center items-center rounded overflow-hidden border border-slate-700",
 				value: group_toggle_value(),
 				on_value_chenge: move |value: String| group_toggle_value.set(value),
@@ -477,7 +464,7 @@ pub fn HeadlessDemo() -> Element {
 		}
 		div { class: "flex gap-6",
 			div { class: "flex justify-center items-center gap-3",
-				Checkbox {
+				CheckboxRoot {
 					class: "w-10 h-10 rounded flex items-center justify-center border border-slate-100",
 					value: group_toggle_value(),
 					name: "box",
@@ -487,9 +474,9 @@ pub fn HeadlessDemo() -> Element {
 			}
 		}
 		div { class: "flex gap-6",
-			Collapsible { class: "flex flex-col data-[state=open]:gap-4 gap-0",
+			CollapsibleRoot { class: "flex flex-col data-[state=open]:gap-4 gap-0",
 				div { class: "flex justify-between items-center gap-3 px-6 py-3",
-					span { class: "text-slate-100", "Collapsible" }
+					span { class: "text-slate-100", "CollapsibleRoot" }
 					CollapsibleTrigger { class: "w-10 h-10 rounded-full flex items-center justify-center border border-slate-300 text-slate-300",
 						Icon { icon: LdSmile }
 					}
@@ -500,12 +487,12 @@ pub fn HeadlessDemo() -> Element {
 			}
 		}
 		div { class: "flex gap-6",
-			Switch { class: "flex items-center px-1 py-1 rounded-full h-6 w-12 bg-teal-200 data-[state=checked]:bg-teal-400 border border-teal-600",
+			SwitchRoot { class: "flex items-center px-1 py-1 rounded-full h-6 w-12 bg-teal-200 data-[state=checked]:bg-teal-400 border border-teal-600",
 				SwitchIndicator { class: "relative translate-x-0.5 data-[state=checked]:translate-x-5 transition ease-linear rounded-full w-5 h-5 bg-teal-600" }
 			}
 		}
 		div { class: "pb-44 flex gap-6",
-			Popover {
+			PopoverRoot {
 				class: "mx-auto w-64",
 				open: is_open(),
 				on_open_change: move |value: bool| {
@@ -529,7 +516,7 @@ pub fn HeadlessDemo() -> Element {
 			}
 		}
 		div { class: "py-6",
-			Tabs { default_value: "1", class: "flex flex-col gap-4",
+			TabsRoot { default_value: "1", class: "flex flex-col gap-4",
 
 				TabsList { class: "w-full flex items-center gap-6",
 					TabsTrigger {
@@ -562,7 +549,7 @@ pub fn HeadlessDemo() -> Element {
 		}
 
 		div { class: "pb-20",
-			TooltipProvider { class: "w-fit mx-auto",
+			TooltipRoot { class: "w-fit mx-auto",
 				Tooltip { class: "w-fit group",
 					TooltipTrigger { class: "mx-auto w-12 h-12 bg-slate-200 text-slate-800 rounded-full",
 						"+"
@@ -586,7 +573,7 @@ pub fn HeadlessDemo() -> Element {
 		}
 
 		div { class: "",
-			HoverCard { class: "w-fit",
+			HoverCardRoot { class: "w-fit",
 				HoverCardTrigger { class: "mx-auto w-12 h-12 bg-slate-200 text-slate-800 rounded-full",
 					"*"
 				}
@@ -604,34 +591,34 @@ pub fn HeadlessDemo() -> Element {
 		}
 
 		div { class: "py-10 flex flex-col gap-8",
-			Range {
+			RangeRoot {
 				class: "w-52 flex items-center",
 				value: range_1(),
 				on_value_change: move |v| { range_1.set(v) },
-				RangeTrackWrapper { class: "flex-1 bg-slate-600 rounded-full h-1",
-					RangeTrack { class: "flex-1 bg-slate-300 rounded-full h-1" }
+				RangeTrack { class: "flex-1 bg-slate-600 rounded-full h-1",
+					Range { class: "flex-1 bg-slate-300 rounded-full h-1" }
 					RangeThumb { class: "w-5 h-5 rounded-full bg-slate-100" }
 				}
 			}
-			Range {
+			RangeRoot {
 				class: "w-1 flex items-center",
 				orientation: EOrientation::Vertical,
 				max: 200.0,
 				step: 10.0,
 				default_value: Vec::from([40.0]),
-				RangeTrackWrapper { class: "flex-1 bg-slate-600 rounded-full h-52",
-					RangeTrack { class: "flex-1 bg-slate-300 rounded-full" }
+				RangeTrack { class: "flex-1 bg-slate-600 rounded-full h-52",
+					Range { class: "flex-1 bg-slate-300 rounded-full" }
 					RangeThumb { class: "w-5 h-5 rounded-full bg-slate-100" }
 				}
 			}
 
-			Range {
+			RangeRoot {
 				class: "w-52 flex items-center",
 				value: range_3(),
 				on_value_change: move |v| { range_3.set(v) },
 				min_steps_between_thumbs: 10.0,
-				RangeTrackWrapper { class: "flex-1 bg-slate-600 rounded-full h-[3px]",
-					RangeTrack { class: "flex-1 bg-slate-300 rounded-full h-1" }
+				RangeTrack { class: "flex-1 bg-slate-600 rounded-full h-[3px]",
+					Range { class: "flex-1 bg-slate-300 rounded-full h-1" }
 					RangeThumb { class: "w-3 h-3 rounded-full bg-slate-100" }
 					RangeThumb { class: "w-3 h-3 rounded-full bg-blue-100" }
 				}

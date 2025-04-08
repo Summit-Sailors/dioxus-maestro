@@ -25,7 +25,7 @@ impl CollapsibleContext {
 }
 
 #[derive(Props, Clone, PartialEq)]
-pub struct CollapsibleProps {
+pub struct CollapsibleRootProps {
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
 	pub open: ReadOnlySignal<Option<bool>>,
 	#[props(optional, default = false)]
@@ -43,8 +43,8 @@ pub struct CollapsibleProps {
 }
 
 #[component]
-pub fn Collapsible(props: CollapsibleProps) -> Element {
-	let CollapsibleProps { open, default_open, on_open_change, disabled, children, attributes } = props;
+pub fn CollapsibleRoot(props: CollapsibleRootProps) -> Element {
+	let CollapsibleRootProps { open, default_open, on_open_change, disabled, children, attributes } = props;
 	let is_controlled = use_hook(move || open().is_some());
 	let (open, set_open) =
 		use_controllable_state(UseControllableStateParams { is_controlled, prop: open, default_prop: default_open, on_change: on_open_change });
@@ -67,7 +67,6 @@ pub fn Collapsible(props: CollapsibleProps) -> Element {
 pub struct CollapsibleTriggerProps {
 	#[props(extends = GlobalAttributes, extends = button)]
 	pub attributes: Vec<Attribute>,
-
 	pub children: Element,
 }
 

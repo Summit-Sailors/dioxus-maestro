@@ -2,7 +2,7 @@ use {
 	dioxus::prelude::*,
 	dioxus_free_icons::{Icon, icons::bs_icons::BsInfo},
 	maestro_headless::{
-		popover::{Popover, PopoverArrow, PopoverContent, PopoverTrigger},
+		popover::{PopoverArrow, PopoverContent, PopoverRoot, PopoverTrigger},
 		shared::{EAlign, ESide},
 	},
 };
@@ -47,7 +47,7 @@ pub fn PropsTable(props: TableProps) -> Element {
 							if let Some(text) = tooltip_text {
 								{
 										rsx! {
-											Popover { class: "w-fit",
+											PopoverRoot { class: "w-fit",
 												PopoverTrigger { class: "w-4 h-4 bg-neutral-900 text-neutral-100 rounded-full border border-orange-600/60 flex items-center justify-center focus-visible:outline-none",
 													Icon { icon: BsInfo {} }
 												}

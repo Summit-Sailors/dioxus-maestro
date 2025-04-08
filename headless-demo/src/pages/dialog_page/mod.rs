@@ -10,16 +10,10 @@ use {
 	dioxus::prelude::*,
 	dioxus_free_icons::{
 		Icon,
-		icons::{
-			bs_icons::{BsCheckLg, BsThreeDots},
-			ld_icons::LdX,
-		},
+		icons::{bs_icons::BsThreeDots, ld_icons::LdX},
 	},
-	maestro_headless::{
-		collapsible::{Collapsible, CollapsibleContent, CollapsibleTrigger},
-		dialog::{Dialog, DialogBody, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogTitle, DialogTrigger},
-		shared::EOrientation,
-		tabs::{Tabs, TabsContent, TabsList, TabsTrigger},
+	maestro_headless::dialog::{
+		DialogBody, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogRoot, DialogTitle, DialogTrigger,
 	},
 };
 
@@ -34,13 +28,14 @@ pub fn DialogPage() -> Element {
 
 	rsx! {
 		DescriptionSection {
+			class: "[&>h3]:lg:text-2xl [&>h3]:text-xl",
 			title: "Dialog",
-			description: "A window overlaid on either the primary window or another dialog window, rendering the content underneath inert.",
+			description: "A component that displays a modal window to present content or interactions.",
 		}
 		section { class: "container flex flex-col px-4 lg:py-6 py-4 ",
 			div { class: "grow flex flex-col justify-center items-center rounded-md border border-neutral-800 bg-neutral-950 overflow-hidden",
 				div { class: "p-6 flex grow items-center justify-center w-full",
-					Dialog {
+					DialogRoot {
 						DialogTrigger { class: "rounded-full w-10 h-10 flex items-center justify-center focus-visible:ring-2 focus-visible:ring-offset-2 outline-none transition-colors bg-neutral-900 border border-neutral-300 text-orange-600 hover:border-neutral-100 focus-visible:ring-neutral-300 focus-visible:ring-offset-neutral-900",
 							Icon { icon: BsThreeDots }
 						}
@@ -85,17 +80,15 @@ pub fn DialogPage() -> Element {
 		DescriptionSection { title: "Supports",
 			Features { features: features_list.clone() }
 		}
-		DescriptionSection {
-			title: "Usage and Anatomy",
-			description: "Import all parts and piece them together. Each part may be styled separately, accept own properties and additional attributes, e.g. \"data\" or \"aria\" (althought they are provided by default).",
+		DescriptionSection { title: "Usage and Anatomy",
 			ExampleCodeAnatomy { code: EXAMPLE_ANATOMY }
 		}
 		DescriptionSection { title: "Api Reference",
 			div { class: "flex flex-col space-y-6",
 				div { class: "flex flex-col gap-4",
-					h4 { class: "font-medium text-lg text-orange-300", "Root Component" }
+					h4 { class: "font-medium text-lg text-orange-300", "DialogRoot" }
 					p {
-						"Wrapps all parts af the collapsible and manages state. Props "
+						"Wrapps all parts of the dialog and manages state. Props "
 						span { class: "px-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
 							"open"
 						}
@@ -103,10 +96,10 @@ pub fn DialogPage() -> Element {
 						span { class: "px-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
 							"on_open_change"
 						}
-						span { class: "font-medium", "must go in pair" }
-						"if use "
+						span { class: "font-medium", " must go in pair" }
+						"in case of useage "
 						span { class: "font-medium", "controllable state" }
-						". In other case may be used "
+						". Otherwise may be used "
 						span { class: "px-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
 							"default_open"
 						}
@@ -152,7 +145,7 @@ pub fn DialogPage() -> Element {
 					}
 				}
 				div {
-					h4 { class: "font-medium text-lg text-orange-300", "Overlay Component" }
+					h4 { class: "font-medium text-lg text-orange-300", "DialogOverlay" }
 					p {
 						"A layer that covers the whole screen when dialog is opened. Prevents body from scrolling."
 					}
@@ -181,7 +174,7 @@ pub fn DialogPage() -> Element {
 					}
 				}
 				div {
-					h4 { class: "font-medium text-lg text-orange-300", "Trigger Component" }
+					h4 { class: "font-medium text-lg text-orange-300", "DialogTrigger" }
 					p { "Opens/closes the dialog." }
 					PageTabs {
 						props_list: Vec::from([
@@ -199,9 +192,9 @@ pub fn DialogPage() -> Element {
 								},
 								PropsStruct {
 										prop: "children".into(),
-										prop_default: "-".into(),
+										prop_default: "None".into(),
 										prop_type: "Element".into(),
-										tooltip_text: Some("Required".into()),
+										tooltip_text: None,
 								},
 						]),
 						attrs_list: Vec::from([
@@ -234,7 +227,7 @@ pub fn DialogPage() -> Element {
 					}
 				}
 				div {
-					h4 { class: "font-medium text-lg text-orange-300", "Content Component" }
+					h4 { class: "font-medium text-lg text-orange-300", "DialogContent" }
 					p { class: "mb-4", "Contains a content (elements) of the dialog. Traps focus." }
 					PageTabs {
 						props_list: Vec::from([
@@ -266,7 +259,7 @@ pub fn DialogPage() -> Element {
 					}
 				}
 				div {
-					h4 { class: "font-medium text-lg text-orange-300", "Header Component" }
+					h4 { class: "font-medium text-lg text-orange-300", "DialogHeader" }
 					p { class: "mb-4",
 						"Contains a heading section. May include "
 						span { class: "px-1.5 py-0.5 font-mono text-orange-400 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
@@ -280,7 +273,11 @@ pub fn DialogPage() -> Element {
 						span { class: "px-1.5 py-0.5 font-mono text-orange-400 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
 							"DialogClose"
 						}
-						"."
+						". Must be inside of "
+						span { class: "px-1.5 py-0.5 font-mono text-orange-400 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
+							"DialogContent"
+						}
+						". Optional."
 					}
 					PropsTable {
 						content: Vec::from([
@@ -300,8 +297,8 @@ pub fn DialogPage() -> Element {
 					}
 				}
 				div {
-					h4 { class: "font-medium text-lg text-orange-300", "Title Component" }
-					p { class: "mb-4", "Contains a title." }
+					h4 { class: "font-medium text-lg text-orange-300", "DialogTitle" }
+					p { class: "mb-4", "Contains a title. Optional." }
 					PropsTable {
 						content: Vec::from([
 								PropsStruct {
@@ -320,8 +317,8 @@ pub fn DialogPage() -> Element {
 					}
 				}
 				div {
-					h4 { class: "font-medium text-lg text-orange-300", "Description Component" }
-					p { class: "mb-4", "Contains a description section." }
+					h4 { class: "font-medium text-lg text-orange-300", "DialogDescription" }
+					p { class: "mb-4", "Contains a description section. Optional." }
 					PropsTable {
 						content: Vec::from([
 								PropsStruct {
@@ -340,8 +337,14 @@ pub fn DialogPage() -> Element {
 					}
 				}
 				div {
-					h4 { class: "font-medium text-lg text-orange-300", "Body Component" }
-					p { class: "mb-4", "Section for a main content." }
+					h4 { class: "font-medium text-lg text-orange-300", "DialogBody" }
+					p { class: "mb-4",
+						"Section for a main content. Must be wrapped by "
+						span { class: "px-1.5 py-0.5 font-mono text-orange-400 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
+							"DialogContent"
+						}
+						" component. Optional."
+					}
 					PropsTable {
 						content: Vec::from([
 								PropsStruct {
@@ -360,13 +363,17 @@ pub fn DialogPage() -> Element {
 					}
 				}
 				div {
-					h4 { class: "font-medium text-lg text-orange-300", "Footer Component" }
+					h4 { class: "font-medium text-lg text-orange-300", "DialogFooter" }
 					p { class: "mb-4",
 						"The most bottom part of the content. May contain "
 						span { class: "px-1.5 py-0.5 font-mono text-orange-400 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
 							"DialogClose"
 						}
-						"."
+						". Must live in "
+						span { class: "px-1.5 py-0.5 font-mono text-orange-400 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
+							"DialogContent"
+						}
+						" component. Optional."
 					}
 					PropsTable {
 						content: Vec::from([
@@ -386,8 +393,8 @@ pub fn DialogPage() -> Element {
 					}
 				}
 				div {
-					h4 { class: "font-medium text-lg text-orange-300", "Close Component" }
-					p { class: "mb-4", "Responsible for closing the popup." }
+					h4 { class: "font-medium text-lg text-orange-300", "DialogClose" }
+					p { class: "mb-4", "Responsible for closing the popup. Optional." }
 					PropsTable {
 						content: Vec::from([
 								PropsStruct {

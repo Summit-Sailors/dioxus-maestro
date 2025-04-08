@@ -3,7 +3,7 @@ use {
 		layout::Layout,
 		pages::{
 			AccordionPage, AspectRatioPage, AvatarPage, ButtonPage, CheckboxPage, CollapsiblePage, DialogPage, Home, HoverCardPage, PopoverPage, ProgressBarPage,
-			RadioPage,
+			RadioPage, RangePage, SelectPage, SeparatorPage, SwitchPage, TabsPage, TogglePage, TooltipPage,
 		},
 	},
 	dioxus::prelude::*,
@@ -36,8 +36,22 @@ pub enum Route {
 	PopoverPage {},
 	#[route("/progress")]
 	ProgressBarPage {},
-	#[route("/radion-group")]
+	#[route("/radio-group")]
 	RadioPage {},
+	#[route("/range")]
+	RangePage {},
+	#[route("/select")]
+	SelectPage {},
+	#[route("/separator")]
+	SeparatorPage {},
+	#[route("/switch")]
+	SwitchPage {},
+	#[route("/tabs")]
+	TabsPage {},
+	#[route("/toggle-&-group")]
+	TogglePage,
+	#[route("/tooltip")]
+	TooltipPage,
 }
 
 impl Route {
@@ -52,9 +66,16 @@ impl Route {
 			Route::CollapsiblePage {} => "Collapsible",
 			Route::DialogPage {} => "Dialog",
 			Route::HoverCardPage {} => "Hover Card",
-			Route::PopoverPage {} => "Popover",
+			Route::PopoverPage {} => "PopoverRoot",
 			Route::ProgressBarPage {} => "Progress Bar",
 			Route::RadioPage {} => "Radio Group",
+			Route::RangePage {} => "Range",
+			Route::SelectPage {} => "Range",
+			Route::SeparatorPage {} => "Separator",
+			Route::SwitchPage {} => "Switch",
+			Route::TabsPage {} => "Tabs",
+			Route::TogglePage {} => "Toggle & ToggleGroup",
+			Route::TooltipPage {} => "Tooltip",
 		}
 	}
 }

@@ -25,7 +25,6 @@ impl RadioContext {
 #[derive(Props, PartialEq, Debug, Clone)]
 pub struct RadioProps {
 	pub value: ReadOnlySignal<String>,
-	pub name: String,
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
 	pub checked: ReadOnlySignal<Option<bool>>,
 	#[props(optional, default = false)]
@@ -47,7 +46,7 @@ pub struct RadioProps {
 
 #[component]
 pub fn Radio(props: RadioProps) -> Element {
-	let RadioProps { disabled, value, name, checked, default_checked, attributes, extra_attributes, on_change, children, required } = props;
+	let RadioProps { disabled, value, checked, default_checked, attributes, extra_attributes, on_change, children, required } = props;
 
 	let is_controlled = use_hook(move || checked().is_some());
 	let (checked, set_checked) = use_controllable_state(UseControllableStateParams { is_controlled, prop: checked, default_prop: default_checked, on_change });
@@ -67,7 +66,6 @@ pub fn Radio(props: RadioProps) -> Element {
 				tabindex: -1,
 				r#type: "radio",
 				checked: checked(),
-				name,
 				disabled: disabled(),
 				aria_hidden: true,
 				required,
@@ -76,8 +74,9 @@ pub fn Radio(props: RadioProps) -> Element {
 				r#type: "button",
 				tabindex: if disabled() { "-1" } else { "0" },
 				role: "radio",
-				aria_checked: checked(),
-				aria_required: required,
+				aria_checked: checked().then_some(Some(true)),
+				aria_required: required.then_some(Some(true)),
+				"data-required": required.then_some(Some(true)),
 				"data-state": if checked() { "checked" } else { "unchecked" },
 				disabled,
 				pointer_events: disabled().then_some(Some("none")),

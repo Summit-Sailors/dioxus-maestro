@@ -9,15 +9,8 @@ use {
 	async_std::task::sleep,
 	consts::EXAMPLE,
 	dioxus::prelude::*,
-	dioxus_free_icons::{
-		Icon,
-		icons::{bs_icons::BsCheckLg, ld_icons::LdLoader},
-	},
-	maestro_headless::{
-		button::Button,
-		collapsible::{Collapsible, CollapsibleContent, CollapsibleTrigger},
-		shared::EOrientation,
-	},
+	dioxus_free_icons::{Icon, icons::ld_icons::LdLoader},
+	maestro_headless::button::Button,
 	std::time::Duration,
 };
 
@@ -30,6 +23,7 @@ pub fn ButtonPage() -> Element {
 
 	rsx! {
 		DescriptionSection {
+			class: "[&>h3]:lg:text-2xl [&>h3]:text-xl",
 			title: "Button",
 			description: "Button component with different states, such as pending and disabled.",
 		}
@@ -59,7 +53,6 @@ pub fn ButtonPage() -> Element {
 					}
 				}
 				ExampleCodeCollapsible { code: EXAMPLE }
-
 			}
 		}
 		DescriptionSection { title: "Supports",
@@ -85,12 +78,12 @@ pub fn ButtonPage() -> Element {
 						span { class: "px-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
 							"pending"
 						}
-						span { class: "font-medium", "must go in pair" }
-						"allows to prevent interaction with button. For example, "
-						span { class: "font-medium", "pending" }
-						" is usefull for indicating long tasks."
+						" allow to prevent interaction with the button. For example, "
+						span { class: "fpx-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
+							"pending"
+						}
+						" is usefull for indicating some long tasks (like calling API)."
 					}
-
 					PageTabs {
 						props_list: Vec::from([
 								PropsStruct {
@@ -182,9 +175,9 @@ pub fn ButtonPage() -> Element {
 								},
 								PropsStruct {
 										prop: "children".into(),
-										prop_default: "-".into(),
+										prop_default: "None".into(),
 										prop_type: "Element".into(),
-										tooltip_text: Some("Required".into()),
+										tooltip_text: None,
 								},
 						]),
 						attrs_list: Vec::from([

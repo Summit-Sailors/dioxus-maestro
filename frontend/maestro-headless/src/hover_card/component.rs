@@ -39,7 +39,7 @@ impl HoverCardContext {
 }
 
 #[derive(Props, PartialEq, Clone)]
-pub struct HoverCardProps {
+pub struct HoverCardRootProps {
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
 	pub open: ReadOnlySignal<Option<bool>>,
 	#[props(optional, default = false)]
@@ -58,8 +58,8 @@ pub struct HoverCardProps {
 }
 
 #[component]
-pub fn HoverCard(props: HoverCardProps) -> Element {
-	let HoverCardProps { open, default_open, on_open_change, open_delay, close_delay, children, attributes } = props;
+pub fn HoverCardRoot(props: HoverCardRootProps) -> Element {
+	let HoverCardRootProps { open, default_open, on_open_change, open_delay, close_delay, children, attributes } = props;
 	let is_controlled = use_hook(move || open().is_some());
 	let (open, set_open) =
 		use_controllable_state(UseControllableStateParams { is_controlled, prop: open, default_prop: default_open, on_change: on_open_change });
@@ -116,6 +116,7 @@ pub fn HoverCard(props: HoverCardProps) -> Element {
 pub struct HoverCardTriggerProps {
 	#[props(extends = GlobalAttributes, extends = a)]
 	pub attributes: Vec<Attribute>,
+	#[props(optional)]
 	pub children: Element,
 }
 

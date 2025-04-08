@@ -36,7 +36,7 @@ impl DialogContext {
 }
 
 #[derive(Props, Clone, PartialEq)]
-pub struct DialogProps {
+pub struct DialogRootProps {
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
 	pub open: ReadOnlySignal<Option<bool>>,
 	#[props(optional, default = false)]
@@ -49,8 +49,8 @@ pub struct DialogProps {
 }
 
 #[component]
-pub fn Dialog(props: DialogProps) -> Element {
-	let DialogProps { open, default_open, on_close, on_open_change, children } = props;
+pub fn DialogRoot(props: DialogRootProps) -> Element {
+	let DialogRootProps { open, default_open, on_close, on_open_change, children } = props;
 
 	let is_controlled = use_hook(move || open().is_some());
 	let (open, set_open) =
@@ -80,6 +80,7 @@ pub struct DialogTriggerProps {
 	disabled: ReadOnlySignal<bool>,
 	#[props(extends = GlobalAttributes, extends = button)]
 	pub attributes: Vec<Attribute>,
+	#[props(optional)]
 	pub children: Element,
 }
 

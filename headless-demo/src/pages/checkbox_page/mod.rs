@@ -6,12 +6,12 @@ use {
 	dioxus_free_icons::{Icon, icons::bs_icons::BsCheckLg},
 	dioxus_logger::tracing::info,
 	maestro_headless::{
-		accordion::{Accordion, AccordionContent, AccordionHeader, AccordionItem, AccordionTrigger, AccordionVariant},
-		checkbox::{Checkbox, CheckboxIndicator},
+		accordion::{AccordionContent, AccordionHeader, AccordionItem, AccordionRoot, AccordionTrigger, AccordionVariant},
+		checkbox::{CheckboxIndicator, CheckboxRoot},
 		checkbox_group::{CheckboxGroup, CheckboxGroupItem},
-		collapsible::{Collapsible, CollapsibleContent, CollapsibleTrigger},
+		collapsible::{CollapsibleRoot, CollapsibleContent, CollapsibleTrigger},
 		shared::EOrientation,
-		tabs::{Tabs, TabsContent, TabsList, TabsTrigger},
+		tabs::{TabsRoot, TabsContent, TabsList, TabsTrigger},
 	},
 };
 
@@ -23,7 +23,7 @@ mod consts;
 pub fn CheckboxPage() -> Element {
 	rsx! {
 		section { class: "container flex flex-col px-4 lg:py-6 py-4 ",
-			Tabs {
+			TabsRoot {
 				default_value: "Checkbox",
 				orientation: EOrientation::Vertical,
 				class: "flex flex-col gap-4",

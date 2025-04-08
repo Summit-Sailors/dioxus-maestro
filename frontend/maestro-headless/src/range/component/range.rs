@@ -28,7 +28,7 @@ pub struct RangeContext {
 }
 
 #[derive(Props, Clone, PartialEq)]
-pub struct RangeProps {
+pub struct RangeRootProps {
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
 	pub value: ReadOnlySignal<Option<Vec<f32>>>,
 	#[props(optional, default = Vec::new())]
@@ -36,8 +36,6 @@ pub struct RangeProps {
 	#[props(default = None)]
 	pub on_value_change: Option<Callback<Vec<f32>>>,
 
-	#[props(optional, default = String::new())]
-	pub name: String,
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]
 	pub disabled: ReadOnlySignal<bool>,
 	#[props(default = false)]
@@ -59,22 +57,9 @@ pub struct RangeProps {
 }
 
 #[component]
-pub fn Range(props: RangeProps) -> Element {
-	let RangeProps {
-		value,
-		default_value,
-		on_value_change,
-		name,
-		disabled,
-		required,
-		orientation,
-		min,
-		max,
-		step,
-		min_steps_between_thumbs,
-		attributes,
-		children,
-	} = props;
+pub fn RangeRoot(props: RangeRootProps) -> Element {
+	let RangeRootProps { value, default_value, on_value_change, disabled, required, orientation, min, max, step, min_steps_between_thumbs, attributes, children } =
+		props;
 
 	let is_controlled = use_hook(move || value().is_some());
 	let default = if default_value.is_empty() { Vec::from([min]) } else { default_value.clone() };
@@ -226,11 +211,11 @@ pub fn Range(props: RangeProps) -> Element {
 
 	rsx! {
 		div {
+			position: "relative",
 			role: "group",
 			aria_roledescription: "range slider",
 			aria_disabled: disabled(),
 			aria_required: required,
-			aria_label: name,
 			"data-disabled": disabled(),
 			"data-required": required,
 			"data-orientation": orientation().to_string(),
@@ -278,14 +263,14 @@ pub fn Range(props: RangeProps) -> Element {
 }
 
 #[derive(Props, Clone, PartialEq)]
-pub struct RangeTrackWrapperProps {
+pub struct RangeTrackProps {
 	#[props(extends = GlobalAttributes, extends = div)]
 	pub attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
 #[component]
-pub fn RangeTrackWrapper(props: RangeTrackWrapperProps) -> Element {
+pub fn RangeTrack(props: RangeTrackProps) -> Element {
 	let context = use_context::<RangeContext>();
 
 	rsx! {
@@ -302,14 +287,14 @@ pub fn RangeTrackWrapper(props: RangeTrackWrapperProps) -> Element {
 }
 
 #[derive(Props, Clone, PartialEq)]
-pub struct RangeTrackProps {
+pub struct RangeProps {
 	#[props(extends = div, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
 #[component]
-pub fn RangeTrack(props: RangeTrackProps) -> Element {
+pub fn Range(props: RangeProps) -> Element {
 	let context = use_context::<RangeContext>();
 	let percentages = context.values.read().clone().iter().map(|&value| convert_value_to_percentage(value, context.min, context.max)).collect::<Vec<f32>>();
 	let offset_start = if context.values.read().clone().len() > 1 { percentages.iter().cloned().reduce(f32::min).unwrap_or(0.0) } else { 0.0 };
@@ -344,7 +329,6 @@ pub fn RangeTrack(props: RangeTrackProps) -> Element {
 
 #[derive(Props, Clone, PartialEq)]
 pub struct RangeThumbProps {
-	pub name: Option<String>,
 	#[props(extends = div, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
 	pub children: Element,
@@ -403,7 +387,7 @@ pub fn RangeThumb(props: RangeThumbProps) -> Element {
 			aria_disabled: *context.disabled.read(),
 			tabindex: if *context.disabled.read() { "-1" } else { "0" },
 			display: if context.values.read().clone().get(index() as usize).is_none() { "none" } else { "flex" },
-			transform: if *context.orientation.read() == EOrientation::Horizontal { "translateY(-50%) translateX(-50%)" } else { "translateX(-50%) translateY(-50%)" },
+			transform: if *context.orientation.read() == EOrientation::Horizontal { "translateY(0%) translateX(-50%)" } else { "translateX(0%) translateY(-50%)" },
 			position: "absolute",
 			onmounted: move |event| context.thumbs.write().push((id(), event.data().clone())),
 			onfocus: move |_| {

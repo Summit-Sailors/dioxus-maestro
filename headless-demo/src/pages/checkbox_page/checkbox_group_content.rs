@@ -10,15 +10,9 @@ use {
 		pages::checkbox_page::consts::{EXAMPLE_GROUP, EXAMPLE_GROUP_ANATOMY},
 	},
 	dioxus::prelude::*,
-	dioxus_free_icons::{Icon, icons::bs_icons::BsCheckLg},
-	dioxus_logger::tracing::info,
 	maestro_headless::{
-		accordion::{Accordion, AccordionContent, AccordionHeader, AccordionItem, AccordionTrigger, AccordionVariant},
-		checkbox::{Checkbox, CheckboxIndicator},
 		checkbox_group::{CheckboxGroup, CheckboxGroupIndicator, CheckboxGroupItem},
-		collapsible::{Collapsible, CollapsibleContent, CollapsibleTrigger},
 		shared::EOrientation,
-		tabs::{Tabs, TabsContent, TabsList, TabsTrigger},
 	},
 };
 
@@ -41,7 +35,6 @@ pub fn CheckboxGroupContent() -> Element {
 					on_value_change: move |v: Vec<String>| {
 							values.set(v);
 					},
-					name: "favorites",
 					div { class: "flex justify-center items-center gap-3",
 						CheckboxGroupItem {
 							id: "chocolate",
@@ -95,17 +88,15 @@ pub fn CheckboxGroupContent() -> Element {
 		DescriptionSection { title: "Supports",
 			Features { features: features_list.clone() }
 		}
-		DescriptionSection {
-			title: "Usage and Anatomy",
-			description: "Import all parts and piece them together. Each part may be styled separately, accept own properties and additional attributes, e.g. \"data\" or \"aria\" (althought they are provided by default).",
+		DescriptionSection { title: "Usage and Anatomy",
 			ExampleCodeAnatomy { code: EXAMPLE_GROUP_ANATOMY }
 		}
 		DescriptionSection { title: "Api Reference",
 			div { class: "flex flex-col space-y-6",
 				div { class: "flex flex-col gap-4",
-					h4 { class: "font-medium text-lg text-orange-300", "Root Component" }
+					h4 { class: "font-medium text-lg text-orange-300", "CheckboxGroup" }
 					p {
-						"Wrapps all checkboxes af the checkbox group and manages state. Props "
+						"Wrapps all checkboxes of the checkbox group and manages state. Props "
 						span { class: "px-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
 							"value"
 						}
@@ -113,10 +104,9 @@ pub fn CheckboxGroupContent() -> Element {
 						span { class: "px-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
 							"on_value_change"
 						}
-						span { class: "font-medium", "must go in pair" }
-						"if use "
+						" in case of usage the "
 						span { class: "font-medium", "controllable state" }
-						". In other case may be used "
+						" must go in pair. In other case may be used "
 						span { class: "px-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
 							"default_value"
 						}
@@ -155,6 +145,12 @@ pub fn CheckboxGroupContent() -> Element {
 										tooltip_text: Some("Prevents from toggling any item in the group".into()),
 								},
 								PropsStruct {
+										prop: "required".into(),
+										prop_default: "false".into(),
+										prop_type: "bool".into(),
+										tooltip_text: None,
+								},
+								PropsStruct {
 										prop: "attributes".into(),
 										prop_default: "[]".into(),
 										prop_type: "Vec<Attribute>".into(),
@@ -171,12 +167,12 @@ pub fn CheckboxGroupContent() -> Element {
 								AttrsStruct {
 										attr: "aria-disabled".into(),
 										value: "true".into(),
-										description: "Appears only if the whole accordion is disabled".into(),
+										description: "Appears only if the group is disabled".into(),
 								},
 								AttrsStruct {
 										attr: "data-disabled".into(),
 										value: "true".into(),
-										description: "Appears only if the whole accordion is disabled".into(),
+										description: "Appears only if the group is disabled".into(),
 								},
 								AttrsStruct {
 										attr: "aria-orientation".into(),
@@ -192,8 +188,8 @@ pub fn CheckboxGroupContent() -> Element {
 					}
 				}
 				div { class: "flex flex-col gap-4",
-					h4 { class: "font-medium text-lg text-orange-300", "Item Component" }
-					p { "Indicates checkbox input." }
+					h4 { class: "font-medium text-lg text-orange-300", "CheckboxGroupItem" }
+					p { "Indicates checkbox input as part of the group." }
 					PageTabs {
 						props_list: Vec::from([
 								PropsStruct {
@@ -232,7 +228,7 @@ pub fn CheckboxGroupContent() -> Element {
 								AttrsStruct {
 										attr: "aria-disabled".into(),
 										value: "true".into(),
-										description: "Appears only if the whole accordion is disabled".into(),
+										description: "Appears only if the group or current item is disabled".into(),
 								},
 								AttrsStruct {
 										attr: "aria-required".into(),
@@ -242,7 +238,7 @@ pub fn CheckboxGroupContent() -> Element {
 								AttrsStruct {
 										attr: "data-disabled".into(),
 										value: "true".into(),
-										description: "Appears only if the whole accordion is disabled".into(),
+										description: "Appears only if the group or current item is disabled".into(),
 								},
 								AttrsStruct {
 										attr: "data-state".into(),
@@ -253,8 +249,14 @@ pub fn CheckboxGroupContent() -> Element {
 					}
 				}
 				div { class: "flex flex-col gap-4",
-					h4 { class: "font-medium text-lg text-orange-300", "Indicator Component" }
-					p { "Appears when the checkbox is checked. May accept checked component." }
+					h4 { class: "font-medium text-lg text-orange-300", "CheckboxGroupIndicator" }
+					p {
+						"Appears when the checkbox is checked. Must be placed in the "
+						span { class: "px-1.5 py-0.5 font-mono text-orange-400 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
+							"CheckboxGroupItem"
+						}
+						" component."
+					}
 					PageTabs {
 						props_list: Vec::from([
 								PropsStruct {
@@ -279,12 +281,12 @@ pub fn CheckboxGroupContent() -> Element {
 								AttrsStruct {
 										attr: "aria-disabled".into(),
 										value: "true".into(),
-										description: "Appears only if the whole accordion is disabled".into(),
+										description: "Appears only if the group is disabled".into(),
 								},
 								AttrsStruct {
 										attr: "data-disabled".into(),
 										value: "true".into(),
-										description: "Appears only if the whole accordion is disabled".into(),
+										description: "Appears only if the group is disabled".into(),
 								},
 								AttrsStruct {
 										attr: "data-state".into(),
