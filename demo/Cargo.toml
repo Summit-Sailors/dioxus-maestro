@@ -29,8 +29,9 @@ maestro-ui = { path = "../frontend/maestro-ui" }
 
 # thrird party deps
 anyhow = "1.0.97"
-apalis = { version = "0.7.0", features = ["limit"], optional = true }
+apalis = { version = "0.7.0", default-features = false, features = ["limit", "retry"], optional = true }
 apalis-core = { version = "0.7.0", optional = true }
+apalis-sql = { version = "0.7.0", features = ["postgres", "tokio-comp"], optional = true }
 async-std = "1.13.1"
 chrono = { workspace = true }
 dioxus = { version = "0.6.3", features = ["fullstack", "router"] }
@@ -83,6 +84,7 @@ mobile = ["dep:apalis", "dioxus/mobile"]
 server = [
   "dep:apalis",
   "dep:apalis-core",
+  "dep:apalis-sql",
   "dep:api",
   "dep:diesel",
   "dep:diesel-async",

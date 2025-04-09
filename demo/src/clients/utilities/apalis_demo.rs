@@ -13,8 +13,8 @@ pub fn JobForm() -> Element {
 			status.set("Adding job...".to_string());
 
 			match crate::clients::utilities::apis::apalis_api::add_email_job(to(), subject(), body()).await {
-				Ok(_) => {
-					status.set("Job added successfully!".to_string());
+				Ok(result) => {
+					status.set(result);
 					to.set(String::new());
 					subject.set(String::new());
 					body.set(String::new());
@@ -74,14 +74,14 @@ pub fn JobForm() -> Element {
 
 #[component]
 pub fn JobsList() -> Element {
-	let mut jobs_state = use_signal(|| String::new());
+	let mut jobs_states = use_signal(|| Vec::<String>::new());
 	let mut loading = use_signal(|| false);
 
 	let fetch_jobs = move |_| async move {
 		loading.set(true);
-		match crate::clients::utilities::apis::apalis_api::list_pending_jobs().await {
+		match crate::clients::utilities::apis::apalis_api::list_completed_jobs().await {
 			Ok(job_list) => {
-				jobs_state.set(job_list);
+				jobs_states.set(job_list);
 			},
 			Err(e) => {
 				println!("Error fetching jobs status: {}", e);
@@ -91,8 +91,8 @@ pub fn JobsList() -> Element {
 	};
 
 	rsx! {
-		div { class: "bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-md mt-8",
-			h2 { class: "text-xl font-semibold text-white mb-4 text-center", "Pending Email Jobs" }
+		div { class: "bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-md mt-4 mb-4",
+			h2 { class: "text-xl font-semibold text-white mb-4 text-center", "Completed Email Jobs" }
 
 			button {
 				class: "w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition mb-4",
@@ -104,7 +104,22 @@ pub fn JobsList() -> Element {
 				p { class: "text-gray-400 text-center", "Loading jobs state..." }
 			} else {
 				pre { class: "bg-gray-900 text-gray-100 p-4 rounded-md whitespace-pre-wrap text-sm",
-					"{jobs_state()}"
+					{
+							{
+									jobs_states
+											.iter()
+											.enumerate()
+											.map(|(index, job_state)| {
+													rsx! {
+														div {
+															key: "{index}",
+															class: "border border-slate-700 rounded-xl p-4 bg-gray-800 text-slate-100 shadow transition hover:shadow-lg hover:border-slate-500",
+															p { class: "text-xl font-bold text-white", "{job_state}" }
+														}
+													}
+											})
+							}
+					}
 				}
 			}
 		}

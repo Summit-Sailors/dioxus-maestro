@@ -18,3 +18,4 @@ impl EmailJob {
 		EmailJob { to, subject, body }
 	}
 }
+

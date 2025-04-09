@@ -13,6 +13,7 @@ bon = { workspace = true }
 serde = { workspace = true }
 
 apalis = { version = "0.7.0", default-features = false, features = ["limit"], optional = true }
+apalis-core = "0.7.0"
 apalis-sql = { version = "0.7.0", features = ["postgres", "tokio-comp"], optional = true }
 tokio = { version = "1.44.2", optional = true }
 

@@ -3,11 +3,11 @@ use {
 	async_std::task::sleep,
 	dioxus::prelude::*,
 	dioxus_free_icons::{
+		Icon,
 		icons::{
 			fa_solid_icons::{FaCopy, FaPaste},
 			ld_icons::{LdChevronLeft, LdChevronRight, LdChevronsLeft, LdChevronsRight},
 		},
-		Icon,
 	},
 	maestro_hooks::{clipboard::use_clipboard, explicit_memo::use_explicit_memo, pagination::use_pagination},
 	std::time::Duration,

@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+/* Define custom z-index values for toast elements */
+@layer utilities {
+  .z-toast {
+    z-index: 9999 !important;
+  }
+}
+
 @keyframes highlight {
   0% {
     background: #8f8;
@@ -30,25 +37,119 @@ body {
   font-family: var(--font-poppins);
 }
 
-/* toast styles - simplified */
+/* Toast container overrides */
+.toast-scope {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999 !important;
+  isolation: isolate;
+  top: 0;
+  left: 0;
+}
+
+/* Override the wrapper divs for toast positions */
+.toast-scope [id^="wrap-"] {
+  @apply flex flex-col gap-2 max-h-[calc(100vh-2rem)] overflow-y-auto w-max max-w-[384px] sm:max-w-[90vw];
+  z-index: 9999 !important;
+  position: fixed !important;
+}
+
+/* Ensure each corner has proper positioning regardless of inline styles */
+#wrap-bottom-left {
+  bottom: 1.25rem !important;
+  left: 1.25rem !important;
+  right: auto !important;
+  top: auto !important;
+}
+
+#wrap-bottom-right {
+  bottom: 1.25rem !important;
+  right: 1.25rem !important;
+  left: auto !important;
+  top: auto !important;
+}
+
+#wrap-top-left {
+  top: 1.25rem !important;
+  left: 1.25rem !important;
+  right: auto !important;
+  bottom: auto !important;
+}
+
+#wrap-top-right {
+  top: 1.25rem !important;
+  right: 1.25rem !important;
+  left: auto !important;
+  bottom: auto !important;
+}
+
+/* Toast style enhancements with important background colors */
 .maestro-toast {
   @apply transition-all duration-200 ease-in-out relative p-4 rounded-lg;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  pointer-events: auto !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
   width: max-content;
   max-width: 90vw;
 }
 
-/* responsive toast containers */
-.toast-scope [id^="wrap-"] {
-  @apply flex flex-col gap-2 max-h-[calc(100vh-2rem)] overflow-y-auto w-max max-w-[384px] sm:max-w-[90vw];
+/* Force specific background colors for each toast type */
+.maestro-toast__success {
+  background-color: #3c763d !important;
+  color: #dff0d8 !important;
+  border-color: #d6e9c6 !important;
 }
 
-/* media queries */
+.maestro-toast__error {
+  background-color: #a94442 !important;
+  color: #f2dede !important;
+  border-color: #ebccd1 !important;
+}
+
+.maestro-toast__warning {
+  background-color: #8a6d3b !important;
+  color: #fcf8e3 !important;
+  border-color: #faebcc !important;
+}
+
+.maestro-toast__info {
+  background-color: #31708f !important;
+  color: #d9edf7 !important;
+  border-color: #bce8f1 !important;
+}
+
+.maestro-toast__default {
+  background-color: #374151 !important; /* gray-700 */
+  color: #f9fafb !important; /* gray-50 */
+}
+
+/* Progress bar colors */
+.maestro-toast__success .progress-bar {
+  background-color: #d6e9c6 !important;
+}
+
+.maestro-toast__error .progress-bar {
+  background-color: #ebccd1 !important;
+}
+
+.maestro-toast__warning .progress-bar {
+  background-color: #faebcc !important;
+}
+
+.maestro-toast__info .progress-bar {
+  background-color: #bce8f1 !important;
+}
+
+.maestro-toast__default .progress-bar {
+  background-color: #6b7280 !important; /* gray-500 */
+}
+
+/* responsive toast containers */
 @media (max-width: 640px) {
   .toast-scope [id^="wrap-"] {
     max-width: calc(100vw - 2rem);
   }
-
   .maestro-toast {
     width: 100%;
     max-width: 100%;
@@ -59,6 +160,7 @@ body {
   @apply mx-auto px-4;
 }
 
+/* Container media queries remain unchanged */
 @media (min-width: 640px) {
   .container {
     max-width: 584px;

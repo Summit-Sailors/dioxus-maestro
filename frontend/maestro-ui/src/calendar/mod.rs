@@ -203,14 +203,14 @@ pub fn Calendar(display_props: CalendarDisplayProps, select_props: CalendarSelec
 					}
 				}
 				div { class: tw_merge!("p-4 maestro-calendar-body", body_class),
-					div { class: tw_merge!("grid grid-cols-7 gap-2 mb-2 maestro-calendar-days", days_class),
+					div { class: tw_merge!("grid !grid-cols-6 gap-2 mb-2 maestro-calendar-days", days_class),
 						for day in ECalendarDay::iter() {
 							div { class: "text-center text-sm font-medium text-gray-600",
 								"{day}"
 							}
 						}
 					}
-					div { class: tw_merge!("grid grid-cols-7 gap-2 maestro-calendar-grid", grid_class),
+					div { class: tw_merge!("grid !grid-cols-6 gap-2 maestro-calendar-grid", grid_class),
 						if empty_cells < 6 {
 							for _ in 0..=empty_cells {
 								div {
