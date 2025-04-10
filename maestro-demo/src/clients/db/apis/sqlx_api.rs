@@ -5,7 +5,6 @@ use {crate::clients::db::SqlxUser, dioxus::prelude::*};
 pub async fn fetch_users_sync() -> Result<Vec<SqlxUser>, ServerFnError> {
 	use {
 		maestro_sqlx::create::create_sqlx_pool,
-		sqlx::prelude::*,
 		tokio::runtime::{Handle, Runtime},
 	};
 
@@ -38,7 +37,7 @@ pub async fn fetch_users_sync() -> Result<Vec<SqlxUser>, ServerFnError> {
 
 #[server(AFetchUsersSqlx)]
 pub async fn fetch_users_async() -> Result<Vec<SqlxUser>, ServerFnError> {
-	use {maestro_sqlx::acreate::acreate_sqlx_pool, sqlx::prelude::*};
+	use maestro_sqlx::acreate::acreate_sqlx_pool;
 
 	// creating a pool asynchronously
 	let pool = acreate_sqlx_pool(std::env!("DATABASE_URL")).await;

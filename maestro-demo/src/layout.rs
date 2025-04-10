@@ -1,6 +1,6 @@
 use {
 	crate::{
-		components::{backdrop::Backdrop, editor::editor::CodeEditor, logo_light::LogoLight},
+		components::{backdrop::Backdrop, editor::code_viewer::CodeEditor, logo_light::LogoLight},
 		router::Route,
 	},
 	dioxus::prelude::*,

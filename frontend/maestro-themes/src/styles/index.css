@@ -1,0 +1,9 @@
+@import "tailwindcss"; /* Tailwindcss base styles */
+
+@import "./base.css"; /* Base styles for the theme */
+@import "./dark.css"; /* Dark mode styles */
+@import "./light.css"; /* Light mode styles */
+
+/* Component specific styles */
+@import "./components.css";
+@import "./animations.css";

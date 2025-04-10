@@ -2,10 +2,10 @@ use {crate::components::ui::features::Features, dioxus::prelude::*};
 
 #[component]
 pub fn JobForm() -> Element {
-	let mut to = use_signal(|| String::new());
-	let mut subject = use_signal(|| String::new());
-	let mut body = use_signal(|| String::new());
-	let status = use_signal(|| String::new());
+	let mut to = use_signal(String::new);
+	let mut subject = use_signal(String::new);
+	let mut body = use_signal(String::new);
+	let status = use_signal(String::new);
 
 	let add_job = move |_| {
 		to_owned![to, subject, body, status];
@@ -74,7 +74,7 @@ pub fn JobForm() -> Element {
 
 #[component]
 pub fn JobsList() -> Element {
-	let mut jobs_states = use_signal(|| Vec::<String>::new());
+	let mut jobs_states = use_signal(Vec::<String>::new);
 	let mut loading = use_signal(|| false);
 
 	let fetch_jobs = move |_| async move {
@@ -130,7 +130,7 @@ pub fn JobsList() -> Element {
 pub fn ApalisDemo() -> Element {
 	rsx! {
 		div { class: "max-h-screen bg-gray-900 text-white flex items-center justify-center p-4",
-			div { class: "flex flex-col items-center gap-6 w-full max-w-4xl",
+			div { class: "flex flex-col items-center gap-6 w-full",
 				div { class: "flex flex-col gap-3",
 					h1 { class: "text-slate-100 text-center text-2xl sm:text-3xl lg:text-4xl 2xl:text-5xl font-semibold",
 						"Maestro Apalis"

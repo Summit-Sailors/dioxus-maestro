@@ -75,16 +75,16 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
 
 		// highlight code
 		let mut highlighter = HighlightLines::new(syntax, theme);
-		let highlighted_html = code
+		
+
+		code
 			.lines()
 			.map(|line| {
 				let regions = highlighter.highlight_line(line, &syntax_set).unwrap();
 				styled_line_to_highlighted_html(&regions[..], IncludeBackground::Yes).unwrap_or_else(|_| line.to_string())
 			})
 			.collect::<Vec<String>>()
-			.join("\n");
-
-		highlighted_html
+			.join("\n")
 	};
 
 	let current_code = code().get(&selected_file()).unwrap_or(&String::new()).clone();

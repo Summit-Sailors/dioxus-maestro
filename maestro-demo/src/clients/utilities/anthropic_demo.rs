@@ -1,7 +1,6 @@
 use {
 	crate::components::ui::features::Features,
 	dioxus::prelude::*,
-	futures::StreamExt,
 	maestro_anthropic::chat_message::{ChatMessage, Role},
 	std::fmt::Debug,
 	tailwind_fuse::tw_join,
@@ -9,8 +8,8 @@ use {
 
 #[component]
 pub fn AnthropicDemo() -> Element {
-	let mut messages = use_signal(|| vec![]);
-	let mut user_input = use_signal(|| String::new());
+	let mut messages = use_signal(std::vec::Vec::new);
+	let mut user_input = use_signal(String::new);
 	let mut is_loading = use_signal(|| false);
 	let mut temperature = use_signal(|| 0.7f32);
 	let mut system_prompt = use_signal(|| String::from("You are Claude, a helpful AI assistant."));
@@ -201,6 +200,7 @@ pub fn AnthropicDemo() -> Element {
 
 #[server]
 async fn stream_chat(messages: Vec<ChatMessage>, temperature: f32, system_prompt: String) -> Result<String, ServerFnError> {
+	use futures::StreamExt;
 	let stream = maestro_anthropic::functions::stream_chat_from_server(messages, temperature, system_prompt).await?;
 
 	let mut full_text = String::new();

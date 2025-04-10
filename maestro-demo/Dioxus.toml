@@ -1,7 +1,7 @@
 [application]
 
 # App (Project) Name
-name = "demo"
+name = "maestro-demo"
 
 # `build` & `serve` output path
 out_dir = "dist"
@@ -22,7 +22,7 @@ index_on_404 = true
 [web.app]
 
 # HTML title tag content
-title = "demo"
+title = "maestro-demo"
 
 script = []
 

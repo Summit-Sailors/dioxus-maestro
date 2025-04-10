@@ -1,0 +1,9 @@
+[package]
+authors = []
+description = ""
+edition = { workspace = true }
+license = ""
+name = "maestro-themes"
+repository = ""
+
+[dependencies]

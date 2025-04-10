@@ -1,4 +1,4 @@
-#[allow(non_snake_case)]
+#![allow(non_snake_case)]
 use {
 	crate::{
 		clients::db::{DieselUser, apis::diesel_api},
@@ -10,7 +10,7 @@ use {
 
 #[component]
 pub fn DieselDemo() -> Element {
-	let mut users = use_signal(|| Vec::<DieselUser>::new());
+	let mut users = use_signal(Vec::<DieselUser>::new);
 	let mut loading = use_signal(|| true);
 	let mut error = use_signal(|| None::<String>);
 	let mut total_pages = use_signal(|| 0);

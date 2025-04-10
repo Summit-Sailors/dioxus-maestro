@@ -5,7 +5,7 @@ use {
 
 #[component]
 pub fn SqlxDemo() -> Element {
-	let mut users = use_signal(|| Vec::<SqlxUser>::new());
+	let mut users = use_signal(Vec::<SqlxUser>::new);
 	let mut loading = use_signal(|| true);
 	let mut error = use_signal(|| None::<String>);
 
@@ -13,7 +13,7 @@ pub fn SqlxDemo() -> Element {
 
 	// 1. using async pool creation
 	// preferred method when in an async context
-	let aresult = use_server_future(move || crate::clients::db::apis::sqlx_api::fetch_users_async())?;
+	let aresult = use_server_future(crate::clients::db::apis::sqlx_api::fetch_users_async)?;
 
 	// users onmount - shows both sync and async methods
 	use_effect(move || match aresult.state().cloned() {

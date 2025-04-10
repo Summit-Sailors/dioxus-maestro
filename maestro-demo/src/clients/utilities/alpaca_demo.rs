@@ -38,6 +38,7 @@ pub fn AlpacaDemo() -> Element {
 	let mut show_order_form = use_signal(|| false);
 
 	let server_bars_data = use_server_future(move || {
+		loading.set(true);
 		maestro_alpaca::data::bars::functions::get_alpaca_bars_from_server(
 			selected_symbol(),
 			BarsSingleRequestDTO::builder().timeframe(selected_timeframe()).feed(selected_feed()).limit(selected_limit() as usize).build(),
@@ -45,11 +46,13 @@ pub fn AlpacaDemo() -> Element {
 	})?
 	.suspend()?;
 
-	let mut fetch_data = move || match &*server_bars_data.read_unchecked() {
+	let fetch_data = move || match &*server_bars_data.read_unchecked() {
 		Ok(data) => {
+			loading.set(false);
 			bars_data.set(Some(data.clone()));
 		},
 		Err(e) => {
+			loading.set(false);
 			error.set(Some(format!("Error fetching data: {}", e)));
 		},
 	};
@@ -75,7 +78,7 @@ pub fn AlpacaDemo() -> Element {
 		});
 	};
 
-	use_effect(move || fetch_data());
+	use_effect(fetch_data);
 
 	rsx! {
 		div { class: "container mx-auto p-4",
