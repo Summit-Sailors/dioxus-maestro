@@ -14,6 +14,7 @@ pub mod label;
 pub mod number_input;
 pub mod popover;
 pub mod popper;
+pub mod portal;
 pub mod presence;
 pub mod progress;
 pub mod radio;

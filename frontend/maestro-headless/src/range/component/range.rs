@@ -72,6 +72,8 @@ pub fn RangeRoot(props: RangeRootProps) -> Element {
 	let mut closure_pointer_down_ref = use_signal(|| None::<Closure<dyn FnMut(web_sys::PointerEvent)>>);
 	let mut closure_pointer_move_ref = use_signal(|| None::<Closure<dyn FnMut(web_sys::PointerEvent)>>);
 
+	let mut dragging_thumb_id = use_signal(|| None::<Uuid>);
+
 	let callback = use_callback(move |values: Vec<f32>| {
 		if let Some(callback) = on_value_change {
 			callback(values);
@@ -89,13 +91,11 @@ pub fn RangeRoot(props: RangeRootProps) -> Element {
 
 		let mut next_values = current_values.clone();
 		next_values[at_index] = next_value;
-		next_values.sort_by(|a, b| a.partial_cmp(b).unwrap());
 
 		if has_min_steps_between_values(&next_values, min_steps_between_thumbs * step) {
-			let new_index = next_values.iter().position(|&v| v == next_value).unwrap_or(0);
 			let has_changed = next_values != current_values;
+			value_index_to_change.set(at_index);
 
-			value_index_to_change.set(new_index.clone());
 			if has_changed {
 				set_values(next_values.clone());
 			}
@@ -104,6 +104,9 @@ pub fn RangeRoot(props: RangeRootProps) -> Element {
 
 	let handle_slide_start = use_callback(move |new_value: f32| {
 		let closest_index = get_closest_value_index(&values(), new_value);
+		if let Some((thumb_id, _)) = thumb_refs.peek().get(closest_index) {
+			dragging_thumb_id.set(Some(*thumb_id));
+		}
 		update_values((new_value, closest_index));
 	});
 
@@ -192,20 +195,24 @@ pub fn RangeRoot(props: RangeRootProps) -> Element {
 		}
 	});
 
-	use_drop(move || {
-		if let Some(closure) = closure_pointer_down_ref.peek().as_ref() {
-			if let Some(range_element) = range_ref.read().as_ref().and_then(|node| node.try_as_web_event()) {
-				range_element.remove_event_listener_with_callback("pointerdown", closure.as_ref().unchecked_ref()).expect("Cannot remove onpointerdown listener");
-			}
-			drop(closure);
-		}
-		if let Some(closure) = closure_pointer_move_ref.peek().as_ref() {
-			if let Some(range_element) = range_ref.read().as_ref().and_then(|node| node.try_as_web_event()) {
-				range_element.remove_event_listener_with_callback("pointermove", closure.as_ref().unchecked_ref()).expect("Cannot remove onpointermove listener");
-			}
-			drop(closure);
-		}
-	});
+	#[cfg(target_arch = "wasm32")]
+	{
+		use_drop(move || {
+			spawn(async move {
+				if let Some(closure) = closure_pointer_down_ref.peek().as_ref() {
+					if let Some(range_element) = range_ref.read().as_ref().and_then(|node| node.try_as_web_event()) {
+						range_element.remove_event_listener_with_callback("pointerdown", closure.as_ref().unchecked_ref()).expect("Cannot remove onpointerdown listener");
+					}
+				}
+				closure_pointer_down_ref.set(None);
+				if let Some(closure) = closure_pointer_move_ref.peek().as_ref() {
+					if let Some(range_element) = range_ref.read().as_ref().and_then(|node| node.try_as_web_event()) {
+						range_element.remove_event_listener_with_callback("pointermove", closure.as_ref().unchecked_ref()).expect("Cannot remove onpointermove listener");
+					}
+				}
+			});
+		})
+	};
 
 	use_context_provider::<RangeContext>(|| RangeContext { disabled, min, max, value_index_to_change, thumbs: thumb_refs, values, set_values, orientation });
 
@@ -341,8 +348,18 @@ pub fn RangeThumb(props: RangeThumbProps) -> Element {
 	let mut index = use_signal(|| 0_i32);
 	let mut size = use_signal(|| None::<web_sys::DomRect>);
 
+	use_effect(move || {
+		let thumbs = context.thumbs.peek();
+		let idx = thumbs.iter().position(|(uuid, _)| *uuid == id());
+		if let Some(i) = idx {
+			index.set(i as i32);
+		}
+	});
+
 	use_drop(move || {
-		context.thumbs.write().retain(|(uuid, _)| *uuid != id());
+		spawn(async move {
+			context.thumbs.write().retain(|(uuid, _)| *uuid != id());
+		});
 	});
 
 	use_effect(move || {
@@ -389,7 +406,11 @@ pub fn RangeThumb(props: RangeThumbProps) -> Element {
 			display: if context.values.read().clone().get(index() as usize).is_none() { "none" } else { "flex" },
 			transform: if *context.orientation.read() == EOrientation::Horizontal { "translateY(0%) translateX(-50%)" } else { "translateX(0%) translateY(-50%)" },
 			position: "absolute",
-			onmounted: move |event| context.thumbs.write().push((id(), event.data().clone())),
+			onmounted: move |event| {
+					let new_index = context.thumbs.peek().len();
+					context.thumbs.write().push((id(), event.data().clone()));
+					index.set(new_index as i32);
+			},
 			onfocus: move |_| {
 					context.value_index_to_change.set(*index.peek() as usize);
 			},

@@ -15,6 +15,7 @@ pub enum Route {
 	#[layout(Layout)]
 	#[route("/")]
 	Home {},
+	#[nest("/headless")]
 	#[nest("/components")]
 	#[route("/accordion")]
 	AccordionPage {},
@@ -70,7 +71,7 @@ impl Route {
 			Route::ProgressBarPage {} => "Progress Bar",
 			Route::RadioPage {} => "Radio Group",
 			Route::RangePage {} => "Range",
-			Route::SelectPage {} => "Range",
+			Route::SelectPage {} => "Select",
 			Route::SeparatorPage {} => "Separator",
 			Route::SwitchPage {} => "Switch",
 			Route::TabsPage {} => "Tabs",

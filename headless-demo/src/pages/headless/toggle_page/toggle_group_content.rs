@@ -7,7 +7,7 @@ use {
 			tables::{AttrsStruct, PropsStruct},
 			tabs::PageTabs,
 		},
-		pages::toggle_page::consts::{EXAMPLE_GROUP, EXAMPLE_GROUP_ANATOMY},
+		pages::headless::toggle_page::consts::{EXAMPLE_GROUP, EXAMPLE_GROUP_ANATOMY},
 	},
 	dioxus::prelude::*,
 	dioxus_free_icons::{
@@ -17,7 +17,6 @@ use {
 			ld_icons::{LdAlignCenter, LdAlignLeft, LdAlignRight},
 		},
 	},
-	dioxus_logger::tracing::info,
 	maestro_headless::{
 		accordion::{AccordionContent, AccordionHeader, AccordionItem, AccordionRoot, AccordionTrigger, AccordionVariant},
 		checkbox::{CheckboxIndicator, CheckboxRoot},
@@ -67,8 +66,7 @@ pub fn ToggleGroupContent() -> Element {
 		DescriptionSection { title: "Supports",
 			Features { features: features_list.clone() }
 		}
-		DescriptionSection {
-			title: "Usage and Anatomy",
+		DescriptionSection { title: "Usage and Anatomy",
 			ExampleCodeAnatomy { code: EXAMPLE_GROUP_ANATOMY }
 		}
 		DescriptionSection { title: "Api Reference",

@@ -2,7 +2,7 @@ use {
 	crate::{
 		button::Button,
 		presence::Presence,
-		shared::{EOrientation, UseControllableStateParams, use_arrow_key_navigation, use_controllable_state, use_dimensions},
+		shared::{EOrientation, UseControllableStateParams, use_arrow_key_navigation, use_controllable_state, use_dimensions, use_ref_provider},
 	},
 	dioxus::prelude::*,
 	std::rc::Rc,
@@ -33,18 +33,26 @@ impl AccordionItemContext {
 struct AccordionContext {
 	pub value: Memo<Vec<String>>,
 	pub set_value: Callback<Vec<String>>,
-	pub collapsible: bool,
-	pub variant: AccordionVariant,
+	pub collapsible: ReadOnlySignal<bool>,
+	pub variant: ReadOnlySignal<AccordionVariant>,
 	pub disabled: ReadOnlySignal<bool>,
+	pub orientation: ReadOnlySignal<EOrientation>,
 }
 
 impl AccordionContext {
-	pub fn new(value: Memo<Vec<String>>, set_value: Callback<Vec<String>>, collapsible: bool, variant: AccordionVariant, disabled: ReadOnlySignal<bool>) -> Self {
-		Self { value, set_value, collapsible, variant, disabled }
+	pub fn new(
+		value: Memo<Vec<String>>,
+		set_value: Callback<Vec<String>>,
+		collapsible: ReadOnlySignal<bool>,
+		variant: ReadOnlySignal<AccordionVariant>,
+		disabled: ReadOnlySignal<bool>,
+		orientation: ReadOnlySignal<EOrientation>,
+	) -> Self {
+		Self { value, set_value, collapsible, variant, disabled, orientation }
 	}
 
 	pub fn onopen(&self, value: String) {
-		match self.variant {
+		match *self.variant.peek() {
 			AccordionVariant::Single => {
 				self.set_value.call(Vec::from([value.clone()]));
 			},
@@ -59,9 +67,9 @@ impl AccordionContext {
 	}
 
 	pub fn onclose(&mut self, value: String) {
-		match self.variant {
+		match *self.variant.peek() {
 			AccordionVariant::Single =>
-				if self.collapsible {
+				if *self.collapsible.peek() {
 					self.set_value.call(Vec::new());
 				},
 			AccordionVariant::Multiple => {
@@ -84,12 +92,12 @@ pub struct AccordionRootProps {
 
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(EOrientation::Vertical)))]
 	pub orientation: ReadOnlySignal<EOrientation>,
-	#[props(optional, default = true)]
-	pub collapsible: bool,
+	#[props(optional, default = ReadOnlySignal::new(Signal::new(true)))]
+	pub collapsible: ReadOnlySignal<bool>,
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]
 	pub disabled: ReadOnlySignal<bool>,
-	#[props(optional, default = AccordionVariant::Single)]
-	variant: AccordionVariant,
+	#[props(optional, default = ReadOnlySignal::new(Signal::new(AccordionVariant::Single)))]
+	variant: ReadOnlySignal<AccordionVariant>,
 
 	#[props(extends = ul, extends = GlobalAttributes)]
 	attributes: Vec<Attribute>,
@@ -103,7 +111,7 @@ pub fn AccordionRoot(props: AccordionRootProps) -> Element {
 	let (value, set_value) =
 		use_controllable_state(UseControllableStateParams { is_controlled, prop: value, default_prop: default_value, on_change: on_value_change });
 
-	use_context_provider::<AccordionContext>(|| AccordionContext::new(value, set_value, collapsible, variant, disabled));
+	use_context_provider::<AccordionContext>(|| AccordionContext::new(value, set_value, collapsible, variant, disabled, orientation));
 
 	let mut current_ref = use_signal(|| None::<Rc<MountedData>>);
 	let handle_key_down = use_arrow_key_navigation(current_ref, Some(String::from("button[role='button']:not([tabindex='-1'])")), orientation());
@@ -158,6 +166,8 @@ pub fn AccordionItem(props: AccordionItemProps) -> Element {
 			"data-state": if *accordion_item_context.open.read() { "open" } else { "closed" },
 			"data-disabled": is_disabled().then_some(Some(true)),
 			"data-role": "accordion-item",
+			aria_orientation: accordion_context.orientation.read().to_string(),
+			"data-orientation": accordion_context.orientation.read().to_string(),
 			..attributes,
 			{children}
 		}
@@ -177,6 +187,9 @@ pub fn AccordionTrigger(props: AccordionTriggerProps) -> Element {
 	let accordion_item_context = use_context::<AccordionItemContext>();
 	let is_disabled = use_context::<Memo<bool>>();
 
+	let variant = *accordion_context.variant.read();
+	let collapsible = *accordion_context.collapsible.read();
+
 	rsx! {
 		Button {
 			id: accordion_item_context.trigger_id.to_string(),
@@ -190,15 +203,17 @@ pub fn AccordionTrigger(props: AccordionTriggerProps) -> Element {
 			aria_expanded: accordion_item_context.open.read().then_some(Some(true)),
 			"data-state": if *accordion_item_context.open.read() { "open" } else { "closed" },
 			"data-role": "accordion-trigger",
+			aria_orientation: accordion_context.orientation.read().to_string(),
+			"data-orientation": accordion_context.orientation.read().to_string(),
 			onclick: move |_| {
 					if is_disabled() {
 							return;
 					}
 					let value = accordion_item_context.value.peek().clone();
 					let open = *accordion_item_context.open.peek();
-					match accordion_context.variant {
+					match variant {
 							AccordionVariant::Single => {
-									if accordion_context.collapsible {
+									if collapsible {
 											if open {
 													accordion_context.onclose(value);
 											} else {
@@ -232,10 +247,13 @@ pub struct AccordionHeaderProps {
 
 #[component]
 pub fn AccordionHeader(props: AccordionHeaderProps) -> Element {
+	let accordion_context = use_context::<AccordionContext>();
 	let accordion_item_context = use_context::<AccordionItemContext>();
 	rsx! {
 		h3 {
 			"data-state": if *accordion_item_context.open.read() { "open" } else { "closed" },
+			aria_orientation: accordion_context.orientation.read().to_string(),
+			"data-orientation": accordion_context.orientation.read().to_string(),
 			..props.attributes,
 			{props.children}
 		}
@@ -251,8 +269,10 @@ pub struct AccordionContentProps {
 
 #[component]
 pub fn AccordionContent(props: AccordionContentProps) -> Element {
+	let accordion_context = use_context::<AccordionContext>();
 	let accordion_item_context = use_context::<AccordionItemContext>();
-	let mut current_ref = use_signal(|| None::<Rc<MountedData>>);
+	// let mut current_ref = use_signal(|| None::<Rc<MountedData>>);
+	let mut current_ref = use_ref_provider();
 	let (width, height) = use_dimensions(current_ref, *accordion_item_context.open.peek());
 
 	let mut attrs = props.attributes.clone();
@@ -263,7 +283,6 @@ pub fn AccordionContent(props: AccordionContentProps) -> Element {
 	rsx! {
 		Presence {
 			present: *accordion_item_context.open.read(),
-			node_ref: current_ref,
 			div {
 				id: accordion_item_context.content_id.to_string(),
 				role: "region",
@@ -272,6 +291,8 @@ pub fn AccordionContent(props: AccordionContentProps) -> Element {
 				"data-role": "accordion-content",
 				aria_expanded: accordion_item_context.open.read().then_some(Some(true)),
 				aria_hidden: !*accordion_item_context.open.read(),
+				aria_orientation: accordion_context.orientation.read().to_string(),
+				"data-orientation": accordion_context.orientation.read().to_string(),
 				onmounted: move |event: Event<MountedData>| current_ref.set(Some(event.data())),
 				..attrs,
 				{props.children}

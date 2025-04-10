@@ -12,8 +12,9 @@ use {
 		Icon,
 		icons::{bs_icons::BsThreeDots, ld_icons::LdX},
 	},
-	maestro_headless::dialog::{
-		DialogBody, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogRoot, DialogTitle, DialogTrigger,
+	maestro_headless::{
+		dialog::{DialogBody, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogRoot, DialogTitle, DialogTrigger},
+		switch::{SwitchIndicator, SwitchRoot},
 	},
 };
 
@@ -33,9 +34,22 @@ pub fn DialogPage() -> Element {
 			description: "A component that displays a modal window to present content or interactions.",
 		}
 		section { class: "container flex flex-col px-4 lg:py-6 py-4 ",
+			div { class: "flex flex-wrap gap-3 items-center mb-4",
+				div { class: "flex items-center justify-center gap-2 text-neutral-100",
+					SwitchRoot {
+						checked: is_open(),
+						on_toggle_change: move |v| is_open.set(v),
+						class: "flex items-center px-1 py-1 rounded-full h-6 w-12 bg-neutral-500 data-[state=checked]:bg-neutral-100 border border-neutral-700",
+						SwitchIndicator { class: "relative data-[state=checked]:translate-x-5 transition ease-linear rounded-full w-5 h-5 bg-neutral-900" }
+					}
+					"Default open"
+				}
+			}
 			div { class: "grow flex flex-col justify-center items-center rounded-md border border-neutral-800 bg-neutral-950 overflow-hidden",
 				div { class: "p-6 flex grow items-center justify-center w-full",
 					DialogRoot {
+						open: is_open(),
+						on_open_change: move |v| is_open.set(v),
 						DialogTrigger { class: "rounded-full w-10 h-10 flex items-center justify-center focus-visible:ring-2 focus-visible:ring-offset-2 outline-none transition-colors bg-neutral-900 border border-neutral-300 text-orange-600 hover:border-neutral-100 focus-visible:ring-neutral-300 focus-visible:ring-offset-neutral-900",
 							Icon { icon: BsThreeDots }
 						}

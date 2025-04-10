@@ -3,24 +3,30 @@ use {
 	dioxus::{prelude::*, web::WebEventExt},
 	std::rc::Rc,
 	web_sys::{
-		wasm_bindgen::{prelude::Closure, JsCast},
 		AnimationEvent, CssStyleDeclaration, HtmlElement, TransitionEvent,
+		wasm_bindgen::{JsCast, prelude::Closure},
 	},
 };
 
 #[derive(Props, PartialEq, Clone)]
 pub struct PresenceProps {
 	present: ReadOnlySignal<bool>,
-	node_ref: Signal<Option<Rc<MountedData>>>,
 	children: Element,
 }
 
 #[component]
 pub fn Presence(props: PresenceProps) -> Element {
-	let PresenceProps { present, node_ref, children } = props;
+	let PresenceProps { present, children } = props;
+	let mut current_ref = use_context::<Signal<Option<Rc<MountedData>>>>();
 
 	let memo_present = use_memo(move || present());
-	let is_present = use_presence(memo_present, node_ref);
+	let is_present = use_presence(memo_present, current_ref);
+
+	// use_effect(move || {
+	// 	if !is_present() {
+	// 		current_ref.set(None);
+	// 	}
+	// });
 
 	rsx! {
 		if is_present() {
@@ -48,6 +54,7 @@ pub fn use_presence(present: Memo<bool>, node_ref: Signal<Option<Rc<MountedData>
 	let mut prev_present_ref = use_signal(|| present());
 	let mut animation_state = use_signal(|| AnimationState { animation_name: "none".to_string(), has_transition: false, is_animating: false });
 	let mut state = use_signal(|| if present() { EMountState::Mounted } else { EMountState::Unmounted });
+
 	let is_present = use_memo(move || match state() {
 		EMountState::Unmounted => false,
 		_ => true,

@@ -1,6 +1,7 @@
 use {
 	crate::shared::ESide,
 	dioxus::{prelude::*, web::WebEventExt},
+	dioxus_logger::tracing::info,
 	serde::{Deserialize, Serialize},
 	std::rc::Rc,
 	web_sys::{HtmlElement, wasm_bindgen::JsCast, window},
@@ -123,27 +124,51 @@ pub fn calculate_position(
 	};
 
 	let (left, top) = match (side, alignment) {
-		(ESide::Top | ESide::Bottom, Some(Alignment::Start)) => (left + align_offset, top),
-		(ESide::Top | ESide::Bottom, Some(Alignment::End)) => (left + reference_rect.width - floating_rect.width - align_offset, top),
-		(ESide::Right | ESide::Left, Some(Alignment::Start)) => (left, top + align_offset),
-		(ESide::Right | ESide::Left, Some(Alignment::End)) => (left, top + reference_rect.height - floating_rect.height - align_offset),
+		(ESide::Top | ESide::Bottom, Some(Alignment::Start)) => (left - reference_rect.width / 2.0 + floating_rect.width / 2.0 + align_offset, top),
+		(ESide::Top | ESide::Bottom, Some(Alignment::End)) => (left + reference_rect.width / 2.0 - floating_rect.width / 2.0 - align_offset, top),
+		(ESide::Right | ESide::Left, Some(Alignment::Start)) => (left, top - reference_rect.height / 2.0 + floating_rect.height / 2.0 + align_offset),
+		(ESide::Right | ESide::Left, Some(Alignment::End)) => (left, top + reference_rect.height / 2.0 - floating_rect.height / 2.0 - align_offset),
 		_ => (left, top),
 	};
 
-	let (arrow_x, arrow_y) = match side {
-		ESide::Top | ESide::Bottom => {
+	info!("!!!{} {} {}", reference_rect.x, scroll_x, left);
+	info!("***{} {} {}", reference_rect.y, scroll_y, top);
+
+	let (arrow_x, arrow_y) = match (side, alignment) {
+		(ESide::Top | ESide::Bottom, None) => {
 			let arrow_x = floating_rect.width / 2.0;
 			let constrained_x = arrow_x.max(arrow_width).min(floating_rect.width - arrow_width);
 			(Some(constrained_x), None)
 		},
-		ESide::Right | ESide::Left => {
+		(ESide::Right | ESide::Left, None) => {
 			let arrow_y = floating_rect.height / 2.0;
 			let constrained_y = arrow_y.max(arrow_width).min(floating_rect.height - arrow_width);
 			(None, Some(constrained_y))
 		},
+		(ESide::Top | ESide::Bottom, Some(Alignment::Start)) => {
+			let arrow_x = 0.0 + reference_rect.width / 2.0;
+			(Some(arrow_x), None)
+		},
+		(ESide::Top | ESide::Bottom, Some(Alignment::End)) => {
+			let arrow_x = floating_rect.width - reference_rect.width / 2.0;
+			(Some(arrow_x), None)
+		},
+		(ESide::Right | ESide::Left, Some(Alignment::Start)) => {
+			let arrow_y = 0.0 + reference_rect.height / 2.0;
+			(None, Some(arrow_y))
+		},
+		(ESide::Right | ESide::Left, Some(Alignment::End)) => {
+			let arrow_y = floating_rect.height - reference_rect.height / 2.0;
+			(None, Some(arrow_y))
+		},
 	};
 
-	let styles = FloatingStyles { position: "fixed".to_string(), top: format!("{}px", top), left: format!("{}px", left), transform: None };
+	let styles = FloatingStyles {
+		position: "fixed".to_string(),
+		top: "0px".to_string(),
+		left: "0px".to_string(),
+		transform: Some(format!("translate({}px, {}px)", left, top)),
+	};
 
 	let arrow_data = ArrowData { x: arrow_x, y: arrow_y, center_offset: 0.0 };
 

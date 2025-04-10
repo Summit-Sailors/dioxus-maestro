@@ -4,9 +4,11 @@ use {
 		popper::component::utils::{
 			Alignment, ArrowData, FloatingStyles, Placement, Rect, TransformOriginData, calculate_position, find_scrollable_parents, get_element_rect,
 		},
+		portal::Portal,
 		shared::{EAlign, ESide},
 	},
 	dioxus::{prelude::*, web::WebEventExt},
+	dioxus_logger::tracing::info,
 	std::rc::Rc,
 	web_sys::{
 		wasm_bindgen::{JsCast, prelude::Closure},
@@ -167,20 +169,19 @@ pub fn PopperAnchor(props: PopperAnchorProps) -> Element {
 
 #[derive(Props, PartialEq, Clone)]
 pub struct PopperContentProps {
-	#[props(default = ESide::Bottom)]
-	side: ESide,
-	#[props(default = 0.0)]
-	side_offset: f32,
-	#[props(default = EAlign::Center)]
-	align: EAlign,
-	#[props(default = 0.0)]
-	align_offset: f32,
-	#[props(default = true)]
-	avoid_collisions: bool,
-	#[props(default = 4.0)]
-	collision_padding: f32,
-	#[props(optional, default = None)]
-	pub onmounted: Option<EventHandler<Event<MountedData>>>,
+	#[props(default = ReadOnlySignal::new(Signal::new(ESide::Bottom)))]
+	side: ReadOnlySignal<ESide>,
+	#[props(default = ReadOnlySignal::new(Signal::new(0.0)))]
+	side_offset: ReadOnlySignal<f32>,
+	#[props(default = ReadOnlySignal::new(Signal::new(EAlign::Center)))]
+	align: ReadOnlySignal<EAlign>,
+	#[props(default = ReadOnlySignal::new(Signal::new(0.0)))]
+	align_offset: ReadOnlySignal<f32>,
+	#[props(default = ReadOnlySignal::new(Signal::new(true)))]
+	avoid_collisions: ReadOnlySignal<bool>,
+	#[props(default = ReadOnlySignal::new(Signal::new(4.0)))]
+	collision_padding: ReadOnlySignal<f32>,
+
 	#[props(optional)]
 	onplaced: Option<EventHandler<()>>,
 
@@ -218,7 +219,6 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 		align_offset,
 		avoid_collisions,
 		collision_padding,
-		onmounted,
 		onplaced,
 		onkeydown,
 		onkeyup,
@@ -235,14 +235,15 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 
 	let popper_context = use_context::<PopperContext>();
 
-	let mut content = use_signal(|| None::<Rc<MountedData>>);
+	let content = use_context::<Signal<Option<Rc<MountedData>>>>();
+	info!("CONTENT {:?}", content());
 	let arrow = use_signal(|| None::<Rc<MountedData>>);
 	let mut closure = use_signal(|| None::<Closure<dyn FnMut()>>);
 	let mut parents = use_signal::<Vec<web_sys::Element>>(Vec::new);
 	let mut last_update = use_signal(|| 0.0);
-	let placement = use_signal(|| Placement {
-		side,
-		alignment: match align {
+	let placement = Signal::new(Placement {
+		side: side(),
+		alignment: match align() {
 			EAlign::Start => Some(Alignment::Start),
 			EAlign::Center => None,
 			EAlign::End => Some(Alignment::End),
@@ -291,25 +292,25 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 			let adjusted_reference_rect =
 				Rect { x: reference_rect.x - scroll_x, y: reference_rect.y - scroll_y, width: reference_rect.width, height: reference_rect.height };
 
-			let should_flip = match current_placement.side {
-				ESide::Top => adjusted_reference_rect.y < floating_rect.height + side_offset + arrow_height + collision_padding,
+			let should_flip = match current_placement.side() {
+				ESide::Top => adjusted_reference_rect.y < floating_rect.height + side_offset() + arrow_height + collision_padding(),
 				ESide::Right =>
-					adjusted_reference_rect.x + adjusted_reference_rect.width + floating_rect.width + side_offset + arrow_height + collision_padding > window_width,
+					adjusted_reference_rect.x + adjusted_reference_rect.width + floating_rect.width + side_offset() + arrow_height + collision_padding() > window_width,
 				ESide::Bottom =>
-					adjusted_reference_rect.y + adjusted_reference_rect.height + floating_rect.height + side_offset + arrow_height + collision_padding > window_height,
-				ESide::Left => adjusted_reference_rect.x < floating_rect.width + side_offset + arrow_height + collision_padding,
+					adjusted_reference_rect.y + adjusted_reference_rect.height + floating_rect.height + side_offset() + arrow_height + collision_padding() > window_height,
+				ESide::Left => adjusted_reference_rect.x < floating_rect.width + side_offset() + arrow_height + collision_padding(),
 			};
 
-			let has_collision_with_original = match init_placement.side {
-				ESide::Top => adjusted_reference_rect.y < floating_rect.height + side_offset + arrow_height + collision_padding,
+			let has_collision_with_original = match init_placement.side() {
+				ESide::Top => adjusted_reference_rect.y < floating_rect.height + side_offset() + arrow_height + collision_padding(),
 				ESide::Right =>
-					adjusted_reference_rect.x + adjusted_reference_rect.width + floating_rect.width + side_offset + arrow_height + collision_padding > window_width,
+					adjusted_reference_rect.x + adjusted_reference_rect.width + floating_rect.width + side_offset() + arrow_height + collision_padding() > window_width,
 				ESide::Bottom =>
-					adjusted_reference_rect.y + adjusted_reference_rect.height + floating_rect.height + side_offset + arrow_height + collision_padding > window_height,
-				ESide::Left => adjusted_reference_rect.x < floating_rect.width + side_offset + arrow_height + collision_padding,
+					adjusted_reference_rect.y + adjusted_reference_rect.height + floating_rect.height + side_offset() + arrow_height + collision_padding() > window_height,
+				ESide::Left => adjusted_reference_rect.x < floating_rect.width + side_offset() + arrow_height + collision_padding(),
 			};
 
-			if avoid_collisions {
+			if avoid_collisions() {
 				if should_flip {
 					new_placement.with_mut(|state| {
 						state.side = state.side.opposite();
@@ -322,7 +323,7 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 			}
 
 			let (styles, arrow, transform) =
-				calculate_position(&reference_rect, &floating_rect, &new_placement.peek(), arrow_width as f32, arrow_height as f32, side_offset, align_offset);
+				calculate_position(&reference_rect, &floating_rect, &new_placement.peek(), arrow_width as f32, arrow_height as f32, side_offset(), align_offset());
 
 			floating_styles.set(styles);
 			arrow_data.set(arrow);
@@ -381,21 +382,23 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 		}
 	});
 
-	use_drop(move || {
-		let window = window().expect("should have a window in this context");
-		if let Some(frame_id) = *frame_id.peek() {
-			window.cancel_animation_frame(frame_id).ok();
-		}
-		if let Some(closure_fn) = &*closure.peek() {
-			window.remove_event_listener_with_callback("resize", closure_fn.as_ref().unchecked_ref()).expect("should remove event listener");
-			window.remove_event_listener_with_callback("scroll", closure_fn.as_ref().unchecked_ref()).expect("should remove event listener");
-
-			for parent in parents() {
-				parent.remove_event_listener_with_callback("resize", closure_fn.as_ref().unchecked_ref()).expect("should remove event listener");
-				parent.remove_event_listener_with_callback("scroll", closure_fn.as_ref().unchecked_ref()).expect("should remove event listener");
+	#[cfg(target_arch = "wasm32")]
+	{
+		use_drop(move || {
+			let window = window().expect("should have a window in this context");
+			if let Some(frame_id) = *frame_id.peek() {
+				window.cancel_animation_frame(frame_id).ok();
 			}
-		}
-	});
+			if let Some(closure_fn) = &*closure.peek() {
+				window.remove_event_listener_with_callback("resize", closure_fn.as_ref().unchecked_ref()).expect("should remove event listener");
+				window.remove_event_listener_with_callback("scroll", closure_fn.as_ref().unchecked_ref()).expect("should remove event listener");
+				for parent in parents() {
+					parent.remove_event_listener_with_callback("resize", closure_fn.as_ref().unchecked_ref()).expect("should remove event listener");
+					parent.remove_event_listener_with_callback("scroll", closure_fn.as_ref().unchecked_ref()).expect("should remove event listener");
+				}
+			}
+		});
+	};
 
 	let placed_side = new_placement().side;
 
@@ -424,6 +427,7 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 		attrs.push(Attribute::new("--maestro-popper-content-width", format!("{}px", width), Some("style"), false));
 	}
 
+	info!("{:?}", floating_styles().style_transform());
 	rsx! {
 		FocusTrap {
 			position: "fixed",
@@ -480,12 +484,6 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 			onblur: move |event| {
 					if let Some(handler) = onblur {
 							handler.call(event);
-					}
-			},
-			onmounted: move |event: Event<MountedData>| {
-					content.set(Some(event.data()));
-					if let Some(callback) = onmounted {
-							callback.call(event)
 					}
 			},
 			extra_attributes: attrs.clone(),

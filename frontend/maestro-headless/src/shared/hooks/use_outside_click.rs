@@ -16,9 +16,10 @@ pub fn use_outside_click(node_ref: Signal<Option<Rc<MountedData>>>, on_outside_c
 		let document = window.document().expect("window should have a document");
 
 		if closure_ref.peek().is_none() && flag() {
-			let closure = Closure::wrap(Box::new(move |event: web_sys::MouseEvent| {
-				if let Some(node) = node_ref.read().as_ref() {
-					let node = node.try_as_web_event();
+			if let Some(node) = node_ref.read().as_ref() {
+				let cloned_node = node.clone();
+				let closure = Closure::wrap(Box::new(move |event: web_sys::MouseEvent| {
+					let node = cloned_node.try_as_web_event();
 					if let Some(node) = node {
 						if let Some(target) = event.target().and_then(|t: EventTarget| t.dyn_into::<HtmlElement>().ok()) {
 							if !node.contains(Some(&target)) {
@@ -26,9 +27,9 @@ pub fn use_outside_click(node_ref: Signal<Option<Rc<MountedData>>>, on_outside_c
 							}
 						}
 					}
-				}
-			}) as Box<dyn FnMut(web_sys::MouseEvent)>);
-			closure_ref.set(Some(closure));
+				}) as Box<dyn FnMut(web_sys::MouseEvent)>);
+				closure_ref.set(Some(closure));
+			}
 		}
 
 		if flag() {
@@ -47,9 +48,9 @@ pub fn use_outside_click(node_ref: Signal<Option<Rc<MountedData>>>, on_outside_c
 			if let Some(closure) = closure_ref.peek().as_ref() {
 				let window = window().expect("should have a window in this context");
 				let document = window.document().expect("window should have a document");
-
 				document.remove_event_listener_with_callback("mousedown", closure.as_ref().unchecked_ref()).expect("should remove event listener");
 			}
+			closure_ref.set(None);
 		}
 	});
 
@@ -57,9 +58,7 @@ pub fn use_outside_click(node_ref: Signal<Option<Rc<MountedData>>>, on_outside_c
 		if let Some(closure) = closure_ref.peek().as_ref() {
 			let window = window().expect("should have a window in this context");
 			let document = window.document().expect("window should have a document");
-
 			document.remove_event_listener_with_callback("mousedown", closure.as_ref().unchecked_ref()).expect("should remove event listener");
-			drop(closure);
 		}
 	});
 }

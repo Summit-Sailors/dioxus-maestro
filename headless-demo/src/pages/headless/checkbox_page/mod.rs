@@ -4,14 +4,13 @@ use {
 	checkbox_group_content::CheckboxGroupContent,
 	dioxus::prelude::*,
 	dioxus_free_icons::{Icon, icons::bs_icons::BsCheckLg},
-	dioxus_logger::tracing::info,
 	maestro_headless::{
 		accordion::{AccordionContent, AccordionHeader, AccordionItem, AccordionRoot, AccordionTrigger, AccordionVariant},
 		checkbox::{CheckboxIndicator, CheckboxRoot},
 		checkbox_group::{CheckboxGroup, CheckboxGroupItem},
-		collapsible::{CollapsibleRoot, CollapsibleContent, CollapsibleTrigger},
+		collapsible::{CollapsibleContent, CollapsibleRoot, CollapsibleTrigger},
 		shared::EOrientation,
-		tabs::{TabsRoot, TabsContent, TabsList, TabsTrigger},
+		tabs::{TabsContent, TabsList, TabsRoot, TabsTrigger},
 	},
 };
 

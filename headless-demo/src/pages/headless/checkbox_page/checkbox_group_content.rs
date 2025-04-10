@@ -7,7 +7,7 @@ use {
 			tables::{AttrsStruct, PropsStruct},
 			tabs::PageTabs,
 		},
-		pages::checkbox_page::consts::{EXAMPLE_GROUP, EXAMPLE_GROUP_ANATOMY},
+		pages::headless::checkbox_page::consts::{EXAMPLE_GROUP, EXAMPLE_GROUP_ANATOMY},
 	},
 	dioxus::prelude::*,
 	maestro_headless::{

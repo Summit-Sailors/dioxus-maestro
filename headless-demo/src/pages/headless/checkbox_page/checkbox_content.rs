@@ -7,30 +7,30 @@ use {
 			tables::{AttrsStruct, PropsStruct},
 			tabs::PageTabs,
 		},
-		pages::toggle_page::consts::{EXAMPLE, EXAMPLE_ANATOMY},
+		pages::headless::checkbox_page::consts::{EXAMPLE, EXAMPLE_ANATOMY},
 	},
 	dioxus::prelude::*,
-	dioxus_free_icons::{Icon, icons::bs_icons::BsBrightnessAltHigh},
-	maestro_headless::toggle::Toggle,
+	maestro_headless::checkbox::{CheckboxIndicator, CheckboxRoot},
 };
 
 #[component]
-pub fn ToggleContent() -> Element {
+pub fn CheckboxContent() -> Element {
 	let features_list: Vec<&str> = Vec::from(["Controlled/uncontrolled state", "Keyboard navigation"]);
 
 	rsx! {
 		p { class: "container flex flex-col gap-3 lg:py-6 py-4 text-neutral-300",
-			"A UI component that allows users to switch between two states (e.g., on/off, true/false) with a simple action, often represented as a button or switch that visually indicates the current state."
+			"A control that allows the user to toggle between checked and not checked."
 		}
 		div { class: "grow flex flex-col justify-center items-center overflow-hidden rounded-md border border-neutral-800 bg-neutral-950",
 			div { class: "p-6 flex flex-col gap-4 items-start",
 				div { class: "flex justify-center items-center gap-3",
-					Toggle {
-						class: "aria-[pressed=true]:bg-orange-600 bg-neutral-500 text-neutral-200 flex justify-center items-center p-3 w-10 h-10 rounded transition-colors hover:text-neutral-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 aria-[pressed=true]:hover:bg-orange-700 aria-[pressed=true]:focus-visible:ring-orange-600 aria-[pressed=false]:hover:bg-neutral-700 aria-[pressed=false]:focus-visible:ring-neutral-500",
-						value: "on",
-						default_pressed: false,
-						Icon { icon: BsBrightnessAltHigh {} }
+					CheckboxRoot {
+						id: "maestro-box",
+						class: "w-6 h-6 rounded flex items-center justify-center border border-neutral-100 transition-colors hover:border-orange-600 focus-visible:ring-2 ring-orange-600 ring-offset-neutral-950 focus-visible:ring-offset-2 focus-visible:outline-none",
+						value: "some",
+						CheckboxIndicator { class: "text-neutral-100 " }
 					}
+					label { class: "text-slate-100", r#for: "maestro-box", "Check Me" }
 				}
 			}
 			ExampleCodeCollapsible { code: EXAMPLE }
@@ -45,41 +45,41 @@ pub fn ToggleContent() -> Element {
 		DescriptionSection { title: "Api Reference",
 			div { class: "flex flex-col space-y-6",
 				div { class: "flex flex-col gap-4",
-					h4 { class: "font-medium text-lg text-orange-300", "Toggle" }
+					h4 { class: "font-medium text-lg text-orange-300", "CheckboxRoot" }
 					p {
-						"The toggle itself. Props "
+						"Indicates a checkbox input. Props "
 						span { class: "px-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
-							"pressed"
+							"checked"
 						}
 						" and "
 						span { class: "px-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
-							"on_toggle_change"
+							"on_change"
 						}
 						span { class: "font-medium", " must go in pair" }
-						" if use "
+						"in case of usage "
 						span { class: "font-medium", "controllable state" }
 						". In other case may be used "
 						span { class: "px-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
-							"default_pressed"
+							"default_checked"
 						}
 						"."
 					}
 					PageTabs {
 						props_list: Vec::from([
 								PropsStruct {
-										prop: "pressed".into(),
+										prop: "checked".into(),
 										prop_default: "None".into(),
 										prop_type: "Option<bool>".into(),
-										tooltip_text: Some("Must go in pair with 'on_toggle_change' callback".into()),
+										tooltip_text: Some("Must go in pair with 'on_value_change' callback".into()),
 								},
 								PropsStruct {
-										prop: "on_toggle_change".into(),
+										prop: "on_value_change".into(),
 										prop_default: "None".into(),
 										prop_type: "Callback<bool>".into(),
-										tooltip_text: Some("Must go in pair with 'pressed' prop".into()),
+										tooltip_text: Some("Must go in pair with 'checked' prop".into()),
 								},
 								PropsStruct {
-										prop: "default_pressed".into(),
+										prop: "default_checked".into(),
 										prop_default: "false".into(),
 										prop_type: "bool".into(),
 										tooltip_text: None,
@@ -88,7 +88,13 @@ pub fn ToggleContent() -> Element {
 										prop: "disabled".into(),
 										prop_default: "false".into(),
 										prop_type: "bool".into(),
-										tooltip_text: Some("Prevents from any interactions".into()),
+										tooltip_text: Some("Prevents checkbox from selecting/deselecting".into()),
+								},
+								PropsStruct {
+										prop: "required".into(),
+										prop_default: "false".into(),
+										prop_type: "bool".into(),
+										tooltip_text: None,
 								},
 								PropsStruct {
 										prop: "value".into(),
@@ -101,7 +107,7 @@ pub fn ToggleContent() -> Element {
 										prop_default: "[]".into(),
 										prop_type: "Vec<Attribute>".into(),
 										tooltip_text: Some(
-												"Helps provide attributes to the toggle if it is nested into other components"
+												"Helps provide attributes to the checkbox if it is nested into other components"
 														.into(),
 										),
 								},
@@ -115,28 +121,81 @@ pub fn ToggleContent() -> Element {
 										prop: "children".into(),
 										prop_default: "-".into(),
 										prop_type: "Element".into(),
-										tooltip_text: None,
+										tooltip_text: Some("Required".into()),
 								},
 						]),
 						attrs_list: Vec::from([
 								AttrsStruct {
-										attr: "aria-pressed".into(),
+										attr: "aria-checked".into(),
 										value: "true".into(),
 										description: "".into(),
 								},
 								AttrsStruct {
 										attr: "aria-disabled".into(),
 										value: "true".into(),
-										description: "Appears only if the toggle is disabled".into(),
+										description: "Appears only if the checkbox is disabled".into(),
+								},
+								AttrsStruct {
+										attr: "aria-required".into(),
+										value: "true".into(),
+										description: "".into(),
 								},
 								AttrsStruct {
 										attr: "data-disabled".into(),
 										value: "true".into(),
-										description: "Appears only if the toggle is disabled".into(),
+										description: "Appears only if the checkbox is disabled".into(),
 								},
 								AttrsStruct {
 										attr: "data-state".into(),
-										value: "on | off".into(),
+										value: "checked | unchecked".into(),
+										description: "".into(),
+								},
+						]),
+					}
+				}
+				div { class: "flex flex-col gap-4",
+					h4 { class: "font-medium text-lg text-orange-300", "CheckboxIndicator" }
+					p {
+						"Appears when the checkbox is checked. May accept checked component. Must be wrapped by "
+						span { class: "px-1.5 py-0.5 font-mono text-orange-400 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
+							"CheckboxRoot"
+						}
+						"."
+					}
+					PageTabs {
+						props_list: Vec::from([
+								PropsStruct {
+										prop: "attributes".into(),
+										prop_default: "[]".into(),
+										prop_type: "Vec<Attribute>".into(),
+										tooltip_text: Some("Extends 'global' and 'span' attribules".into()),
+								},
+								PropsStruct {
+										prop: "children".into(),
+										prop_default: "None".into(),
+										prop_type: "Option<Element>".into(),
+										tooltip_text: None,
+								},
+						]),
+						attrs_list: Vec::from([
+								AttrsStruct {
+										attr: "aria-checked".into(),
+										value: "true".into(),
+										description: "".into(),
+								},
+								AttrsStruct {
+										attr: "aria-disabled".into(),
+										value: "true".into(),
+										description: "Appears only if the checkbox is disabled".into(),
+								},
+								AttrsStruct {
+										attr: "data-disabled".into(),
+										value: "true".into(),
+										description: "Appears only if the checkbox is disabled".into(),
+								},
+								AttrsStruct {
+										attr: "data-state".into(),
+										value: "checked | unchecked".into(),
 										description: "".into(),
 								},
 						]),

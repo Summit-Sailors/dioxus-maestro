@@ -1,11 +1,12 @@
 use {
 	crate::{
+		focus_trap::FocusTrap,
 		popper::{Popper, PopperAnchor, PopperArrow, PopperContent},
 		presence::Presence,
-		shared::{EAlign, ESide, UseControllableStateParams, use_controllable_state},
+		shared::{EAlign, ESide, UseControllableStateParams, use_controllable_state, use_outside_click, use_ref_provider},
 	},
 	dioxus::prelude::*,
-	std::{fmt::Debug, rc::Rc},
+	std::fmt::Debug,
 	uuid::Uuid,
 	web_sys::{
 		wasm_bindgen::{JsCast, prelude::Closure},
@@ -47,10 +48,10 @@ pub struct HoverCardRootProps {
 	#[props(optional)]
 	pub on_open_change: Option<Callback<bool>>,
 
-	#[props(default = 700.0)]
-	open_delay: f32,
-	#[props(default = 300.0)]
-	close_delay: f32,
+	#[props(default = ReadOnlySignal::new(Signal::new(700.0)))]
+	open_delay: ReadOnlySignal<f32>,
+	#[props(default = ReadOnlySignal::new(Signal::new(300.0)))]
+	close_delay: ReadOnlySignal<f32>,
 
 	#[props(extends = GlobalAttributes, extends = div)]
 	pub attributes: Vec<Attribute>,
@@ -79,7 +80,7 @@ pub fn HoverCardRoot(props: HoverCardRootProps) -> Element {
 		}) as Box<dyn FnMut()>);
 
 		let timer_id =
-			window.set_timeout_with_callback_and_timeout_and_arguments_0(closure.as_ref().unchecked_ref(), open_delay as i32).expect("Cannot add timeout");
+			window.set_timeout_with_callback_and_timeout_and_arguments_0(closure.as_ref().unchecked_ref(), open_delay() as i32).expect("Cannot add timeout");
 		closure.forget();
 		open_timer_ref.set(Some(timer_id));
 	});
@@ -94,7 +95,7 @@ pub fn HoverCardRoot(props: HoverCardRootProps) -> Element {
 				set_open(false);
 			}) as Box<dyn FnMut()>);
 			let timer_id =
-				window.set_timeout_with_callback_and_timeout_and_arguments_0(closure.as_ref().unchecked_ref(), close_delay as i32).expect("Cannot add timeout");
+				window.set_timeout_with_callback_and_timeout_and_arguments_0(closure.as_ref().unchecked_ref(), close_delay() as i32).expect("Cannot add timeout");
 			closure.forget();
 			close_timer_ref.set(Some(timer_id));
 		}
@@ -159,18 +160,18 @@ pub fn HoverCardTrigger(props: HoverCardTriggerProps) -> Element {
 
 #[derive(Clone, PartialEq, Props)]
 pub struct HoverCardContentProps {
-	#[props(default = ESide::Bottom)]
-	side: ESide,
-	#[props(default = 0.0)]
-	side_offset: f32,
-	#[props(default = EAlign::Center)]
-	align: EAlign,
-	#[props(default = 0.0)]
-	align_offset: f32,
-	#[props(default = true)]
-	avoid_collisions: bool,
-	#[props(default = 4.0)]
-	collision_padding: f32,
+	#[props(default = ReadOnlySignal::new(Signal::new(ESide::Bottom)))]
+	side: ReadOnlySignal<ESide>,
+	#[props(default = ReadOnlySignal::new(Signal::new(0.0)))]
+	side_offset: ReadOnlySignal<f32>,
+	#[props(default = ReadOnlySignal::new(Signal::new(EAlign::Center)))]
+	align: ReadOnlySignal<EAlign>,
+	#[props(default = ReadOnlySignal::new(Signal::new(0.0)))]
+	align_offset: ReadOnlySignal<f32>,
+	#[props(default = ReadOnlySignal::new(Signal::new(true)))]
+	avoid_collisions: ReadOnlySignal<bool>,
+	#[props(default = ReadOnlySignal::new(Signal::new(4.0)))]
+	collision_padding: ReadOnlySignal<f32>,
 
 	#[props(optional)]
 	onmouseenter: Option<EventHandler<MouseEvent>>,
@@ -188,7 +189,14 @@ pub fn HoverCardContent(props: HoverCardContentProps) -> Element {
 		props;
 
 	let context = use_context::<HoverCardContext>();
-	let mut current_ref = use_signal(|| None::<Rc<MountedData>>);
+
+	let handle_close = use_callback(move |()| {
+		context.set_open.call(false);
+	});
+
+	let current_ref = use_ref_provider();
+
+	use_outside_click(current_ref, handle_close, context.open);
 
 	let mut attrs = attributes.clone();
 	attrs.push(Attribute::new("--maestro-hover-card-anchor-height", "var(--maestro-popper-anchor-height)", Some("style"), false));
@@ -197,7 +205,7 @@ pub fn HoverCardContent(props: HoverCardContentProps) -> Element {
 	attrs.push(Attribute::new("--maestro-hover-card-content-width", "var(--maestro-popper-content-width)", Some("style"), false));
 
 	rsx! {
-		Presence { node_ref: current_ref, present: *context.open.read(),
+		Presence { present: *context.open.read(),
 			PopperContent {
 				role: "modal",
 				id: context.content_id.to_string(),
@@ -212,7 +220,6 @@ pub fn HoverCardContent(props: HoverCardContentProps) -> Element {
 				aria_modal: true,
 				"data-state": if *context.open.read() { "open" } else { "closed" },
 				extra_attributes: attrs,
-				onmounted: move |event: Event<MountedData>| current_ref.set(Some(event.data())),
 				onmouseenter: move |event| {
 						context.on_open.call(());
 						if let Some(callback) = onmouseenter.as_ref() {

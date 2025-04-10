@@ -1,4 +1,7 @@
-use {crate::presence::Presence, dioxus::prelude::*, std::rc::Rc};
+use {
+	crate::{presence::Presence, shared::use_ref_provider},
+	dioxus::prelude::*,
+};
 
 #[derive(Props, Clone, PartialEq)]
 pub struct HelpTextProps {
@@ -15,10 +18,10 @@ pub struct HelpTextProps {
 #[component]
 pub fn HelpText(props: HelpTextProps) -> Element {
 	let HelpTextProps { text, visible, attributes, children } = props;
-	let mut current_ref = use_signal(|| None::<Rc<MountedData>>);
+	let mut current_ref = use_ref_provider();
 
 	rsx! {
-		Presence { present: visible, node_ref: current_ref,
+		Presence { present: visible,
 			span {
 				onmounted: move |event: Event<MountedData>| current_ref.set(Some(event.data())),
 				..attributes,

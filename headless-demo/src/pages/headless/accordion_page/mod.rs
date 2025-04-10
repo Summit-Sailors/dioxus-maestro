@@ -1,25 +1,32 @@
 use {
-	crate::{
-		components::{
-			description_section::DescriptionSection,
-			example_code::{ExampleCodeAnatomy, ExampleCodeCollapsible},
-			features_list::Features,
-			tables::{AttrsStruct, PropsStruct},
-			tabs::PageTabs,
-		},
-		pages::accordion_page::consts::{EXAMPLE, EXAMPLE_ANATOMY},
+	crate::components::{
+		description_section::DescriptionSection,
+		example_code::{ExampleCodeAnatomy, ExampleCodeCollapsible},
+		features_list::Features,
+		tables::{AttrsStruct, PropsStruct},
+		tabs::PageTabs,
 	},
+	consts::{EXAMPLE, EXAMPLE_ANATOMY},
 	dioxus::prelude::*,
 	maestro_headless::{
 		accordion::{AccordionContent, AccordionHeader, AccordionItem, AccordionRoot, AccordionTrigger, AccordionVariant},
 		shared::EOrientation,
+		switch::{SwitchIndicator, SwitchRoot},
 	},
+	styled_accordion::StyledAccordion,
 };
 
 mod consts;
+mod styled_accordion;
 
 #[component]
 pub fn AccordionPage() -> Element {
+	let mut variant = use_signal(|| AccordionVariant::Single);
+	let mut orientation = use_signal(|| EOrientation::Vertical);
+	let mut disabled = use_signal(|| false);
+	let mut collapsible = use_signal(|| true);
+	let mut value = use_signal(|| Vec::from(["1".into()]));
+
 	let features_list: Vec<&str> =
 		Vec::from(["Controlled/uncontrolled state", "Open single or multiple items", "Keyboard navigation", "Horizontal/vertical orientation"]);
 
@@ -29,62 +36,67 @@ pub fn AccordionPage() -> Element {
 			title: "Accordion",
 			description: "UI component that allows to toggle the visibility of content within sections, one or multiple sections at a time.",
 		}
-		section { class: "container flex flex-col px-4 lg:py-6 py-4 ",
+		section { class: "container flex flex-col px-4 lg:py-6 py-4",
+			div { class: "flex flex-wrap gap-3 items-center mb-4",
+				div { class: "flex items-center justify-center gap-2 text-neutral-100",
+					SwitchRoot {
+						checked: disabled(),
+						on_toggle_change: move |v| disabled.set(v),
+						class: "flex items-center px-1 py-1 rounded-full h-6 w-12 bg-neutral-500 data-[state=checked]:bg-neutral-100 border border-neutral-700",
+						SwitchIndicator { class: "relative data-[state=checked]:translate-x-5 transition ease-linear rounded-full w-5 h-5 bg-neutral-900" }
+					}
+					"Disable"
+				}
+				div { class: "flex items-center justify-center gap-2 text-neutral-100",
+					SwitchRoot {
+						checked: variant() == AccordionVariant::Multiple,
+						on_toggle_change: move |v| {
+								if v {
+										variant.set(AccordionVariant::Multiple);
+								} else {
+										variant.set(AccordionVariant::Single);
+								}
+								value.set(Vec::from(["1".to_string()]));
+						},
+						class: "flex items-center px-1 py-1 rounded-full h-6 w-12 bg-neutral-500 data-[state=checked]:bg-neutral-100 border border-neutral-700",
+						SwitchIndicator { class: "relative data-[state=checked]:translate-x-5 transition ease-linear rounded-full w-5 h-5 bg-neutral-900" }
+					}
+					"Multiple"
+				}
+				div { class: "flex items-center justify-center gap-2 text-neutral-100",
+					SwitchRoot {
+						checked: orientation() == EOrientation::Horizontal,
+						on_toggle_change: move |v| {
+								if v {
+										orientation.set(EOrientation::Horizontal);
+								} else {
+										orientation.set(EOrientation::Vertical);
+								}
+						},
+						class: "flex items-center px-1 py-1 rounded-full h-6 w-12 bg-neutral-500 data-[state=checked]:bg-neutral-100 border border-neutral-700",
+						SwitchIndicator { class: "relative data-[state=checked]:translate-x-5 transition ease-linear rounded-full w-5 h-5 bg-neutral-900" }
+					}
+					"Horizontal"
+				}
+				div { class: "flex items-center justify-center gap-2 text-neutral-100",
+					SwitchRoot {
+						checked: collapsible(),
+						on_toggle_change: move |v| collapsible.set(v),
+						class: "flex items-center px-1 py-1 rounded-full h-6 w-12 bg-neutral-500 data-[state=checked]:bg-neutral-100 border border-neutral-700",
+						SwitchIndicator { class: "relative data-[state=checked]:translate-x-5 transition ease-linear rounded-full w-5 h-5 bg-neutral-900" }
+					}
+					"Collapsible"
+				}
+			}
 			div { class: "grow flex flex-col justify-center items-center rounded-md border border-neutral-800 bg-neutral-950 overflow-hidden",
-				div { class: "p-6 flex gap-4 items-start w-full max-w-96",
-					AccordionRoot {
-						default_value: Vec::from(["1".into()]),
-						class: "relative w-full grow max-w-96 flex flex-col rounded-sm bg-neutral-900 text-neutral-100 p-0.5 transition-all ease-linear overflow-hidden",
-						variant: AccordionVariant::Single,
-						AccordionItem {
-							value: "1",
-							class: "flex flex-col data-[state=open]:gap-3 data-[disabled=true]:opacity-50 data-[disabled=true]:pointer-events-none border-b border-b-neutral-500",
-							AccordionHeader {
-								AccordionTrigger { class: "px-4 py-2 h-full w-full hover:bg-neutral-800 data-[state=open]:border-b border-b-neutral-700 data-[state=open]:text-orange-600 transition-all ease-linear focus-visible:ring-2 focus-visible:ring-orange-600 focus-visible:outline-none line-clamp-1",
-									"Default opened"
-								}
-							}
-							AccordionContent { class: "flex overflow-hidden data-[state=open]:h-fit data-[state=closed]:h-0 transition-all ease-linear px-4 data-[state=open]:py-2",
-								"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-							}
-						}
-						AccordionItem {
-							value: "2",
-							class: "flex flex-col data-[state=open]:gap-3 data-[disabled=true]:opacity-50 data-[disabled=true]:pointer-events-none border-b border-b-neutral-500",
-							AccordionHeader {
-								AccordionTrigger { class: "px-4 py-2 h-full w-full hover:bg-neutral-800 data-[state=open]:border-b border-b-neutral-700 data-[state=open]:text-orange-600 transition-all ease-linear focus-visible:ring-2 focus-visible:ring-orange-600 focus-visible:outline-none line-clamp-1",
-									"Sed ut perspiciatis unde..."
-								}
-							}
-							AccordionContent { class: "flex overflow-hidden data-[state=open]:h-fit data-[state=closed]:h-0 transition-all ease-linear px-4 data-[state=open]:py-2",
-								"Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo."
-							}
-						}
-						AccordionItem {
-							value: "3",
-							disabled: true,
-							class: "flex flex-col data-[state=open]:gap-3 data-[disabled=true]:opacity-50 data-[disabled=true]:pointer-events-none border-b border-b-neutral-500",
-							AccordionHeader {
-								AccordionTrigger { class: "px-4 py-2 h-full w-full hover:bg-neutral-800 data-[state=open]:border-b border-b-neutral-700 data-[state=open]:text-orange-600 transition-all ease-linear focus-visible:ring-2 focus-visible:ring-orange-600 focus-visible:outline-none line-clamp-1",
-									"I'm disabled :("
-								}
-							}
-							AccordionContent { class: "flex overflow-hidden data-[state=open]:h-fit data-[state=closed]:h-0 transition-all ease-linear px-4 data-[state=open]:py-2",
-								"Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem."
-							}
-						}
-						AccordionItem {
-							value: "4",
-							class: "flex flex-col data-[state=open]:gap-3 data-[disabled=true]:opacity-50 data-[disabled=true]:pointer-events-none",
-							AccordionHeader {
-								AccordionTrigger { class: "px-4 py-2 h-full w-full hover:bg-neutral-800 data-[state=open]:border-b border-b-neutral-700 data-[state=open]:text-orange-600 transition-all ease-linear focus-visible:ring-2 focus-visible:ring-orange-600 focus-visible:outline-none line-clamp-1",
-									"Ut enim ad minima veniam"
-								}
-							}
-							AccordionContent { class: "flex overflow-hidden data-[state=open]:h-fit data-[state=closed]:h-0 transition-all ease-linear px-4 data-[state=open]:py-2",
-								"Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? "
-							}
-						}
+				div { class: "p-6 flex gap-6 items-center justify-center w-full overflow-auto",
+					StyledAccordion {
+						value: Some(value()),
+						on_value_change: move |v| value.set(v),
+						orientation: orientation(),
+						collapsible: collapsible(),
+						variant: variant(),
+						disabled: disabled(),
 					}
 				}
 				ExampleCodeCollapsible { code: EXAMPLE }
@@ -227,7 +239,6 @@ pub fn AccordionPage() -> Element {
 						" allows to disable "
 						span { class: "font-medium", "current" }
 						" item and prevent it from expanding and other interactions."
-
 					}
 					PageTabs {
 						props_list: Vec::from([
@@ -277,6 +288,16 @@ pub fn AccordionPage() -> Element {
 										value: "accordion-item".into(),
 										description: "".into(),
 								},
+								AttrsStruct {
+										attr: "aria-orientation".into(),
+										value: "vertical | horizontal".into(),
+										description: "".into(),
+								},
+								AttrsStruct {
+										attr: "data-orientation".into(),
+										value: "vertical | horizontal".into(),
+										description: "".into(),
+								},
 						]),
 					}
 				}
@@ -308,6 +329,16 @@ pub fn AccordionPage() -> Element {
 								AttrsStruct {
 										attr: "data-state".into(),
 										value: "open | closed".into(),
+										description: "".into(),
+								},
+								AttrsStruct {
+										attr: "aria-orientation".into(),
+										value: "vertical | horizontal".into(),
+										description: "".into(),
+								},
+								AttrsStruct {
+										attr: "data-orientation".into(),
+										value: "vertical | horizontal".into(),
 										description: "".into(),
 								},
 						]),
@@ -388,6 +419,16 @@ pub fn AccordionPage() -> Element {
 								AttrsStruct {
 										attr: "aria-expanded".into(),
 										value: "true".into(),
+										description: "".into(),
+								},
+								AttrsStruct {
+										attr: "aria-orientation".into(),
+										value: "vertical | horizontal".into(),
+										description: "".into(),
+								},
+								AttrsStruct {
+										attr: "data-orientation".into(),
+										value: "vertical | horizontal".into(),
 										description: "".into(),
 								},
 								AttrsStruct {

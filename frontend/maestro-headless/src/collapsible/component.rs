@@ -2,10 +2,9 @@ use {
 	crate::{
 		button::Button,
 		presence::Presence,
-		shared::{UseControllableStateParams, use_controllable_state, use_dimensions},
+		shared::{UseControllableStateParams, use_controllable_state, use_dimensions, use_ref_provider},
 	},
 	dioxus::prelude::*,
-	std::rc::Rc,
 	uuid::Uuid,
 };
 
@@ -105,7 +104,7 @@ pub struct CollapsibleContentProps {
 pub fn CollapsibleContent(props: CollapsibleContentProps) -> Element {
 	let CollapsibleContentProps { attributes, children } = props;
 	let context = use_context::<CollapsibleContext>();
-	let mut current_ref = use_signal(|| None::<Rc<MountedData>>);
+	let mut current_ref = use_ref_provider();
 	let (width, height) = use_dimensions(current_ref, *context.open.peek());
 
 	let mut attrs = attributes.clone();
@@ -119,7 +118,7 @@ pub fn CollapsibleContent(props: CollapsibleContentProps) -> Element {
 	attrs.push(Attribute::new("--maestro-headless-collapsible-width", if width() > 0.0 { Some(format!("{}px", width())) } else { None }, Some("style"), false));
 
 	rsx! {
-		Presence { present: *context.open.read(), node_ref: current_ref,
+		Presence { present: *context.open.read(),
 			div {
 				id: context.content_id.to_string(),
 				role: "region",

@@ -11,7 +11,10 @@ use {
 	dioxus_free_icons::{Icon, icons::io_icons::IoLogoGithub},
 	maestro_headless::{
 		hover_card::{HoverCardArrow, HoverCardContent, HoverCardRoot, HoverCardTrigger},
+		range::{Range, RangeRoot, RangeThumb, RangeTrack},
+		select::{OptionSelectedIndicator, SelectDropdown, SelectIcon, SelectOption, SelectRoot, SelectTrigger, SelectValue},
 		shared::{EAlign, EOrientation, ESide},
+		switch::{SwitchIndicator, SwitchRoot},
 	},
 };
 
@@ -19,7 +22,10 @@ mod consts;
 
 #[component]
 pub fn HoverCardPage() -> Element {
-	let mut is_open = use_signal(|| false);
+	let mut side = use_signal(|| Vec::from([ESide::Top.to_string()]));
+	let mut align = use_signal(|| Vec::from([EAlign::Center.to_string()]));
+	let mut side_offset = use_signal(|| Vec::from([6.0_f32]));
+	let mut align_offset = use_signal(|| Vec::from([0.0_f32]));
 
 	let features_list: Vec<&str> =
 		Vec::from(["Controlled/uncontrolled state", "Custom side, alignment, offsets", "Optionally render a pointing arrow", "Custom open and close delays"]);
@@ -31,6 +37,125 @@ pub fn HoverCardPage() -> Element {
 			description: "A UI component that displays additional information or content when the user hovers over an element, providing a preview or quick details without requiring a click.",
 		}
 		section { class: "container flex flex-col px-4 lg:py-6 py-4 ",
+			div { class: "flex flex-wrap gap-5 items-center mb-4",
+				SelectRoot {
+					value: side(),
+					on_value_change: move |value: Vec<String>| { side.set(value) },
+					class: "relative w-fit",
+					SelectTrigger { class: "rounded-sm border border-orange-400 bg-neutral-900 text-neutral-100 w-52 flex justify-between items-center gap-4 px-3 py-2 min-h-12 hover:text-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-600 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900",
+						SelectValue {
+							placeholder: "Chose something...",
+							class: "data-[state=selected]:text-neutral-100 data-[state=placeholder]:text-neutral-500 overflow-ellipsis",
+						}
+						SelectIcon {}
+					}
+					SelectDropdown {
+						side: ESide::Bottom,
+						side_offset: 10.0,
+						class: "rounded bg-neutral-900 text-neutral-200 border border-neutral-700 z-10 px-2 py-4 [&_*]:transition-all w-60 ",
+						SelectOption {
+							key: 1,
+							value: ESide::Top.to_string(),
+							class: "flex items-center justify-between gap-4 px-2 py-3 hover:bg-neutral-700 focus-visible:outline-none focus-visible:bg-neutral-700 data-[disabled=true]:opacity-50 data-[disabled=true]:pointer-events-none data-[disabled=true]:cursor-auto",
+							"Top"
+							OptionSelectedIndicator { class: "w-4 h-4" }
+						}
+						SelectOption {
+							key: 2,
+							value: ESide::Left.to_string(),
+							class: "flex items-center justify-between gap-4 px-2 py-3 hover:bg-neutral-700 focus-visible:outline-none focus-visible:bg-neutral-700 data-[disabled=true]:opacity-50 data-[disabled=true]:pointer-events-none data-[disabled=true]:cursor-auto",
+							"Left"
+							OptionSelectedIndicator { class: "w-4 h-4" }
+						}
+						SelectOption {
+							key: 3,
+							value: ESide::Bottom.to_string(),
+							class: "flex items-center justify-between gap-4 px-2 py-3 hover:bg-neutral-700 focus-visible:outline-none focus-visible:bg-neutral-700 data-[disabled=true]:opacity-50 data-[disabled=true]:pointer-events-none data-[disabled=true]:cursor-auto",
+							"Bottom"
+							OptionSelectedIndicator { class: "w-4 h-4" }
+						}
+						SelectOption {
+							key: 4,
+							value: ESide::Right.to_string(),
+							class: "flex items-center justify-between gap-4 px-2 py-3 hover:bg-neutral-700 focus-visible:outline-none focus-visible:bg-neutral-700 data-[disabled=true]:opacity-50 data-[disabled=true]:pointer-events-none data-[disabled=true]:cursor-auto",
+							"Right"
+							OptionSelectedIndicator { class: "w-4 h-4" }
+						}
+					}
+				}
+				SelectRoot {
+					value: align(),
+					on_value_change: move |value: Vec<String>| { align.set(value) },
+					class: "relative w-fit",
+					SelectTrigger { class: "rounded-sm border border-orange-400 bg-neutral-900 text-neutral-100 w-52 flex justify-between items-center gap-4 px-3 py-2 min-h-12 hover:text-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-600 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900",
+						SelectValue {
+							placeholder: "Chose something...",
+							class: "data-[state=selected]:text-neutral-100 data-[state=placeholder]:text-neutral-500 overflow-ellipsis",
+						}
+						SelectIcon {}
+					}
+					SelectDropdown {
+						side: ESide::Bottom,
+						side_offset: 10.0,
+						class: "rounded bg-neutral-900 text-neutral-200 border border-neutral-700 z-10 px-2 py-4 [&_*]:transition-all w-60 ",
+						SelectOption {
+							key: 1,
+							value: EAlign::Start.to_string(),
+							class: "flex items-center justify-between gap-4 px-2 py-3 hover:bg-neutral-700 focus-visible:outline-none focus-visible:bg-neutral-700 data-[disabled=true]:opacity-50 data-[disabled=true]:pointer-events-none data-[disabled=true]:cursor-auto",
+							"Start"
+							OptionSelectedIndicator { class: "w-4 h-4" }
+						}
+						SelectOption {
+							key: 2,
+							value: EAlign::Center.to_string(),
+							class: "flex items-center justify-between gap-4 px-2 py-3 hover:bg-neutral-700 focus-visible:outline-none focus-visible:bg-neutral-700 data-[disabled=true]:opacity-50 data-[disabled=true]:pointer-events-none data-[disabled=true]:cursor-auto",
+							"Center"
+							OptionSelectedIndicator { class: "w-4 h-4" }
+						}
+						SelectOption {
+							key: 3,
+							value: EAlign::End.to_string(),
+							class: "flex items-center justify-between gap-4 px-2 py-3 hover:bg-neutral-700 focus-visible:outline-none focus-visible:bg-neutral-700 data-[disabled=true]:opacity-50 data-[disabled=true]:pointer-events-none data-[disabled=true]:cursor-auto",
+							"End"
+							OptionSelectedIndicator { class: "w-4 h-4" }
+						}
+					}
+				}
+			}
+			div { class: "flex flex-wrap gap-5 items-center mb-4",
+				div {
+					span { class: "mb-4 inline-block", "Side offset" }
+					RangeRoot {
+						class: "w-52 flex items-center",
+						value: side_offset(),
+						on_value_change: move |v| side_offset.set(v),
+						min: 0.0,
+						max: 20.0,
+						RangeTrack { class: "flex-1 bg-neutral-600 rounded-full h-1",
+							Range { class: "flex-1 bg-orange-600 rounded-full h-1" }
+						}
+						RangeThumb { class: "w-6 h-6 rounded-full bg-orange-600 flex items-center justify-center text-neutral-300 text-xs cursor-pointer transition-colors hover:text-neutral-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-orange-600 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900",
+							"{side_offset().get(0).unwrap_or(&0.0):.0}"
+						}
+					}
+				}
+				div {
+					span { class: "mb-4 inline-block", "Align offset" }
+					RangeRoot {
+						class: "w-52 flex items-center",
+						value: align_offset(),
+						on_value_change: move |v| align_offset.set(v),
+						min: 0.0,
+						max: 20.0,
+						RangeTrack { class: "flex-1 bg-neutral-600 rounded-full h-1",
+							Range { class: "flex-1 bg-orange-600 rounded-full h-1" }
+						}
+						RangeThumb { class: "w-6 h-6 rounded-full bg-orange-600 flex items-center justify-center text-neutral-300 text-xs cursor-pointer transition-colors hover:text-neutral-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-orange-600 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900",
+							"{align_offset().get(0).unwrap_or(&0.0):.0}"
+						}
+					}
+				}
+			}
 			div { class: "grow flex flex-col justify-center items-center rounded-md border border-neutral-800 bg-neutral-950 overflow-hidden",
 				div { class: "p-6 flex grow items-center justify-center w-full",
 					HoverCardRoot { class: "w-fit",
@@ -40,9 +165,12 @@ pub fn HoverCardPage() -> Element {
 							Icon { icon: IoLogoGithub, class: "w-5 h-5" }
 						}
 						HoverCardContent {
-							side: ESide::Top,
-							side_offset: 6.0,
-							align: EAlign::Center,
+							side: ESide::try_from(side().get(0).unwrap_or(&"top".into())).ok().unwrap_or(ESide::Top),
+							side_offset: *side_offset().get(0).unwrap_or(&6.0),
+							align: EAlign::try_from(align().get(0).unwrap_or(&"center".into()))
+									.ok()
+									.unwrap_or(EAlign::Center),
+							align_offset: *align_offset().get(0).unwrap_or(&0.0),
 							class: "bg-neutral-700 text-neutral-100 rounded-sm w-56 p-4 data-[state-open]:animate-fade-in data-[state=closed]:animate-fade-out z-50",
 							div { class: "flex flex-col",
 								h3 { class: "font-medium text-lg mb-1", "Maestro-Headless" }

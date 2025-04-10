@@ -40,19 +40,20 @@ pub fn use_escape(on_outside_key: Callback<()>, flag: Memo<bool>) {
 			if let Some(closure) = closure_ref.peek().as_ref() {
 				let window = window().expect("should have a window in this context");
 				let document = window.document().expect("window should have a document");
+				document.remove_event_listener_with_callback("keydown", closure.as_ref().unchecked_ref()).expect("should remove event listener");
+			}
+			closure_ref.set(None);
+		}
+	});
+
+	{
+		use_drop(move || {
+			if let Some(closure) = closure_ref.peek().as_ref() {
+				let window = window().expect("should have a window in this context");
+				let document = window.document().expect("window should have a document");
 
 				document.remove_event_listener_with_callback("keydown", closure.as_ref().unchecked_ref()).expect("should remove event listener");
 			}
-		}
-	});
-
-	use_drop(move || {
-		if let Some(closure) = closure_ref.peek().as_ref() {
-			let window = window().expect("should have a window in this context");
-			let document = window.document().expect("window should have a document");
-
-			document.remove_event_listener_with_callback("keydown", closure.as_ref().unchecked_ref()).expect("should remove event listener");
-			drop(closure);
-		}
-	});
+		});
+	}
 }

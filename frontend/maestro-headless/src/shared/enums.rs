@@ -9,11 +9,15 @@ pub enum EOrientation {
 	Vertical,
 }
 
-#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, strum_macros::Display)]
 pub enum ESide {
+	#[strum(to_string = "top")]
 	Top,
+	#[strum(to_string = "right")]
 	Right,
+	#[strum(to_string = "bottom")]
 	Bottom,
+	#[strum(to_string = "left")]
 	Left,
 }
 
@@ -28,9 +32,39 @@ impl ESide {
 	}
 }
 
-#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+impl TryFrom<&String> for ESide {
+	type Error = String;
+
+	fn try_from(v: &String) -> Result<Self, Self::Error> {
+		match v.as_str() {
+			"top" => Ok(ESide::Top),
+			"right" => Ok(ESide::Right),
+			"bottom" => Ok(ESide::Bottom),
+			"left" => Ok(ESide::Left),
+			_ => Err(format!("'{}' is not a valid ESide", v)),
+		}
+	}
+}
+
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, strum_macros::Display)]
 pub enum EAlign {
+	#[strum(to_string = "start")]
 	Start,
+	#[strum(to_string = "center")]
 	Center,
+	#[strum(to_string = "end")]
 	End,
+}
+
+impl TryFrom<&String> for EAlign {
+	type Error = String;
+
+	fn try_from(v: &String) -> Result<Self, Self::Error> {
+		match v.as_str() {
+			"start" => Ok(EAlign::Start),
+			"center" => Ok(EAlign::Center),
+			"end" => Ok(EAlign::End),
+			_ => Err(format!("'{}' is not a valid EAlign", v)),
+		}
+	}
 }

@@ -3,7 +3,7 @@ use {
 		button::Button,
 		popper::{Popper, PopperAnchor, PopperContent},
 		presence::Presence,
-		shared::{EAlign, ESide, UseControllableStateParams, use_controllable_state, use_escape, use_outside_click},
+		shared::{EAlign, ESide, UseControllableStateParams, use_controllable_state, use_escape, use_outside_click, use_ref_provider},
 	},
 	dioxus::prelude::*,
 	std::{fmt::Debug, rc::Rc},
@@ -264,7 +264,7 @@ pub fn SelectDropdown(props: SelectDropdownProps) -> Element {
 		context.set_open.call(false);
 	});
 
-	let mut current_ref = use_signal(|| None::<Rc<MountedData>>);
+	use_ref_provider();
 
 	use_escape(handle_close, context.open);
 
@@ -275,7 +275,7 @@ pub fn SelectDropdown(props: SelectDropdownProps) -> Element {
 	attrs.push(Attribute::new("--maestro-select-content-width", "var(--maestro-popper-content-width)", Some("style"), false));
 
 	rsx! {
-		Presence { node_ref: current_ref, present: *context.open.read(),
+		Presence { present: *context.open.read(),
 			PopperContent {
 				role: "listbox",
 				id: context.container_id.to_string(),
@@ -288,7 +288,6 @@ pub fn SelectDropdown(props: SelectDropdownProps) -> Element {
 				aria_labelledby: context.trigger_id.to_string(),
 				aria_hidden: !*context.open.read(),
 				"data-state": if *context.open.read() { "open" } else { "closed" },
-				onmounted: move |event: Event<MountedData>| current_ref.set(Some(event.data())),
 				extra_attributes: attrs.clone(),
 				{children}
 			}

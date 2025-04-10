@@ -3,7 +3,7 @@ use {
 		button::Button,
 		popper::{Popper, PopperAnchor, PopperArrow, PopperContent},
 		presence::Presence,
-		shared::{EAlign, ESide, UseControllableStateParams, use_controllable_state},
+		shared::{EAlign, ESide, UseControllableStateParams, use_controllable_state, use_ref_provider},
 	},
 	dioxus::prelude::*,
 	std::{fmt::Debug, rc::Rc},
@@ -331,7 +331,7 @@ pub fn TooltipContent(props: TooltipContentProps) -> Element {
 	let TooltipContentProps { side, side_offset, align, align_offset, avoid_collisions, collision_padding, attributes, children } = props;
 
 	let context = use_context::<TooltipContext>();
-	let mut current_ref = use_signal(|| None::<Rc<MountedData>>);
+	use_ref_provider();
 
 	let mut attrs = attributes.clone();
 	attrs.push(Attribute::new("--maestro-tooltip-anchor-height", "var(--maestro-popper-anchor-height)", Some("style"), false));
@@ -340,7 +340,7 @@ pub fn TooltipContent(props: TooltipContentProps) -> Element {
 	attrs.push(Attribute::new("--maestro-tooltip-content-width", "var(--maestro-popper-content-width)", Some("style"), false));
 
 	rsx! {
-		Presence { node_ref: current_ref, present: *context.open.read(),
+		Presence { present: *context.open.read(),
 			PopperContent {
 				role: "popup",
 				id: context.content_id.to_string(),
@@ -355,7 +355,6 @@ pub fn TooltipContent(props: TooltipContentProps) -> Element {
 				"data-state": if *context.open.read() { "open" } else { "closed" },
 				"data-state-open": context.state_attribute.clone(),
 				extra_attributes: attrs.clone(),
-				onmounted: move |event: Event<MountedData>| current_ref.set(Some(event.data())),
 				{children}
 			}
 		}
