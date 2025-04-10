@@ -67,7 +67,7 @@ impl Route {
 			Route::CollapsiblePage {} => "Collapsible",
 			Route::DialogPage {} => "Dialog",
 			Route::HoverCardPage {} => "Hover Card",
-			Route::PopoverPage {} => "PopoverRoot",
+			Route::PopoverPage {} => "Popover",
 			Route::ProgressBarPage {} => "Progress Bar",
 			Route::RadioPage {} => "Radio Group",
 			Route::RangePage {} => "Range",

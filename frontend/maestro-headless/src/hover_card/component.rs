@@ -1,6 +1,5 @@
 use {
 	crate::{
-		focus_trap::FocusTrap,
 		popper::{Popper, PopperAnchor, PopperArrow, PopperContent},
 		presence::Presence,
 		shared::{EAlign, ESide, UseControllableStateParams, use_controllable_state, use_outside_click, use_ref_provider},

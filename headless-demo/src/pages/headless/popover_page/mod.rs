@@ -14,6 +14,7 @@ use {
 		range::{Range, RangeRoot, RangeThumb, RangeTrack},
 		select::{OptionSelectedIndicator, SelectDropdown, SelectIcon, SelectOption, SelectRoot, SelectTrigger, SelectValue},
 		shared::{EAlign, EOrientation, ESide},
+		switch::{SwitchIndicator, SwitchRoot},
 	},
 };
 
@@ -26,6 +27,7 @@ pub fn PopoverPage() -> Element {
 	let mut align = use_signal(|| Vec::from([EAlign::Center.to_string()]));
 	let mut side_offset = use_signal(|| Vec::from([6.0_f32]));
 	let mut align_offset = use_signal(|| Vec::from([0.0_f32]));
+	let mut show_nested = use_signal(|| false);
 
 	let features_list: Vec<&str> = Vec::from([
 		"Controlled/uncontrolled state",
@@ -160,6 +162,15 @@ pub fn PopoverPage() -> Element {
 					}
 				}
 			}
+			div { class: "flex items-center gap-2 text-neutral-100 mb-4 mt-5",
+				SwitchRoot {
+					checked: show_nested(),
+					on_toggle_change: move |v| show_nested.set(v),
+					class: "flex items-center px-1 py-1 rounded-full h-6 w-12 bg-neutral-500 data-[state=checked]:bg-neutral-100 border border-neutral-700",
+					SwitchIndicator { class: "relative data-[state=checked]:translate-x-5 transition ease-linear rounded-full w-5 h-5 bg-neutral-900" }
+				}
+				"Show nested popover"
+			}
 			div { class: "grow flex flex-col justify-center items-center rounded-md border border-neutral-800 bg-neutral-950 overflow-hidden",
 				div { class: "p-6 flex grow items-center justify-center w-full",
 					PopoverRoot { class: "w-fit",
@@ -174,7 +185,7 @@ pub fn PopoverPage() -> Element {
 									.unwrap_or(EAlign::Center),
 							align_offset: *align_offset().get(0).unwrap_or(&0.0),
 							class: "z-10 data-[state=open]:opacity-100 data-[state=closed]:opacity-0 bg-neutral-700 text-neutral-100 text-xs text-center rounded-sm p-2 transition-opacity ease-linear",
-							div { class: "flex flex-col gap-3",
+							div { class: "flex flex-col gap-4",
 								h3 { class: "font-medium text-lg", "Here maybe any content you want" }
 								div { class: "overflow-hidden rounded-lg border border-neutral-500 w-full h-40",
 									img {
@@ -183,41 +194,27 @@ pub fn PopoverPage() -> Element {
 										alt: "whales",
 									}
 								}
-								SelectRoot {
-									value: align(),
-									on_value_change: move |value: Vec<String>| { align.set(value) },
-									class: "relative w-fit",
-									SelectTrigger { class: "rounded-sm border border-orange-400 bg-neutral-900 text-neutral-100 w-52 flex justify-between items-center gap-4 px-3 py-2 min-h-12 hover:text-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-600 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900",
-										SelectValue {
-											placeholder: "Chose something...",
-											class: "data-[state=selected]:text-neutral-100 data-[state=placeholder]:text-neutral-500 overflow-ellipsis",
+								if show_nested() {
+									PopoverRoot { class: "w-fit mx-auto ",
+										PopoverTrigger { class: "mx-auto px-3 h-10 flex justify-center items-center bg-neutral-700 hover:bg-neutral-600 border border-orange-600 text-neutral-300 hover:text-neutral-100 rounded-full focus-visible:ring-2 focus-visible:ring-offset-2 outline-none transition-colors focus-visible:ring-orange-600 focus-visible:ring-offset-neutral-900",
+											"Nested Popover"
 										}
-										SelectIcon {}
-									}
-									SelectDropdown {
-										side: ESide::Bottom,
-										side_offset: 10.0,
-										class: "rounded bg-neutral-900 text-neutral-200 border border-neutral-700 z-10 px-2 py-4 [&_*]:transition-all w-60 ",
-										SelectOption {
-											key: 1,
-											value: EAlign::Start.to_string(),
-											class: "flex items-center justify-between gap-4 px-2 py-3 hover:bg-neutral-700 focus-visible:outline-none focus-visible:bg-neutral-700 data-[disabled=true]:opacity-50 data-[disabled=true]:pointer-events-none data-[disabled=true]:cursor-auto",
-											"Start"
-											OptionSelectedIndicator { class: "w-4 h-4" }
-										}
-										SelectOption {
-											key: 2,
-											value: EAlign::Center.to_string(),
-											class: "flex items-center justify-between gap-4 px-2 py-3 hover:bg-neutral-700 focus-visible:outline-none focus-visible:bg-neutral-700 data-[disabled=true]:opacity-50 data-[disabled=true]:pointer-events-none data-[disabled=true]:cursor-auto",
-											"Center"
-											OptionSelectedIndicator { class: "w-4 h-4" }
-										}
-										SelectOption {
-											key: 3,
-											value: EAlign::End.to_string(),
-											class: "flex items-center justify-between gap-4 px-2 py-3 hover:bg-neutral-700 focus-visible:outline-none focus-visible:bg-neutral-700 data-[disabled=true]:opacity-50 data-[disabled=true]:pointer-events-none data-[disabled=true]:cursor-auto",
-											"End"
-											OptionSelectedIndicator { class: "w-4 h-4" }
+										PopoverContent {
+											side: ESide::Top,
+											class: "z-10 data-[state=open]:opacity-100 data-[state=closed]:opacity-0 bg-neutral-100 text-neutral-800 text-xs text-center rounded-sm p-2 transition-opacity ease-linear",
+											div { class: "flex flex-col gap-3",
+												h3 { class: "font-medium text-lg",
+													"Nested is here!"
+												}
+												PopoverClose { class: "h-8 px-3 w-2/3 mx-auto rounded-md flex items-center justify-center bg-orange-600 text-neutral-100 border border-transparent transition-colors hover:bg-neutral-700 hover:border-orange-600 focus-visible:outline-none focus-visible:hover:bg-neutral-700 focus-visible:ring-2 focus-visible:ring-orange-600 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-700",
+													"Close"
+												}
+											}
+											PopoverArrow {
+												width: 16.0,
+												height: 8.0,
+												class: "text-neutral-100",
+											}
 										}
 									}
 								}

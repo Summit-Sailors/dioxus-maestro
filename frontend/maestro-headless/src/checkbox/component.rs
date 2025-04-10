@@ -31,8 +31,8 @@ pub struct CheckboxRootProps {
 	pub value: ReadOnlySignal<String>,
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]
 	pub disabled: ReadOnlySignal<bool>,
-	#[props(default = false)]
-	pub required: bool,
+	#[props(default = ReadOnlySignal::new(Signal::new(false)))]
+	pub required: ReadOnlySignal<bool>,
 
 	#[props(extends = GlobalAttributes, extends = button)]
 	pub attributes: Vec<Attribute>,
@@ -65,7 +65,7 @@ pub fn CheckboxRoot(props: CheckboxRootProps) -> Element {
 				checked: checked(),
 				value: value(),
 				disabled: disabled(),
-				required,
+				required: required(),
 				aria_hidden: true,
 			}
 			Button {
@@ -74,8 +74,8 @@ pub fn CheckboxRoot(props: CheckboxRootProps) -> Element {
 				role: "checkbox",
 				disabled,
 				aria_checked: checked().then_some(Some(true)),
-				aria_required: required.then_some(Some(true)),
-				"data-required": required.then_some(Some(true)),
+				aria_required: required().then_some(Some(true)),
+				"data-required": required().then_some(Some(true)),
 				"data-state": if checked() { "checked" } else { "unchecked" },
 				pointer_events: disabled().then_some(Some("none")),
 				onclick: move |_| set_checked(!checked()),

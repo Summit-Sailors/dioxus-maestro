@@ -2,13 +2,12 @@ use {
 	crate::{
 		focus_trap::FocusTrap,
 		popper::component::utils::{
-			Alignment, ArrowData, FloatingStyles, Placement, Rect, TransformOriginData, calculate_position, find_scrollable_parents, get_element_rect,
+			Alignment, ArrowData, FloatingStyles, Placement, Rect, TransformOriginData, calculate_position, find_positioned_parent, find_scrollable_parents,
+			get_element_rect,
 		},
-		portal::Portal,
 		shared::{EAlign, ESide},
 	},
 	dioxus::{prelude::*, web::WebEventExt},
-	dioxus_logger::tracing::info,
 	std::rc::Rc,
 	web_sys::{
 		wasm_bindgen::{JsCast, prelude::Closure},
@@ -236,10 +235,10 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 	let popper_context = use_context::<PopperContext>();
 
 	let content = use_context::<Signal<Option<Rc<MountedData>>>>();
-	info!("CONTENT {:?}", content());
 	let arrow = use_signal(|| None::<Rc<MountedData>>);
 	let mut closure = use_signal(|| None::<Closure<dyn FnMut()>>);
 	let mut parents = use_signal::<Vec<web_sys::Element>>(Vec::new);
+	let mut parent = use_signal::<Option<web_sys::Element>>(|| None);
 	let mut last_update = use_signal(|| 0.0);
 	let placement = Signal::new(Placement {
 		side: side(),
@@ -322,8 +321,16 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 				}
 			}
 
-			let (styles, arrow, transform) =
-				calculate_position(&reference_rect, &floating_rect, &new_placement.peek(), arrow_width as f32, arrow_height as f32, side_offset(), align_offset());
+			let (styles, arrow, transform) = calculate_position(
+				parent(),
+				&reference_rect,
+				&floating_rect,
+				&new_placement.peek(),
+				arrow_width as f32,
+				arrow_height as f32,
+				side_offset(),
+				align_offset(),
+			);
 
 			floating_styles.set(styles);
 			arrow_data.set(arrow);
@@ -382,6 +389,13 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 		}
 	});
 
+	use_effect(move || {
+		if let Some(anchor) = popper_context.anchor.read().as_ref() {
+			let fixed_parent = find_positioned_parent(anchor);
+			parent.set(fixed_parent);
+		}
+	});
+
 	#[cfg(target_arch = "wasm32")]
 	{
 		use_drop(move || {
@@ -427,10 +441,9 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 		attrs.push(Attribute::new("--maestro-popper-content-width", format!("{}px", width), Some("style"), false));
 	}
 
-	info!("{:?}", floating_styles().style_transform());
 	rsx! {
 		FocusTrap {
-			position: "fixed",
+			position: floating_styles().position,
 			top: floating_styles().style_top(),
 			left: floating_styles().style_left(),
 			transform: floating_styles()
@@ -443,6 +456,7 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 							}
 					}),
 			min_width: "max-content",
+			max_height: "max-content",
 			will_change: "transform",
 			"data-side": format!("{:?}", placed_side).to_lowercase(),
 			"data-align": format!("{:?}", placed_align).to_lowercase(),

@@ -334,6 +334,9 @@
   .mx-auto {
     margin-inline: auto;
   }
+  .mt-5 {
+    margin-top: calc(var(--spacing) * 5);
+  }
   .mb-1 {
     margin-bottom: calc(var(--spacing) * 1);
   }
@@ -1251,6 +1254,13 @@
       }
     }
   }
+  .hover\:bg-neutral-600 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--color-neutral-600);
+      }
+    }
+  }
   .hover\:bg-neutral-700 {
     &:hover {
       @media (hover: hover) {
@@ -1564,6 +1574,11 @@
       width: 100%;
     }
   }
+  .data-\[orientation\=horizontal\]\:items-center {
+    &[data-orientation="horizontal"] {
+      align-items: center;
+    }
+  }
   .data-\[orientation\=horizontal\]\:border-r {
     &[data-orientation="horizontal"] {
       border-right-style: var(--tw-border-style);
@@ -1606,6 +1621,11 @@
   .data-\[orientation\=vertical\]\:flex-col {
     &[data-orientation="vertical"] {
       flex-direction: column;
+    }
+  }
+  .data-\[orientation\=vertical\]\:justify-center {
+    &[data-orientation="vertical"] {
+      justify-content: center;
     }
   }
   .data-\[orientation\=vertical\]\:border-b {

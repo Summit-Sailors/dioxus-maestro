@@ -1,6 +1,5 @@
 use {
 	dioxus::{prelude::*, web::WebEventExt},
-	dioxus_logger::tracing::info,
 	std::rc::Rc,
 	uuid::Uuid,
 	web_sys::{
@@ -62,8 +61,6 @@ pub fn FocusTrap(props: FocusTrapProps) -> Element {
 	let mut closure_focus_out_ref = use_signal(|| None::<Closure<dyn FnMut(web_sys::FocusEvent)>>);
 	let mut closure_keyboard_ref = use_signal(|| None::<Closure<dyn FnMut(web_sys::KeyboardEvent)>>);
 	let mut current_ref = use_context::<Signal<Option<Rc<MountedData>>>>();
-
-	info!("FOC {:?}", current_ref());
 
 	let mut attrs = attributes.clone();
 	attrs.extend(extra_attributes);
@@ -184,10 +181,6 @@ textarea:not([disabled]):not([aria-disabled='true']):not([data-disabled='true'])
 				element.add_event_listener_with_callback("focusin", closure.as_ref().unchecked_ref()).expect("should register event listener");
 			}
 
-			// if let Some(closure) = &*closure_focus_out_ref.read() {
-			// 	element.add_event_listener_with_callback("focusout", closure.as_ref().unchecked_ref()).expect("should register event listener");
-			// }
-
 			if let Some(closure) = &*closure_keyboard_ref.read() {
 				element.add_event_listener_with_callback("keydown", closure.as_ref().unchecked_ref()).expect("should register event listener");
 			}
@@ -224,7 +217,6 @@ textarea:not([disabled]):not([aria-disabled='true']):not([data-disabled='true'])
 							handler.call(event);
 					}
 			},
-
 			onmouseenter: move |event| {
 					if let Some(handler) = onmouseenter {
 							handler.call(event);

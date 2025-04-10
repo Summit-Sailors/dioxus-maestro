@@ -13,7 +13,7 @@ pub struct CheckboxGroupContext {
 	pub set_value: Callback<Vec<String>>,
 	pub orientation: ReadOnlySignal<EOrientation>,
 	pub disabled: ReadOnlySignal<bool>,
-	pub required: bool,
+	pub required: ReadOnlySignal<bool>,
 }
 
 impl CheckboxGroupContext {
@@ -22,7 +22,7 @@ impl CheckboxGroupContext {
 		set_value: Callback<Vec<String>>,
 		orientation: ReadOnlySignal<EOrientation>,
 		disabled: ReadOnlySignal<bool>,
-		required: bool,
+		required: ReadOnlySignal<bool>,
 	) -> Self {
 		Self { value, set_value, orientation, disabled, required }
 	}
@@ -52,8 +52,8 @@ pub struct CheckboxGroupProps {
 	pub on_value_change: Option<Callback<Vec<String>>>,
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]
 	pub disabled: ReadOnlySignal<bool>,
-	#[props(optional, default = false)]
-	pub required: bool,
+	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]
+	pub required: ReadOnlySignal<bool>,
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(EOrientation::Horizontal)))]
 	pub orientation: ReadOnlySignal<EOrientation>,
 
@@ -85,8 +85,8 @@ pub fn CheckboxGroup(props: CheckboxGroupProps) -> Element {
 			role: "group",
 			aria_disabled: disabled().then_some(Some(true)),
 			"data-disabled": disabled().then_some(Some(true)),
-			aria_required: required.then_some(Some(true)),
-			"data-required": required.then_some(Some(true)),
+			aria_required: required().then_some(Some(true)),
+			"data-required": required().then_some(Some(true)),
 			aria_orientation: orientation().to_string(),
 			"data-orientation": orientation().to_string(),
 			onkeydown: handle_key_down,

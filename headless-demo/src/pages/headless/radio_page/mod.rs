@@ -8,10 +8,13 @@ use {
 	},
 	consts::{EXAMPLE, EXAMPLE_ANATOMY},
 	dioxus::prelude::*,
+	dioxus_free_icons::{Icon, icons::ld_icons::LdSmile},
 	maestro_headless::{
 		radio_group::{RadioGroupIndicator, RadioGroupItem, RadioGroupRoot},
 		shared::EOrientation,
+		switch::{SwitchIndicator, SwitchRoot},
 	},
+	tailwind_fuse::tw_merge,
 };
 
 mod consts;
@@ -25,6 +28,11 @@ pub fn RadioPage() -> Element {
 		"Supports vertical / horizontal orientation",
 	]);
 
+	let mut disabled = use_signal(|| false);
+	let mut switch = use_signal(|| false);
+	let mut use_custom_indicator = use_signal(|| false);
+	let orientation = use_memo(move || if switch() { EOrientation::Vertical } else { EOrientation::Horizontal });
+
 	rsx! {
 		DescriptionSection {
 			class: "[&>h3]:lg:text-2xl [&>h3]:text-xl",
@@ -32,15 +40,58 @@ pub fn RadioPage() -> Element {
 			description: "A group of radio buttons where only one item can be checked at a time.",
 		}
 		section { class: "container flex flex-col px-4 lg:py-6 py-4 ",
+			div { class: "flex flex-wrap gap-5 items-center mb-4",
+				div { class: "flex items-center gap-2 text-neutral-100 mb-4 mt-5",
+					SwitchRoot {
+						checked: disabled(),
+						on_toggle_change: move |v| disabled.set(v),
+						class: "flex items-center px-1 py-1 rounded-full h-6 w-12 bg-neutral-500 data-[state=checked]:bg-neutral-100 border border-neutral-700",
+						SwitchIndicator { class: "relative data-[state=checked]:translate-x-5 transition ease-linear rounded-full w-5 h-5 bg-neutral-900" }
+					}
+					"Disable"
+				}
+				div { class: "flex items-center gap-2 text-neutral-100 mb-4 mt-5",
+					SwitchRoot {
+						checked: switch(),
+						on_toggle_change: move |v| switch.set(v),
+						class: "flex items-center px-1 py-1 rounded-full h-6 w-12 bg-neutral-500 data-[state=checked]:bg-neutral-100 border border-neutral-700",
+						SwitchIndicator { class: "relative data-[state=checked]:translate-x-5 transition ease-linear rounded-full w-5 h-5 bg-neutral-900" }
+					}
+					"Vertical"
+				}
+				div { class: "flex items-center gap-2 text-neutral-100 mb-4 mt-5",
+					SwitchRoot {
+						checked: use_custom_indicator(),
+						on_toggle_change: move |v| use_custom_indicator.set(v),
+						class: "flex items-center px-1 py-1 rounded-full h-6 w-12 bg-neutral-500 data-[state=checked]:bg-neutral-100 border border-neutral-700",
+						SwitchIndicator { class: "relative data-[state=checked]:translate-x-5 transition ease-linear rounded-full w-5 h-5 bg-neutral-900" }
+					}
+					"Custom Indicator"
+				}
+			}
 			div { class: "grow flex flex-col justify-center items-center rounded-md border border-neutral-800 bg-neutral-950 overflow-hidden",
 				div { class: "p-6 flex grow items-center justify-center w-full",
-					RadioGroupRoot { class: "flex items-center gap-4",
+					RadioGroupRoot {
+						default_value: "coffee",
+						orientation: orientation(),
+						class: "flex data-[orientation=horizontal]:items-center data-[orientation=vertical]:justify-center data-[orientation=vertical]:flex-col gap-4",
+						disabled: disabled(),
 						div { class: "flex items-center gap-2",
 							RadioGroupItem {
 								value: "coffee",
 								id: "maestro-radio-1",
 								class: "w-6 h-6 rounded-full flex items-center justify-center transition-colors border border-orange-400 hover:border-orange-600 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-orange-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 disabled:opacity-50",
-								RadioGroupIndicator { class: "w-3 h-3 rounded-full bg-orange-600" }
+								RadioGroupIndicator {
+									class: tw_merge!(
+											"w-3 h-3 rounded-full", (! use_custom_indicator()).then_some("bg-orange-600")
+									),
+									if use_custom_indicator() {
+										Icon {
+											icon: LdSmile,
+											class: "w-5 h-5 text-orange-400",
+										}
+									}
+								}
 							}
 							label { r#for: "maestro-radio-1", "Coffee" }
 						}
@@ -50,7 +101,17 @@ pub fn RadioPage() -> Element {
 								id: "maestro-radio-2",
 								class: "w-6 h-6 rounded-full flex items-center justify-center transition-colors border border-orange-400 hover:border-orange-600 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-orange-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 disabled:opacity-50",
 								disabled: true,
-								RadioGroupIndicator { class: "w-3 h-3 rounded-full bg-orange-600" }
+								RadioGroupIndicator {
+									class: tw_merge!(
+											"w-3 h-3 rounded-full", (! use_custom_indicator()).then_some("bg-orange-600")
+									),
+									if use_custom_indicator() {
+										Icon {
+											icon: LdSmile,
+											class: "w-5 h-5 text-orange-400",
+										}
+									}
+								}
 							}
 							label { r#for: "maestro-radio-2", "Water" }
 						}
@@ -59,7 +120,17 @@ pub fn RadioPage() -> Element {
 								value: "juice",
 								id: "maestro-radio-3",
 								class: "w-6 h-6 rounded-full flex items-center justify-center transition-colors border border-orange-400 hover:border-orange-600 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-orange-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 disabled:opacity-50",
-								RadioGroupIndicator { class: "w-3 h-3 rounded-full bg-orange-600" }
+								RadioGroupIndicator {
+									class: tw_merge!(
+											"w-3 h-3 rounded-full", (! use_custom_indicator()).then_some("bg-orange-600")
+									),
+									if use_custom_indicator() {
+										Icon {
+											icon: LdSmile,
+											class: "w-5 h-5 text-orange-400",
+										}
+									}
+								}
 							}
 							label { r#for: "maestro-radio-3", "Juice" }
 						}

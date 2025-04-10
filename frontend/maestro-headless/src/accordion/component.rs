@@ -271,7 +271,6 @@ pub struct AccordionContentProps {
 pub fn AccordionContent(props: AccordionContentProps) -> Element {
 	let accordion_context = use_context::<AccordionContext>();
 	let accordion_item_context = use_context::<AccordionItemContext>();
-	// let mut current_ref = use_signal(|| None::<Rc<MountedData>>);
 	let mut current_ref = use_ref_provider();
 	let (width, height) = use_dimensions(current_ref, *accordion_item_context.open.peek());
 

@@ -17,16 +17,10 @@ pub struct PresenceProps {
 #[component]
 pub fn Presence(props: PresenceProps) -> Element {
 	let PresenceProps { present, children } = props;
-	let mut current_ref = use_context::<Signal<Option<Rc<MountedData>>>>();
+	let current_ref = use_context::<Signal<Option<Rc<MountedData>>>>();
 
 	let memo_present = use_memo(move || present());
 	let is_present = use_presence(memo_present, current_ref);
-
-	// use_effect(move || {
-	// 	if !is_present() {
-	// 		current_ref.set(None);
-	// 	}
-	// });
 
 	rsx! {
 		if is_present() {

@@ -14,7 +14,6 @@ use {
 		range::{Range, RangeRoot, RangeThumb, RangeTrack},
 		select::{OptionSelectedIndicator, SelectDropdown, SelectIcon, SelectOption, SelectRoot, SelectTrigger, SelectValue},
 		shared::{EAlign, EOrientation, ESide},
-		switch::{SwitchIndicator, SwitchRoot},
 	},
 };
 
