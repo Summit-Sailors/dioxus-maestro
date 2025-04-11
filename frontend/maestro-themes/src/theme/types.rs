@@ -1,4 +1,4 @@
-use std::fmt::{Disaply, Formatter};
+use std::fmt::{self, Display, Formatter};
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Theme {
@@ -16,11 +16,12 @@ impl Theme {
 		}
 	}
 
-	pub fn from_str_slice(s: &str) -> Self {
+	pub fn from_str_slice(s: &str) -> Result<Self, String> {
 		match s {
-			"light" => Theme::Light,
-			"dark" => Theme::Dark,
-			_ => Theme::Auto,
+			"light" => Ok(Theme::Light),
+			"dark" => Ok(Theme::Dark),
+			"auto" => Ok(Theme::Auto),
+			_ => Err(format!("Invalid theme: {}", s)),
 		}
 	}
 
@@ -70,7 +71,7 @@ impl ResolvedTheme {
 		match s {
 			"light" => ResolvedTheme::Light,
 			"dark" => ResolvedTheme::Dark,
-			_ => ResolvedTheme::Light,
+			_ => ResolvedTheme::Dark,
 		}
 	}
 }

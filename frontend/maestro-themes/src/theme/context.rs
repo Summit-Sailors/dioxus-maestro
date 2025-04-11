@@ -2,10 +2,14 @@
 use {
 	crate::theme::{
 		storage::{ThemeStorage, get_storage},
-		system::{SytstemThemeDetector, get_system_theme_detector},
+		system::{SystemThemeDetector, get_system_theme_detector},
 		types::{ResolvedTheme, Theme},
 	},
-	dioxus::prelude::*,
+	dioxus::{
+		logger::tracing::{Level, warn},
+		prelude::*,
+	},
+	dioxus_desktop::tao::{platform::macos::WindowExtMacOS, rwh_06::HasWindowHandle},
 	std::{cell::RefCell, collections::HashMap, rc::Rc},
 };
 
@@ -13,33 +17,33 @@ use {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct ThemeContext {
-	/// Theme preference (e.g., "light", "dark", "custom")
-	pub theme: Signal<Theme>,
+	/// Theme preference (e.g., "light", "dark", "auto")
+	pub theme: Signal<Option<Theme>>,
 	/// Actual theme being applied
 	pub resolved_theme: Signal<ResolvedTheme>,
 	/// System preference (true means dark mode)
 	pub system_prefers_dark: Signal<bool>,
 	/// Function to set theme
-	pub set_theme: Rc<RefCell<dyn FnMut(Theme)>>,
+	pub set_theme: Callback<Theme>,
 }
 
 /// Storing the Theme state
-pub static THEME_ATOM: Atom<Theme> = |_| Theme::System;
+pub static THEME_ATOM: Atom<Theme> = |_| Theme::Auto;
 
 // hooks to access theme context
 pub fn use_theme() -> ThemeContext {
-	use_context::<ThemeContext>().expect("ThemeContext not found. Make sure to wrap your app with ThemeProvider.")
+	use_context::<ThemeContext>()
 }
 
 /// Current theme class for CSS
-pub fn use_theme_class() -> String {
+pub fn use_theme_class() -> Memo<String> {
 	let theme_ctx = use_theme();
-	use_memo(move || theme_ctx.resolved_theme.read().deref().as_class().to_string())
+	use_memo(move || theme_ctx.resolved_theme.read().as_class().to_string())
 }
 
 // Update document class for theming
 #[cfg(feature = "web")]
-fn set_document_theme(theme_class: &str) {
+pub fn set_document_theme(theme_class: &str) {
 	use web_sys::window;
 
 	if let Some(window) = window() {
@@ -60,16 +64,26 @@ fn set_document_theme(theme_class: &str) {
 
 // Update document class for theming (Desktop)
 #[cfg(all(feature = "desktop", not(feature = "web")))]
-fn set_document_theme(theme_class: &str) {
+pub fn set_document_theme(theme_class: &str) {
 	// The current window instance
-	if let Some(window) = use_window() {
+	if let window = dioxus_desktop::window() {
 		#[cfg(target_os = "windows")]
-		if let Some(hwnd) = window.hwnd() {
-			use windows::{Win32::UI::Controls::DarkMode::SetWindowTheme, core::PCWSTR};
+		{
+			let hwnd = window.window_handle();
+			use windows::{
+				Win32::{
+					Foundation::*,
+					System::Threading::*,
+					UI::{Controls::SetWindowTheme, WindowsAndMessaging::*},
+				},
+				core::*,
+			};
 
 			let theme_value = if theme_class == "dark" { "DarkMode_Explorer" } else { "Explorer" };
+			let wide: Vec<u16> = theme_value.encode_utf16().chain(std::iter::once(0)).collect(); // null-terminated
+			let wide_ptr = PCWSTR::from_raw(wide.as_ptr());
 			unsafe {
-				SetWindowTheme(hwnd, PCWSTR::from_raw(theme_value.encode_utf16().collect::<Vec<_>>().as_ptr()), PCWSTR::null());
+				SetWindowTheme(hwnd, wide_ptr, PCWSTR::null());
 			}
 		}
 
@@ -83,23 +97,20 @@ fn set_document_theme(theme_class: &str) {
 			theme_class, theme_class
 		);
 
-		if let Err(e) = eval(&js) {
-			log::warn!("Failed to set document theme: {}", e);
-		}
+		let _ = document::eval(&js);
 
 		#[cfg(target_os = "macos")]
 		{
 			use {
-				cocoa::appkit::{NSAppearance, NSAppearanceNameAqua, NSAppearanceNameDarkAqua},
+				cocoa::appkit::{NSAppearance, NSAppearanceNameVibrantDark, NSAppearanceNameVibrantLight, NSWindow},
 				objc::{msg_send, sel, sel_impl},
 			};
 
 			let is_dark = theme_class == "dark";
-			if let Some(ns_window) = ns_window() {
-				unsafe {
-					let appearance = if is_dark { NSAppearance::appearanceNamed(NSAppearanceNameDarkAqua) } else { NSAppearance::appearanceNamed(NSAppearanceNameAqua) };
-					let _: () = msg_send![ns_window, setAppearance: appearance];
-				}
+			let ns_window = window.ns_window();
+			unsafe {
+				let appearance = if is_dark { NSAppearance(NSAppearanceNameVibrantDark) } else { NSAppearance(NSAppearanceNameVibrantLight) };
+				let _: () = msg_send![ns_window, setAppearance: appearance];
 			}
 		}
 
@@ -108,7 +119,7 @@ fn set_document_theme(theme_class: &str) {
 			use std::process::Command;
 			if theme_class == "dark" {
 				// try setting GTK theme variant if app uses GTK
-				std::env::set_var("GTK_THEME_VARIANT", "dark");
+				unsafe { std::env::set_var("_GTK_THEME_VARIANT", "dark") };
 				// for desktop environments that support it, we can try setting the theme
 				let _ = Command::new("gsettings")
 					.arg("set")
@@ -118,7 +129,7 @@ fn set_document_theme(theme_class: &str) {
 					.output()
 					.expect("Failed to set GTK theme");
 			} else {
-				std::env::set_var("GTK_THEME_VARIANT", "light");
+				unsafe { std::env::set_var("_GTK_THEME_VARIANT", "light") };
 				let _ =
 					Command::new("gsettings").arg("set").arg("org.gnome.desktop.interface").arg("gtk-theme").arg("Adwaita").output().expect("Failed to set GTK theme");
 			}
@@ -127,13 +138,13 @@ fn set_document_theme(theme_class: &str) {
 			// so this might not work in all environments
 		}
 
-		// Emit a theme change event that can be caught by other components
-		emit("theme_change", theme_class);
+		// Emit a theme change event that can be caught by other components (TODO)
+		// emit("theme_change", theme_class);
 	}
 }
 
 // fallback for other platforms
 #[cfg(all(not(feature = "web"), not(feature = "desktop")))]
-fn set_document_theme(_theme_class: &str) {
+pub fn set_document_theme(_theme_class: &str) {
 	// No-op for platforms other than web and desktop
 }

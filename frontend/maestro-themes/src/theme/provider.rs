@@ -1,12 +1,11 @@
 use {
 	crate::theme::{
 		context::{THEME_ATOM, ThemeContext, set_document_theme},
-		storage::get_storage,
+		storage::{ThemeStorageError, get_storage},
 		system::get_system_theme_detector,
 		types::{ResolvedTheme, Theme},
 	},
 	dioxus::prelude::*,
-	std::{cell::RefCell, rc::Rc},
 };
 
 #[derive(Props, Clone, PartialEq)]
@@ -23,27 +22,22 @@ pub fn ThemeProvider(props: ThemeProviderProps) -> Element {
 	let system_theme_detector = get_system_theme_detector();
 
 	// Initialize theme from storage or default
-	let initial_theme = storage.get_theme().or_else(|| props.default_theme.clone()).unwrap_or(Theme::System);
+	let initial_theme = storage.get_theme().or_else(|| props.default_theme.clone()).unwrap_or(Some(Theme::Auto));
 
 	let initial_system_dark = system_theme_detector.prefers_dark_mode();
 
 	let mut theme = use_signal(|| initial_theme);
-	let mut system_prefers_dark = use_signal(|| initial_system_dark);
-	let mut resolved_theme = use_signal(|| theme().resolve(&system_prefers_dark()));
+	let system_prefers_dark = use_signal(|| initial_system_dark);
+	let mut resolved_theme = use_signal(|| theme().as_ref().map(|t| t.resolve(system_prefers_dark())).unwrap_or(ResolvedTheme::Dark));
 
-	// Set theme when changed (Will find an alternative to RefCell later during the real implementation)
-	let set_theme = Rc::new(RefCell::new(move |new_theme: Theme| {
-		theme.set(new_theme.clone());
-		storage.set_theme(new_theme.clone());
-		resolved_theme.set(new_theme.resolve(&system_prefers_dark()));
-	}));
+	// Set theme when changed
+	let set_theme = Callback::new(move |new_theme: Theme| {
+		theme.set(Some(new_theme.clone()));
+		storage.set_theme(&new_theme.clone()).map_err(|e| format!("Error setting theme: {e}")).ok();
+		resolved_theme.set(new_theme.resolve(system_prefers_dark()));
+	});
 
-	let theme_ctx = ThemeContext {
-		theme: theme.clone(),
-		resolved_theme: resolved_theme.clone(),
-		system_prefers_dark: system_prefers_dark.clone(),
-		set_theme: set_theme.clone(),
-	};
+	let theme_ctx = ThemeContext { theme, resolved_theme: resolved_theme.clone(), system_prefers_dark: system_prefers_dark.clone(), set_theme };
 
 	// persist theme to storage when it changes
 	use_effect(move || {
@@ -56,8 +50,10 @@ pub fn ThemeProvider(props: ThemeProviderProps) -> Element {
 		to_owned![system_prefers_dark, theme, resolved_theme];
 		system_theme_detector.listen_for_theme_changes(move |prefers_dark| {
 			system_prefers_dark.set(prefers_dark);
-			if them() == Theme::System {
-				resolved_theme.set(theme().resolve(prefers_dark));
+			if let Some(t) = theme() {
+				if t == Theme::Auto {
+					resolved_theme.set(t.resolve(prefers_dark));
+				}
 			}
 		});
 	});
@@ -68,9 +64,6 @@ pub fn ThemeProvider(props: ThemeProviderProps) -> Element {
 	let theme_class = resolved_theme().as_class();
 
 	rsx! {
-		div {
-			class: "{theme_class}",
-			props.children
-		}
+		div { class: "{theme_class}", {props.children} }
 	}
 }

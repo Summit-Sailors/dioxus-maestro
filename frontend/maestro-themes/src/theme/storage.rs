@@ -2,7 +2,7 @@
 
 use {crate::theme::types::Theme, std::fmt::Display};
 
-#[derive(Debug, Display)]
+#[derive(Debug)]
 pub enum ThemeStorageError {
 	WebStorageAccessError,
 	WebStorageSetError,
@@ -46,10 +46,9 @@ pub mod web {
 			window().and_then(|win| win.local_storage().ok()).flatten().ok_or(ThemeStorageError::WebStorageAccessError).and_then(|storage| {
 				storage
 					.get_item("maestro-ui-theme-v1")
-					.ok()
-					.flatten()
-					.map(|theme_str| Theme::from_str_slice(&theme_str).map_err(|e| ThemeStorageError::ThemeDeserializationError(format!("{}", e))))
-					.transpose() // Result<Option<Result<Theme, Error>>, Error> -> Result<Option<Theme>, Error>
+					.map_err(|_e| ThemeStorageError::WebStorageGetError)?
+					.map(|theme_str| Theme::from_str_slice(&theme_str).map_err(|e| ThemeStorageError::ThemeDeserializationError(e)))
+					.transpose()
 			})
 		}
 	}
@@ -89,7 +88,7 @@ pub mod desktop {
 					.and_then(|mut file| {
 						let mut contents = String::new();
 						file.read_to_string(&mut contents).map_err(|_| ThemeStorageError::DesktopFileReadError)?;
-						Ok(Some(Theme::from_str_slice(contents.trim()).map_err(|e| ThemeStorageError::ThemeDeserializationError(format!("{}", e)))?))
+						Theme::from_str_slice(contents.trim()).map(Some).map_err(|e| ThemeStorageError::ThemeDeserializationError(e))
 					})
 					.or_else(|e| match e {
 						ThemeStorageError::DesktopFileOpenError => Ok(None),
@@ -102,38 +101,49 @@ pub mod desktop {
 			Self::get_config_path().and_then(|path| {
 				File::create(path)
 					.map_err(|_| ThemeStorageError::DesktopFileCreateError)
-					.and_then(|mut file| file.write_all(theme.as_str()).map_err(|_| ThemeStorageError::DesktopFileWriteError))
+					.and_then(|mut file| file.write_all(theme.as_str().as_bytes()).map_err(|_| ThemeStorageError::DesktopFileWriteError))
 			})
 		}
 	}
 }
 
-use std::cell::RefCell;
+// Default in-memory storage for platforms without specific implementations (assumes mobile for now)
+#[cfg(not(any(feature = "web", feature = "desktop")))]
+pub mod mobile {
+	use {
+		super::*,
+		std::sync::{Arc, Mutex},
+	};
 
-// Default in-memory storage for platforms without specific implementations
-pub struct MemoryStorage {
-	theme: RefCell<Option<Theme>>,
-}
-impl MemoryStorage {
-	pub fn new() -> Self {
-		Self { theme: RefCell::new(None) }
+	pub struct MemoryStorage {
+		theme: Arc<Mutex<Option<Theme>>>,
 	}
-}
-
-impl MemoryStorage {
-	pub fn current_theme(&self) -> Option<Theme> {
-		self.theme.borrow().clone()
-	}
-}
-
-impl ThemeStorage for MemoryStorage {
-	fn set_theme(&self, theme: &Theme) -> ThemeStorageResult<()> {
-		*self.theme.borrow_mut() = Some(theme.clone());
-		Ok(())
+	impl MemoryStorage {
+		pub fn new() -> Self {
+			Self { theme: Arc::new(Mutex::new(None::<Theme>)) }
+		}
 	}
 
-	fn get_theme(&self) -> ThemeStorageResult<Option<Theme>> {
-		Ok(self.theme.borrow().clone())
+	impl MemoryStorage {
+		pub fn current_theme(&self) -> Option<Theme> {
+			self.theme.lock().ok().and_then(|guard| guard.clone())
+		}
+	}
+
+	impl ThemeStorage for MemoryStorage {
+		fn set_theme(&self, theme: &Theme) -> ThemeStorageResult<()> {
+			match self.theme.lock() {
+				Ok(mut guard) => {
+					*guard = Some(theme.clone());
+					Ok(())
+				},
+				Err(_) => Err(ThemeStorageError::ThemeSerializationError("Failed to acquire lock".to_string()))?,
+			}
+		}
+
+		fn get_theme(&self) -> ThemeStorageResult<Option<Theme>> {
+			self.theme.lock().map(|guard| guard.clone()).map_err(|_| ThemeStorageError::ThemeDeserializationError("Failed to acquire lock".to_string()))
+		}
 	}
 }
 
@@ -141,16 +151,16 @@ impl ThemeStorage for MemoryStorage {
 pub fn get_storage() -> Box<dyn ThemeStorage> {
 	#[cfg(feature = "web")]
 	{
-		Box::new(web::WebStorage);
+		Box::new(web::WebStorage)
 	}
 
 	#[cfg(all(feature = "desktop", not(feature = "web")))]
 	{
-		Box::new(desktop::DesktopStorage);
+		Box::new(desktop::DesktopStorage)
 	}
 
 	#[cfg(not(any(feature = "web", feature = "desktop")))]
 	{
-		Box::new(MemoryStorage::new());
+		Box::new(MemoryStorage::new())
 	}
 }
