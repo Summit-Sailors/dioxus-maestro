@@ -2,7 +2,7 @@
 
 use {
 	serde::{Deserialize, Serialize},
-	std::collection::HashMap,
+	std::collections::HashMap,
 };
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -16,7 +16,7 @@ pub struct DesignerState {
 	/// Border radius settings
 	pub border_radius: BorderRadiusSettings,
 	// Shadow settings
-	pub shadow: Shadowsettings,
+	pub shadow: ShadowSettings,
 }
 
 impl Default for DesignerState {
@@ -91,7 +91,7 @@ impl Default for Typographysettings {
 			heading_font_family: String::from("Inter, system-ui, sans-serif"),
 			base_size: String::from("16px"),
 			line_height: String::from("1.5"),
-			font_height,
+			font_weights,
 		}
 	}
 }
@@ -137,7 +137,7 @@ impl Default for BorderRadiusSettings {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct Shadowsettings {
+pub struct ShadowSettings {
 	pub sm: String,
 	pub md: String,
 	pub lg: String,
@@ -145,7 +145,7 @@ pub struct Shadowsettings {
 	pub xxl: String,
 }
 
-impl Default for Shadowsettings {
+impl Default for ShadowSettings {
 	fn default() -> Self {
 		Self {
 			sm: String::from("0 1px 2px 0 rgb(0 0 0 / 0.05)"),
