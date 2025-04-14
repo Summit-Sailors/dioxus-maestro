@@ -1,7 +1,10 @@
 use {
 	crate::{
 		layout::Layout,
-		pages::{AccordionPage, AspectRatioPage, AvatarPage, ButtonPage, CheckboxPage, CollapsiblePage, DialogPage, Home},
+		pages::{
+			AccordionPage, AspectRatioPage, AvatarPage, ButtonPage, CheckboxPage, CollapsiblePage, DialogPage, Home, HoverCardPage, PopoverPage, ProgressBarPage,
+			RadioPage, RangePage, SelectPage, SeparatorPage, SwitchPage, TabsPage, TogglePage, TooltipPage,
+		},
 	},
 	dioxus::prelude::*,
 	strum_macros::EnumIter,
@@ -12,6 +15,7 @@ pub enum Route {
 	#[layout(Layout)]
 	#[route("/")]
 	Home {},
+	#[nest("/headless")]
 	#[nest("/components")]
 	#[route("/accordion")]
 	AccordionPage {},
@@ -27,6 +31,28 @@ pub enum Route {
 	CollapsiblePage {},
 	#[route("/dialog")]
 	DialogPage {},
+	#[route("/hover-card")]
+	HoverCardPage {},
+	#[route("/popover")]
+	PopoverPage {},
+	#[route("/progress")]
+	ProgressBarPage {},
+	#[route("/radio-group")]
+	RadioPage {},
+	#[route("/range")]
+	RangePage {},
+	#[route("/select")]
+	SelectPage {},
+	#[route("/separator")]
+	SeparatorPage {},
+	#[route("/switch")]
+	SwitchPage {},
+	#[route("/tabs")]
+	TabsPage {},
+	#[route("/toggle-&-group")]
+	TogglePage,
+	#[route("/tooltip")]
+	TooltipPage,
 }
 
 impl Route {
@@ -40,6 +66,17 @@ impl Route {
 			Route::CheckboxPage {} => "Checkbox & CheckboxGroup",
 			Route::CollapsiblePage {} => "Collapsible",
 			Route::DialogPage {} => "Dialog",
+			Route::HoverCardPage {} => "Hover Card",
+			Route::PopoverPage {} => "Popover",
+			Route::ProgressBarPage {} => "Progress Bar",
+			Route::RadioPage {} => "Radio Group",
+			Route::RangePage {} => "Range",
+			Route::SelectPage {} => "Select",
+			Route::SeparatorPage {} => "Separator",
+			Route::SwitchPage {} => "Switch",
+			Route::TabsPage {} => "Tabs",
+			Route::TogglePage {} => "Toggle & ToggleGroup",
+			Route::TooltipPage {} => "Tooltip",
 		}
 	}
 }

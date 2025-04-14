@@ -3,10 +3,10 @@ use {
 		button::Button,
 		focus_trap::FocusTrap,
 		presence::Presence,
-		shared::{UseControllableStateParams, use_controllable_state, use_escape},
+		shared::{UseControllableStateParams, use_controllable_state, use_escape, use_ref_provider},
 	},
 	dioxus::prelude::*,
-	std::{fmt::Debug, rc::Rc},
+	std::fmt::Debug,
 	uuid::Uuid,
 	web_sys::window,
 };
@@ -36,7 +36,7 @@ impl DialogContext {
 }
 
 #[derive(Props, Clone, PartialEq)]
-pub struct DialogProps {
+pub struct DialogRootProps {
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
 	pub open: ReadOnlySignal<Option<bool>>,
 	#[props(optional, default = false)]
@@ -49,8 +49,8 @@ pub struct DialogProps {
 }
 
 #[component]
-pub fn Dialog(props: DialogProps) -> Element {
-	let DialogProps { open, default_open, on_close, on_open_change, children } = props;
+pub fn DialogRoot(props: DialogRootProps) -> Element {
+	let DialogRootProps { open, default_open, on_close, on_open_change, children } = props;
 
 	let is_controlled = use_hook(move || open().is_some());
 	let (open, set_open) =
@@ -80,6 +80,7 @@ pub struct DialogTriggerProps {
 	disabled: ReadOnlySignal<bool>,
 	#[props(extends = GlobalAttributes, extends = button)]
 	pub attributes: Vec<Attribute>,
+	#[props(optional)]
 	pub children: Element,
 }
 
@@ -114,10 +115,11 @@ pub struct DialogOverlayProps {
 #[component]
 pub fn DialogOverlay(props: DialogOverlayProps) -> Element {
 	let mut context = use_context::<DialogContext>();
-	let mut node_ref = use_signal(|| None::<Rc<MountedData>>);
+	// let mut node_ref = use_signal(|| None::<Rc<MountedData>>);
+	let mut node_ref = use_ref_provider();
 
 	rsx! {
-		Presence { node_ref, present: *context.open.read(),
+		Presence { present: *context.open.read(),
 			div {
 				"data-state": if *context.open.peek() { "open" } else { "closed" },
 				pointer_events: "auto",
@@ -140,7 +142,7 @@ pub struct DialogContentProps {
 #[component]
 pub fn DialogContent(props: DialogContentProps) -> Element {
 	let mut context = use_context::<DialogContext>();
-	let mut node_ref = use_signal(|| None::<Rc<MountedData>>);
+	use_ref_provider();
 
 	let handle_close = use_callback(move |()| {
 		context.toggle(false);
@@ -149,18 +151,16 @@ pub fn DialogContent(props: DialogContentProps) -> Element {
 	use_escape(handle_close, context.open);
 
 	rsx! {
-		Presence { node_ref, present: *context.open.read(),
+		Presence { present: *context.open.read(),
 			FocusTrap {
-				div {
-					role: "dialog",
-					id: context.content_id.to_string(),
-					aria_modal: true,
-					aria_labelledby: context.trigger_id.to_string(),
-					"data-state": if *context.open.read() { "open" } else { "closed" },
-					onmounted: move |event| node_ref.set(Some(event.data())),
-					..props.attributes,
-					{props.children}
-				}
+				key: Uuid::new_v4().to_string(),
+				role: "dialog",
+				id: context.content_id.to_string(),
+				aria_modal: true,
+				aria_labelledby: context.trigger_id.to_string(),
+				"data-state": if *context.open.read() { "open" } else { "closed" },
+				extra_attributes: props.attributes.clone(),
+				{props.children}
 			}
 		}
 	}

@@ -28,7 +28,7 @@ pub struct RangeContext {
 }
 
 #[derive(Props, Clone, PartialEq)]
-pub struct RangeProps {
+pub struct RangeRootProps {
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
 	pub value: ReadOnlySignal<Option<Vec<f32>>>,
 	#[props(optional, default = Vec::new())]
@@ -36,8 +36,6 @@ pub struct RangeProps {
 	#[props(default = None)]
 	pub on_value_change: Option<Callback<Vec<f32>>>,
 
-	#[props(optional, default = String::new())]
-	pub name: String,
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]
 	pub disabled: ReadOnlySignal<bool>,
 	#[props(default = false)]
@@ -59,22 +57,9 @@ pub struct RangeProps {
 }
 
 #[component]
-pub fn Range(props: RangeProps) -> Element {
-	let RangeProps {
-		value,
-		default_value,
-		on_value_change,
-		name,
-		disabled,
-		required,
-		orientation,
-		min,
-		max,
-		step,
-		min_steps_between_thumbs,
-		attributes,
-		children,
-	} = props;
+pub fn RangeRoot(props: RangeRootProps) -> Element {
+	let RangeRootProps { value, default_value, on_value_change, disabled, required, orientation, min, max, step, min_steps_between_thumbs, attributes, children } =
+		props;
 
 	let is_controlled = use_hook(move || value().is_some());
 	let default = if default_value.is_empty() { Vec::from([min]) } else { default_value.clone() };
@@ -87,6 +72,8 @@ pub fn Range(props: RangeProps) -> Element {
 	let mut closure_pointer_down_ref = use_signal(|| None::<Closure<dyn FnMut(web_sys::PointerEvent)>>);
 	let mut closure_pointer_move_ref = use_signal(|| None::<Closure<dyn FnMut(web_sys::PointerEvent)>>);
 
+	let mut dragging_thumb_id = use_signal(|| None::<Uuid>);
+
 	let callback = use_callback(move |values: Vec<f32>| {
 		if let Some(callback) = on_value_change {
 			callback(values);
@@ -96,6 +83,12 @@ pub fn Range(props: RangeProps) -> Element {
 	let (values, set_values) =
 		use_controllable_state(UseControllableStateParams { is_controlled, prop: value, default_prop: default, on_change: Some(callback) });
 
+	use_effect(move || {
+		let _ = orientation();
+		if let Some(range_ref) = range_ref.read().as_ref().and_then(|node| node.try_as_web_event()) {
+			rect_ref.set(Some(range_ref.get_bounding_client_rect()));
+		}
+	});
 	let update_values = use_callback(move |(new_value, at_index): (f32, usize)| {
 		let current_values = values().clone();
 		let decimal_count = get_decimal_count(step);
@@ -104,13 +97,11 @@ pub fn Range(props: RangeProps) -> Element {
 
 		let mut next_values = current_values.clone();
 		next_values[at_index] = next_value;
-		next_values.sort_by(|a, b| a.partial_cmp(b).unwrap());
 
 		if has_min_steps_between_values(&next_values, min_steps_between_thumbs * step) {
-			let new_index = next_values.iter().position(|&v| v == next_value).unwrap_or(0);
 			let has_changed = next_values != current_values;
+			value_index_to_change.set(at_index);
 
-			value_index_to_change.set(new_index.clone());
 			if has_changed {
 				set_values(next_values.clone());
 			}
@@ -119,6 +110,9 @@ pub fn Range(props: RangeProps) -> Element {
 
 	let handle_slide_start = use_callback(move |new_value: f32| {
 		let closest_index = get_closest_value_index(&values(), new_value);
+		if let Some((thumb_id, _)) = thumb_refs.peek().get(closest_index) {
+			dragging_thumb_id.set(Some(*thumb_id));
+		}
 		update_values((new_value, closest_index));
 	});
 
@@ -153,6 +147,7 @@ pub fn Range(props: RangeProps) -> Element {
 				if let (Some(range_element), Some(target)) =
 					(range_ref.peek().as_ref().and_then(|node| node.try_as_web_event()), event.target().and_then(|t: EventTarget| t.dyn_into::<HtmlElement>().ok()))
 				{
+					rect_ref.set(Some(range_element.get_bounding_client_rect()));
 					if range_element.contains(Some(&target)) {
 						target.set_pointer_capture(event.pointer_id());
 						event.prevent_default();
@@ -207,30 +202,34 @@ pub fn Range(props: RangeProps) -> Element {
 		}
 	});
 
-	use_drop(move || {
-		if let Some(closure) = closure_pointer_down_ref.peek().as_ref() {
-			if let Some(range_element) = range_ref.read().as_ref().and_then(|node| node.try_as_web_event()) {
-				range_element.remove_event_listener_with_callback("pointerdown", closure.as_ref().unchecked_ref()).expect("Cannot remove onpointerdown listener");
-			}
-			drop(closure);
-		}
-		if let Some(closure) = closure_pointer_move_ref.peek().as_ref() {
-			if let Some(range_element) = range_ref.read().as_ref().and_then(|node| node.try_as_web_event()) {
-				range_element.remove_event_listener_with_callback("pointermove", closure.as_ref().unchecked_ref()).expect("Cannot remove onpointermove listener");
-			}
-			drop(closure);
-		}
-	});
+	#[cfg(target_arch = "wasm32")]
+	{
+		use_drop(move || {
+			spawn(async move {
+				if let Some(closure) = closure_pointer_down_ref.peek().as_ref() {
+					if let Some(range_element) = range_ref.read().as_ref().and_then(|node| node.try_as_web_event()) {
+						range_element.remove_event_listener_with_callback("pointerdown", closure.as_ref().unchecked_ref()).expect("Cannot remove onpointerdown listener");
+					}
+				}
+				closure_pointer_down_ref.set(None);
+				if let Some(closure) = closure_pointer_move_ref.peek().as_ref() {
+					if let Some(range_element) = range_ref.read().as_ref().and_then(|node| node.try_as_web_event()) {
+						range_element.remove_event_listener_with_callback("pointermove", closure.as_ref().unchecked_ref()).expect("Cannot remove onpointermove listener");
+					}
+				}
+			});
+		})
+	};
 
 	use_context_provider::<RangeContext>(|| RangeContext { disabled, min, max, value_index_to_change, thumbs: thumb_refs, values, set_values, orientation });
 
 	rsx! {
 		div {
+			position: "relative",
 			role: "group",
 			aria_roledescription: "range slider",
 			aria_disabled: disabled(),
 			aria_required: required,
-			aria_label: name,
 			"data-disabled": disabled(),
 			"data-required": required,
 			"data-orientation": orientation().to_string(),
@@ -278,14 +277,14 @@ pub fn Range(props: RangeProps) -> Element {
 }
 
 #[derive(Props, Clone, PartialEq)]
-pub struct RangeTrackWrapperProps {
+pub struct RangeTrackProps {
 	#[props(extends = GlobalAttributes, extends = div)]
 	pub attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
 #[component]
-pub fn RangeTrackWrapper(props: RangeTrackWrapperProps) -> Element {
+pub fn RangeTrack(props: RangeTrackProps) -> Element {
 	let context = use_context::<RangeContext>();
 
 	rsx! {
@@ -302,14 +301,14 @@ pub fn RangeTrackWrapper(props: RangeTrackWrapperProps) -> Element {
 }
 
 #[derive(Props, Clone, PartialEq)]
-pub struct RangeTrackProps {
+pub struct RangeProps {
 	#[props(extends = div, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
 #[component]
-pub fn RangeTrack(props: RangeTrackProps) -> Element {
+pub fn Range(props: RangeProps) -> Element {
 	let context = use_context::<RangeContext>();
 	let percentages = context.values.read().clone().iter().map(|&value| convert_value_to_percentage(value, context.min, context.max)).collect::<Vec<f32>>();
 	let offset_start = if context.values.read().clone().len() > 1 { percentages.iter().cloned().reduce(f32::min).unwrap_or(0.0) } else { 0.0 };
@@ -344,7 +343,6 @@ pub fn RangeTrack(props: RangeTrackProps) -> Element {
 
 #[derive(Props, Clone, PartialEq)]
 pub struct RangeThumbProps {
-	pub name: Option<String>,
 	#[props(extends = div, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
 	pub children: Element,
@@ -357,8 +355,18 @@ pub fn RangeThumb(props: RangeThumbProps) -> Element {
 	let mut index = use_signal(|| 0_i32);
 	let mut size = use_signal(|| None::<web_sys::DomRect>);
 
+	use_effect(move || {
+		let thumbs = context.thumbs.peek();
+		let idx = thumbs.iter().position(|(uuid, _)| *uuid == id());
+		if let Some(i) = idx {
+			index.set(i as i32);
+		}
+	});
+
 	use_drop(move || {
-		context.thumbs.write().retain(|(uuid, _)| *uuid != id());
+		spawn(async move {
+			context.thumbs.write().retain(|(uuid, _)| *uuid != id());
+		});
 	});
 
 	use_effect(move || {
@@ -403,9 +411,13 @@ pub fn RangeThumb(props: RangeThumbProps) -> Element {
 			aria_disabled: *context.disabled.read(),
 			tabindex: if *context.disabled.read() { "-1" } else { "0" },
 			display: if context.values.read().clone().get(index() as usize).is_none() { "none" } else { "flex" },
-			transform: if *context.orientation.read() == EOrientation::Horizontal { "translateY(-50%) translateX(-50%)" } else { "translateX(-50%) translateY(-50%)" },
+			transform: if *context.orientation.read() == EOrientation::Horizontal { "translateY(0%) translateX(-50%)" } else { "translateX(-50%) translateY(-50%)" },
 			position: "absolute",
-			onmounted: move |event| context.thumbs.write().push((id(), event.data().clone())),
+			onmounted: move |event| {
+					let new_index = context.thumbs.peek().len();
+					context.thumbs.write().push((id(), event.data().clone()));
+					index.set(new_index as i32);
+			},
 			onfocus: move |_| {
 					context.value_index_to_change.set(*index.peek() as usize);
 			},

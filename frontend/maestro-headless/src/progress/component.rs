@@ -38,7 +38,7 @@ impl ProgressContext {
 const DEFAULT_MAX: f32 = 100.0;
 
 #[derive(Props, PartialEq, Clone)]
-pub struct ProgressProps {
+pub struct ProgressRootProps {
 	#[props(default = ReadOnlySignal::new(Signal::new(0.0)))]
 	value: ReadOnlySignal<f32>,
 	#[props(optional, default = DEFAULT_MAX)]
@@ -49,14 +49,15 @@ pub struct ProgressProps {
 }
 
 #[component]
-pub fn Progress(props: ProgressProps) -> Element {
-	let ProgressProps { value, max, attributes, children } = props;
+pub fn ProgressRoot(props: ProgressRootProps) -> Element {
+	let ProgressRootProps { value, max, attributes, children } = props;
 
-	let value = use_memo(move || if value() < max && value() > 0.0 { value() } else { 0.0 });
+	let value = use_memo(move || if value() <= max && value() > 0.0 { value() } else { 0.0 });
 	let context = use_context_provider::<ProgressContext>(|| ProgressContext { value, max });
 
 	rsx! {
 		div {
+			position: "relative",
 			role: "progressbar",
 			aria_valuemax: max,
 			aria_valuemin: 0,
@@ -82,12 +83,14 @@ pub struct ProgressIndicatorProps {
 #[component]
 pub fn ProgressIndicator(props: ProgressIndicatorProps) -> Element {
 	let context = use_context::<ProgressContext>();
+	let transform = use_memo(move || 100.0 - *context.value.read());
 
 	rsx! {
 		div {
 			"data-state": context.get_state().to_string(),
 			"data-value": *context.value.read(),
 			"data-max": context.max,
+			transform: format!("translateX(-{}%)", transform()),
 			..props.attributes.clone(),
 			{props.children.clone()}
 		}

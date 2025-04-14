@@ -125,7 +125,7 @@ pub fn UserFormComponent() -> Element {
 Maestro Forms includes a built-in form state debugger that helps during development:
 
 ```rust
-FormStateDebugger { form: props.form } 
+FormStateDebugger { form: props.form }
 // View the demo directory for sample implementation of the FormStateDebugger
 ```
 
@@ -142,7 +142,7 @@ FormFieldWrapper {
 }
 ```
 
-### Select Fields with Custom Labels
+### RangeRoot Fields with Custom Labels
 
 ```rust
 SelectFormField::<User, String> {

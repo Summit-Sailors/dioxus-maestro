@@ -2,11 +2,12 @@ use {
 	crate::{
 		focus_trap::FocusTrap,
 		popper::component::utils::{
-			Alignment, ArrowData, FloatingStyles, Placement, Rect, TransformOriginData, calculate_position, find_scrollable_parents, get_element_rect,
+			Alignment, ArrowData, FloatingStyles, Placement, Rect, TransformOriginData, calculate_position, find_positioned_parent, find_scrollable_parents,
+			get_element_rect,
 		},
 		shared::{EAlign, ESide},
 	},
-	dioxus::{dioxus_core::AttributeValue, prelude::*, web::WebEventExt},
+	dioxus::{prelude::*, web::WebEventExt},
 	std::rc::Rc,
 	web_sys::{
 		wasm_bindgen::{JsCast, prelude::Closure},
@@ -17,7 +18,6 @@ use {
 #[derive(Clone, Debug, PartialEq)]
 pub struct PopperContext {
 	anchor: Signal<Option<Rc<MountedData>>>,
-	is_arrow_hidden: bool,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -30,9 +30,6 @@ pub struct PopperContentContext {
 
 #[derive(Props, Clone, PartialEq)]
 pub struct PopperProps {
-	#[props(default = false)]
-	pub is_arrow_hidden: bool,
-
 	#[props(optional, default = None)]
 	pub onmounted: Option<EventHandler<Event<MountedData>>>,
 
@@ -45,11 +42,11 @@ pub struct PopperProps {
 
 #[component]
 pub fn Popper(props: PopperProps) -> Element {
-	let PopperProps { is_arrow_hidden, onmounted, attributes, extra_attributes, children } = props;
+	let PopperProps { onmounted, attributes, extra_attributes, children } = props;
 
 	let anchor = use_signal(|| None::<Rc<MountedData>>);
 
-	use_context_provider::<PopperContext>(|| PopperContext { is_arrow_hidden, anchor });
+	use_context_provider::<PopperContext>(|| PopperContext { anchor });
 
 	rsx! {
 		div {
@@ -171,20 +168,19 @@ pub fn PopperAnchor(props: PopperAnchorProps) -> Element {
 
 #[derive(Props, PartialEq, Clone)]
 pub struct PopperContentProps {
-	#[props(default = ESide::Bottom)]
-	side: ESide,
-	#[props(default = 0.0)]
-	side_offset: f32,
-	#[props(default = EAlign::Center)]
-	align: EAlign,
-	#[props(default = 0.0)]
-	align_offset: f32,
-	#[props(default = true)]
-	avoid_collisions: bool,
-	#[props(default = 4.0)]
-	collision_padding: f32,
-	#[props(optional, default = None)]
-	pub onmounted: Option<EventHandler<Event<MountedData>>>,
+	#[props(default = ReadOnlySignal::new(Signal::new(ESide::Bottom)))]
+	side: ReadOnlySignal<ESide>,
+	#[props(default = ReadOnlySignal::new(Signal::new(0.0)))]
+	side_offset: ReadOnlySignal<f32>,
+	#[props(default = ReadOnlySignal::new(Signal::new(EAlign::Center)))]
+	align: ReadOnlySignal<EAlign>,
+	#[props(default = ReadOnlySignal::new(Signal::new(0.0)))]
+	align_offset: ReadOnlySignal<f32>,
+	#[props(default = ReadOnlySignal::new(Signal::new(true)))]
+	avoid_collisions: ReadOnlySignal<bool>,
+	#[props(default = ReadOnlySignal::new(Signal::new(4.0)))]
+	collision_padding: ReadOnlySignal<f32>,
+
 	#[props(optional)]
 	onplaced: Option<EventHandler<()>>,
 
@@ -222,7 +218,6 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 		align_offset,
 		avoid_collisions,
 		collision_padding,
-		onmounted,
 		onplaced,
 		onkeydown,
 		onkeyup,
@@ -239,14 +234,15 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 
 	let popper_context = use_context::<PopperContext>();
 
-	let mut content = use_signal(|| None::<Rc<MountedData>>);
+	let content = use_context::<Signal<Option<Rc<MountedData>>>>();
 	let arrow = use_signal(|| None::<Rc<MountedData>>);
 	let mut closure = use_signal(|| None::<Closure<dyn FnMut()>>);
 	let mut parents = use_signal::<Vec<web_sys::Element>>(Vec::new);
+	let mut parent = use_signal::<Option<web_sys::Element>>(|| None);
 	let mut last_update = use_signal(|| 0.0);
-	let placement = use_signal(|| Placement {
-		side,
-		alignment: match align {
+	let placement = Signal::new(Placement {
+		side: side(),
+		alignment: match align() {
 			EAlign::Start => Some(Alignment::Start),
 			EAlign::Center => None,
 			EAlign::End => Some(Alignment::End),
@@ -256,9 +252,14 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 	let mut is_positioned = use_signal(|| false);
 	let mut arrow_data = use_signal(|| ArrowData { x: None, y: None, center_offset: 0.0 });
 	let mut transform_origin = use_signal(|| TransformOriginData { x: "50%".to_string(), y: "50%".to_string() });
+	let mut frame_id = use_signal(|| None::<i32>);
 
 	let context = use_context_provider::<PopperContentContext>(|| PopperContentContext { placement, arrow_data, arrow, content });
 	let mut new_placement = use_context_provider(|| Signal::new(placement()));
+	let mut anchor_width = use_signal(|| None::<f32>);
+	let mut anchor_height = use_signal(|| None::<f32>);
+	let mut floating_width = use_signal(|| None::<f32>);
+	let mut floating_height = use_signal(|| None::<f32>);
 
 	let mut update_position = move || {
 		if let (Some(reference_rect), Some(floating_rect)) = (get_element_rect(popper_context.anchor), get_element_rect(content)) {
@@ -273,7 +274,14 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 				(0.0, 0.0)
 			};
 
+			anchor_width.set(Some(reference_rect.width));
+			anchor_height.set(Some(reference_rect.height));
+			floating_width.set(Some(floating_rect.width));
+			floating_height.set(Some(floating_rect.height));
+
 			let current_placement = new_placement.peek().clone();
+			let init_placement = placement.peek().clone();
+
 			let window = window().expect("should have a window in this context");
 			let scroll_x = window.page_x_offset().unwrap_or(0.0) as f32;
 			let scroll_y = window.page_y_offset().unwrap_or(0.0) as f32;
@@ -283,23 +291,46 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 			let adjusted_reference_rect =
 				Rect { x: reference_rect.x - scroll_x, y: reference_rect.y - scroll_y, width: reference_rect.width, height: reference_rect.height };
 
-			let should_flip = match current_placement.side {
-				ESide::Top => adjusted_reference_rect.y < floating_rect.height + side_offset + arrow_height + collision_padding,
+			let should_flip = match current_placement.side() {
+				ESide::Top => adjusted_reference_rect.y < floating_rect.height + side_offset() + arrow_height + collision_padding(),
 				ESide::Right =>
-					adjusted_reference_rect.x + adjusted_reference_rect.width + floating_rect.width + side_offset + arrow_height + collision_padding > window_width,
+					adjusted_reference_rect.x + adjusted_reference_rect.width + floating_rect.width + side_offset() + arrow_height + collision_padding() > window_width,
 				ESide::Bottom =>
-					adjusted_reference_rect.y + adjusted_reference_rect.height + floating_rect.height + side_offset + arrow_height + collision_padding > window_height,
-				ESide::Left => adjusted_reference_rect.x < floating_rect.width + side_offset + arrow_height + collision_padding,
+					adjusted_reference_rect.y + adjusted_reference_rect.height + floating_rect.height + side_offset() + arrow_height + collision_padding() > window_height,
+				ESide::Left => adjusted_reference_rect.x < floating_rect.width + side_offset() + arrow_height + collision_padding(),
 			};
 
-			if avoid_collisions && should_flip {
-				new_placement.with_mut(|state| {
-					state.side = state.side.opposite();
-				});
+			let has_collision_with_original = match init_placement.side() {
+				ESide::Top => adjusted_reference_rect.y < floating_rect.height + side_offset() + arrow_height + collision_padding(),
+				ESide::Right =>
+					adjusted_reference_rect.x + adjusted_reference_rect.width + floating_rect.width + side_offset() + arrow_height + collision_padding() > window_width,
+				ESide::Bottom =>
+					adjusted_reference_rect.y + adjusted_reference_rect.height + floating_rect.height + side_offset() + arrow_height + collision_padding() > window_height,
+				ESide::Left => adjusted_reference_rect.x < floating_rect.width + side_offset() + arrow_height + collision_padding(),
+			};
+
+			if avoid_collisions() {
+				if should_flip {
+					new_placement.with_mut(|state| {
+						state.side = state.side.opposite();
+					});
+				} else if current_placement.side != init_placement.side && !has_collision_with_original {
+					new_placement.with_mut(|state| {
+						state.side = init_placement.side;
+					});
+				}
 			}
 
-			let (styles, arrow, transform) =
-				calculate_position(&reference_rect, &floating_rect, &new_placement.peek(), arrow_width as f32, arrow_height as f32, side_offset, align_offset);
+			let (styles, arrow, transform) = calculate_position(
+				parent(),
+				&reference_rect,
+				&floating_rect,
+				&new_placement.peek(),
+				arrow_width as f32,
+				arrow_height as f32,
+				side_offset(),
+				align_offset(),
+			);
 
 			floating_styles.set(styles);
 			arrow_data.set(arrow);
@@ -335,7 +366,8 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 						let l_update = *last_update.peek();
 						throttled_update_position(l_update);
 					}) as Box<dyn FnMut()>);
-					let _ = win_clone.request_animation_frame(inner_closure.as_ref().unchecked_ref()).expect("should register request frame");
+					let frame_id_value = win_clone.request_animation_frame(inner_closure.as_ref().unchecked_ref()).expect("should register request frame");
+					frame_id.set(Some(frame_id_value));
 					inner_closure.forget();
 				}) as Box<dyn FnMut()>);
 				closure.set(Some(closure_fn));
@@ -357,18 +389,30 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 		}
 	});
 
-	use_drop(move || {
-		let window = window().expect("should have a window in this context");
-		if let Some(closure_fn) = &*closure.read() {
-			window.remove_event_listener_with_callback("resize", closure_fn.as_ref().unchecked_ref()).unwrap();
-			window.remove_event_listener_with_callback("scroll", closure_fn.as_ref().unchecked_ref()).unwrap();
-
-			for parent in parents() {
-				parent.remove_event_listener_with_callback("resize", closure_fn.as_ref().unchecked_ref()).expect("should register event listener");
-				parent.remove_event_listener_with_callback("scroll", closure_fn.as_ref().unchecked_ref()).expect("should register event listener");
-			}
+	use_effect(move || {
+		if let Some(anchor) = popper_context.anchor.read().as_ref() {
+			let fixed_parent = find_positioned_parent(anchor);
+			parent.set(fixed_parent);
 		}
 	});
+
+	#[cfg(target_arch = "wasm32")]
+	{
+		use_drop(move || {
+			let window = window().expect("should have a window in this context");
+			if let Some(frame_id) = *frame_id.peek() {
+				window.cancel_animation_frame(frame_id).ok();
+			}
+			if let Some(closure_fn) = &*closure.peek() {
+				window.remove_event_listener_with_callback("resize", closure_fn.as_ref().unchecked_ref()).expect("should remove event listener");
+				window.remove_event_listener_with_callback("scroll", closure_fn.as_ref().unchecked_ref()).expect("should remove event listener");
+				for parent in parents() {
+					parent.remove_event_listener_with_callback("resize", closure_fn.as_ref().unchecked_ref()).expect("should remove event listener");
+					parent.remove_event_listener_with_callback("scroll", closure_fn.as_ref().unchecked_ref()).expect("should remove event listener");
+				}
+			}
+		});
+	};
 
 	let placed_side = new_placement().side;
 
@@ -378,15 +422,28 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 		None => EAlign::Center,
 	};
 
-	let mut attributes = attributes.clone();
-	attributes.extend(extra_attributes);
+	let mut attrs = attributes.clone();
+	attrs.extend(extra_attributes.clone());
+
 	if !is_positioned() {
-		attributes.push(Attribute { name: "animation", value: AttributeValue::Text("none".into()), namespace: Some("style"), volatile: false });
+		attrs.push(Attribute::new("animation", "none", Some("style"), false));
+	}
+	if let Some(height) = anchor_height() {
+		attrs.push(Attribute::new("--maestro-popper-anchor-height", format!("{}px", height), Some("style"), false));
+	}
+	if let Some(width) = anchor_width() {
+		attrs.push(Attribute::new("--maestro-popper-anchor-width", format!("{}px", width), Some("style"), false));
+	}
+	if let Some(height) = floating_height() {
+		attrs.push(Attribute::new("--maestro-popper-content-height", format!("{}px", height), Some("style"), false));
+	}
+	if let Some(width) = floating_width() {
+		attrs.push(Attribute::new("--maestro-popper-content-width", format!("{}px", width), Some("style"), false));
 	}
 
 	rsx! {
 		FocusTrap {
-			position: "fixed",
+			position: floating_styles().style_position(),
 			top: floating_styles().style_top(),
 			left: floating_styles().style_left(),
 			transform: floating_styles()
@@ -399,6 +456,7 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 							}
 					}),
 			min_width: "max-content",
+			max_height: "max-content",
 			will_change: "transform",
 			"data-side": format!("{:?}", placed_side).to_lowercase(),
 			"data-align": format!("{:?}", placed_align).to_lowercase(),
@@ -442,13 +500,7 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 							handler.call(event);
 					}
 			},
-			onmounted: move |event: Event<MountedData>| {
-					content.set(Some(event.data()));
-					if let Some(callback) = onmounted {
-							callback.call(event)
-					}
-			},
-			extra_attributes: attributes.clone(),
+			extra_attributes: attrs.clone(),
 			{children.clone()}
 		}
 	}
@@ -472,7 +524,6 @@ pub struct PopperArrowProps {
 pub fn PopperArrow(props: PopperArrowProps) -> Element {
 	let PopperArrowProps { width, height, attributes, extra_attributes, children } = props;
 
-	let popper_context = use_context::<PopperContext>();
 	let mut content_context = use_context::<PopperContentContext>();
 	let new_placement = use_context::<Signal<Placement>>();
 	let arrow_data = content_context.arrow_data.read().clone();
@@ -505,7 +556,6 @@ pub fn PopperArrow(props: PopperArrowProps) -> Element {
 			left,
 			top,
 			transform_origin: arrow_transform_origin,
-			hidden: popper_context.is_arrow_hidden,
 			if let Some(children) = children {
 				{children}
 			} else {

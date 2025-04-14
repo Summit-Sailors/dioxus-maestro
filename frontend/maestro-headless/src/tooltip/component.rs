@@ -3,7 +3,7 @@ use {
 		button::Button,
 		popper::{Popper, PopperAnchor, PopperArrow, PopperContent},
 		presence::Presence,
-		shared::{EAlign, ESide, UseControllableStateParams, use_controllable_state},
+		shared::{EAlign, ESide, UseControllableStateParams, use_controllable_state, use_ref_provider},
 	},
 	dioxus::prelude::*,
 	std::{fmt::Debug, rc::Rc},
@@ -38,7 +38,7 @@ impl TooltipProviderContext {
 }
 
 #[derive(Props, PartialEq, Clone)]
-pub struct TooltipProviderProps {
+pub struct TooltipRootProps {
 	#[props(default = 700.0)]
 	pub delay_duration_ms: f32,
 	#[props(default = 300.0)]
@@ -50,8 +50,8 @@ pub struct TooltipProviderProps {
 }
 
 #[component]
-pub fn TooltipProvider(props: TooltipProviderProps) -> Element {
-	let TooltipProviderProps { delay_duration_ms, skip_delay_duration_ms, attributes, children } = props;
+pub fn TooltipRoot(props: TooltipRootProps) -> Element {
+	let TooltipRootProps { delay_duration_ms, skip_delay_duration_ms, attributes, children } = props;
 
 	let mut is_open_delayed_ref = use_signal(|| true);
 	let mut is_pointer_in_transit_ref = use_signal(|| false);
@@ -144,8 +144,6 @@ pub struct TooltipProps {
 	pub default_open: bool,
 	#[props(optional)]
 	pub on_open_change: Option<Callback<bool>>,
-	#[props(optional, default = false)]
-	is_arrow_hidden: bool,
 	#[props(optional)]
 	delay_duration: Option<f32>,
 
@@ -156,7 +154,7 @@ pub struct TooltipProps {
 
 #[component]
 pub fn Tooltip(props: TooltipProps) -> Element {
-	let TooltipProps { open, default_open, on_open_change, is_arrow_hidden, delay_duration, children, attributes } = props;
+	let TooltipProps { open, default_open, on_open_change, delay_duration, children, attributes } = props;
 
 	let is_controlled = use_hook(move || open().is_some());
 	let (open, set_open) =
@@ -233,7 +231,6 @@ pub fn Tooltip(props: TooltipProps) -> Element {
 	rsx! {
 		Popper {
 			position: "relative",
-			is_arrow_hidden,
 			"data-state": if open() { "open" } else { "closed" },
 			extra_attributes: attributes,
 			{children}
@@ -249,13 +246,12 @@ pub struct TooltipTriggerProps {
 	#[props(extends = GlobalAttributes, extends = button)]
 	pub attributes: Vec<Attribute>,
 	#[props(default = Vec::new())]
-	pub container_attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
 #[component]
 pub fn TooltipTrigger(props: TooltipTriggerProps) -> Element {
-	let TooltipTriggerProps { attributes, container_attributes, onclick, children } = props;
+	let TooltipTriggerProps { attributes, onclick, children } = props;
 
 	let context = use_context::<TooltipContext>();
 	let provider_context = use_context::<TooltipProviderContext>();
@@ -263,7 +259,7 @@ pub fn TooltipTrigger(props: TooltipTriggerProps) -> Element {
 	let mut has_pointer_move_opened_ref = use_signal(|| false);
 
 	rsx! {
-		PopperAnchor { extra_attributes: container_attributes, role: "tooltip",
+		PopperAnchor { role: "tooltip",
 			Button {
 				aria_describedby: context.content_id.to_string(),
 				"data-state-open": context.state_attribute.clone(),
@@ -335,10 +331,16 @@ pub fn TooltipContent(props: TooltipContentProps) -> Element {
 	let TooltipContentProps { side, side_offset, align, align_offset, avoid_collisions, collision_padding, attributes, children } = props;
 
 	let context = use_context::<TooltipContext>();
-	let mut current_ref = use_signal(|| None::<Rc<MountedData>>);
+	use_ref_provider();
+
+	let mut attrs = attributes.clone();
+	attrs.push(Attribute::new("--maestro-tooltip-anchor-height", "var(--maestro-popper-anchor-height)", Some("style"), false));
+	attrs.push(Attribute::new("--maestro-tooltip-anchor-width", "var(--maestro-popper-anchor-width)", Some("style"), false));
+	attrs.push(Attribute::new("--maestro-tooltip-content-height", "var(--maestro-popper-content-height)", Some("style"), false));
+	attrs.push(Attribute::new("--maestro-tooltip-content-width", "var(--maestro-popper-content-width)", Some("style"), false));
 
 	rsx! {
-		Presence { node_ref: current_ref, present: *context.open.read(),
+		Presence { present: *context.open.read(),
 			PopperContent {
 				role: "popup",
 				id: context.content_id.to_string(),
@@ -352,8 +354,7 @@ pub fn TooltipContent(props: TooltipContentProps) -> Element {
 				aria_hidden: !*context.open.read(),
 				"data-state": if *context.open.read() { "open" } else { "closed" },
 				"data-state-open": context.state_attribute.clone(),
-				extra_attributes: attributes.clone(),
-				onmounted: move |event: Event<MountedData>| current_ref.set(Some(event.data())),
+				extra_attributes: attrs.clone(),
 				{children}
 			}
 		}

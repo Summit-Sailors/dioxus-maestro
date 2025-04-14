@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 
 #[derive(Props, Clone, PartialEq)]
-pub struct AspectRatioProps {
+pub struct AspectRatioRootProps {
 	#[props(default = 1.0)]
 	pub ratio: f32,
 
@@ -11,7 +11,7 @@ pub struct AspectRatioProps {
 }
 
 #[component]
-pub fn AspectRatio(props: AspectRatioProps) -> Element {
+pub fn AspectRatioRoot(props: AspectRatioRootProps) -> Element {
 	rsx! {
 		div {
 			position: "relative",

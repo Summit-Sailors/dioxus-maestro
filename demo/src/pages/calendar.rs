@@ -58,7 +58,7 @@ pub fn CalendarDemo() -> Element {
 							"Dynamic UI Updates: Instant reflection of state changes".to_string(),
 							"Full Calendar View: Comprehensive month display".to_string(),
 							"Compact Modal View: Minimalist, space-efficient design".to_string(),
-							"Date Range Limitations: Easily set minimum and maximum selectable dates"
+							"Date RangeRoot Limitations: Easily set minimum and maximum selectable dates"
 									.to_string(),
 					],
 				}
@@ -141,7 +141,7 @@ pub fn CalendarDemo() -> Element {
 			}
 
 			ComponentSection {
-				title: "Date Range Calendar",
+				title: "Date RangeRoot Calendar",
 				description: "Calendar with min and max date constraints",
 
 				div {

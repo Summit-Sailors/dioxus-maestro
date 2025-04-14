@@ -25,7 +25,6 @@ impl RadioContext {
 #[derive(Props, PartialEq, Debug, Clone)]
 pub struct RadioProps {
 	pub value: ReadOnlySignal<String>,
-	pub name: String,
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
 	pub checked: ReadOnlySignal<Option<bool>>,
 	#[props(optional, default = false)]
@@ -47,7 +46,7 @@ pub struct RadioProps {
 
 #[component]
 pub fn Radio(props: RadioProps) -> Element {
-	let RadioProps { disabled, value, name, checked, default_checked, attributes, extra_attributes, on_change, children, required } = props;
+	let RadioProps { disabled, value, checked, default_checked, attributes, extra_attributes, on_change, children, required } = props;
 
 	let is_controlled = use_hook(move || checked().is_some());
 	let (checked, set_checked) = use_controllable_state(UseControllableStateParams { is_controlled, prop: checked, default_prop: default_checked, on_change });
@@ -67,7 +66,6 @@ pub fn Radio(props: RadioProps) -> Element {
 				tabindex: -1,
 				r#type: "radio",
 				checked: checked(),
-				name,
 				disabled: disabled(),
 				aria_hidden: true,
 				required,
@@ -76,10 +74,12 @@ pub fn Radio(props: RadioProps) -> Element {
 				r#type: "button",
 				tabindex: if disabled() { "-1" } else { "0" },
 				role: "radio",
-				aria_checked: checked(),
-				aria_required: required,
+				aria_checked: checked().then_some(Some(true)),
+				aria_required: required.then_some(Some(true)),
+				"data-required": required.then_some(Some(true)),
 				"data-state": if checked() { "checked" } else { "unchecked" },
 				disabled,
+				pointer_events: disabled().then_some(Some("none")),
 				onclick: move |_| {
 						let new_checked = !checked();
 						set_checked(new_checked);
@@ -95,6 +95,8 @@ pub fn Radio(props: RadioProps) -> Element {
 pub struct RadioIndicatorProps {
 	#[props(extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	#[props(default = None)]
 	pub children: Option<Element>,
 }
@@ -108,24 +110,16 @@ pub fn RadioIndicator(props: RadioIndicatorProps) -> Element {
 			aria_disabled: *context.disabled.read(),
 			"data-state": if *context.checked.read() { "checked" } else { "unchecked" },
 			"data-disabled": *context.disabled.read(),
+			aria_hidden: if *context.checked.read() { false } else { true },
 			pointer_events: "none",
 			position: "relative",
 			display: "flex",
 			justify_content: "center",
 			align_items: "center",
+			visibility: if *context.checked.read() { "visible" } else { "hidden" },
 			..props.attributes,
-			if *context.checked.read() {
-				if let Some(children) = props.children {
-					{children}
-				} else {
-					span {
-						width: "8px",
-						height: "8px",
-						border: "1px solid",
-						border_radius: "100%",
-					}
-				}
-			}
+			..props.extra_attributes,
+			{props.children}
 		}
 	}
 }

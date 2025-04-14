@@ -3,7 +3,7 @@ use {
 		button::Button,
 		popper::{Popper, PopperAnchor, PopperContent},
 		presence::Presence,
-		shared::{EAlign, ESide, UseControllableStateParams, use_controllable_state, use_escape, use_outside_click},
+		shared::{EAlign, ESide, UseControllableStateParams, use_controllable_state, use_escape, use_outside_click, use_ref_provider},
 	},
 	dioxus::prelude::*,
 	std::{fmt::Debug, rc::Rc},
@@ -12,7 +12,7 @@ use {
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct SelectOptionContext {
-	pub selected: ReadOnlySignal<bool>,
+	pub selected: Memo<bool>,
 	pub disabled: ReadOnlySignal<bool>,
 }
 
@@ -23,8 +23,8 @@ pub struct SelectContext {
 	pub open: Memo<bool>,
 	pub set_open: Callback<bool>,
 	pub disabled: ReadOnlySignal<bool>,
-	pub required: bool,
-	pub multi: bool,
+	pub required: ReadOnlySignal<bool>,
+	pub multi: ReadOnlySignal<bool>,
 	pub trigger_id: Uuid,
 	pub container_id: Uuid,
 }
@@ -36,15 +36,15 @@ impl SelectContext {
 		open: Memo<bool>,
 		set_open: Callback<bool>,
 		disabled: ReadOnlySignal<bool>,
-		required: bool,
-		multi: bool,
+		required: ReadOnlySignal<bool>,
+		multi: ReadOnlySignal<bool>,
 	) -> Self {
 		Self { value, set_value, open, set_open, disabled, required, multi, trigger_id: Uuid::new_v4(), container_id: Uuid::new_v4() }
 	}
 }
 
 #[derive(Clone, PartialEq, Props)]
-pub struct SelectProps {
+pub struct SelectRootProps {
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
 	pub value: ReadOnlySignal<Option<Vec<String>>>,
 	#[props(optional, default = Vec::new())]
@@ -61,10 +61,10 @@ pub struct SelectProps {
 
 	#[props(default = ReadOnlySignal::new(Signal::new(false)))]
 	pub disabled: ReadOnlySignal<bool>,
-	#[props(default = false)]
-	pub required: bool,
-	#[props(default = false)]
-	pub multi: bool,
+	#[props(default = ReadOnlySignal::new(Signal::new(false)))]
+	pub required: ReadOnlySignal<bool>,
+	#[props(default = ReadOnlySignal::new(Signal::new(false)))]
+	pub multi: ReadOnlySignal<bool>,
 
 	#[props(extends = select, extends = GlobalAttributes)]
 	attributes: Vec<Attribute>,
@@ -72,8 +72,8 @@ pub struct SelectProps {
 }
 
 #[component]
-pub fn Select(props: SelectProps) -> Element {
-	let SelectProps { open, default_open, on_open_change, disabled, value, default_value, on_value_change, required, multi, attributes, children } = props;
+pub fn SelectRoot(props: SelectRootProps) -> Element {
+	let SelectRootProps { open, default_open, on_open_change, disabled, value, default_value, on_value_change, required, multi, attributes, children } = props;
 	let is_controlled = use_hook(move || value().is_some());
 	let (value, set_value) =
 		use_controllable_state(UseControllableStateParams { is_controlled, prop: value, default_prop: default_value, on_change: on_value_change });
@@ -93,13 +93,13 @@ pub fn Select(props: SelectProps) -> Element {
 
 	rsx! {
 		Popper {
-			is_arrow_hidden: true,
 			aria_haspopup: "listbox",
 			aria_expanded: open(),
 			aria_disabled: disabled(),
-			aria_required: required,
+			aria_required: required(),
 			"data-disabled": disabled(),
-			"data-required": required,
+			"data-required": required(),
+			"data-role": "select",
 			role: "combobox",
 			onmounted: move |event: Event<MountedData>| current_ref.set(Some(event.data())),
 			extra_attributes: attributes.clone(),
@@ -115,24 +115,17 @@ pub struct SelectTriggerProps {
 
 	#[props(extends = button, extends = GlobalAttributes)]
 	attributes: Vec<Attribute>,
-	#[props(default = Vec::new())]
-	pub container_attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
 #[component]
 pub fn SelectTrigger(props: SelectTriggerProps) -> Element {
-	let SelectTriggerProps { onclick, attributes, container_attributes, children } = props;
+	let SelectTriggerProps { onclick, attributes, children } = props;
 
 	let context = use_context::<SelectContext>();
 
-	let mut attributes = attributes.clone();
-	attributes.push(Attribute::new("aria-haspopup", "listbox", None, false));
-	attributes.push(Attribute::new("aria-expanded", *context.open.read(), None, false));
-	attributes.push(Attribute::new("aria-disabled", *context.disabled.read(), None, false));
-
 	rsx! {
-		PopperAnchor { extra_attributes: container_attributes.clone(),
+		PopperAnchor {
 			Button {
 				id: context.trigger_id.to_string(),
 				disabled: *context.disabled.read(),
@@ -224,7 +217,7 @@ pub fn SelectValue(props: SelectValueProps) -> Element {
 			{children}
 		}
 	} else {
-		let v = if context.multi { value.join(", ") } else { (value.first().unwrap_or(&String::new())).to_string() };
+		let v = if *context.multi.read() { value.join(", ") } else { (value.first().unwrap_or(&String::new())).to_string() };
 		rsx! { "{v}" }
 	};
 
@@ -242,10 +235,69 @@ pub fn SelectValue(props: SelectValueProps) -> Element {
 }
 
 #[derive(Props, PartialEq, Clone)]
+pub struct SelectDropdownProps {
+	#[props(default = ESide::Bottom)]
+	side: ESide,
+	#[props(default = 0.0)]
+	side_offset: f32,
+	#[props(default = EAlign::Center)]
+	align: EAlign,
+	#[props(default = 0.0)]
+	align_offset: f32,
+	#[props(default = true)]
+	avoid_collisions: bool,
+	#[props(default = 4.0)]
+	collision_padding: f32,
+
+	#[props(extends = div, extends = GlobalAttributes)]
+	attributes: Vec<Attribute>,
+	children: Element,
+}
+
+#[component]
+pub fn SelectDropdown(props: SelectDropdownProps) -> Element {
+	let SelectDropdownProps { side, side_offset, align, align_offset, avoid_collisions, collision_padding, attributes, children } = props;
+
+	let context = use_context::<SelectContext>();
+
+	let handle_close = use_callback(move |()| {
+		context.set_open.call(false);
+	});
+
+	use_ref_provider();
+
+	use_escape(handle_close, context.open);
+
+	let mut attrs = attributes.clone();
+	attrs.push(Attribute::new("--maestro-select-anchor-height", "var(--maestro-popper-anchor-height)", Some("style"), false));
+	attrs.push(Attribute::new("--maestro-select-anchor-width", "var(--maestro-popper-anchor-width)", Some("style"), false));
+	attrs.push(Attribute::new("--maestro-select-content-height", "var(--maestro-popper-content-height)", Some("style"), false));
+	attrs.push(Attribute::new("--maestro-select-content-width", "var(--maestro-popper-content-width)", Some("style"), false));
+
+	rsx! {
+		Presence { present: *context.open.read(),
+			PopperContent {
+				role: "listbox",
+				id: context.container_id.to_string(),
+				side,
+				side_offset,
+				align,
+				align_offset,
+				avoid_collisions,
+				collision_padding,
+				aria_labelledby: context.trigger_id.to_string(),
+				aria_hidden: !*context.open.read(),
+				"data-state": if *context.open.read() { "open" } else { "closed" },
+				extra_attributes: attrs.clone(),
+				{children}
+			}
+		}
+	}
+}
+
+#[derive(Props, PartialEq, Clone)]
 pub struct SelectOptionProps {
 	pub value: String,
-	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]
-	pub selected: ReadOnlySignal<bool>,
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]
 	pub disabled: ReadOnlySignal<bool>,
 
@@ -257,14 +309,18 @@ pub struct SelectOptionProps {
 
 #[component]
 pub fn SelectOption(props: SelectOptionProps) -> Element {
-	let SelectOptionProps { value, selected, disabled, attributes, children } = props;
+	let SelectOptionProps { value, disabled, attributes, children } = props;
 
 	let context = use_context::<SelectContext>();
+	let current_value = value.clone();
+	let selected = use_memo(move || context.value.read().contains(&current_value.clone()));
+
 	use_context_provider::<SelectOptionContext>(|| SelectOptionContext { selected, disabled });
 
 	let handle_change = use_callback(move |_| {
 		let mut current_value = context.value.peek().clone();
-		if context.multi {
+		let is_multi = *context.multi.read();
+		if is_multi {
 			if current_value.contains(&value) {
 				current_value.retain(|val| val != &value);
 			} else {
@@ -278,7 +334,7 @@ pub fn SelectOption(props: SelectOptionProps) -> Element {
 			}
 		}
 		context.set_value.call(current_value);
-		if !context.multi {
+		if !is_multi {
 			context.set_open.call(false);
 		}
 	});
@@ -298,6 +354,7 @@ pub fn SelectOption(props: SelectOptionProps) -> Element {
 			onkeydown: move |event| {
 					if event.key() == Key::Enter || event.code() == Code::Space {
 							event.stop_propagation();
+							event.prevent_default();
 							handle_change(());
 					}
 			},
@@ -354,62 +411,6 @@ pub fn OptionSelectedIndicator(props: OptionSelectedIndicator) -> Element {
 			"data-role": "indicator",
 			..props.attributes,
 			{indicator}
-		}
-	}
-}
-
-#[derive(Props, PartialEq, Clone)]
-pub struct SelectDropdownProps {
-	#[props(default = ESide::Bottom)]
-	side: ESide,
-	#[props(default = 0.0)]
-	side_offset: f32,
-	#[props(default = EAlign::Center)]
-	align: EAlign,
-	#[props(default = 0.0)]
-	align_offset: f32,
-	#[props(default = true)]
-	avoid_collisions: bool,
-	#[props(default = 4.0)]
-	collision_padding: f32,
-
-	#[props(extends = div, extends = GlobalAttributes)]
-	attributes: Vec<Attribute>,
-	children: Element,
-}
-
-#[component]
-pub fn SelectDropdown(props: SelectDropdownProps) -> Element {
-	let SelectDropdownProps { side, side_offset, align, align_offset, avoid_collisions, collision_padding, attributes, children } = props;
-
-	let context = use_context::<SelectContext>();
-
-	let handle_close = use_callback(move |()| {
-		context.set_open.call(false);
-	});
-
-	let mut current_ref = use_signal(|| None::<Rc<MountedData>>);
-
-	use_escape(handle_close, context.open);
-
-	rsx! {
-		Presence { node_ref: current_ref, present: *context.open.read(),
-			PopperContent {
-				role: "listbox",
-				id: context.container_id.to_string(),
-				side,
-				side_offset,
-				align,
-				align_offset,
-				avoid_collisions,
-				collision_padding,
-				aria_labelledby: context.trigger_id.to_string(),
-				aria_hidden: !*context.open.read(),
-				"data-state": if *context.open.read() { "open" } else { "closed" },
-				onmounted: move |event: Event<MountedData>| current_ref.set(Some(event.data())),
-				extra_attributes: attributes.clone(),
-				{children}
-			}
 		}
 	}
 }

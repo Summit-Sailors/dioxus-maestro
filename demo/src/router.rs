@@ -1,9 +1,7 @@
 use {
 	crate::{
 		layout::Layout,
-		pages::{
-			calendar::CalendarDemo, form::FormsDemo, headless::HeadlessDemo, home::HomePage, hooks::HooksDemo, plotters::PlottersDemo, toast::ToastDemo, ui::UIDemo,
-		},
+		pages::{calendar::CalendarDemo, form::FormsDemo, home::HomePage, hooks::HooksDemo, plotters::PlottersDemo, toast::ToastDemo, ui::UIDemo},
 	},
 	dioxus::prelude::*,
 	strum_macros::EnumIter,
@@ -26,8 +24,6 @@ pub enum Route {
 	UIDemo {},
 	#[route("/calendar")]
 	CalendarDemo {},
-	#[route("/headless")]
-	HeadlessDemo {},
 }
 
 impl Route {
@@ -40,7 +36,6 @@ impl Route {
 			Route::ToastDemo {} => "Toast",
 			Route::UIDemo {} => "UI",
 			Route::CalendarDemo {} => "Calendar",
-			Route::HeadlessDemo {} => "Headless",
 		}
 	}
 
@@ -53,7 +48,6 @@ impl Route {
 			Route::ToastDemo {} => "A powerful, flexible, and intuitive toast notification system designed specifically for Dioxus applications. ",
 			Route::UIDemo {} => "A comprehensive, type-safe, and highly customizable UI component library for Dioxus, designed to provide developers with powerful, flexible, and elegant UI building blocks.",
       Route::CalendarDemo {} => "A  highly customizable UI calendar and date picker utility.",
-      Route::HeadlessDemo {} => "Headless components",
 		}
 	}
 }

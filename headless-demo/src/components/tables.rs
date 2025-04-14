@@ -2,7 +2,7 @@ use {
 	dioxus::prelude::*,
 	dioxus_free_icons::{Icon, icons::bs_icons::BsInfo},
 	maestro_headless::{
-		popover::{Popover, PopoverArrow, PopoverContent, PopoverTrigger},
+		popover::{PopoverArrow, PopoverContent, PopoverRoot, PopoverTrigger},
 		shared::{EAlign, ESide},
 	},
 };
@@ -47,8 +47,8 @@ pub fn PropsTable(props: TableProps) -> Element {
 							if let Some(text) = tooltip_text {
 								{
 										rsx! {
-											Popover { class: "w-fit",
-												PopoverTrigger { class: "w-4 h-4 bg-neutral-900 text-orange-600 rounded-full border border-neutral-100 flex items-center justify-center focus-visible:outline-none",
+											PopoverRoot { class: "w-fit",
+												PopoverTrigger { class: "w-4 h-4 bg-neutral-900 text-neutral-100 rounded-full border border-orange-600/60 flex items-center justify-center focus-visible:outline-none",
 													Icon { icon: BsInfo {} }
 												}
 												PopoverContent {
@@ -100,7 +100,7 @@ pub fn AttrsTable(props: AttrsProps) -> Element {
 				}
 			}
 			tbody { class: "*:not-last:border-b *:not-last:border-b-neutral-700",
-				for AttrsStruct { attr , description, value } in props.content.iter() {
+				for AttrsStruct { attr , description , value } in props.content.iter() {
 					tr { class: "*:px-3 *:py-2 *:not-last:border-r *:not-last:border-r-neutral-800",
 						td { class: "flex items-center gap-2", "{attr}" }
 						td {

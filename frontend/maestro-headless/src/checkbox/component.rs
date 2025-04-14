@@ -20,7 +20,7 @@ impl CheckboxContext {
 }
 
 #[derive(Props, PartialEq, Debug, Clone)]
-pub struct CheckboxProps {
+pub struct CheckboxRootProps {
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
 	pub checked: ReadOnlySignal<Option<bool>>,
 	#[props(optional, default = false)]
@@ -29,11 +29,10 @@ pub struct CheckboxProps {
 	pub on_change: Option<Callback<bool>>,
 
 	pub value: ReadOnlySignal<String>,
-	pub name: String,
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]
 	pub disabled: ReadOnlySignal<bool>,
-	#[props(default = false)]
-	pub required: bool,
+	#[props(default = ReadOnlySignal::new(Signal::new(false)))]
+	pub required: ReadOnlySignal<bool>,
 
 	#[props(extends = GlobalAttributes, extends = button)]
 	pub attributes: Vec<Attribute>,
@@ -43,8 +42,8 @@ pub struct CheckboxProps {
 }
 
 #[component]
-pub fn Checkbox(props: CheckboxProps) -> Element {
-	let CheckboxProps { checked, default_checked, on_change, value, name, disabled, required, attributes, extra_attributes, children } = props;
+pub fn CheckboxRoot(props: CheckboxRootProps) -> Element {
+	let CheckboxRootProps { checked, default_checked, on_change, value, disabled, required, attributes, extra_attributes, children } = props;
 	let is_controlled = use_hook(move || checked().is_some());
 	let (checked, set_checked) = use_controllable_state(UseControllableStateParams { is_controlled, prop: checked, default_prop: default_checked, on_change });
 	use_context_provider::<CheckboxContext>(|| CheckboxContext::new(checked, disabled));
@@ -59,14 +58,14 @@ pub fn Checkbox(props: CheckboxProps) -> Element {
 				width: 0,
 				height: 0,
 				opacity: 0,
-				margin: 0,
+				margin: "-1px",
+				z_index: -10,
 				tabindex: -1,
 				r#type: "checkbox",
 				checked: checked(),
-				name,
 				value: value(),
 				disabled: disabled(),
-				required,
+				required: required(),
 				aria_hidden: true,
 			}
 			Button {
@@ -75,7 +74,8 @@ pub fn Checkbox(props: CheckboxProps) -> Element {
 				role: "checkbox",
 				disabled,
 				aria_checked: checked().then_some(Some(true)),
-				aria_required: required.then_some(Some(true)),
+				aria_required: required().then_some(Some(true)),
+				"data-required": required().then_some(Some(true)),
 				"data-state": if checked() { "checked" } else { "unchecked" },
 				pointer_events: disabled().then_some(Some("none")),
 				onclick: move |_| set_checked(!checked()),
@@ -90,6 +90,8 @@ pub fn Checkbox(props: CheckboxProps) -> Element {
 pub struct CheckboxIndicatorProps {
 	#[props(extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	#[props(default = None)]
 	pub children: Option<Element>,
 }
@@ -110,6 +112,7 @@ pub fn CheckboxIndicator(props: CheckboxIndicatorProps) -> Element {
 			justify_content: "center",
 			align_items: "center",
 			..props.attributes,
+			..props.extra_attributes,
 			if *context.checked.read() {
 				if let Some(children) = props.children {
 					{

@@ -1,6 +1,6 @@
 use {
 	crate::{
-		checkbox::{Checkbox, CheckboxIndicator},
+		checkbox::{CheckboxIndicator, CheckboxRoot},
 		shared::{EOrientation, UseControllableStateParams, use_arrow_key_navigation, use_controllable_state},
 	},
 	dioxus::prelude::*,
@@ -9,11 +9,11 @@ use {
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct CheckboxGroupContext {
-	pub name: String,
 	pub value: Memo<Vec<String>>,
 	pub set_value: Callback<Vec<String>>,
 	pub orientation: ReadOnlySignal<EOrientation>,
 	pub disabled: ReadOnlySignal<bool>,
+	pub required: ReadOnlySignal<bool>,
 }
 
 impl CheckboxGroupContext {
@@ -21,10 +21,10 @@ impl CheckboxGroupContext {
 		value: Memo<Vec<String>>,
 		set_value: Callback<Vec<String>>,
 		orientation: ReadOnlySignal<EOrientation>,
-		name: String,
 		disabled: ReadOnlySignal<bool>,
+		required: ReadOnlySignal<bool>,
 	) -> Self {
-		Self { value, set_value, orientation, name, disabled }
+		Self { value, set_value, orientation, disabled, required }
 	}
 
 	pub fn on_select(&self, value: String) {
@@ -44,7 +44,6 @@ impl CheckboxGroupContext {
 
 #[derive(Props, Clone, PartialEq)]
 pub struct CheckboxGroupProps {
-	pub name: String,
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
 	pub value: ReadOnlySignal<Option<Vec<String>>>,
 	#[props(optional, default = None)]
@@ -53,6 +52,8 @@ pub struct CheckboxGroupProps {
 	pub on_value_change: Option<Callback<Vec<String>>>,
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]
 	pub disabled: ReadOnlySignal<bool>,
+	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]
+	pub required: ReadOnlySignal<bool>,
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(EOrientation::Horizontal)))]
 	pub orientation: ReadOnlySignal<EOrientation>,
 
@@ -63,7 +64,7 @@ pub struct CheckboxGroupProps {
 
 #[component]
 pub fn CheckboxGroup(props: CheckboxGroupProps) -> Element {
-	let CheckboxGroupProps { name, value, default_value, on_value_change, disabled, orientation, children, attributes } = props;
+	let CheckboxGroupProps { value, default_value, on_value_change, disabled, required, orientation, children, attributes } = props;
 
 	let is_controlled = use_hook(move || value().is_some());
 	let (value, set_value) = use_controllable_state(UseControllableStateParams {
@@ -73,7 +74,7 @@ pub fn CheckboxGroup(props: CheckboxGroupProps) -> Element {
 		on_change: on_value_change,
 	});
 
-	use_context_provider::<CheckboxGroupContext>(|| CheckboxGroupContext::new(value, set_value, orientation, name, disabled));
+	use_context_provider::<CheckboxGroupContext>(|| CheckboxGroupContext::new(value, set_value, orientation, disabled, required));
 
 	let mut container_ref = use_signal(|| None::<Rc<MountedData>>);
 
@@ -84,6 +85,10 @@ pub fn CheckboxGroup(props: CheckboxGroupProps) -> Element {
 			role: "group",
 			aria_disabled: disabled().then_some(Some(true)),
 			"data-disabled": disabled().then_some(Some(true)),
+			aria_required: required().then_some(Some(true)),
+			"data-required": required().then_some(Some(true)),
+			aria_orientation: orientation().to_string(),
+			"data-orientation": orientation().to_string(),
 			onkeydown: handle_key_down,
 			onmounted: move |event| container_ref.set(Some(event.data())),
 			..attributes,
@@ -114,9 +119,9 @@ pub fn CheckboxGroupItem(props: CheckboxGroupItemProps) -> Element {
 	use_context_provider::<Memo<bool>>(|| is_disabled);
 
 	rsx! {
-		Checkbox {
-			name: context.name.clone(),
+		CheckboxRoot {
 			value,
+			required: context.required,
 			disabled: is_disabled(),
 			checked: checked(),
 			on_change: move |checked: bool| {
@@ -127,15 +132,28 @@ pub fn CheckboxGroupItem(props: CheckboxGroupItemProps) -> Element {
 					}
 			},
 			extra_attributes: attributes.clone(),
-			if let Some(children) = children {
-				{children}
-			} else {
-				{
-						rsx! {
-							CheckboxIndicator {}
-						}
-				}
-			}
+			{children}
+		}
+	}
+}
+
+#[derive(Props, PartialEq, Debug, Clone)]
+pub struct CheckboxGroupIndicatorProps {
+	#[props(extends = GlobalAttributes)]
+	pub attributes: Vec<Attribute>,
+	#[props(default = None)]
+	pub children: Option<Element>,
+}
+
+#[component]
+pub fn CheckboxGroupIndicator(props: CheckboxGroupIndicatorProps) -> Element {
+	if let Some(children) = props.children {
+		rsx! {
+			CheckboxIndicator { extra_attributes: props.attributes.clone(), {children} }
+		}
+	} else {
+		rsx! {
+			CheckboxIndicator { extra_attributes: props.attributes.clone() }
 		}
 	}
 }

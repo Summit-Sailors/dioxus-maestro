@@ -23,14 +23,14 @@ struct AvatarContextValue {
 }
 
 #[derive(Props, PartialEq, Clone)]
-pub struct AvatarProps {
+pub struct AvatarRootProps {
 	#[props(extends = GlobalAttributes, extends = div)]
 	pub attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
 #[component]
-pub fn Avatar(props: AvatarProps) -> Element {
+pub fn AvatarRoot(props: AvatarRootProps) -> Element {
 	let image_loading_status = use_signal(|| ImageLoadingStatus::Idle);
 	use_context_provider::<AvatarContextValue>(|| AvatarContextValue { image_loading_status });
 

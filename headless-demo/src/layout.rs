@@ -1,12 +1,9 @@
 use {
-	crate::{components::logo_light::LogoLight, router::Route},
+	crate::router::Route,
 	dioxus::prelude::*,
 	dioxus_free_icons::{
 		Icon,
-		icons::{
-			bs_icons::{BsLayoutSidebar, BsLayoutSidebarReverse},
-			io_icons::IoLogoGithub,
-		},
+		icons::io_icons::IoLogoGithub,
 	},
 	maestro_headless::button::Button,
 	maestro_toast::{init::use_init_toast_ctx, toast_frame_component::ToastFrame},
@@ -22,16 +19,6 @@ pub fn Layout(children: Element) -> Element {
 	let is_home = Route::Home {} == current_route;
 
 	rsx! {
-		head {
-			// document::Link { rel: "icon", href: asset!("/assets/favicon.ico") }
-			document::Link { rel: "stylesheet", href: asset!("/assets/tailwind.css") }
-			document::Link { rel: "preconnect", href: "https://fonts.googleapis.com" }
-			document::Link {
-				rel: "stylesheet",
-				href: "https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap",
-			}
-		}
-
 		ToastFrame { manager: toast }
 		header { class: "py-4 px-10 sticky top-0 left-0 w-full z-30 border-b  backdrop-blur-sm border-b-neutral-800 bg-neutral-900",
 			div { class: "flex justify-end items-center w-full gap-4",

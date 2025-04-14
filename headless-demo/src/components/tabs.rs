@@ -3,14 +3,14 @@ use {
 	dioxus::prelude::*,
 	maestro_headless::{
 		shared::EOrientation,
-		tabs::{Tabs, TabsContent, TabsList, TabsTrigger},
+		tabs::{TabsRoot, TabsContent, TabsList, TabsTrigger},
 	},
 };
 
 #[component]
 pub fn PageTabs(props_list: Vec<PropsStruct>, attrs_list: Vec<AttrsStruct>) -> Element {
 	rsx! {
-		Tabs {
+		TabsRoot {
 			default_value: "Props",
 			orientation: EOrientation::Horizontal,
 			class: "flex flex-col gap-4",

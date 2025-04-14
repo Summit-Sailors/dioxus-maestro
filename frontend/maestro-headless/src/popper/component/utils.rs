@@ -89,6 +89,7 @@ pub fn get_element_rect(ref_element: Signal<Option<Rc<MountedData>>>) -> Option<
 }
 
 pub fn calculate_position(
+	fixed_parent: Option<web_sys::Element>,
 	reference_rect: &Rect,
 	floating_rect: &Rect,
 	placement: &Placement,
@@ -100,21 +101,33 @@ pub fn calculate_position(
 	let side = placement.side();
 	let alignment = placement.alignment();
 	let window = window().expect("should have a window in this context");
-	let scroll_x = window.page_x_offset().unwrap_or(0.0) as f32;
-	let scroll_y = window.page_y_offset().unwrap_or(0.0) as f32;
+	let is_parent_positioned = if let Some(positioned_parent) = &fixed_parent {
+		let parent_rect = positioned_parent.get_bounding_client_rect();
+		parent_rect.left() as f32 != 0.0 || parent_rect.top() as f32 != 0.0
+	} else {
+		false
+	};
+	let scroll_x = if is_parent_positioned { 0.0 } else { window.page_x_offset().unwrap_or(0.0) as f32 };
+	let scroll_y = if is_parent_positioned { 0.0 } else { window.page_y_offset().unwrap_or(0.0) as f32 };
+	let reference_rect_x = if is_parent_positioned { 0.0 } else { reference_rect.x };
+	let reference_rect_y = if is_parent_positioned { 0.0 } else { reference_rect.y };
 
 	let (left, top) = match side {
 		ESide::Top => (
-			reference_rect.x + (reference_rect.width / 2.0) - (floating_rect.width / 2.0) - scroll_x,
-			reference_rect.y - floating_rect.height - offset - arrow_height - scroll_y,
+			reference_rect_x + reference_rect.width / 2.0 - floating_rect.width / 2.0 - scroll_x,
+			reference_rect_y - floating_rect.height - offset - arrow_height - scroll_y,
 		),
 		ESide::Right => (
-			reference_rect.x + reference_rect.width + offset + arrow_height - scroll_x,
-			reference_rect.y + (reference_rect.height / 2.0) - (floating_rect.height / 2.0) - scroll_y,
+			if is_parent_positioned {
+				-floating_rect.width - offset - arrow_height
+			} else {
+				reference_rect_x + reference_rect.width + offset + arrow_height - scroll_x
+			},
+			reference_rect_y + (reference_rect.height / 2.0) - (floating_rect.height / 2.0) - scroll_y,
 		),
 		ESide::Bottom => (
-			reference_rect.x + (reference_rect.width / 2.0) - (floating_rect.width / 2.0) - scroll_x,
-			reference_rect.y + reference_rect.height + offset + arrow_height - scroll_y,
+			reference_rect_x + (reference_rect.width / 2.0) - (floating_rect.width / 2.0) - scroll_x,
+			reference_rect_y + reference_rect.height + offset + arrow_height - scroll_y,
 		),
 		ESide::Left => (
 			reference_rect.x - floating_rect.width - offset - arrow_height - scroll_x,
@@ -123,27 +136,45 @@ pub fn calculate_position(
 	};
 
 	let (left, top) = match (side, alignment) {
-		(ESide::Top | ESide::Bottom, Some(Alignment::Start)) => (left + align_offset, top),
-		(ESide::Top | ESide::Bottom, Some(Alignment::End)) => (left + reference_rect.width - floating_rect.width - align_offset, top),
-		(ESide::Right | ESide::Left, Some(Alignment::Start)) => (left, top + align_offset),
-		(ESide::Right | ESide::Left, Some(Alignment::End)) => (left, top + reference_rect.height - floating_rect.height - align_offset),
+		(ESide::Top | ESide::Bottom, Some(Alignment::Start)) => (left - reference_rect.width / 2.0 + floating_rect.width / 2.0 + align_offset, top),
+		(ESide::Top | ESide::Bottom, Some(Alignment::End)) => (left + reference_rect.width / 2.0 - floating_rect.width / 2.0 - align_offset, top),
+		(ESide::Right | ESide::Left, Some(Alignment::Start)) => (left, top - reference_rect.height / 2.0 + floating_rect.height / 2.0 + align_offset),
+		(ESide::Right | ESide::Left, Some(Alignment::End)) => (left, top + reference_rect.height / 2.0 - floating_rect.height / 2.0 - align_offset),
 		_ => (left, top),
 	};
 
-	let (arrow_x, arrow_y) = match side {
-		ESide::Top | ESide::Bottom => {
+	let (arrow_x, arrow_y) = match (side, alignment) {
+		(ESide::Top | ESide::Bottom, None) => {
 			let arrow_x = floating_rect.width / 2.0;
 			let constrained_x = arrow_x.max(arrow_width).min(floating_rect.width - arrow_width);
 			(Some(constrained_x), None)
 		},
-		ESide::Right | ESide::Left => {
+		(ESide::Right | ESide::Left, None) => {
 			let arrow_y = floating_rect.height / 2.0;
 			let constrained_y = arrow_y.max(arrow_width).min(floating_rect.height - arrow_width);
 			(None, Some(constrained_y))
 		},
+		(ESide::Top | ESide::Bottom, Some(Alignment::Start)) => {
+			let arrow_x = 0.0 + reference_rect.width / 2.0;
+			(Some(arrow_x), None)
+		},
+		(ESide::Top | ESide::Bottom, Some(Alignment::End)) => {
+			let arrow_x = floating_rect.width - reference_rect.width / 2.0;
+			(Some(arrow_x), None)
+		},
+		(ESide::Right | ESide::Left, Some(Alignment::Start)) => {
+			let arrow_y = 0.0 + reference_rect.height / 2.0;
+			(None, Some(arrow_y))
+		},
+		(ESide::Right | ESide::Left, Some(Alignment::End)) => {
+			let arrow_y = floating_rect.height - reference_rect.height / 2.0;
+			(None, Some(arrow_y))
+		},
 	};
 
-	let styles = FloatingStyles { position: "fixed".to_string(), top: format!("{}px", top), left: format!("{}px", left), transform: None };
+	let position = if is_parent_positioned { "absolute".to_string() } else { "fixed".to_string() };
+
+	let styles = FloatingStyles { position, top: "0px".to_string(), left: "0px".to_string(), transform: Some(format!("translate({}px, {}px)", left, top)) };
 
 	let arrow_data = ArrowData { x: arrow_x, y: arrow_y, center_offset: 0.0 };
 
@@ -177,4 +208,23 @@ pub fn find_scrollable_parents(element: &Rc<MountedData>) -> Vec<web_sys::Elemen
 		}
 	}
 	elements
+}
+
+pub fn find_positioned_parent(element: &Rc<MountedData>) -> Option<web_sys::Element> {
+	let position_values = ["fixed", "absolute", "sticky"];
+	if let Some(element) = element.try_as_web_event().and_then(|x| x.dyn_into::<HtmlElement>().ok()) {
+		let mut current_element = element.clone();
+
+		while let Some(parent) = current_element.parent_element() {
+			if let Some(computed_style) = web_sys::window().and_then(|w| w.get_computed_style(&parent).ok()).unwrap_or(None) {
+				if let Ok(position) = computed_style.get_property_value("position") {
+					if position_values.contains(&position.as_str()) {
+						return Some(parent.clone());
+					}
+				}
+			}
+			current_element = parent.dyn_into::<HtmlElement>().ok().expect("Error");
+		}
+	}
+	None
 }

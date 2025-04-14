@@ -7,11 +7,9 @@ use {
 };
 
 #[derive(Props, PartialEq, Debug, Clone)]
-pub struct SwitchProps {
-	#[props(default = ReadOnlySignal::new(Signal::new("on".to_string())))]
-	pub value: ReadOnlySignal<String>,
-	#[props(default = "switch".to_string())]
-	pub name: String,
+pub struct SwitchRootProps {
+	#[props(default = ReadOnlySignal::new(Signal::new(None)))]
+	pub value: ReadOnlySignal<Option<String>>,
 
 	#[props(default = ReadOnlySignal::new(Signal::new(None)))]
 	pub checked: ReadOnlySignal<Option<bool>>,
@@ -30,12 +28,21 @@ pub struct SwitchProps {
 }
 
 #[component]
-pub fn Switch(props: SwitchProps) -> Element {
-	let SwitchProps { value, disabled, required, attributes, on_toggle_change, checked, default_checked, name, children } = props;
+pub fn SwitchRoot(props: SwitchRootProps) -> Element {
+	let SwitchRootProps { value, disabled, required, attributes, on_toggle_change, checked, default_checked, children } = props;
 	let is_controlled = use_hook(move || checked().is_some());
 	let (checked, set_checked) =
 		use_controllable_state(UseControllableStateParams { is_controlled, prop: checked, default_prop: default_checked, on_change: on_toggle_change });
 	use_context_provider::<Memo<bool>>(|| checked);
+	let current_value = use_memo(move || {
+		if let Some(value) = value() {
+			value
+		} else if checked() {
+			"on".into()
+		} else {
+			"off".into()
+		}
+	});
 
 	rsx! {
 		div { position: "relative",
@@ -47,9 +54,8 @@ pub fn Switch(props: SwitchProps) -> Element {
 				margin: 0,
 				tabindex: -1,
 				r#type: "radio",
-				value: value.clone(),
+				value: current_value.clone(),
 				checked: checked(),
-				name,
 				disabled: disabled(),
 				required,
 				aria_hidden: true,

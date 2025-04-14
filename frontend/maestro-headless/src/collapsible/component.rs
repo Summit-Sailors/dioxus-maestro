@@ -2,10 +2,9 @@ use {
 	crate::{
 		button::Button,
 		presence::Presence,
-		shared::{UseControllableStateParams, use_controllable_state, use_dimensions},
+		shared::{UseControllableStateParams, use_controllable_state, use_dimensions, use_ref_provider},
 	},
 	dioxus::prelude::*,
-	std::rc::Rc,
 	uuid::Uuid,
 };
 
@@ -25,7 +24,7 @@ impl CollapsibleContext {
 }
 
 #[derive(Props, Clone, PartialEq)]
-pub struct CollapsibleProps {
+pub struct CollapsibleRootProps {
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
 	pub open: ReadOnlySignal<Option<bool>>,
 	#[props(optional, default = false)]
@@ -43,8 +42,8 @@ pub struct CollapsibleProps {
 }
 
 #[component]
-pub fn Collapsible(props: CollapsibleProps) -> Element {
-	let CollapsibleProps { open, default_open, on_open_change, disabled, children, attributes } = props;
+pub fn CollapsibleRoot(props: CollapsibleRootProps) -> Element {
+	let CollapsibleRootProps { open, default_open, on_open_change, disabled, children, attributes } = props;
 	let is_controlled = use_hook(move || open().is_some());
 	let (open, set_open) =
 		use_controllable_state(UseControllableStateParams { is_controlled, prop: open, default_prop: default_open, on_change: on_open_change });
@@ -67,7 +66,6 @@ pub fn Collapsible(props: CollapsibleProps) -> Element {
 pub struct CollapsibleTriggerProps {
 	#[props(extends = GlobalAttributes, extends = button)]
 	pub attributes: Vec<Attribute>,
-
 	pub children: Element,
 }
 
@@ -106,7 +104,7 @@ pub struct CollapsibleContentProps {
 pub fn CollapsibleContent(props: CollapsibleContentProps) -> Element {
 	let CollapsibleContentProps { attributes, children } = props;
 	let context = use_context::<CollapsibleContext>();
-	let mut current_ref = use_signal(|| None::<Rc<MountedData>>);
+	let mut current_ref = use_ref_provider();
 	let (width, height) = use_dimensions(current_ref, *context.open.peek());
 
 	let mut attrs = attributes.clone();
@@ -120,7 +118,7 @@ pub fn CollapsibleContent(props: CollapsibleContentProps) -> Element {
 	attrs.push(Attribute::new("--maestro-headless-collapsible-width", if width() > 0.0 { Some(format!("{}px", width())) } else { None }, Some("style"), false));
 
 	rsx! {
-		Presence { present: *context.open.read(), node_ref: current_ref,
+		Presence { present: *context.open.read(),
 			div {
 				id: context.content_id.to_string(),
 				role: "region",
