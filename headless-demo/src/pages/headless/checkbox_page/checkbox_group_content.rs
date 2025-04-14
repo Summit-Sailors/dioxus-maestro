@@ -10,10 +10,7 @@ use {
 		pages::headless::checkbox_page::consts::{EXAMPLE_GROUP, EXAMPLE_GROUP_ANATOMY},
 	},
 	dioxus::prelude::*,
-	maestro_headless::{
-		checkbox_group::{CheckboxGroup, CheckboxGroupIndicator, CheckboxGroupItem},
-		shared::EOrientation,
-	},
+	maestro_headless::checkbox_group::{CheckboxGroup, CheckboxGroupIndicator, CheckboxGroupItem},
 };
 
 #[component]

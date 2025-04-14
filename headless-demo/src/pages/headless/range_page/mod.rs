@@ -3,7 +3,7 @@ use {
 		description_section::DescriptionSection,
 		example_code::{ExampleCodeAnatomy, ExampleCodeCollapsible},
 		features_list::Features,
-		tables::{AttrsStruct, PropsStruct, PropsTable},
+		tables::{AttrsStruct, PropsStruct},
 		tabs::PageTabs,
 	},
 	consts::{EXAMPLE, EXAMPLE_ANATOMY},
@@ -11,6 +11,7 @@ use {
 	maestro_headless::{
 		range::{Range, RangeRoot, RangeThumb, RangeTrack},
 		shared::EOrientation,
+		switch::{SwitchIndicator, SwitchRoot},
 	},
 };
 
@@ -19,6 +20,24 @@ mod consts;
 #[component]
 pub fn RangePage() -> Element {
 	let mut value = use_signal(|| Vec::from([0.0_f32]));
+	let mut double = use_signal(|| false);
+	let mut use_step = use_signal(|| false);
+	let mut disabled = use_signal(|| false);
+	let mut switch = use_signal(|| false);
+	let orientation = use_memo(move || if switch() { EOrientation::Vertical } else { EOrientation::Horizontal });
+
+	use_effect(move || {
+		if double() {
+			if value.peek().len() == 1 {
+				value.push(50.0);
+			}
+		} else {
+			if value.peek().len() > 1 {
+				value.pop();
+			}
+		}
+	});
+
 	let features_list: Vec<&str> = Vec::from([
 		"Controlled/uncontrolled state",
 		"Keyboard navigation",
@@ -34,17 +53,64 @@ pub fn RangePage() -> Element {
 			description: "An input where the user selects a value from within a given range.",
 		}
 		section { class: "container flex flex-col px-4 lg:py-6 py-4 ",
+			div { class: "flex flex-wrap gap-5 items-center mb-4",
+				div { class: "flex flex-wrap items-center gap-2 text-neutral-100 mb-4 mt-5",
+					SwitchRoot {
+						checked: disabled(),
+						on_toggle_change: move |v| disabled.set(v),
+						class: "flex items-center px-1 py-1 rounded-full h-6 w-12 bg-neutral-500 data-[state=checked]:bg-neutral-100 border border-neutral-700",
+						SwitchIndicator { class: "relative data-[state=checked]:translate-x-5 transition ease-linear rounded-full w-5 h-5 bg-neutral-900" }
+					}
+					"Disable"
+				}
+				div { class: "flex items-center gap-2 text-neutral-100 mb-4 mt-5",
+					SwitchRoot {
+						checked: switch(),
+						on_toggle_change: move |v| switch.set(v),
+						class: "flex items-center px-1 py-1 rounded-full h-6 w-12 bg-neutral-500 data-[state=checked]:bg-neutral-100 border border-neutral-700",
+						SwitchIndicator { class: "relative data-[state=checked]:translate-x-5 transition ease-linear rounded-full w-5 h-5 bg-neutral-900" }
+					}
+					"Vertical"
+				}
+				div { class: "flex items-center gap-2 text-neutral-100 mb-4 mt-5",
+					SwitchRoot {
+						checked: double(),
+						on_toggle_change: move |v| double.set(v),
+						class: "flex items-center px-1 py-1 rounded-full h-6 w-12 bg-neutral-500 data-[state=checked]:bg-neutral-100 border border-neutral-700",
+						SwitchIndicator { class: "relative data-[state=checked]:translate-x-5 transition ease-linear rounded-full w-5 h-5 bg-neutral-900" }
+					}
+					"Try double"
+				}
+				div { class: "flex items-center gap-2 text-neutral-100 mb-4 mt-5",
+					SwitchRoot {
+						disabled: !double(),
+						checked: use_step(),
+						on_toggle_change: move |v| use_step.set(v),
+						class: "flex items-center px-1 py-1 rounded-full h-6 w-12 bg-neutral-500 data-[state=checked]:bg-neutral-100 border border-neutral-700 disabled:opacity-50 disabled:cursor-auto disabled:pointer-events-none",
+						SwitchIndicator { class: "relative data-[state=checked]:translate-x-5 transition ease-linear rounded-full w-5 h-5 bg-neutral-900" }
+					}
+					"Use step between (20.0)"
+				}
+			}
 			div { class: "grow flex flex-col justify-center items-center rounded-md border border-neutral-800 bg-neutral-950 overflow-hidden",
 				div { class: "p-6 flex grow items-center justify-center w-full",
 					RangeRoot {
-						class: "w-52 flex items-center",
+						class: "data-[orientation=horizontal]:w-52 data-[orientation=vertical]:h-52 data-[orientation=vertical]:w-1 flex items-center data-[disabled=true]:opacity-50 data-[disabled=true]:cursor-auto data-[disabled=true]:pointer-events-none",
 						value: value(),
 						on_value_change: move |v| { value.set(v) },
-						RangeTrack { class: "flex-1 bg-neutral-600 rounded-full h-1",
-							Range { class: "flex-1 bg-orange-600 rounded-full h-1" }
+						min_steps_between_thumbs: if use_step() { 20.0 } else { 0.0 },
+						disabled: disabled(),
+						orientation: orientation(),
+						RangeTrack { class: "flex-1 bg-neutral-600 rounded-full data-[orientation=horizontal]:h-1 data-[orientation=horizontal]:w-52 data-[orientation=vertical]:w-1 data-[orientation=vertical]:h-52 data-[disabled=true]:cursor-auto data-[disabled=true]:pointer-events-none",
+							Range { class: "flex-1 bg-orange-600 rounded-full data-[orientation=horizontal]:h-1 data-[orientation=vertical]:w-1 data-[disabled=true]:cursor-auto data-[disabled=true]:pointer-events-none" }
 						}
-						RangeThumb { class: "w-6 h-6 rounded-full bg-orange-600 flex items-center justify-center text-neutral-300 text-xs cursor-pointer transition-colors hover:text-neutral-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-orange-600 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900",
+						RangeThumb { class: "w-[25px] h-[25px] rounded-full bg-orange-600 flex items-center justify-center text-neutral-300 text-xs cursor-pointer transition-colors hover:text-neutral-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-orange-600 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 data-[disabled=true]:cursor-auto data-[disabled=true]:pointer-events-none",
 							"{value().get(0).unwrap_or(&0.0):.0}"
+						}
+						if double() {
+							RangeThumb { class: "w-[25px] h-[25px] rounded-full bg-orange-600 flex items-center justify-center text-neutral-300 text-xs cursor-pointer transition-colors hover:text-neutral-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-orange-600 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 data-[disabled=true]:cursor-auto data-[disabled=true]:pointer-events-none",
+								"{value().get(1).unwrap_or(&50.0):.0}"
+							}
 						}
 					}
 				}
@@ -96,21 +162,21 @@ pub fn RangePage() -> Element {
 								},
 								PropsStruct {
 										prop: "default_value".into(),
-										prop_default: "0".into(),
-										prop_type: "f32".into(),
+										prop_default: "[0.0]".into(),
+										prop_type: "Vec<f32>".into(),
 										tooltip_text: None,
 								},
 								PropsStruct {
 										prop: "orientation".into(),
-										prop_default: "EOrientation::Vertical".into(),
-										prop_type: "EOrientation::Vertical | EOrientation::Horizontal".into(),
+										prop_default: "EOrientation::Horizontal".into(),
+										prop_type: "EOrientation".into(),
 										tooltip_text: None,
 								},
 								PropsStruct {
 										prop: "disabled".into(),
 										prop_default: "false".into(),
 										prop_type: "bool".into(),
-										tooltip_text: Some("Prevents from toggling any item in the group".into()),
+										tooltip_text: Some("Prevents from interaction with a range slider".into()),
 								},
 								PropsStruct {
 										prop: "required".into(),

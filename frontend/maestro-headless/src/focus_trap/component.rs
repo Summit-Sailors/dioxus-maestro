@@ -156,12 +156,12 @@ textarea:not([disabled]):not([aria-disabled='true']):not([data-disabled='true'])
 													event.prevent_default();
 													tabbables.last().unwrap().focus().ok();
 												},
-											"ArrowDown" => {
+											"ArrowDown" | "ArrowRight" => {
 												event.prevent_default();
 												let next_index = (index + 1) % tabbables.len();
 												tabbables[next_index].focus().ok();
 											},
-											"ArrowUp" => {
+											"ArrowUp" | "ArrowLeft" => {
 												event.prevent_default();
 												let prev_index = if index == 0 { tabbables.len() - 1 } else { index - 1 };
 												tabbables[prev_index].focus().ok();

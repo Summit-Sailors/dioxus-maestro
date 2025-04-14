@@ -443,7 +443,7 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 
 	rsx! {
 		FocusTrap {
-			position: floating_styles().position,
+			position: floating_styles().style_position(),
 			top: floating_styles().style_top(),
 			left: floating_styles().style_left(),
 			transform: floating_styles()

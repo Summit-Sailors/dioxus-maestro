@@ -12,18 +12,11 @@ use {
 	dioxus::prelude::*,
 	dioxus_free_icons::{
 		Icon,
-		icons::{
-			bs_icons::BsCheckLg,
-			ld_icons::{LdAlignCenter, LdAlignLeft, LdAlignRight},
-		},
+		icons::ld_icons::{LdAlignCenter, LdAlignLeft, LdAlignRight},
 	},
 	maestro_headless::{
-		accordion::{AccordionContent, AccordionHeader, AccordionItem, AccordionRoot, AccordionTrigger, AccordionVariant},
-		checkbox::{CheckboxIndicator, CheckboxRoot},
-		checkbox_group::{CheckboxGroup, CheckboxGroupIndicator, CheckboxGroupItem},
-		collapsible::{CollapsibleContent, CollapsibleRoot, CollapsibleTrigger},
 		shared::EOrientation,
-		tabs::{TabsContent, TabsList, TabsRoot, TabsTrigger},
+		switch::{SwitchIndicator, SwitchRoot},
 		toggle_group::{ToggleGroupItem, ToggleGroupRoot},
 	},
 };
@@ -31,6 +24,9 @@ use {
 #[component]
 pub fn ToggleGroupContent() -> Element {
 	let mut value = use_signal(|| "1".to_string());
+	let mut switch = use_signal(|| false);
+	let orientation = use_memo(move || if switch() { EOrientation::Vertical } else { EOrientation::Horizontal });
+	let mut disabled = use_signal(|| false);
 
 	let features_list: Vec<&str> = Vec::from(["Controlled/uncontrolled state", "Keyboard navigation", "Vertical/horizontal orientation"]);
 
@@ -38,24 +34,46 @@ pub fn ToggleGroupContent() -> Element {
 		p { class: "container flex flex-col gap-3 lg:py-6 py-4 text-neutral-300",
 			"A UI component that consists of multiple toggle buttons, where users can switch between different options, with only one option being active at a time, similar to a radio button group but with a toggle interface."
 		}
+		div { class: "flex flex-wrap gap-5 items-center mb-4",
+			div { class: "flex flex-wrap items-center gap-2 text-neutral-100 mb-4 mt-5",
+				SwitchRoot {
+					checked: disabled(),
+					on_toggle_change: move |v| disabled.set(v),
+					class: "flex items-center px-1 py-1 rounded-full h-6 w-12 bg-neutral-500 data-[state=checked]:bg-neutral-100 border border-neutral-700",
+					SwitchIndicator { class: "relative data-[state=checked]:translate-x-5 transition ease-linear rounded-full w-5 h-5 bg-neutral-900" }
+				}
+				"Disable"
+			}
+			div { class: "flex items-center gap-2 text-neutral-100 mb-4 mt-5",
+				SwitchRoot {
+					checked: switch(),
+					on_toggle_change: move |v| switch.set(v),
+					class: "flex items-center px-1 py-1 rounded-full h-6 w-12 bg-neutral-500 data-[state=checked]:bg-neutral-100 border border-neutral-700",
+					SwitchIndicator { class: "relative data-[state=checked]:translate-x-5 transition ease-linear rounded-full w-5 h-5 bg-neutral-900" }
+				}
+				"Vertical"
+			}
+		}
 		div { class: "grow flex flex-col justify-center items-center overflow-hidden rounded-md border border-neutral-800 bg-neutral-950",
 			div { class: "p-6 flex flex-col gap-4 items-start",
 				ToggleGroupRoot {
-					class: "flex justify-center items-center rounded overflow-hidden border border-slate-700",
+					class: "flex justify-center items-center rounded overflow-hidden border border-slate-700 data-[orientation=vertical]:flex-col data-[disabled=true]:*:opacity-50 data-[disabled=true]:*:cursor-auto data-[disabled=true]:*:pointer-events-none",
 					value: value(),
 					on_value_chenge: move |v: String| value.set(v),
+					disabled: disabled(),
+					orientation: orientation(),
 					ToggleGroupItem {
-						class: "data-[state=on]:bg-orange-600  data-[state=on]:text-neutral-100 border-r border-r-neutral-700 bg-neutral-500 text-neutral-300 flex justify-center items-center w-12 h-12 hover:text-neutral-100 focus-visible:outline-none data-[state=on]focus-visible:bg-orange-700 data-[state=off]:focus-visible:bg-neutral-700",
+						class: "data-[state=on]:bg-orange-600  data-[state=on]:text-neutral-100 border-r data-[orientation=vertical]:border-b border-r-neutral-700 data-[orientation=vertical]:border-b-neutral-700 bg-neutral-500 text-neutral-300 flex justify-center items-center w-12 h-12 hover:text-neutral-100 focus-visible:outline-none data-[state=on]focus-visible:bg-orange-700 data-[state=off]:focus-visible:bg-neutral-700",
 						value: "1",
 						Icon { icon: LdAlignRight }
 					}
 					ToggleGroupItem {
-						class: "data-[state=on]:bg-orange-600  data-[state=on]:text-neutral-100 border-r border-r-neutral-700 bg-neutral-500 text-neutral-300 flex justify-center items-center w-12 h-12 hover:text-neutral-100 focus-visible:outline-none data-[state=on]focus-visible:bg-orange-700 data-[state=off]:focus-visible:bg-neutral-700",
+						class: "data-[state=on]:bg-orange-600  data-[state=on]:text-neutral-100 border-r data-[orientation=vertical]:border-b border-r-neutral-700 data-[orientation=vertical]:border-b-neutral-700 bg-neutral-500 text-neutral-300 flex justify-center items-center w-12 h-12 hover:text-neutral-100 focus-visible:outline-none data-[state=on]focus-visible:bg-orange-700 data-[state=off]:focus-visible:bg-neutral-700",
 						value: "2",
 						Icon { icon: LdAlignCenter }
 					}
 					ToggleGroupItem {
-						class: "data-[state=on]:bg-orange-600  data-[state=on]:text-neutral-100 border-r border-r-neutral-700 bg-neutral-500 text-neutral-300 flex justify-center items-center w-12 h-12 hover:text-neutral-100 focus-visible:outline-none data-[state=on]focus-visible:bg-orange-700 data-[state=off]:focus-visible:bg-neutral-700",
+						class: "data-[state=on]:bg-orange-600  data-[state=on]:text-neutral-100 border-r data-[orientation=vertical]:border-b border-r-neutral-700 data-[orientation=vertical]:border-b-neutral-700 bg-neutral-500 text-neutral-300 flex justify-center items-center w-12 h-12 hover:text-neutral-100 focus-visible:outline-none data-[state=on]focus-visible:bg-orange-700 data-[state=off]:focus-visible:bg-neutral-700",
 						value: "3",
 						Icon { icon: LdAlignLeft }
 					}

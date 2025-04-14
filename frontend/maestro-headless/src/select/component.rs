@@ -23,8 +23,8 @@ pub struct SelectContext {
 	pub open: Memo<bool>,
 	pub set_open: Callback<bool>,
 	pub disabled: ReadOnlySignal<bool>,
-	pub required: bool,
-	pub multi: bool,
+	pub required: ReadOnlySignal<bool>,
+	pub multi: ReadOnlySignal<bool>,
 	pub trigger_id: Uuid,
 	pub container_id: Uuid,
 }
@@ -36,8 +36,8 @@ impl SelectContext {
 		open: Memo<bool>,
 		set_open: Callback<bool>,
 		disabled: ReadOnlySignal<bool>,
-		required: bool,
-		multi: bool,
+		required: ReadOnlySignal<bool>,
+		multi: ReadOnlySignal<bool>,
 	) -> Self {
 		Self { value, set_value, open, set_open, disabled, required, multi, trigger_id: Uuid::new_v4(), container_id: Uuid::new_v4() }
 	}
@@ -61,10 +61,10 @@ pub struct SelectRootProps {
 
 	#[props(default = ReadOnlySignal::new(Signal::new(false)))]
 	pub disabled: ReadOnlySignal<bool>,
-	#[props(default = false)]
-	pub required: bool,
-	#[props(default = false)]
-	pub multi: bool,
+	#[props(default = ReadOnlySignal::new(Signal::new(false)))]
+	pub required: ReadOnlySignal<bool>,
+	#[props(default = ReadOnlySignal::new(Signal::new(false)))]
+	pub multi: ReadOnlySignal<bool>,
 
 	#[props(extends = select, extends = GlobalAttributes)]
 	attributes: Vec<Attribute>,
@@ -96,9 +96,9 @@ pub fn SelectRoot(props: SelectRootProps) -> Element {
 			aria_haspopup: "listbox",
 			aria_expanded: open(),
 			aria_disabled: disabled(),
-			aria_required: required,
+			aria_required: required(),
 			"data-disabled": disabled(),
-			"data-required": required,
+			"data-required": required(),
 			"data-role": "select",
 			role: "combobox",
 			onmounted: move |event: Event<MountedData>| current_ref.set(Some(event.data())),
@@ -217,7 +217,7 @@ pub fn SelectValue(props: SelectValueProps) -> Element {
 			{children}
 		}
 	} else {
-		let v = if context.multi { value.join(", ") } else { (value.first().unwrap_or(&String::new())).to_string() };
+		let v = if *context.multi.read() { value.join(", ") } else { (value.first().unwrap_or(&String::new())).to_string() };
 		rsx! { "{v}" }
 	};
 
@@ -319,7 +319,8 @@ pub fn SelectOption(props: SelectOptionProps) -> Element {
 
 	let handle_change = use_callback(move |_| {
 		let mut current_value = context.value.peek().clone();
-		if context.multi {
+		let is_multi = *context.multi.read();
+		if is_multi {
 			if current_value.contains(&value) {
 				current_value.retain(|val| val != &value);
 			} else {
@@ -333,7 +334,7 @@ pub fn SelectOption(props: SelectOptionProps) -> Element {
 			}
 		}
 		context.set_value.call(current_value);
-		if !context.multi {
+		if !is_multi {
 			context.set_open.call(false);
 		}
 	});
@@ -353,6 +354,7 @@ pub fn SelectOption(props: SelectOptionProps) -> Element {
 			onkeydown: move |event| {
 					if event.key() == Key::Enter || event.code() == Code::Space {
 							event.stop_propagation();
+							event.prevent_default();
 							handle_change(());
 					}
 			},

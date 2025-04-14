@@ -1,11 +1,4 @@
 use {
-	crate::components::{
-		description_section::DescriptionSection,
-		example_code::{ExampleCodeAnatomy, ExampleCodeCollapsible},
-		features_list::Features,
-		tables::{AttrsStruct, PropsStruct},
-		tabs::PageTabs,
-	},
 	dioxus::prelude::*,
 	maestro_headless::{
 		accordion::{AccordionContent, AccordionHeader, AccordionItem, AccordionRoot, AccordionTrigger, AccordionVariant},

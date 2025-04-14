@@ -9,7 +9,7 @@ use {
 	consts::{EXAMPLE, EXAMPLE_ANATOMY},
 	dioxus::prelude::*,
 	maestro_headless::{
-		accordion::{AccordionContent, AccordionHeader, AccordionItem, AccordionRoot, AccordionTrigger, AccordionVariant},
+		accordion::AccordionVariant,
 		shared::EOrientation,
 		switch::{SwitchIndicator, SwitchRoot},
 	},

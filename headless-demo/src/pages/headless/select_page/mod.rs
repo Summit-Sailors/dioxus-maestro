@@ -10,7 +10,8 @@ use {
 	dioxus::prelude::*,
 	maestro_headless::{
 		select::{OptionSelectedIndicator, SelectDropdown, SelectIcon, SelectOption, SelectRoot, SelectTrigger, SelectValue},
-		shared::{EAlign, EOrientation, ESide},
+		shared::ESide,
+		switch::{SwitchIndicator, SwitchRoot},
 	},
 };
 
@@ -19,6 +20,8 @@ mod consts;
 #[component]
 pub fn SelectPage() -> Element {
 	let mut selected = use_signal(Vec::new);
+	let mut disabled = use_signal(|| false);
+	let mut is_multiple = use_signal(|| false);
 
 	let features_list: Vec<&str> = Vec::from(["Controlled/uncontrolled state", "SelectRoot single or multiple items", "Keyboard navigation"]);
 
@@ -29,16 +32,38 @@ pub fn SelectPage() -> Element {
 			description: "A UI component that allows to choose one or more options from a dropdown list, providing a compact and efficient way to select values from a predefined set of choices.",
 		}
 		section { class: "container flex flex-col px-4 lg:py-6 py-4 ",
+			div { class: "flex flex-wrap gap-5 items-center mb-4",
+				div { class: "flex flex-wrap items-center gap-2 text-neutral-100 mb-4 mt-5",
+					SwitchRoot {
+						checked: disabled(),
+						on_toggle_change: move |v| disabled.set(v),
+						class: "flex items-center px-1 py-1 rounded-full h-6 w-12 bg-neutral-500 data-[state=checked]:bg-neutral-100 border border-neutral-700",
+						SwitchIndicator { class: "relative data-[state=checked]:translate-x-5 transition ease-linear rounded-full w-5 h-5 bg-neutral-900" }
+					}
+					"Disable"
+				}
+				div { class: "flex items-center gap-2 text-neutral-100 mb-4 mt-5",
+					SwitchRoot {
+						checked: is_multiple(),
+						on_toggle_change: move |v| is_multiple.set(v),
+						class: "flex items-center px-1 py-1 rounded-full h-6 w-12 bg-neutral-500 data-[state=checked]:bg-neutral-100 border border-neutral-700",
+						SwitchIndicator { class: "relative data-[state=checked]:translate-x-5 transition ease-linear rounded-full w-5 h-5 bg-neutral-900" }
+					}
+					"Multiple"
+				}
+			}
 			div { class: "grow flex flex-col justify-center items-center rounded-md border border-neutral-800 bg-neutral-950 overflow-hidden",
 				div { class: "p-6 flex gap-4 items-start w-full max-w-96",
 					SelectRoot {
 						value: selected(),
 						on_value_change: move |value: Vec<String>| { selected.set(value) },
+						multi: is_multiple(),
+						disabled,
 						class: "relative w-fit",
-						SelectTrigger { class: "rounded-sm border border-orange-400 bg-neutral-900 text-neutral-100 w-52 flex justify-between items-center gap-4 px-3 py-2 min-h-12 hover:text-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-600 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900",
+						SelectTrigger { class: "overflow-x-hidden rounded-sm border border-orange-400 bg-neutral-900 text-neutral-100 w-52 flex justify-between items-center gap-4 px-3 py-2 min-h-12 hover:text-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-600 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 data-[disabled=true]:opacity-50",
 							SelectValue {
 								placeholder: "Chose something...",
-								class: "data-[state=selected]:text-neutral-100 data-[state=placeholder]:text-neutral-500 overflow-ellipsis",
+								class: "data-[state=selected]:text-neutral-100 data-[state=placeholder]:text-neutral-500 overflow-hidden overflow-ellipsis whitespace-nowrap max-w-[90%] block",
 							}
 							SelectIcon {}
 						}

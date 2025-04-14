@@ -9,7 +9,7 @@ use {
 	consts::{EXAMPLE, EXAMPLE_ANATOMY},
 	dioxus::prelude::*,
 	maestro_headless::{
-		shared::{EAlign, EOrientation, ESide},
+		shared::{EAlign, ESide},
 		tooltip::{Tooltip, TooltipArrow, TooltipContent, TooltipRoot, TooltipTrigger},
 	},
 };

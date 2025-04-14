@@ -1,14 +1,8 @@
 use {
-	crate::components::description_section::DescriptionSection,
 	checkbox_content::CheckboxContent,
 	checkbox_group_content::CheckboxGroupContent,
 	dioxus::prelude::*,
-	dioxus_free_icons::{Icon, icons::bs_icons::BsCheckLg},
 	maestro_headless::{
-		accordion::{AccordionContent, AccordionHeader, AccordionItem, AccordionRoot, AccordionTrigger, AccordionVariant},
-		checkbox::{CheckboxIndicator, CheckboxRoot},
-		checkbox_group::{CheckboxGroup, CheckboxGroupItem},
-		collapsible::{CollapsibleContent, CollapsibleRoot, CollapsibleTrigger},
 		shared::EOrientation,
 		tabs::{TabsContent, TabsList, TabsRoot, TabsTrigger},
 	},

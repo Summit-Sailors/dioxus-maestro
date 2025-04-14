@@ -2,28 +2,28 @@ pub const EXAMPLE:&str = "use dioxus::prelude::*;
 use maestro_headless::tabs::{TabsRoot, TabsContent, TabsList, TabsTrigger};
 
 rsx! {
-  TabsRoot { default_value: '1', class: 'flex flex-col gap-4',
+  TabsRoot { default_value: '1', class: 'flex data-[orientation=vertical]:flex-row flex-col gap-4',
     TabsList { 
-    class: 'w-full flex items-center gap-6',
+    class: 'w-full flex items-center data-[orientation=horizontal]:gap-6 data-[orientation=vertical]:flex-col',
       TabsTrigger {
         value: '1',
-        class: 'data-[disabled=true]:opacity-50 data-[disabled=true]:pointer-events-none py-2 font-medium text-neutral-300 border-b border-b-transparent hover:border-b-orange-300 data-[state=active]:border-b-orange-600 data-[state=active]:text-neutral-100 transition-all ease-linear focus-visible:outline-none data-[state=active]:focus-visible:border-b-neutral-100 focus-visible:text-neutral-100',
+        class: 'data-[disabled=true]:opacity-50 data-[disabled=true]:pointer-events-none py-2 data-[orientation=vertical]:pr-3 font-medium text-neutral-300 data-[orientation=horizontal]:border-b data-[orientation=vertical]:border-r data-[orientation=horizontal]:border-b-transparent data-[orientation=vertical]:border-r-transparent data-[orientation=horizontal]:hover:border-b-orange-300 data-[orientation=vertical]:hover:border-r-orange-300 data-[orientation=horizontal]:data-[state=active]:border-b-orange-600 data-[orientation=vertical]:data-[state=active]:border-r-orange-600 data-[state=active]:text-neutral-100 transition-all ease-linear focus-visible:outline-none data-[orientation=horizontal]:data-[state=active]:focus-visible:border-b-neutral-100 data-[orientation=vertical]:data-[state=active]:focus-visible:border-r-neutral-100 focus-visible:text-neutral-100',
         'One'
       }
       TabsTrigger {
         value: '2',
-        class: 'data-[disabled=true]:opacity-50 data-[disabled=true]:pointer-events-none py-2 font-medium text-neutral-300 border-b border-b-transparent hover:border-b-orange-300 data-[state=active]:border-b-orange-600 data-[state=active]:text-neutral-100 transition-all ease-linear focus-visible:outline-none data-[state=active]:focus-visible:border-b-neutral-100 focus-visible:text-neutral-100',
+        class: 'data-[disabled=true]:opacity-50 data-[disabled=true]:pointer-events-none py-2 data-[orientation=vertical]:pr-3 font-medium text-neutral-300 data-[orientation=horizontal]:border-b data-[orientation=vertical]:border-r data-[orientation=horizontal]:border-b-transparent data-[orientation=vertical]:border-r-transparent data-[orientation=horizontal]:hover:border-b-orange-300 data-[orientation=vertical]:hover:border-r-orange-300 data-[orientation=horizontal]:data-[state=active]:border-b-orange-600 data-[orientation=vertical]:data-[state=active]:border-r-orange-600 data-[state=active]:text-neutral-100 transition-all ease-linear focus-visible:outline-none data-[orientation=horizontal]:data-[state=active]:focus-visible:border-b-neutral-100 data-[orientation=vertical]:data-[state=active]:focus-visible:border-r-neutral-100 focus-visible:text-neutral-100',
         'Two'
       }
       TabsTrigger {
         value: '3',
-        class: 'data-[disabled=true]:opacity-50 data-[disabled=true]:pointer-events-none py-2 font-medium text-neutral-300 border-b border-b-transparent hover:border-b-orange-300 data-[state=active]:border-b-orange-600 data-[state=active]:text-neutral-100 transition-all ease-linear focus-visible:outline-none data-[state=active]:focus-visible:border-b-neutral-100 focus-visible:text-neutral-100',
+        class: 'data-[disabled=true]:opacity-50 data-[disabled=true]:pointer-events-none py-2 data-[orientation=vertical]:pr-3 font-medium text-neutral-300 data-[orientation=horizontal]:border-b data-[orientation=vertical]:border-r data-[orientation=horizontal]:border-b-transparent data-[orientation=vertical]:border-r-transparent data-[orientation=horizontal]:hover:border-b-orange-300 data-[orientation=vertical]:hover:border-r-orange-300 data-[orientation=horizontal]:data-[state=active]:border-b-orange-600 data-[orientation=vertical]:data-[state=active]:border-r-orange-600 data-[state=active]:text-neutral-100 transition-all ease-linear focus-visible:outline-none data-[orientation=horizontal]:data-[state=active]:focus-visible:border-b-neutral-100 data-[orientation=vertical]:data-[state=active]:focus-visible:border-r-neutral-100 focus-visible:text-neutral-100',
         disabled: true,
         'Three'
       }
       TabsTrigger {
         value: '4',
-        class: 'data-[disabled=true]:opacity-50 data-[disabled=true]:pointer-events-none py-2 font-medium text-neutral-300 border-b border-b-transparent hover:border-b-orange-300 data-[state=active]:border-b-orange-600 data-[state=active]:text-neutral-100 transition-all ease-linear focus-visible:outline-none data-[state=active]:focus-visible:border-b-neutral-100 focus-visible:text-neutral-100',
+        class: 'data-[disabled=true]:opacity-50 data-[disabled=true]:pointer-events-none py-2 data-[orientation=vertical]:pr-3 font-medium text-neutral-300 data-[orientation=horizontal]:border-b data-[orientation=vertical]:border-r data-[orientation=horizontal]:border-b-transparent data-[orientation=vertical]:border-r-transparent data-[orientation=horizontal]:hover:border-b-orange-300 data-[orientation=vertical]:hover:border-r-orange-300 data-[orientation=horizontal]:data-[state=active]:border-b-orange-600 data-[orientation=vertical]:data-[state=active]:border-r-orange-600 data-[state=active]:text-neutral-100 transition-all ease-linear focus-visible:outline-none data-[orientation=horizontal]:data-[state=active]:focus-visible:border-b-neutral-100 data-[orientation=vertical]:data-[state=active]:focus-visible:border-r-neutral-100 focus-visible:text-neutral-100',
         'Four'
       }
 		}

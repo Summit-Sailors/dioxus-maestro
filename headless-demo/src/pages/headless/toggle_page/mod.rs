@@ -1,5 +1,4 @@
 use {
-	crate::components::description_section::DescriptionSection,
 	dioxus::prelude::*,
 	maestro_headless::{
 		shared::EOrientation,

@@ -3,15 +3,12 @@ use {
 		description_section::DescriptionSection,
 		example_code::{ExampleCodeAnatomy, ExampleCodeCollapsible},
 		features_list::Features,
-		tables::{AttrsStruct, PropsStruct, PropsTable},
+		tables::{AttrsStruct, PropsStruct},
 		tabs::PageTabs,
 	},
 	consts::{EXAMPLE, EXAMPLE_ANATOMY},
 	dioxus::prelude::*,
-	maestro_headless::{
-		shared::{EAlign, EOrientation, ESide},
-		switch::{SwitchIndicator, SwitchRoot},
-	},
+	maestro_headless::switch::{SwitchIndicator, SwitchRoot},
 };
 
 mod consts;

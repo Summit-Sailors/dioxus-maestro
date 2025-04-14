@@ -10,6 +10,7 @@ use {
 	dioxus::prelude::*,
 	maestro_headless::{
 		shared::EOrientation,
+		switch::{SwitchIndicator, SwitchRoot},
 		tabs::{TabsContent, TabsList, TabsRoot, TabsTrigger},
 	},
 };
@@ -18,6 +19,8 @@ mod consts;
 #[component]
 pub fn TabsPage() -> Element {
 	let features_list: Vec<&str> = Vec::from(["Controlled/uncontrolled state", "Keyboard navigation", "Horizontal and vertical orientation"]);
+	let mut switch = use_signal(|| false);
+	let orientation = use_memo(move || if switch() { EOrientation::Vertical } else { EOrientation::Horizontal });
 
 	rsx! {
 		DescriptionSection {
@@ -26,29 +29,41 @@ pub fn TabsPage() -> Element {
 			description: "A UI component that allows users to navigate between different sections of content by clicking on tab headers, displaying only the content of the selected tab while hiding the others.",
 		}
 		section { class: "container flex flex-col px-4 lg:py-6 py-4 ",
+			div { class: "flex items-center gap-2 text-neutral-100 mb-4 mt-5",
+				SwitchRoot {
+					checked: switch(),
+					on_toggle_change: move |v| switch.set(v),
+					class: "flex items-center px-1 py-1 rounded-full h-6 w-12 bg-neutral-500 data-[state=checked]:bg-neutral-100 border border-neutral-700",
+					SwitchIndicator { class: "relative data-[state=checked]:translate-x-5 transition ease-linear rounded-full w-5 h-5 bg-neutral-900" }
+				}
+				"Vertical"
+			}
 			div { class: "grow flex flex-col justify-center items-center rounded-md border border-neutral-800 bg-neutral-950 overflow-hidden",
 				div { class: "p-6 flex gap-4 items-start max-w-96 w-full",
-					TabsRoot { default_value: "1", class: "flex flex-col gap-4",
-						TabsList { class: "w-full flex items-center gap-6",
+					TabsRoot {
+						default_value: "1",
+						orientation: orientation(),
+						class: "flex data-[orientation=vertical]:flex-row flex-col gap-4",
+						TabsList { class: "w-full flex items-center data-[orientation=horizontal]:gap-6 data-[orientation=vertical]:flex-col",
 							TabsTrigger {
 								value: "1",
-								class: "data-[disabled=true]:opacity-50 data-[disabled=true]:pointer-events-none py-2 font-medium text-neutral-300 border-b border-b-transparent hover:border-b-orange-300 data-[state=active]:border-b-orange-600 data-[state=active]:text-neutral-100 transition-all ease-linear focus-visible:outline-none data-[state=active]:focus-visible:border-b-neutral-100 focus-visible:text-neutral-100",
+								class: "data-[disabled=true]:opacity-50 data-[disabled=true]:pointer-events-none py-2 data-[orientation=vertical]:pr-3 font-medium text-neutral-300 data-[orientation=horizontal]:border-b data-[orientation=vertical]:border-r data-[orientation=horizontal]:border-b-transparent data-[orientation=vertical]:border-r-transparent data-[orientation=horizontal]:hover:border-b-orange-300 data-[orientation=vertical]:hover:border-r-orange-300 data-[orientation=horizontal]:data-[state=active]:border-b-orange-600 data-[orientation=vertical]:data-[state=active]:border-r-orange-600 data-[state=active]:text-neutral-100 transition-all ease-linear focus-visible:outline-none data-[orientation=horizontal]:data-[state=active]:focus-visible:border-b-neutral-100 data-[orientation=vertical]:data-[state=active]:focus-visible:border-r-neutral-100 focus-visible:text-neutral-100",
 								"One"
 							}
 							TabsTrigger {
 								value: "2",
-								class: "data-[disabled=true]:opacity-50 data-[disabled=true]:pointer-events-none py-2 font-medium text-neutral-300 border-b border-b-transparent hover:border-b-orange-300 data-[state=active]:border-b-orange-600 data-[state=active]:text-neutral-100 transition-all ease-linear focus-visible:outline-none data-[state=active]:focus-visible:border-b-neutral-100 focus-visible:text-neutral-100",
+								class: "data-[disabled=true]:opacity-50 data-[disabled=true]:pointer-events-none py-2 data-[orientation=vertical]:pr-3 font-medium text-neutral-300 data-[orientation=horizontal]:border-b data-[orientation=vertical]:border-r data-[orientation=horizontal]:border-b-transparent data-[orientation=vertical]:border-r-transparent data-[orientation=horizontal]:hover:border-b-orange-300 data-[orientation=vertical]:hover:border-r-orange-300 data-[orientation=horizontal]:data-[state=active]:border-b-orange-600 data-[orientation=vertical]:data-[state=active]:border-r-orange-600 data-[state=active]:text-neutral-100 transition-all ease-linear focus-visible:outline-none data-[orientation=horizontal]:data-[state=active]:focus-visible:border-b-neutral-100 data-[orientation=vertical]:data-[state=active]:focus-visible:border-r-neutral-100 focus-visible:text-neutral-100",
 								"Two"
 							}
 							TabsTrigger {
 								value: "3",
-								class: "data-[disabled=true]:opacity-50 data-[disabled=true]:pointer-events-none py-2 font-medium text-neutral-300 border-b border-b-transparent hover:border-b-orange-300 data-[state=active]:border-b-orange-600 data-[state=active]:text-neutral-100 transition-all ease-linear focus-visible:outline-none data-[state=active]:focus-visible:border-b-neutral-100 focus-visible:text-neutral-100",
+								class: "data-[disabled=true]:opacity-50 data-[disabled=true]:pointer-events-none py-2 data-[orientation=vertical]:pr-3 font-medium text-neutral-300 data-[orientation=horizontal]:border-b data-[orientation=vertical]:border-r data-[orientation=horizontal]:border-b-transparent data-[orientation=vertical]:border-r-transparent data-[orientation=horizontal]:hover:border-b-orange-300 data-[orientation=vertical]:hover:border-r-orange-300 data-[orientation=horizontal]:data-[state=active]:border-b-orange-600 data-[orientation=vertical]:data-[state=active]:border-r-orange-600 data-[state=active]:text-neutral-100 transition-all ease-linear focus-visible:outline-none data-[orientation=horizontal]:data-[state=active]:focus-visible:border-b-neutral-100 data-[orientation=vertical]:data-[state=active]:focus-visible:border-r-neutral-100 focus-visible:text-neutral-100",
 								disabled: true,
 								"Three"
 							}
 							TabsTrigger {
 								value: "4",
-								class: "data-[disabled=true]:opacity-50 data-[disabled=true]:pointer-events-none py-2 font-medium text-neutral-300 border-b border-b-transparent hover:border-b-orange-300 data-[state=active]:border-b-orange-600 data-[state=active]:text-neutral-100 transition-all ease-linear focus-visible:outline-none data-[state=active]:focus-visible:border-b-neutral-100 focus-visible:text-neutral-100",
+								class: "data-[disabled=true]:opacity-50 data-[disabled=true]:pointer-events-none py-2 data-[orientation=vertical]:pr-3 font-medium text-neutral-300 data-[orientation=horizontal]:border-b data-[orientation=vertical]:border-r data-[orientation=horizontal]:border-b-transparent data-[orientation=vertical]:border-r-transparent data-[orientation=horizontal]:hover:border-b-orange-300 data-[orientation=vertical]:hover:border-r-orange-300 data-[orientation=horizontal]:data-[state=active]:border-b-orange-600 data-[orientation=vertical]:data-[state=active]:border-r-orange-600 data-[state=active]:text-neutral-100 transition-all ease-linear focus-visible:outline-none data-[orientation=horizontal]:data-[state=active]:focus-visible:border-b-neutral-100 data-[orientation=vertical]:data-[state=active]:focus-visible:border-r-neutral-100 focus-visible:text-neutral-100",
 								"Four"
 							}
 						}
@@ -248,6 +263,16 @@ pub fn TabsPage() -> Element {
 										value: "true".into(),
 										description: "".into(),
 								},
+								AttrsStruct {
+										attr: "aria-orientation".into(),
+										value: "vertical | horizontal".into(),
+										description: "".into(),
+								},
+								AttrsStruct {
+										attr: "data-orientation".into(),
+										value: "vertical | horizontal".into(),
+										description: "".into(),
+								},
 						]),
 					}
 				}
@@ -279,6 +304,16 @@ pub fn TabsPage() -> Element {
 								AttrsStruct {
 										attr: "active | inactive".into(),
 										value: "open | closed".into(),
+										description: "".into(),
+								},
+								AttrsStruct {
+										attr: "aria-orientation".into(),
+										value: "vertical | horizontal".into(),
+										description: "".into(),
+								},
+								AttrsStruct {
+										attr: "data-orientation".into(),
+										value: "vertical | horizontal".into(),
 										description: "".into(),
 								},
 						]),

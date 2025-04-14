@@ -13,7 +13,7 @@ use {
 		popover::{PopoverArrow, PopoverClose, PopoverContent, PopoverRoot, PopoverTrigger},
 		range::{Range, RangeRoot, RangeThumb, RangeTrack},
 		select::{OptionSelectedIndicator, SelectDropdown, SelectIcon, SelectOption, SelectRoot, SelectTrigger, SelectValue},
-		shared::{EAlign, EOrientation, ESide},
+		shared::{EAlign, ESide},
 		switch::{SwitchIndicator, SwitchRoot},
 	},
 };
@@ -22,7 +22,6 @@ mod consts;
 
 #[component]
 pub fn PopoverPage() -> Element {
-	let mut is_open = use_signal(|| false);
 	let mut side = use_signal(|| Vec::from([ESide::Top.to_string()]));
 	let mut align = use_signal(|| Vec::from([EAlign::Center.to_string()]));
 	let mut side_offset = use_signal(|| Vec::from([6.0_f32]));

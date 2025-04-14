@@ -83,6 +83,12 @@ pub fn RangeRoot(props: RangeRootProps) -> Element {
 	let (values, set_values) =
 		use_controllable_state(UseControllableStateParams { is_controlled, prop: value, default_prop: default, on_change: Some(callback) });
 
+	use_effect(move || {
+		let _ = orientation();
+		if let Some(range_ref) = range_ref.read().as_ref().and_then(|node| node.try_as_web_event()) {
+			rect_ref.set(Some(range_ref.get_bounding_client_rect()));
+		}
+	});
 	let update_values = use_callback(move |(new_value, at_index): (f32, usize)| {
 		let current_values = values().clone();
 		let decimal_count = get_decimal_count(step);
@@ -141,6 +147,7 @@ pub fn RangeRoot(props: RangeRootProps) -> Element {
 				if let (Some(range_element), Some(target)) =
 					(range_ref.peek().as_ref().and_then(|node| node.try_as_web_event()), event.target().and_then(|t: EventTarget| t.dyn_into::<HtmlElement>().ok()))
 				{
+					rect_ref.set(Some(range_element.get_bounding_client_rect()));
 					if range_element.contains(Some(&target)) {
 						target.set_pointer_capture(event.pointer_id());
 						event.prevent_default();
@@ -404,7 +411,7 @@ pub fn RangeThumb(props: RangeThumbProps) -> Element {
 			aria_disabled: *context.disabled.read(),
 			tabindex: if *context.disabled.read() { "-1" } else { "0" },
 			display: if context.values.read().clone().get(index() as usize).is_none() { "none" } else { "flex" },
-			transform: if *context.orientation.read() == EOrientation::Horizontal { "translateY(0%) translateX(-50%)" } else { "translateX(0%) translateY(-50%)" },
+			transform: if *context.orientation.read() == EOrientation::Horizontal { "translateY(0%) translateX(-50%)" } else { "translateX(-50%) translateY(-50%)" },
 			position: "absolute",
 			onmounted: move |event| {
 					let new_index = context.thumbs.peek().len();

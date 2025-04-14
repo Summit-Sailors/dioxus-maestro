@@ -4,7 +4,6 @@ use {
 		shared::{EOrientation, UseControllableStateParams, use_arrow_key_navigation, use_controllable_state},
 	},
 	dioxus::prelude::*,
-	dioxus_logger::tracing::info,
 	std::{fmt::Debug, rc::Rc},
 };
 

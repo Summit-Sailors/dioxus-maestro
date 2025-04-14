@@ -3,7 +3,7 @@ use {
 		description_section::DescriptionSection,
 		example_code::{ExampleCodeAnatomy, ExampleCodeCollapsible},
 		features_list::Features,
-		tables::{AttrsStruct, PropsStruct, PropsTable},
+		tables::{AttrsStruct, PropsStruct},
 		tabs::PageTabs,
 	},
 	async_std::task::sleep,
