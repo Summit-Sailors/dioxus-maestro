@@ -1,9 +1,8 @@
-use {
-	super::{dtos::PaginatedResultDTO, paginate::Paginated},
-	crate::async_client::AsyncDieselPool,
-	diesel::QueryResult,
-	diesel_async::{AsyncPgConnection, methods::LoadQuery},
-};
+use diesel::QueryResult;
+use diesel_async::{AsyncPgConnection, methods::LoadQuery};
+
+use super::{dtos::PaginatedResultDTO, paginate::Paginated};
+use crate::async_client::AsyncDieselPool;
 
 pub trait PaginateAsync: Sized {
 	fn paginate(self, page: i32, page_size: i32) -> Paginated<Self>;

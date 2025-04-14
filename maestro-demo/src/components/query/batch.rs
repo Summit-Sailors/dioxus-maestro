@@ -1,11 +1,10 @@
-use {
-	async_std::task::sleep,
-	dioxus::prelude::*,
-	maestro_query::prelude::*,
-	maestro_ui::button::Button,
-	serde::{Deserialize, Serialize},
-	std::{collections::HashMap, fmt::Error, time::Duration},
-};
+use std::{collections::HashMap, fmt::Error, time::Duration};
+
+use async_std::task::sleep;
+use dioxus::prelude::*;
+use maestro_query::prelude::*;
+use maestro_ui::button::Button;
+use serde::{Deserialize, Serialize};
 
 // Base trait for displayable data
 trait DisplayData: Serialize + PartialEq + for<'de> Deserialize<'de> {
@@ -245,11 +244,7 @@ pub fn BatchOperationsDemo() -> Element {
 
 	let batch_mutation = use_mutation(|operations: Vec<String>| async move {
 		simulate_db_delay().await;
-		if operations.is_empty() {
-			MutationResult::Err(Error)
-		} else {
-			MutationResult::Ok(operations.len())
-		}
+		if operations.is_empty() { MutationResult::Err(Error) } else { MutationResult::Ok(operations.len()) }
 	});
 
 	let handle_batch_invalidate = move |_| {

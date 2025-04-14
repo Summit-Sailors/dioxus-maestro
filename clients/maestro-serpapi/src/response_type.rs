@@ -1,7 +1,6 @@
-use {
-	serde::{Deserialize, Serialize},
-	std::collections::HashMap,
-};
+use std::collections::HashMap;
+
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SearchResponse {

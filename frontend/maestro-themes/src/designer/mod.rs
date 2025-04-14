@@ -8,18 +8,17 @@ mod shadow_editor;
 mod spacing_editor;
 pub mod state;
 
-pub use {
-	crate::theme::types::Theme,
-	border_radius::BorderRadiusEditor,
-	color_picker::ColorPicker,
-	dioxus::prelude::*,
-	font_selector::FontSelector,
-	preview::ThemePreview,
-	shadow_editor::ShadowEditor,
-	spacing_editor::SpacingEditor,
-	state::{BorderRadiusSettings, ColorPalette, DesignerState, ShadowSettings, SpacingScale, ThemedesignerAction, Typographysettings},
-	tailwind_fuse::tw_merge,
-};
+pub use border_radius::BorderRadiusEditor;
+pub use color_picker::ColorPicker;
+pub use dioxus::prelude::*;
+pub use font_selector::FontSelector;
+pub use preview::ThemePreview;
+pub use shadow_editor::ShadowEditor;
+pub use spacing_editor::SpacingEditor;
+pub use state::{BorderRadiusSettings, ColorPalette, DesignerState, ShadowSettings, SpacingScale, ThemedesignerAction, TypographySettings};
+pub use tailwind_fuse::tw_merge;
+
+pub use crate::theme::types::Theme;
 
 #[derive(Props, PartialEq, Clone)]
 pub struct ThemeDesignerProps {
@@ -32,8 +31,8 @@ pub struct ThemeDesignerProps {
 #[component]
 pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 	let initial_state = props.initial_state.clone().unwrap_or_default();
-	let state = use_signal(|| initial_state);
-	let active_tab = use_signal(|| "colors");
+	let mut state = use_signal(|| initial_state);
+	let mut active_tab = use_signal(|| "colors");
 
 	let export_theme = move |_| {
 		if let Some(on_export) = &props.on_export {

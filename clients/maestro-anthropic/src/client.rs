@@ -1,17 +1,17 @@
-use {
-	super::{
-		prompt::{IsComplete, PromptBuilder},
-		AnthropicStream,
-	},
-	crate::prompt::{SetMessages, SetSystem, SetToolChoice, SetTools},
-	eventsource_stream::Eventsource,
-	reqwest::{
-		header::{HeaderMap, HeaderValue, CONTENT_TYPE},
-		Client, Method, StatusCode,
-	},
-	serde::{Deserialize, Serialize},
-	std::{env, num::NonZeroU16},
+use std::{env, num::NonZeroU16};
+
+use eventsource_stream::Eventsource;
+use reqwest::{
+	Client, Method, StatusCode,
+	header::{CONTENT_TYPE, HeaderMap, HeaderValue},
 };
+use serde::{Deserialize, Serialize};
+
+use super::{
+	AnthropicStream,
+	prompt::{IsComplete, PromptBuilder},
+};
+use crate::prompt::{SetMessages, SetSystem, SetToolChoice, SetTools};
 
 pub type AnthropicResult<T> = std::result::Result<T, AnthropicClientError>;
 

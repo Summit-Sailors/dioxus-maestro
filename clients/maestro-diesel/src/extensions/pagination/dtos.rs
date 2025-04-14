@@ -1,7 +1,5 @@
-use {
-	serde::{Deserialize, Serialize},
-	validator::Validate,
-};
+use serde::{Deserialize, Serialize};
+use validator::Validate;
 
 #[derive(Debug, Deserialize, Validate)]
 pub struct PaginationRequestDTO<T> {

@@ -1,8 +1,7 @@
-use {
-	num_traits::AsPrimitive,
-	serde::{Deserialize, Serialize},
-	std::ops::{Add, Sub},
-};
+use std::ops::{Add, Sub};
+
+use num_traits::AsPrimitive;
+use serde::{Deserialize, Serialize};
 
 #[derive(
 	Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize, strum_macros::EnumIter, strum_macros::Display, strum_macros::FromRepr, strum_macros::IntoStaticStr,

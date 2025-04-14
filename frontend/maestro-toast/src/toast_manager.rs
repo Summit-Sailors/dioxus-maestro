@@ -1,8 +1,8 @@
-use {
-	crate::{id::ToastID, toast_info::ToastInfo},
-	dioxus_logger::tracing::debug,
-	std::collections::BTreeMap,
-};
+use std::collections::BTreeMap;
+
+use dioxus_logger::tracing::debug;
+
+use crate::{id::ToastID, toast_info::ToastInfo};
 
 #[derive(Debug, Clone)]
 pub struct ToastManagerItem {

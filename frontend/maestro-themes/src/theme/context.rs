@@ -1,16 +1,15 @@
 //! Theme context and hooks (Unified context provider)
-use {
-	crate::theme::{
-		storage::{ThemeStorage, get_storage},
-		system::{SystemThemeDetector, get_system_theme_detector},
-		types::{ResolvedTheme, Theme},
-	},
-	dioxus::{
-		logger::tracing::{Level, warn},
-		prelude::*,
-	},
-	dioxus_desktop::tao::{platform::macos::WindowExtMacOS, rwh_06::HasWindowHandle},
-	std::{cell::RefCell, collections::HashMap, rc::Rc},
+use std::sync::atomic::AtomicUsize;
+
+use dioxus::{
+	logger::tracing::{Level, warn},
+	prelude::*,
+};
+
+use crate::theme::{
+	storage::{ThemeStorage, get_storage},
+	system::{SystemThemeDetector, get_system_theme_detector},
+	types::{ResolvedTheme, Theme},
 };
 
 /// Theme context to be used throughout the application
@@ -26,9 +25,6 @@ pub struct ThemeContext {
 	/// Function to set theme
 	pub set_theme: Callback<Theme>,
 }
-
-/// Storing the Theme state
-pub static THEME_ATOM: Atom<Theme> = |_| Theme::Auto;
 
 // hooks to access theme context
 pub fn use_theme() -> ThemeContext {
@@ -101,10 +97,8 @@ pub fn set_document_theme(theme_class: &str) {
 
 		#[cfg(target_os = "macos")]
 		{
-			use {
-				cocoa::appkit::{NSAppearance, NSAppearanceNameVibrantDark, NSAppearanceNameVibrantLight, NSWindow},
-				objc::{msg_send, sel, sel_impl},
-			};
+			use cocoa::appkit::{NSAppearance, NSAppearanceNameVibrantDark, NSAppearanceNameVibrantLight, NSWindow};
+			use objc::{msg_send, sel, sel_impl};
 
 			let is_dark = theme_class == "dark";
 			let ns_window = window.ns_window();

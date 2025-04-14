@@ -84,11 +84,7 @@ pub fn use_pagination(total: Signal<i32>, page_size: i32) -> Pagination {
 
 	let last_page = use_memo(move || {
 		let total_val = total();
-		if total_val == 0 {
-			0
-		} else {
-			((total_val as f64) / (page_size_signal() as f64)).ceil() as i32 - 1
-		}
+		if total_val == 0 { 0 } else { ((total_val as f64) / (page_size_signal() as f64)).ceil() as i32 - 1 }
 	});
 
 	let items_in_current_page = use_memo(move || {
@@ -96,11 +92,7 @@ pub fn use_pagination(total: Signal<i32>, page_size: i32) -> Pagination {
 		let current_page = page();
 		let page_size = page_size_signal();
 
-		if current_page == last_page() {
-			total_val - (current_page * page_size)
-		} else {
-			page_size
-		}
+		if current_page == last_page() { total_val - (current_page * page_size) } else { page_size }
 	});
 
 	let next_idx_disabled = use_memo(move || idx() >= total() - 1);

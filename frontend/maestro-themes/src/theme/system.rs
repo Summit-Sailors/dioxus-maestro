@@ -1,17 +1,19 @@
 // Platform specific theme detection
 
+pub trait ThemeChangeCallback: FnMut(bool) + 'static {}
+impl<F: FnMut(bool) + 'static> ThemeChangeCallback for F {}
+
 pub trait SystemThemeDetector {
 	fn prefers_dark_mode(&self) -> bool;
-	fn listen_for_theme_changes<F: FnMut(bool) + 'static>(&self, callback: F);
+	fn listen_for_theme_changes(&self, callback: Box<dyn ThemeChangeCallback>);
 }
 
 #[cfg(feature = "web")]
 pub mod web {
-	use {
-		super::*,
-		wasm_bindgen::prelude::*,
-		web_sys::{MediaQueryListEvent, window},
-	};
+	use wasm_bindgen::prelude::*;
+	use web_sys::{MediaQueryListEvent, window};
+
+	use super::*;
 
 	pub struct WebThemeDetector;
 
@@ -25,7 +27,7 @@ pub mod web {
 			false
 		}
 
-		fn listen_for_theme_changes<F: FnMut(bool) + 'static>(&self, mut callback: F) {
+		fn listen_for_theme_changes(&self, mut callback: Box<dyn ThemeChangeCallback>) {
 			if let Some(window) = window() {
 				if let Ok(Some(media_query)) = window.match_media("(prefers-color-scheme: dark)") {
 					let listener = Closure::wrap(Box::new(move |e: MediaQueryListEvent| {
@@ -44,14 +46,13 @@ pub mod web {
 
 #[cfg(feature = "desktop")]
 pub mod desktop {
-	use {
-		super::*,
-		std::{
-			sync::{Arc, Mutex},
-			thread,
-			time::Duration,
-		},
+	use std::{
+		sync::{Arc, Mutex},
+		thread,
+		time::Duration,
 	};
+
+	use super::*;
 
 	pub struct DesktopThemeDetector {
 		pub dark_theme: Arc<Mutex<bool>>,
@@ -88,16 +89,15 @@ pub mod desktop {
 			*self.dark_theme.lock().unwrap()
 		}
 
-		fn listen_for_theme_changes<F: FnMut(bool) + 'static>(&self, callback: F) {
+		fn listen_for_theme_changes(&self, callback: Box<dyn ThemeChangeCallback>) {
 			#[cfg(target_os = "macos")]
 			{
-				use {
-					core_foundation::{
-						base::{CFAllocatorRef, CFRelease, CFTypeRef, kCFAllocatorDefault},
-						dictionary::{CFDictionaryGetValue, CFDictionaryRef},
-						string::{CFStringCreateWithCString, CFStringRef, kCFStringEncodingUTF8},
-					},
-					std::os::raw::{c_int, c_void},
+				use std::os::raw::{c_int, c_void};
+
+				use core_foundation::{
+					base::{CFAllocatorRef, CFRelease, CFTypeRef, kCFAllocatorDefault},
+					dictionary::{CFDictionaryGetValue, CFDictionaryRef},
+					string::{CFStringCreateWithCString, CFStringRef, kCFStringEncodingUTF8},
 				};
 
 				extern "C" {
@@ -229,14 +229,13 @@ pub mod desktop {
 
 	#[cfg(target_os = "macos")]
 	fn macos_dark_mode() -> bool {
-		use {
-			core_foundation::{
-				base::{CFRelease, CFTypeRef, TCFType},
-				dictionary::{CFDictionaryGetValue, CFDictionaryRef},
-				number::{CFNumberGetValue, CFNumberRef},
-				string::{CFStringGetCStringPtr, CFStringRef, kCFStringEncodingUTF8},
-			},
-			std::{ffi::CStr, os::raw::c_void},
+		use std::{ffi::CStr, os::raw::c_void};
+
+		use core_foundation::{
+			base::{CFRelease, CFTypeRef, TCFType},
+			dictionary::{CFDictionaryGetValue, CFDictionaryRef},
+			number::{CFNumberGetValue, CFNumberRef},
+			string::{CFStringGetCStringPtr, CFStringRef, kCFStringEncodingUTF8},
 		};
 
 		extern "C" {
@@ -344,7 +343,7 @@ pub mod mobile {
 			true
 		}
 
-		fn listen_for_theme_changes<F: FnMut(bool) + 'static>(&self, _callback: F) {
+		fn listen_for_theme_changes(&self, _callback: Box<dyn ThemeChangeCallback>) {
 			// No-op for unsupported platforms
 		}
 	}

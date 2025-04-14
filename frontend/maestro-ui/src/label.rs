@@ -1,4 +1,5 @@
-use {dioxus::prelude::*, tailwind_fuse::*};
+use dioxus::prelude::*;
+use tailwind_fuse::*;
 
 #[derive(TwClass)]
 #[tw(class = "flex w-full text-md relative flex-col gap-2")]

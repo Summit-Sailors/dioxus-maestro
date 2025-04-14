@@ -1,12 +1,11 @@
-use {
-	futures::StreamExt,
-	reqwest::{
-		header::{HeaderMap, HeaderValue, CONTENT_TYPE},
-		Client, StatusCode,
-	},
-	serde::{Deserialize, Serialize},
-	std::num::NonZeroU16,
+use std::num::NonZeroU16;
+
+use futures::StreamExt;
+use reqwest::{
+	Client, StatusCode,
+	header::{CONTENT_TYPE, HeaderMap, HeaderValue},
 };
+use serde::{Deserialize, Serialize};
 
 pub type AnthropicResult<T> = std::result::Result<T, AnthropicClientError>;
 
@@ -39,7 +38,8 @@ impl AnthropicClient {
 	}
 
 	pub async fn stream_chat(&self, request: ChatRequest) -> AnthropicResult<impl futures::Stream<Item = AnthropicResult<ChatStreamEvent>> + Send + 'static> {
-		use {eventsource_stream::Eventsource, futures::TryStreamExt};
+		use eventsource_stream::Eventsource;
+		use futures::TryStreamExt;
 		let client = self.inner.clone();
 		let stream = futures::stream::once(async move {
 			let response = client.post(Self::DEFAULT_URL).json(&request).send().await?;

@@ -1,11 +1,10 @@
-use {
-	dioxus_lib::prelude::{BorrowMutError, *},
-	std::{
-		collections::HashMap,
-		ops::{Deref, DerefMut},
-		sync::Arc,
-	},
+use std::{
+	collections::HashMap,
+	ops::{Deref, DerefMut},
+	sync::Arc,
 };
+
+use dioxus_lib::prelude::{BorrowMutError, *};
 mod warnings {
 	pub use warnings::Warning;
 }

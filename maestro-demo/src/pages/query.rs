@@ -1,16 +1,15 @@
-use {
-	crate::components::{
-		query::{
-			basic_query::QueryDemoWrapper,
-			batch::BatchOperationsDemo,
-			cache::CacheDemo,
-			mutation::{ManualMutationDemo, SilentMutationDemo},
-			parallel_query::ParallelQueriesWrapper,
-		},
-		ui::features::Features,
+use dioxus::prelude::*;
+use tailwind_fuse::tw_join;
+
+use crate::components::{
+	query::{
+		basic_query::QueryDemoWrapper,
+		batch::BatchOperationsDemo,
+		cache::CacheDemo,
+		mutation::{ManualMutationDemo, SilentMutationDemo},
+		parallel_query::ParallelQueriesWrapper,
 	},
-	dioxus::prelude::*,
-	tailwind_fuse::tw_join,
+	ui::features::Features,
 };
 
 #[derive(PartialEq)]

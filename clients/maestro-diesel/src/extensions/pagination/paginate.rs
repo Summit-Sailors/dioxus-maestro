@@ -1,11 +1,10 @@
-use {
-	diesel::{
-		pg::Pg,
-		query_builder::{AstPass, Query, QueryFragment, QueryId},
-		sql_types::BigInt,
-		PgConnection, QueryResult,
-	},
-	std::fmt::Debug,
+use std::fmt::Debug;
+
+use diesel::{
+	PgConnection, QueryResult,
+	pg::Pg,
+	query_builder::{AstPass, Query, QueryFragment, QueryId},
+	sql_types::BigInt,
 };
 
 #[derive(Debug, Clone, Copy, QueryId)]

@@ -1,8 +1,7 @@
 // Export to tailwind configs
-use {
-	crate::designer::state::DesignerState,
-	std::{fs, path::Path},
-};
+use std::{fs, path::Path};
+
+use crate::designer::state::DesignerState;
 
 /// Generate Tailwind v4 CSS configuration
 pub fn generate_tailwind_v4_css(state: &DesignerState) -> String {

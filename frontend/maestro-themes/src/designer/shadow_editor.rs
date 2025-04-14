@@ -1,5 +1,7 @@
 // Shadow settings editor component
-use {crate::designer::state::ShadowSettings, dioxus::prelude::*};
+use dioxus::prelude::*;
+
+use crate::designer::state::ShadowSettings;
 
 #[derive(Props, PartialEq, Clone)]
 pub struct ShadowEditorProps {

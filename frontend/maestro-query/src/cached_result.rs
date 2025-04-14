@@ -1,8 +1,8 @@
-use {
-	crate::result::QueryResult,
-	instant::Instant,
-	std::{fmt::Debug, ops::Deref, time::Duration},
-};
+use std::{fmt::Debug, ops::Deref, time::Duration};
+
+use instant::Instant;
+
+use crate::result::QueryResult;
 
 const STALE_TIME: u64 = 100;
 
@@ -20,11 +20,7 @@ impl<T, E> CachedResult<T, E> {
 	}
 
 	pub fn is_fresh(&self) -> bool {
-		if let Some(instant) = self.instant {
-			instant.elapsed().as_millis() < Duration::from_millis(STALE_TIME).as_millis()
-		} else {
-			false
-		}
+		if let Some(instant) = self.instant { instant.elapsed().as_millis() < Duration::from_millis(STALE_TIME).as_millis() } else { false }
 	}
 
 	pub(crate) fn has_been_queried(&self) -> bool {

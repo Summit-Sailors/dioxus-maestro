@@ -1,13 +1,11 @@
 // Simple example using the theme system
-use {
-	dioxus::prelude::*,
-	maestro_themes::{
-		designer::{DesignerState, ThemeDesigner},
-		exporter::{ExportFormat, export_theme, save_export_result},
-		theme::{provider::ThemeProvider, types::Theme},
-	},
-	tailwind_fuse::tw_join,
+use dioxus::prelude::*;
+use maestro_themes::{
+	designer::{DesignerState, ThemeDesigner},
+	exporter::{ExportFormat, export_theme, save_export_result},
+	theme::{provider::ThemeProvider, types::Theme},
 };
+use tailwind_fuse::tw_join;
 
 fn main() {
 	launch(App);

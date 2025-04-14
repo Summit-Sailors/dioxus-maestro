@@ -1,17 +1,17 @@
-use {
-	crate::models::user::{Role, User},
-	async_std::task::sleep,
-	dioxus::{fullstack::once_cell::sync::Lazy, prelude::*},
-	maestro_query::prelude::*,
-	maestro_toast::{ctx::use_toast, toast_code::EToastCode, toast_info::ToastInfo, toast_position::EToastPosition},
-	maestro_ui::button::Button,
-	std::{
-		collections::HashMap,
-		sync::{Arc, RwLock},
-		time::Duration,
-	},
-	tailwind_fuse::tw_join,
+use std::{
+	collections::HashMap,
+	sync::{Arc, RwLock},
+	time::Duration,
 };
+
+use async_std::task::sleep;
+use dioxus::{fullstack::once_cell::sync::Lazy, prelude::*};
+use maestro_query::prelude::*;
+use maestro_toast::{ctx::use_toast, toast_code::EToastCode, toast_info::ToastInfo, toast_position::EToastPosition};
+use maestro_ui::button::Button;
+use tailwind_fuse::tw_join;
+
+use crate::models::user::{Role, User};
 
 // mock backend store
 static USERS: Lazy<Arc<RwLock<HashMap<String, User>>>> = Lazy::new(|| {

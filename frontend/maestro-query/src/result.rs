@@ -1,4 +1,6 @@
-use {crate::cached_result::CachedResult, std::mem};
+use std::mem;
+
+use crate::cached_result::CachedResult;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum QueryResult<T, E> {

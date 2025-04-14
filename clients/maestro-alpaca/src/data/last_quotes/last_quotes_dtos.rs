@@ -1,9 +1,9 @@
-use {
-	crate::data::enums::feed::Feed,
-	chrono::{DateTime, Utc},
-	serde::{Deserialize, Serialize},
-	std::collections::HashMap,
-};
+use std::collections::HashMap;
+
+use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
+
+use crate::data::enums::feed::Feed;
 
 #[derive(Debug, Clone, Serialize, Deserialize, bon::Builder)]
 pub struct LatestQuotesRequestDTO {

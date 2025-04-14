@@ -1,9 +1,8 @@
-use {
-	crate::chart_options::ChartOptions,
-	dioxus::prelude::*,
-	dioxus_logger::tracing::info,
-	maestro_toast::{ctx::use_toast, toast_info::ToastInfo},
-};
+use dioxus::prelude::*;
+use dioxus_logger::tracing::info;
+use maestro_toast::{ctx::use_toast, toast_info::ToastInfo};
+
+use crate::chart_options::ChartOptions;
 
 pub fn use_stacked_bar_hook(canvas_id: String, data: Memo<Option<Vec<(String, Vec<f32>)>>>, options: ChartOptions) {
 	let mut toast = use_toast();
@@ -17,7 +16,9 @@ pub fn use_stacked_bar_hook(canvas_id: String, data: Memo<Option<Vec<(String, Ve
 	});
 }
 
-use {dioxus::hooks::to_owned, plotters::prelude::*, plotters_canvas::CanvasBackend};
+use dioxus::hooks::to_owned;
+use plotters::prelude::*;
+use plotters_canvas::CanvasBackend;
 
 pub fn render_stacked_bar_chart(canvas_id: &str, data: Vec<(String, Vec<f32>)>, options: ChartOptions) -> Result<(), Box<dyn std::error::Error>> {
 	let root = CanvasBackend::new(canvas_id).expect("failed to create CanvasBackend").into_drawing_area();

@@ -36,7 +36,7 @@ winreg = { version = "0.55.0", optional = true }
 
 
 [features]
-desktop = ["dep:directories", "dioxus-desktop", "dioxus/desktop", "linux", "macos", "windows"]
+desktop = ["dep:dioxus-desktop", "dep:directories", "dioxus/desktop", "linux", "macos", "windows"]
 linux = []
 macos = ["dep:cocoa", "dep:core-foundation", "dep:objc"]
 mobile = []

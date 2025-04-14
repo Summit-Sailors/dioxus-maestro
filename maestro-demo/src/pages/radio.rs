@@ -1,9 +1,9 @@
-use {
-	crate::components::ui::features::Features,
-	dioxus::prelude::*,
-	maestro_radio::use_radio::{use_init_radio_station, use_radio, RadioChannel, RadioStation},
-	std::fmt::Display,
-};
+use std::fmt::Display;
+
+use dioxus::prelude::*;
+use maestro_radio::use_radio::{RadioChannel, RadioStation, use_init_radio_station, use_radio};
+
+use crate::components::ui::features::Features;
 
 #[derive(Debug, Clone)]
 struct CounterState {

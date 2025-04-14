@@ -1,13 +1,13 @@
-use {anyhow::Result, dioxus::prelude::*};
+use anyhow::Result;
+use dioxus::prelude::*;
 
 #[server]
 pub async fn add_email_job(to: String, subject: String, body: String) -> Result<String, ServerFnError> {
-	use {
-		apalis::{layers::retry::RetryPolicy, prelude::*},
-		apalis_core::worker::Event,
-		maestro_apalis::server_ctx::{Storage, apalis_storage_from_ctx},
-		std::sync::{Arc, Mutex},
-	};
+	use std::sync::{Arc, Mutex};
+
+	use apalis::{layers::retry::RetryPolicy, prelude::*};
+	use apalis_core::worker::Event;
+	use maestro_apalis::server_ctx::{Storage, apalis_storage_from_ctx};
 	let mut storage = apalis_storage_from_ctx::<crate::clients::utilities::EmailJob>().await?;
 
 	let job = crate::clients::utilities::EmailJob { to, subject, body };
@@ -58,7 +58,8 @@ pub async fn add_email_job(to: String, subject: String, body: String) -> Result<
 
 #[server]
 pub async fn list_completed_jobs() -> Result<Vec<String>, ServerFnError> {
-	use {apalis::prelude::*, maestro_apalis::server_ctx::apalis_storage_from_ctx};
+	use apalis::prelude::*;
+	use maestro_apalis::server_ctx::apalis_storage_from_ctx;
 	let storage = apalis_storage_from_ctx::<crate::clients::utilities::EmailJob>().await?;
 
 	let results = storage.list_jobs(&apalis::prelude::State::Done, 10).await?;

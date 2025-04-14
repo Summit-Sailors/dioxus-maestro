@@ -1,11 +1,10 @@
-use {
-	dioxus::prelude::*,
-	maestro_query::prelude::*,
-	maestro_ui::button::Button,
-	serde::{Deserialize, Serialize},
-	std::fmt::Error,
-	tailwind_fuse::tw_join,
-};
+use std::fmt::Error;
+
+use dioxus::prelude::*;
+use maestro_query::prelude::*;
+use maestro_ui::button::Button;
+use serde::{Deserialize, Serialize};
+use tailwind_fuse::tw_join;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 struct Department {

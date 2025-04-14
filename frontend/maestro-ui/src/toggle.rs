@@ -1,9 +1,7 @@
-use {
-	dioxus::prelude::*,
-	serde::{Deserialize, Serialize},
-	strum_macros::{Display, EnumIter, EnumString},
-	tailwind_fuse::tw_merge,
-};
+use dioxus::prelude::*;
+use serde::{Deserialize, Serialize};
+use strum_macros::{Display, EnumIter, EnumString};
+use tailwind_fuse::tw_merge;
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, EnumIter, Display, EnumString)]
 pub enum EToggleSwitchLabelPlacement {

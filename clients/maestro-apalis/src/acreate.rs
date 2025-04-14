@@ -1,8 +1,6 @@
-use {
-	apalis_sql::postgres::PostgresStorage,
-	maestro_sqlx::acreate::acreate_sqlx_pool,
-	serde::{Serialize, de::DeserializeOwned},
-};
+use apalis_sql::postgres::PostgresStorage;
+use maestro_sqlx::acreate::acreate_sqlx_pool;
+use serde::{Serialize, de::DeserializeOwned};
 
 #[bon::builder]
 pub async fn acreate_apalis_storage<T>(db_url: &str) -> PostgresStorage<T>

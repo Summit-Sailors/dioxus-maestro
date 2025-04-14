@@ -7,7 +7,7 @@ repository = ""
 
 
 [workspace]
-members = ["clients/*", "frontend/*", "maestro-demo"]
+members = ["clients/*", "frontend/*", "maestro-demo", "maestro-themes-example"]
 resolver = "2"
 
 [profile.dev.package."*"]
@@ -47,12 +47,13 @@ chrome-fastapi = { path = "../services/crates/chrome-fastapi" }
 maestro-forms = { path = "frontend/maestro-forms" }
 maestro-hooks = { path = "frontend/maestro-hooks" }
 maestro-query = { path = "frontend/maestro-query" }
+maestro-themes = { path = "frontend/maestro-themes" }
 maestro-toast = { path = "frontend/maestro-toast" }
 maestro-ui = { path = "frontend/maestro-ui" }
 
 
-anyhow = "1.0.95"
-bon = "3.5.2"
+anyhow = "1.0.98"
+bon = "3.6.0"
 chrono = { version = "0.4.39", features = ["serde"] }
 futures = { version = "0.3.31" }
 itertools = { version = "0.14.0" }

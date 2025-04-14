@@ -1,7 +1,5 @@
-use {
-	super::last_quotes_dtos::{LatestQuotesRequestDTO, LatestQuotesResponseDTO, QuoteResponseDTO},
-	crate::data::enums::feed::Feed,
-};
+use super::last_quotes_dtos::{LatestQuotesRequestDTO, LatestQuotesResponseDTO, QuoteResponseDTO};
+use crate::data::enums::feed::Feed;
 
 #[bon::builder]
 pub async fn latest_quotes_request_builder(

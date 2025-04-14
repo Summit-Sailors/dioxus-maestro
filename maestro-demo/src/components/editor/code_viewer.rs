@@ -1,22 +1,22 @@
-use {
-	crate::components::icons::{collapse::Collapse, expand::Expand},
-	async_std::task::sleep,
-	dioxus::prelude::*,
-	dioxus_free_icons::{Icon, icons::io_icons::IoCopyOutline},
-	maestro_hooks::clipboard::use_clipboard,
-	maestro_ui::{
-		button::{Button, ButtonSize, ButtonVariant},
-		select::{Select, SelectOption},
-	},
-	std::collections::HashMap,
-	syntect::{
-		easy::HighlightLines,
-		highlighting::ThemeSet,
-		html::{IncludeBackground, styled_line_to_highlighted_html},
-		parsing::SyntaxSet,
-	},
-	tailwind_fuse::tw_join,
+use std::collections::HashMap;
+
+use async_std::task::sleep;
+use dioxus::prelude::*;
+use dioxus_free_icons::{Icon, icons::io_icons::IoCopyOutline};
+use maestro_hooks::clipboard::use_clipboard;
+use maestro_ui::{
+	button::{Button, ButtonSize, ButtonVariant},
+	select::{Select, SelectOption},
 };
+use syntect::{
+	easy::HighlightLines,
+	highlighting::ThemeSet,
+	html::{IncludeBackground, styled_line_to_highlighted_html},
+	parsing::SyntaxSet,
+};
+use tailwind_fuse::tw_join;
+
+use crate::components::icons::{collapse::Collapse, expand::Expand};
 
 #[derive(Clone, PartialEq, Props)]
 pub struct CodeEditorProps {
@@ -75,7 +75,6 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
 
 		// highlight code
 		let mut highlighter = HighlightLines::new(syntax, theme);
-		
 
 		code
 			.lines()

@@ -1,20 +1,20 @@
-use {
-	crate::{
-		button::{Button, ButtonSize, ButtonVariant},
-		input::{Input, InputVariant},
-		select::SelectOption,
+use std::cmp::Ordering;
+
+use dioxus::prelude::*;
+use dioxus_free_icons::{
+	Icon,
+	icons::{
+		bs_icons::BsSearch,
+		io_icons::{IoCheckmarkOutline, IoChevronDownOutline},
+		ld_icons::LdX,
 	},
-	dioxus::prelude::*,
-	dioxus_free_icons::{
-		Icon,
-		icons::{
-			bs_icons::BsSearch,
-			io_icons::{IoCheckmarkOutline, IoChevronDownOutline},
-			ld_icons::LdX,
-		},
-	},
-	std::cmp::Ordering,
-	tailwind_fuse::*,
+};
+use tailwind_fuse::*;
+
+use crate::{
+	button::{Button, ButtonSize, ButtonVariant},
+	input::{Input, InputVariant},
+	select::SelectOption,
 };
 
 #[derive(Clone, PartialEq, Props)]

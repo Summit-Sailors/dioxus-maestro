@@ -1,9 +1,7 @@
-use {
-	dioxus::prelude::*,
-	maestro_serpapi::{
-		request_type::{ETimeFrame, Engine, SafeSearch, SearchType},
-		response_type::{OrganicResult, SearchResponse},
-	},
+use dioxus::prelude::*;
+use maestro_serpapi::{
+	request_type::{ETimeFrame, Engine, SafeSearch, SearchType},
+	response_type::{OrganicResult, SearchResponse},
 };
 
 // server function to perform the search

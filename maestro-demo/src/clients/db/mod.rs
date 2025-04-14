@@ -1,11 +1,10 @@
+use std::fmt;
+
+use chrono::Utc;
+use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 #[cfg(feature = "server")]
 use {crate::clients::db::diesel_schema::sql_types, diesel::prelude::*, std::io::Write};
-use {
-	chrono::Utc,
-	serde::{Deserialize, Serialize},
-	std::fmt,
-	uuid::Uuid,
-};
 
 pub mod apis;
 pub mod diesel_demo;

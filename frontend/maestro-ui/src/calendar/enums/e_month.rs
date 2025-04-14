@@ -1,10 +1,10 @@
-use {
-	super::e_week_day::ECalendarDay,
-	chrono::{Datelike, NaiveDate},
-	num_traits::AsPrimitive,
-	serde::{Deserialize, Serialize},
-	std::ops::{Add, Sub},
-};
+use std::ops::{Add, Sub};
+
+use chrono::{Datelike, NaiveDate};
+use num_traits::AsPrimitive;
+use serde::{Deserialize, Serialize};
+
+use super::e_week_day::ECalendarDay;
 
 #[derive(
 	Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize, strum_macros::EnumIter, strum_macros::Display, strum_macros::FromRepr, strum_macros::IntoStaticStr,

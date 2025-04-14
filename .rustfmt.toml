@@ -1,8 +1,7 @@
 # taplo: schema="https://json.schemastore.org/rustfmt.json"
 
-fn_args_layout = "Tall"
+fn_params_layout = "Tall"
 group_imports = "StdExternalCrate"
-merge_imports = true
 
 # Basic
 edition = "2024"
@@ -11,7 +10,7 @@ max_width = 160
 tab_spaces = 2
 
 # Imports
-imports_granularity = "One"
+imports_granularity = "Crate"
 reorder_imports = true
 
 # Format comments

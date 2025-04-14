@@ -1,12 +1,14 @@
-use {crate::clients::db::DieselUser, dioxus::prelude::*, maestro_diesel::extensions::pagination::dtos::PaginatedResultDTO};
+use dioxus::prelude::*;
+use maestro_diesel::extensions::pagination::dtos::PaginatedResultDTO;
+
+use crate::clients::db::DieselUser;
 
 #[server(AFetchUsers)]
 pub async fn afetch_users_paginated(page: i32, page_size: i32) -> Result<PaginatedResultDTO<DieselUser>, ServerFnError> {
-	use {
-		crate::clients::db::diesel_schema::users::dsl::*,
-		diesel::{QueryDsl, SelectableHelper},
-		maestro_diesel::{async_client::from_server::extract_diesel_pool, extensions::pagination::paginate_async::PaginateAsync},
-	};
+	use diesel::{QueryDsl, SelectableHelper};
+	use maestro_diesel::{async_client::from_server::extract_diesel_pool, extensions::pagination::paginate_async::PaginateAsync};
+
+	use crate::clients::db::diesel_schema::users::dsl::*;
 
 	let pool = extract_diesel_pool().await?;
 
@@ -24,11 +26,10 @@ pub async fn afetch_users_paginated(page: i32, page_size: i32) -> Result<Paginat
 #[server(FetchUsers)]
 // sync version for comparison - should use sync client
 pub async fn fetch_users_paginated(page: i32, page_size: i32) -> Result<PaginatedResultDTO<DieselUser>, ServerFnError> {
-	use {
-		crate::clients::db::diesel_schema::users::dsl::*,
-		diesel::{QueryDsl, SelectableHelper},
-		maestro_diesel::{extensions::pagination::paginate_sync::Paginate, sync_client::create_db_pool_diesel},
-	};
+	use diesel::{QueryDsl, SelectableHelper};
+	use maestro_diesel::{extensions::pagination::paginate_sync::Paginate, sync_client::create_db_pool_diesel};
+
+	use crate::clients::db::diesel_schema::users::dsl::*;
 
 	let db_url = std::env::var("DATABASE_URL").expect("DATABASE_URL not found");
 

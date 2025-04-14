@@ -1,17 +1,16 @@
-use {
-	crate::{
-		clients::{
-			db::{diesel_demo::DieselDemo, sqlx_demo::SqlxDemo},
-			utilities::{alpaca_demo::AlpacaDemo, anthropic_demo::AnthropicDemo, apalis_demo::ApalisDemo, serpapi_demo::SerpApiDemo},
-		},
-		layout::Layout,
-		pages::{
-			calendar::CalendarDemo, form::FormsDemo, home::HomePage, hooks::HooksDemo, not_found::NotFound, plotters::PlottersDemo, query::CompleteQueryDemo,
-			radio::RadioDemo, toast::ToastDemo, ui::UIDemo,
-		},
+use dioxus::prelude::*;
+use strum_macros::EnumIter;
+
+use crate::{
+	clients::{
+		db::{diesel_demo::DieselDemo, sqlx_demo::SqlxDemo},
+		utilities::{alpaca_demo::AlpacaDemo, anthropic_demo::AnthropicDemo, apalis_demo::ApalisDemo, serpapi_demo::SerpApiDemo},
 	},
-	dioxus::prelude::*,
-	strum_macros::EnumIter,
+	layout::Layout,
+	pages::{
+		calendar::CalendarDemo, form::FormsDemo, home::HomePage, hooks::HooksDemo, not_found::NotFound, plotters::PlottersDemo, query::CompleteQueryDemo,
+		radio::RadioDemo, toast::ToastDemo, ui::UIDemo,
+	},
 };
 
 #[derive(Clone, PartialEq, EnumIter, Routable)]

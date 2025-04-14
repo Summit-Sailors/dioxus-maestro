@@ -1,10 +1,10 @@
-use {
-	crate::components::ui::features::Features,
-	dioxus::prelude::*,
-	maestro_anthropic::chat_message::{ChatMessage, Role},
-	std::fmt::Debug,
-	tailwind_fuse::tw_join,
-};
+use std::fmt::Debug;
+
+use dioxus::prelude::*;
+use maestro_anthropic::chat_message::{ChatMessage, Role};
+use tailwind_fuse::tw_join;
+
+use crate::components::ui::features::Features;
 
 #[component]
 pub fn AnthropicDemo() -> Element {

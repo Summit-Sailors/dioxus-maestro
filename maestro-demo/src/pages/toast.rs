@@ -1,8 +1,7 @@
-use {
-	crate::components::ui::features::Features,
-	dioxus::prelude::*,
-	maestro_toast::{ctx::use_toast, toast_code::EToastCode, toast_info::ToastInfo, toast_position::EToastPosition},
-};
+use dioxus::prelude::*;
+use maestro_toast::{ctx::use_toast, toast_code::EToastCode, toast_info::ToastInfo, toast_position::EToastPosition};
+
+use crate::components::ui::features::Features;
 
 #[component]
 pub fn ToastDemo() -> Element {

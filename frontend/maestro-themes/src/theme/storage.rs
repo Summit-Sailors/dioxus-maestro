@@ -1,6 +1,8 @@
 // Platform specific storage for theme settings
 
-use {crate::theme::types::Theme, std::fmt::Display};
+use std::fmt::Display;
+
+use crate::theme::types::Theme;
 
 #[derive(Debug)]
 pub enum ThemeStorageError {
@@ -26,10 +28,9 @@ pub trait ThemeStorage {
 
 #[cfg(feature = "web")]
 pub mod web {
-	use {
-		super::*,
-		web_sys::{Storage, window},
-	};
+	use web_sys::{Storage, window};
+
+	use super::*;
 
 	pub struct WebStorage;
 
@@ -56,15 +57,15 @@ pub mod web {
 
 #[cfg(feature = "desktop")]
 pub mod desktop {
-	use {
-		super::*,
-		directories::ProjectDirs,
-		std::{
-			fs::{self, File},
-			io::{Read, Write},
-			path::PathBuf,
-		},
+	use std::{
+		fs::{self, File},
+		io::{Read, Write},
+		path::PathBuf,
 	};
+
+	use directories::ProjectDirs;
+
+	use super::*;
 
 	pub struct DesktopStorage;
 
@@ -110,10 +111,9 @@ pub mod desktop {
 // Default in-memory storage for platforms without specific implementations (assumes mobile for now)
 #[cfg(not(any(feature = "web", feature = "desktop")))]
 pub mod mobile {
-	use {
-		super::*,
-		std::sync::{Arc, Mutex},
-	};
+	use std::sync::{Arc, Mutex};
+
+	use super::*;
 
 	pub struct MemoryStorage {
 		theme: Arc<Mutex<Option<Theme>>>,
@@ -161,6 +161,6 @@ pub fn get_storage() -> Box<dyn ThemeStorage> {
 
 	#[cfg(not(any(feature = "web", feature = "desktop")))]
 	{
-		Box::new(MemoryStorage::new())
+		Box::new(mobile::MemoryStorage::new())
 	}
 }

@@ -1,11 +1,16 @@
 // Typography configuration
 
-use {super::state::Typographysettings, crate::designer::state::DesignerState, dioxus::prelude::*, std::collections::HashMap};
+use std::collections::HashMap;
+
+use dioxus::prelude::*;
+
+use super::state::TypographySettings;
+use crate::designer::state::DesignerState;
 
 #[derive(Props, PartialEq, Clone)]
 pub struct FontSelectorProps {
-	pub typography: Typographysettings,
-	pub on_change: EventHandler<Typographysettings>,
+	pub typography: TypographySettings,
+	pub on_change: EventHandler<TypographySettings>,
 }
 
 #[component]

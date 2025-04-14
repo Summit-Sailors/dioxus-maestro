@@ -1,9 +1,8 @@
-use {
-	crate::acreate::acreate_apalis_storage,
-	apalis_sql::postgres::PostgresStorage,
-	serde::{Serialize, de::DeserializeOwned},
-	tokio::runtime::Runtime,
-};
+use apalis_sql::postgres::PostgresStorage;
+use serde::{Serialize, de::DeserializeOwned};
+use tokio::runtime::Runtime;
+
+use crate::acreate::acreate_apalis_storage;
 
 #[bon::builder(derive(Clone))]
 pub fn create_apalis_storage_sync<T>(db_url: &str) -> PostgresStorage<T>

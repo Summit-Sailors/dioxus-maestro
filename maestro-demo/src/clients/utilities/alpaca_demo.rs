@@ -1,11 +1,10 @@
-use {
-	crate::components::ui::features::Features,
-	dioxus::prelude::*,
-	maestro_alpaca::data::{
-		bars::bars_dtos::{BarsDTO, BarsSingleRequestDTO, NewBar},
-		enums::{feed::Feed, timeframe::TimeFrame},
-	},
+use dioxus::prelude::*;
+use maestro_alpaca::data::{
+	bars::bars_dtos::{BarsDTO, BarsSingleRequestDTO, NewBar},
+	enums::{feed::Feed, timeframe::TimeFrame},
 };
+
+use crate::components::ui::features::Features;
 
 #[component]
 pub fn AlpacaDemo() -> Element {

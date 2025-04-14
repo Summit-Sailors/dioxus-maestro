@@ -1,16 +1,15 @@
 // Designer state management
 
-use {
-	serde::{Deserialize, Serialize},
-	std::collections::HashMap,
-};
+use std::collections::HashMap;
+
+use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct DesignerState {
 	/// Color palette for the theme
 	pub color: ColorPalette,
 	/// Typography settings
-	pub typography: Typographysettings,
+	pub typography: TypographySettings,
 	/// SpacingScale
 	pub spacing: SpacingScale,
 	/// Border radius settings
@@ -23,10 +22,10 @@ impl Default for DesignerState {
 	fn default() -> Self {
 		Self {
 			color: ColorPalette::default(),
-			typography: Typographysettings::default(),
+			typography: TypographySettings::default(),
 			spacing: SpacingScale::default(),
 			border_radius: BorderRadiusSettings::default(),
-			shadow: Shadowsettings::default(),
+			shadow: ShadowSettings::default(),
 		}
 	}
 }
@@ -69,7 +68,7 @@ impl Default for ColorPalette {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct Typographysettings {
+pub struct TypographySettings {
 	pub font_family: String,
 	pub heading_font_family: String,
 	pub base_size: String,
@@ -77,7 +76,7 @@ pub struct Typographysettings {
 	pub font_weights: HashMap<String, u32>,
 }
 
-impl Default for Typographysettings {
+impl Default for TypographySettings {
 	fn default() -> Self {
 		let mut font_weights = HashMap::new();
 		font_weights.insert(String::from("light"), 300);

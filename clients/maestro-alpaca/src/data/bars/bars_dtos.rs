@@ -1,11 +1,11 @@
-use {
-	crate::data::{
-		enums::{adjustment::Adjustment, feed::Feed, timeframe::TimeFrame},
-		last_quotes::last_quotes_dtos::serialize_vec_to_csv,
-	},
-	chrono::{DateTime, Duration, Timelike, Utc},
-	serde::{Deserialize, Serialize},
-	std::collections::HashMap,
+use std::collections::HashMap;
+
+use chrono::{DateTime, Duration, Timelike, Utc};
+use serde::{Deserialize, Serialize};
+
+use crate::data::{
+	enums::{adjustment::Adjustment, feed::Feed, timeframe::TimeFrame},
+	last_quotes::last_quotes_dtos::serialize_vec_to_csv,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, bon::Builder)]

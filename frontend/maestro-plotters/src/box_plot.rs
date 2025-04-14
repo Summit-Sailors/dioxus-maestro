@@ -1,9 +1,8 @@
-use {
-	crate::chart_options::ChartOptions,
-	maestro_toast::ctx::use_toast,
-	plotters::{data::Quartiles, prelude::*},
-	plotters_canvas::CanvasBackend,
-};
+use maestro_toast::ctx::use_toast;
+use plotters::{data::Quartiles, prelude::*};
+use plotters_canvas::CanvasBackend;
+
+use crate::chart_options::ChartOptions;
 
 pub fn render_box_plot(canvas_id: &str, data: Vec<Vec<f32>>, options: ChartOptions) -> Result<(), Box<dyn std::error::Error>> {
 	let root = CanvasBackend::new(canvas_id).expect("failed to create CanvasBackend").into_drawing_area();
@@ -25,7 +24,9 @@ pub fn render_box_plot(canvas_id: &str, data: Vec<Vec<f32>>, options: ChartOptio
 	Ok(())
 }
 
-use {dioxus::prelude::*, dioxus_logger::tracing::info, maestro_toast::toast_info::ToastInfo};
+use dioxus::prelude::*;
+use dioxus_logger::tracing::info;
+use maestro_toast::toast_info::ToastInfo;
 
 pub fn use_box_plot(canvas_id: String, data: Memo<Option<Vec<Vec<f32>>>>, options: ChartOptions) {
 	let mut toast = use_toast();

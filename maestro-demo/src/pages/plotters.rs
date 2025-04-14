@@ -1,19 +1,18 @@
-use {
-	crate::components::ui::features::Features,
-	dioxus::prelude::*,
-	maestro_hooks::explicit_memo::use_explicit_memo,
-	maestro_plotters::{
-		bar_chart::use_bar_chart,
-		candle_stick::use_candle_stick_hook,
-		chart_options::ChartOptions,
-		heat_map::use_heat_map,
-		line_map::use_line_map,
-		pie::{use_pie_chart, PieChartOptions},
-		radar::use_radar,
-		scatter_plot::use_scatter_plot_hook,
-	},
-	plotters::style::RGBColor,
+use dioxus::prelude::*;
+use maestro_hooks::explicit_memo::use_explicit_memo;
+use maestro_plotters::{
+	bar_chart::use_bar_chart,
+	candle_stick::use_candle_stick_hook,
+	chart_options::ChartOptions,
+	heat_map::use_heat_map,
+	line_map::use_line_map,
+	pie::{PieChartOptions, use_pie_chart},
+	radar::use_radar,
+	scatter_plot::use_scatter_plot_hook,
 };
+use plotters::style::RGBColor;
+
+use crate::components::ui::features::Features;
 
 #[component]
 pub fn PlottersDemo() -> Element {

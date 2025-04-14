@@ -24,7 +24,8 @@ impl UseClipboard {
 
 		#[cfg(not(feature = "desktop"))]
 		{
-			use {wasm_bindgen_futures::JsFuture, web_sys::window};
+			use wasm_bindgen_futures::JsFuture;
+			use web_sys::window;
 			JsFuture::from(window().ok_or(ClipboardError::NotAvailable)?.navigator().clipboard().read_text())
 				.await
 				.map_err(|_| ClipboardError::FailedToRead)?
@@ -42,7 +43,8 @@ impl UseClipboard {
 
 		#[cfg(not(feature = "desktop"))]
 		{
-			use {wasm_bindgen_futures::JsFuture, web_sys::window};
+			use wasm_bindgen_futures::JsFuture;
+			use web_sys::window;
 			JsFuture::from(window().ok_or(ClipboardError::NotAvailable)?.navigator().clipboard().write_text(&contents))
 				.await
 				.map_err(|_| ClipboardError::FailedToSet)?;
@@ -68,4 +70,3 @@ pub fn use_clipboard() -> UseClipboard {
 	#[cfg(not(feature = "desktop"))]
 	UseClipboard {}
 }
-

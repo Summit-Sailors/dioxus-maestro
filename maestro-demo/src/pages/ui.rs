@@ -1,21 +1,20 @@
-use {
-	crate::components::ui::{component_section::ComponentSection, features::Features},
-	dioxus::prelude::*,
-	dioxus_free_icons::{Icon, icons::fa_solid_icons::FaCopy},
-	maestro_toast::{ctx::use_toast, toast_info::ToastInfo, toast_position::EToastPosition},
-	maestro_ui::{
-		button::{Button, ButtonSize, ButtonVariant},
-		input::{Input, InputVariant},
-		label::Label,
-		multi_select::MultiSelect,
-		radio::Radio,
-		range::Range,
-		select::{Select, SelectOption},
-		spinner::FreeIconSpinner,
-		textarea::Textarea,
-		toggle::{EToggleSwitchLabelPlacement, ToggleSwitch, ToggleSwitchLabelStatesProp},
-	},
+use dioxus::prelude::*;
+use dioxus_free_icons::{Icon, icons::fa_solid_icons::FaCopy};
+use maestro_toast::{ctx::use_toast, toast_info::ToastInfo, toast_position::EToastPosition};
+use maestro_ui::{
+	button::{Button, ButtonSize, ButtonVariant},
+	input::{Input, InputVariant},
+	label::Label,
+	multi_select::MultiSelect,
+	radio::Radio,
+	range::Range,
+	select::{Select, SelectOption},
+	spinner::FreeIconSpinner,
+	textarea::Textarea,
+	toggle::{EToggleSwitchLabelPlacement, ToggleSwitch, ToggleSwitchLabelStatesProp},
 };
+
+use crate::components::ui::{component_section::ComponentSection, features::Features};
 
 #[component]
 pub fn UIDemo() -> Element {

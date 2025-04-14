@@ -1,7 +1,6 @@
-use {
-	super::{dtos::PaginatedResultDTO, paginate::Paginated},
-	diesel::{query_dsl::methods::LoadQuery, PgConnection, QueryResult},
-};
+use diesel::{PgConnection, QueryResult, query_dsl::methods::LoadQuery};
+
+use super::{dtos::PaginatedResultDTO, paginate::Paginated};
 
 pub trait Paginate: Sized {
 	fn paginate<'a, U>(self, page: i32, page_size: i32, conn: &mut PgConnection) -> QueryResult<PaginatedResultDTO<U>>

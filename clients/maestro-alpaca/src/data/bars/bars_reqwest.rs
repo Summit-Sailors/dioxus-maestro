@@ -1,8 +1,7 @@
-use {
-	super::bars_dtos::{BarsDTO, BarsMultiApiDTO, BarsMultiRequestDTO, BarsSingleRequestDTO},
-	crate::data::enums::{adjustment::Adjustment, feed::Feed, timeframe::TimeFrame},
-	chrono::{DateTime, Utc},
-};
+use chrono::{DateTime, Utc};
+
+use super::bars_dtos::{BarsDTO, BarsMultiApiDTO, BarsMultiRequestDTO, BarsSingleRequestDTO};
+use crate::data::enums::{adjustment::Adjustment, feed::Feed, timeframe::TimeFrame};
 
 #[bon::builder]
 pub async fn bars_request_single_builder(

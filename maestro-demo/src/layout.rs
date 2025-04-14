@@ -1,20 +1,20 @@
-use {
-	crate::{
-		components::{backdrop::Backdrop, editor::code_viewer::CodeEditor, logo_light::LogoLight},
-		router::Route,
+use std::collections::HashMap;
+
+use dioxus::prelude::*;
+use dioxus_free_icons::{
+	Icon,
+	icons::{
+		bs_icons::{BsLayoutSidebar, BsLayoutSidebarReverse},
+		io_icons::IoLogoGithub,
 	},
-	dioxus::prelude::*,
-	dioxus_free_icons::{
-		Icon,
-		icons::{
-			bs_icons::{BsLayoutSidebar, BsLayoutSidebarReverse},
-			io_icons::IoLogoGithub,
-		},
-	},
-	maestro_toast::{init::use_init_toast_ctx, toast_frame_component::ToastFrame},
-	maestro_ui::button::{Button, ButtonSize, ButtonVariant},
-	std::collections::HashMap,
-	tailwind_fuse::{tw_join, tw_merge},
+};
+use maestro_toast::{init::use_init_toast_ctx, toast_frame_component::ToastFrame};
+use maestro_ui::button::{Button, ButtonSize, ButtonVariant};
+use tailwind_fuse::{tw_join, tw_merge};
+
+use crate::{
+	components::{backdrop::Backdrop, editor::code_viewer::CodeEditor, logo_light::LogoLight},
+	router::Route,
 };
 
 #[component]

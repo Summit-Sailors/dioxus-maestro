@@ -1,9 +1,8 @@
-use {
-	crate::{
-		stream::{ContentMismatch, Delta, DeltaError, MessageStats},
-		Model,
-	},
-	serde::{Deserialize, Serialize},
+use serde::{Deserialize, Serialize};
+
+use crate::{
+	Model,
+	stream::{ContentMismatch, Delta, DeltaError, MessageStats},
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, strum_macros::Display, strum_macros::AsRefStr)]

@@ -1,12 +1,12 @@
-use {crate::clients::db::SqlxUser, dioxus::prelude::*};
+use dioxus::prelude::*;
+
+use crate::clients::db::SqlxUser;
 
 #[server(FetchUsersSqlx)]
 // synchronous user fetching with sync pool creation
 pub async fn fetch_users_sync() -> Result<Vec<SqlxUser>, ServerFnError> {
-	use {
-		maestro_sqlx::create::create_sqlx_pool,
-		tokio::runtime::{Handle, Runtime},
-	};
+	use maestro_sqlx::create::create_sqlx_pool;
+	use tokio::runtime::{Handle, Runtime};
 
 	let database_url = std::env!("DATABASE_URL");
 	let pool = create_sqlx_pool(database_url);

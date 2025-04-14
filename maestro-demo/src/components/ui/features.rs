@@ -1,12 +1,10 @@
 #![allow(non_snake_case)]
-use {
-	dioxus::prelude::*,
-	dioxus_free_icons::{
-		icons::{fa_solid_icons::FaCheck, io_icons::IoChevronForward},
-		Icon,
-	},
-	tailwind_fuse::tw_join,
+use dioxus::prelude::*;
+use dioxus_free_icons::{
+	Icon,
+	icons::{fa_solid_icons::FaCheck, io_icons::IoChevronForward},
 };
+use tailwind_fuse::tw_join;
 
 #[derive(Debug, Props, Clone, PartialEq)]
 pub struct FeatureProps {

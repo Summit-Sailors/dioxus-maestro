@@ -1,4 +1,7 @@
-use {crate::input::InputVariant, dioxus::prelude::*, tailwind_fuse::*};
+use dioxus::prelude::*;
+use tailwind_fuse::*;
+
+use crate::input::InputVariant;
 
 #[derive(TwClass)]
 #[tw(

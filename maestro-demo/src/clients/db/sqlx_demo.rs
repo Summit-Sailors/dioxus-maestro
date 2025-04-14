@@ -1,7 +1,6 @@
-use {
-	crate::{clients::db::SqlxUser, components::ui::features::Features},
-	dioxus::prelude::*,
-};
+use dioxus::prelude::*;
+
+use crate::{clients::db::SqlxUser, components::ui::features::Features};
 
 #[component]
 pub fn SqlxDemo() -> Element {

@@ -1,25 +1,23 @@
 #![allow(clippy::disallowed_types)]
-use {
-	dioxus_lib::prelude::*,
-	futures_util::Future,
-	std::{
-		any::TypeId,
-		collections::HashSet,
-		hash::Hash,
-		sync::{Arc, RwLock, RwLockReadGuard},
-	},
+use std::{
+	any::TypeId,
+	collections::HashSet,
+	hash::Hash,
+	sync::{Arc, RwLock, RwLockReadGuard},
 };
+
+use dioxus_lib::prelude::*;
+use futures_util::Future;
 mod warnings {
 	pub use warnings::Warning;
 }
+use maestro_hooks::explicit_memo::use_explicit_memo;
 pub use warnings::Warning;
-use {
-	crate::{
-		cached_result::CachedResult,
-		result::QueryResult,
-		use_query_client::{use_query_client, QueryFn, QueryListeners, QueryValue, RegistryEntry, UseQueryClient},
-	},
-	maestro_hooks::explicit_memo::use_explicit_memo,
+
+use crate::{
+	cached_result::CachedResult,
+	result::QueryResult,
+	use_query_client::{QueryFn, QueryListeners, QueryValue, RegistryEntry, UseQueryClient, use_query_client},
 };
 
 // #[derive(Clone)]
@@ -73,11 +71,11 @@ impl<T, E, K: Eq + Hash> Drop for UseQueryCleaner<T, E, K> {
 				Ok(v) => v,
 			};
 			if let Some(query_listeners) = queries_registry.get_mut(&self.registry_entry) {
-        query_listeners.listeners.remove(&self.scope_id);
-        if query_listeners.listeners.is_empty() {
-          queries_registry.remove(&self.registry_entry);
-        }
-      }
+				query_listeners.listeners.remove(&self.scope_id);
+				if query_listeners.listeners.is_empty() {
+					queries_registry.remove(&self.registry_entry);
+				}
+			}
 		});
 	}
 }

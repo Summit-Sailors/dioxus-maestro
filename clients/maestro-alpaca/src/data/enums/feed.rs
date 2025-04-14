@@ -1,7 +1,5 @@
-use {
-	serde::{Deserialize, Serialize},
-	strum_macros::{Display, EnumIter, EnumString},
-};
+use serde::{Deserialize, Serialize};
+use strum_macros::{Display, EnumIter, EnumString};
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, EnumIter, Display, EnumString)]
 pub enum Feed {

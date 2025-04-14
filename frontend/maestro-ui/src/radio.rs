@@ -1,4 +1,7 @@
-use {crate::label::Label, dioxus::prelude::*, tailwind_fuse::*};
+use dioxus::prelude::*;
+use tailwind_fuse::*;
+
+use crate::label::Label;
 
 #[derive(TwClass)]
 #[tw(

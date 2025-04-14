@@ -1,11 +1,10 @@
 #![allow(non_snake_case)]
-use {
-	crate::{
-		clients::db::{DieselUser, apis::diesel_api},
-		components::ui::features::Features,
-	},
-	dioxus::prelude::*,
-	tailwind_fuse::tw_join,
+use dioxus::prelude::*;
+use tailwind_fuse::tw_join;
+
+use crate::{
+	clients::db::{DieselUser, apis::diesel_api},
+	components::ui::features::Features,
 };
 
 #[component]

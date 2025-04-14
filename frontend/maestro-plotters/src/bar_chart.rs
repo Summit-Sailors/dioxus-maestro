@@ -1,11 +1,10 @@
-use {
-	crate::chart_options::ChartOptions,
-	dioxus::prelude::*,
-	dioxus_logger::tracing::info,
-	maestro_toast::{ctx::use_toast, toast_info::ToastInfo},
-	plotters::prelude::*,
-	plotters_canvas::CanvasBackend,
-};
+use dioxus::prelude::*;
+use dioxus_logger::tracing::info;
+use maestro_toast::{ctx::use_toast, toast_info::ToastInfo};
+use plotters::prelude::*;
+use plotters_canvas::CanvasBackend;
+
+use crate::chart_options::ChartOptions;
 
 pub fn use_bar_chart(canvas_id: String, data: Memo<Option<Vec<(String, f32)>>>, options: ChartOptions) {
 	let mut toast = use_toast();

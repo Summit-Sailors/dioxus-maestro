@@ -1,15 +1,14 @@
-use {
-	crate::button::Button,
-	chrono::{Datelike, NaiveDate},
-	dioxus::prelude::*,
-	dioxus_free_icons::{
-		Icon,
-		icons::ld_icons::{LdCalendar, LdChevronLeft, LdChevronRight, LdChevronsLeft, LdChevronsRight},
-	},
-	enums::{e_month::ECalendarMonth, e_week_day::ECalendarDay},
-	strum::IntoEnumIterator,
-	tailwind_fuse::*,
+use chrono::{Datelike, NaiveDate};
+use dioxus::prelude::*;
+use dioxus_free_icons::{
+	Icon,
+	icons::ld_icons::{LdCalendar, LdChevronLeft, LdChevronRight, LdChevronsLeft, LdChevronsRight},
 };
+use enums::{e_month::ECalendarMonth, e_week_day::ECalendarDay};
+use strum::IntoEnumIterator;
+use tailwind_fuse::*;
+
+use crate::button::Button;
 
 pub mod enums;
 

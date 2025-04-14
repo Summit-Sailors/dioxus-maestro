@@ -1,12 +1,12 @@
-use {
-	super::use_form_field::FormField,
-	crate::fields::form::FormResult,
-	dioxus::{dioxus_core::SpawnIfAsync, prelude::*},
-	serde::{Deserialize, Serialize},
-	serde_json::{Map, Value},
-	std::collections::HashMap,
-	validator::Validate,
-};
+use std::collections::HashMap;
+
+use dioxus::{dioxus_core::SpawnIfAsync, prelude::*};
+use serde::{Deserialize, Serialize};
+use serde_json::{Map, Value};
+use validator::Validate;
+
+use super::use_form_field::FormField;
+use crate::fields::form::FormResult;
 
 #[derive(Debug, PartialEq)]
 pub struct Formik<T>
@@ -71,7 +71,7 @@ where
 		};
 
 		handler.call((event, result.clone(), Box::new(complete_submission)));
-  ().spawn();
+		().spawn();
 	}
 
 	pub fn as_validated_struct(&mut self) -> FormResult<T> {

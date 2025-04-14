@@ -1,4 +1,6 @@
-use {crate::components::ui::features::Features, dioxus::prelude::*};
+use dioxus::prelude::*;
+
+use crate::components::ui::features::Features;
 
 #[derive(Clone, Debug)]
 struct SearchState {

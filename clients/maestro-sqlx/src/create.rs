@@ -1,9 +1,7 @@
-use {
-	crate::acreate::acreate_sqlx_pool,
-	tokio::runtime::{Handle, Runtime},
-};
+use tokio::runtime::{Handle, Runtime};
 
 pub use crate::SqlxPgPool;
+use crate::acreate::acreate_sqlx_pool;
 
 pub fn create_sqlx_pool(db_url: &str) -> SqlxPgPool {
 	match Handle::try_current() {

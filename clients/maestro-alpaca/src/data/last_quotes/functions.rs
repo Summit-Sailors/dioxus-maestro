@@ -1,7 +1,6 @@
-use {
-	super::last_quotes_dtos::{LatestQuotesRequestDTO, QuoteResponseDTO},
-	dioxus::prelude::*,
-};
+use dioxus::prelude::*;
+
+use super::last_quotes_dtos::{LatestQuotesRequestDTO, QuoteResponseDTO};
 
 #[server]
 pub async fn get_alpaca_latest_quotes_from_server(search_params: LatestQuotesRequestDTO) -> Result<Vec<QuoteResponseDTO>, ServerFnError> {

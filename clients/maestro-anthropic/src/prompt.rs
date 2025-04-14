@@ -1,8 +1,8 @@
-use {
-	super::{chat_message::ChatMessage, tool, Model, Tool},
-	serde::{Deserialize, Serialize},
-	std::num::NonZeroU16,
-};
+use std::num::NonZeroU16;
+
+use serde::{Deserialize, Serialize};
+
+use super::{Model, Tool, chat_message::ChatMessage, tool};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct Prompt {

@@ -1,7 +1,6 @@
-use {
-	dioxus_lib::prelude::*,
-	std::{cell::RefCell, rc::Rc},
-};
+use std::{cell::RefCell, rc::Rc};
+
+use dioxus_lib::prelude::*;
 
 struct MemoizedSynced<TValue, TDeps> {
 	value: TValue,

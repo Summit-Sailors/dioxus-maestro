@@ -1,8 +1,7 @@
-use {
-	dioxus_lib::prelude::*,
-	futures_util::Future,
-	std::{fmt::Debug, mem, sync::Arc},
-};
+use std::{fmt::Debug, mem, sync::Arc};
+
+use dioxus_lib::prelude::*;
+use futures_util::Future;
 
 pub type MutationFn<T, E, A> = dyn Fn(A) -> Box<dyn Future<Output = MutationResult<T, E>>>;
 

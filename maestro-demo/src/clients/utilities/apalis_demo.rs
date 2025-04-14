@@ -1,4 +1,6 @@
-use {crate::components::ui::features::Features, dioxus::prelude::*};
+use dioxus::prelude::*;
+
+use crate::components::ui::features::Features;
 
 #[component]
 pub fn JobForm() -> Element {

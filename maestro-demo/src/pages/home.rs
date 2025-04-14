@@ -1,9 +1,8 @@
-use {
-	crate::router::Route,
-	dioxus::prelude::*,
-	maestro_ui::button::{Button, ButtonSize, ButtonVariant},
-	strum::IntoEnumIterator,
-};
+use dioxus::prelude::*;
+use maestro_ui::button::{Button, ButtonSize, ButtonVariant};
+use strum::IntoEnumIterator;
+
+use crate::router::Route;
 
 #[component]
 pub fn HomePage() -> Element {

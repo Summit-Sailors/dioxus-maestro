@@ -1,5 +1,7 @@
 // Theme preview component
-use {crate::designer::state::DesignerState, dioxus::prelude::*};
+use dioxus::prelude::*;
+
+use crate::designer::state::DesignerState;
 
 #[derive(Props, PartialEq, Clone)]
 pub struct ThemePreviewProps {

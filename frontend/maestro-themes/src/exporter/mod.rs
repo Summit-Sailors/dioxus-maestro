@@ -1,6 +1,8 @@
 mod tailwind;
 
-pub use {crate::designer::state::DesignerState, tailwind::*};
+pub use tailwind::*;
+
+pub use crate::designer::state::DesignerState;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum ExportFormat {

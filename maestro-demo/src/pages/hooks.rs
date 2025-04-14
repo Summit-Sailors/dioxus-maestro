@@ -1,18 +1,18 @@
-use {
-	crate::components::ui::features::Features,
-	async_std::task::sleep,
-	dioxus::prelude::*,
-	dioxus_free_icons::{
-		Icon,
-		icons::{
-			fa_solid_icons::{FaCopy, FaPaste},
-			ld_icons::{LdChevronLeft, LdChevronRight, LdChevronsLeft, LdChevronsRight},
-		},
+use std::time::Duration;
+
+use async_std::task::sleep;
+use dioxus::prelude::*;
+use dioxus_free_icons::{
+	Icon,
+	icons::{
+		fa_solid_icons::{FaCopy, FaPaste},
+		ld_icons::{LdChevronLeft, LdChevronRight, LdChevronsLeft, LdChevronsRight},
 	},
-	maestro_hooks::{clipboard::use_clipboard, explicit_memo::use_explicit_memo, pagination::use_pagination},
-	std::time::Duration,
-	tailwind_fuse::tw_join,
 };
+use maestro_hooks::{clipboard::use_clipboard, explicit_memo::use_explicit_memo, pagination::use_pagination};
+use tailwind_fuse::tw_join;
+
+use crate::components::ui::features::Features;
 
 #[derive(PartialEq)]
 enum HookSection {

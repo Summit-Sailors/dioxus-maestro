@@ -1,9 +1,8 @@
-use {
-	crate::label::Label,
-	dioxus::prelude::*,
-	dioxus_free_icons::{icons::io_icons::IoCheckmarkOutline, Icon},
-	tailwind_fuse::*,
-};
+use dioxus::prelude::*;
+use dioxus_free_icons::{Icon, icons::io_icons::IoCheckmarkOutline};
+use tailwind_fuse::*;
+
+use crate::label::Label;
 
 #[derive(TwClass)]
 #[tw(class = "flex items-center justify-center w-6 h-6 transition-all ease-linear border border-gray-700 rounded bg-transparent shrink-0")]

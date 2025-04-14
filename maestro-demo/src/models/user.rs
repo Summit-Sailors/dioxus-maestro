@@ -1,8 +1,6 @@
-use {
-	serde::{Deserialize, Serialize},
-	strum_macros::{Display, EnumString, VariantNames},
-	validator::{Validate, ValidationError},
-};
+use serde::{Deserialize, Serialize};
+use strum_macros::{Display, EnumString, VariantNames};
+use validator::{Validate, ValidationError};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, Display, EnumString, VariantNames)]
 #[serde(rename_all = "lowercase")]

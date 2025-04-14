@@ -1,9 +1,8 @@
-use {
-	crate::use_formik::Formik,
-	dioxus::prelude::*,
-	serde::{Deserialize, Serialize},
-	validator::Validate,
-};
+use dioxus::prelude::*;
+use serde::{Deserialize, Serialize};
+use validator::Validate;
+
+use crate::use_formik::Formik;
 
 pub type FormResult<T> = (T, bool);
 

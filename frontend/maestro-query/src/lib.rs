@@ -7,8 +7,7 @@ mod use_query;
 mod use_query_client;
 
 pub mod prelude {
-	pub use {
-		crate::{cached_result::*, result::*, use_mutation::*, use_query::*, use_query_client::*},
-		futures_util,
-	};
+	pub use futures_util;
+
+	pub use crate::{cached_result::*, result::*, use_mutation::*, use_query::*, use_query_client::*};
 }

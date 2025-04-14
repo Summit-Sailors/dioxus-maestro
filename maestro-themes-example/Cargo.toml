@@ -1,0 +1,14 @@
+[package]
+description = "maestro themes example usage"
+edition = { workspace = true }
+name = "maestro-themes-example"
+
+
+[dependencies]
+dioxus = { workspace = true }
+maestro-themes = { workspace = true, features = ["web"] }
+tailwind_fuse = { version = "0.3.2", features = ["variant"] }
+
+[features]
+default = ["web"]
+web = ["dioxus/web"]

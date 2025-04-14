@@ -1,7 +1,6 @@
-use {
-	super::bars_dtos::{BarsDTO, BarsSingleRequestDTO},
-	dioxus::prelude::*,
-};
+use dioxus::prelude::*;
+
+use super::bars_dtos::{BarsDTO, BarsSingleRequestDTO};
 
 #[server]
 pub async fn get_alpaca_bars_from_server(symbol: String, search_params: BarsSingleRequestDTO) -> Result<BarsDTO, ServerFnError> {

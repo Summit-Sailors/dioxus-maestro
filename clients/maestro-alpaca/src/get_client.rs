@@ -1,9 +1,8 @@
-use {
-	reqwest::{
-		header::{HeaderName, HeaderValue},
-		Client,
-	},
-	std::ops::Deref,
+use std::ops::Deref;
+
+use reqwest::{
+	Client,
+	header::{HeaderName, HeaderValue},
 };
 
 const HDR_KEY_ID: &str = "apca-api-key-id";

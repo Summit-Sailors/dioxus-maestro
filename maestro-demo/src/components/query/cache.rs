@@ -1,4 +1,10 @@
-use {dioxus::prelude::*, instant::Instant, maestro_query::prelude::*, maestro_ui::button::Button, std::fmt::Error, tailwind_fuse::tw_join};
+use std::fmt::Error;
+
+use dioxus::prelude::*;
+use instant::Instant;
+use maestro_query::prelude::*;
+use maestro_ui::button::Button;
+use tailwind_fuse::tw_join;
 
 #[derive(Debug, Clone, PartialEq)]
 struct CachedData {
@@ -41,97 +47,97 @@ pub fn CacheDemo() -> Element {
 	};
 
 	rsx! {
-    div { class: "flex flex-col items-center gap-4 p-4 bg-slate-900 rounded-lg shadow-lg",
+		div { class: "flex flex-col items-center gap-4 p-4 bg-slate-900 rounded-lg shadow-lg",
 
-      div { class: "space-y-4",
+			div { class: "space-y-4",
 
-        h2 { class: "text-2xl font-bold text-slate-100 text-center", "Cache Management" }
+				h2 { class: "text-2xl font-bold text-slate-100 text-center", "Cache Management" }
 
-        div { class: "mt-4 space-y-2 items-center",
-          label { class: "block text-sm font-medium text-center text-slate-300",
-            "Stale Time: {stale_time}ms"
-          }
-          input {
-            class: "w-full",
-            r#type: "range",
-            min: "500",
-            max: "10000",
-            step: "500",
-            value: "{stale_time}",
-            onchange: move |e| stale_time.set(e.value().parse().unwrap_or(2000)),
-          }
-        }
+				div { class: "mt-4 space-y-2 items-center",
+					label { class: "block text-sm font-medium text-center text-slate-300",
+						"Stale Time: {stale_time}ms"
+					}
+					input {
+						class: "w-full",
+						r#type: "range",
+						min: "500",
+						max: "10000",
+						step: "500",
+						value: "{stale_time}",
+						onchange: move |e| stale_time.set(e.value().parse().unwrap_or(2000)),
+					}
+				}
 
-        div { class: "items-center space-x-2",
-          input {
-            r#type: "checkbox",
-            checked: "{auto_refresh}",
-            onchange: move |e| auto_refresh.set(e.value().parse().unwrap_or(false)),
-          }
-          label { class: "text-sm font-medium text-slate-200", "Auto Refresh" }
-        }
-      }
+				div { class: "items-center space-x-2",
+					input {
+						r#type: "checkbox",
+						checked: "{auto_refresh}",
+						onchange: move |e| auto_refresh.set(e.value().parse().unwrap_or(false)),
+					}
+					label { class: "text-sm font-medium text-slate-200", "Auto Refresh" }
+				}
+			}
 
-      div { class: "grid justify-center grid-cols-1 md:grid-cols-2 p-4 bg-slate-900 rounded-lg",
-        div { class: "text-center p-2 rounded",
-          p { class: "font-medium text-slate-200 text-center", "Cache Status:" }
-          p {
-            class: tw_join!(
-                "p-4 rounded-lg border border-slate-700 transition-colors cursor-pointer", if
-                cached_query.result().is_fresh() { "text-green-500" } else { "text-yellow-500" }
-            ),
-            {if cached_query.result().is_fresh() { "Fresh" } else { "Stale" }}
-          }
-        }
+			div { class: "grid justify-center grid-cols-1 md:grid-cols-2 p-4 bg-slate-900 rounded-lg",
+				div { class: "text-center p-2 rounded",
+					p { class: "font-medium text-slate-200 text-center", "Cache Status:" }
+					p {
+						class: tw_join!(
+								"p-4 rounded-lg border border-slate-700 transition-colors cursor-pointer", if
+								cached_query.result().is_fresh() { "text-green-500" } else { "text-yellow-500" }
+						),
+						{if cached_query.result().is_fresh() { "Fresh" } else { "Stale" }}
+					}
+				}
 
 
-        div { class: "text-center p-2 rounded",
-          p { class: "font-medium text-slate-200", "Query Status:" }
-          p {
-            class: tw_join!(
-                "p-4 rounded-lg border border-slate-700 transition-colors cursor-pointer", if
-                cached_query.result().is_fresh() { "text-blue-500" } else { "text-green-500" }
-            ),
-            if cached_query.result().is_loading() {
-              "Loading..."
-            } else {
-              "Ready"
-            }
-          }
-        }
-      }
+				div { class: "text-center p-2 rounded",
+					p { class: "font-medium text-slate-200", "Query Status:" }
+					p {
+						class: tw_join!(
+								"p-4 rounded-lg border border-slate-700 transition-colors cursor-pointer", if
+								cached_query.result().is_fresh() { "text-blue-500" } else { "text-green-500" }
+						),
+						if cached_query.result().is_loading() {
+							"Loading..."
+						} else {
+							"Ready"
+						}
+					}
+				}
+			}
 
-      // cached data display
-      div { class: "flex items-center p-4 bg-slate-900 rounded border border-slate-700",
-        match cached_query.result().value() {
-            QueryResult::Loading(_) => rsx! {
-              div { class: "text-center text-blue-500", "Fetching fresh data..." }
-            },
-            QueryResult::Ok(data) => rsx! {
-              p { class: "font-medium text-center text-slate-100", "{data.value}" }
-              p { class: "text-sm text-slate-50 text-center",
-                {format!("Cache age: {}ms", data.timestamp.elapsed().as_millis())}
-              }
-            },
-            QueryResult::Err(e) => rsx! {
-              div { class: "text-center text-red-600", "Error: {e:?}" }
-            },
-        }
-      }
+			// cached data display
+			div { class: "flex items-center p-4 bg-slate-900 rounded border border-slate-700",
+				match cached_query.result().value() {
+						QueryResult::Loading(_) => rsx! {
+							div { class: "text-center text-blue-500", "Fetching fresh data..." }
+						},
+						QueryResult::Ok(data) => rsx! {
+							p { class: "font-medium text-center text-slate-100", "{data.value}" }
+							p { class: "text-sm text-slate-50 text-center",
+								{format!("Cache age: {}ms", data.timestamp.elapsed().as_millis())}
+							}
+						},
+						QueryResult::Err(e) => rsx! {
+							div { class: "text-center text-red-600", "Error: {e:?}" }
+						},
+				}
+			}
 
-      // actions
-      div { class: "flex items-center space-x-4",
-        Button {
-          class: "bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition",
-          onclick: force_refetch,
-          disabled: cached_query.result().is_loading(),
-          if cached_query.result().is_loading() {
-            "Fetching..."
-          } else {
-            "Force Refresh"
-          }
-        }
-      }
-    }
-  }
+			// actions
+			div { class: "flex items-center space-x-4",
+				Button {
+					class: "bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition",
+					onclick: force_refetch,
+					disabled: cached_query.result().is_loading(),
+					if cached_query.result().is_loading() {
+						"Fetching..."
+					} else {
+						"Force Refresh"
+					}
+				}
+			}
+		}
+	}
 }

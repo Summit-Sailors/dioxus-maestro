@@ -1,4 +1,8 @@
-use {crate::chart_options::ChartOptions, maestro_toast::ctx::use_toast, plotters::prelude::*, plotters_canvas::CanvasBackend};
+use maestro_toast::ctx::use_toast;
+use plotters::prelude::*;
+use plotters_canvas::CanvasBackend;
+
+use crate::chart_options::ChartOptions;
 
 pub fn render_scatter_plot(
 	canvas_id: &str,
@@ -30,7 +34,9 @@ pub fn render_scatter_plot(
 	Ok(())
 }
 
-use {dioxus::prelude::*, dioxus_logger::tracing::info, maestro_toast::toast_info::ToastInfo};
+use dioxus::prelude::*;
+use dioxus_logger::tracing::info;
+use maestro_toast::toast_info::ToastInfo;
 
 pub fn use_scatter_plot_hook(canvas_id: String, data: Memo<Option<Vec<(f32, f32)>>>, highlight: Memo<Option<Vec<(f32, f32)>>>, options: ChartOptions) {
 	let mut toast = use_toast();

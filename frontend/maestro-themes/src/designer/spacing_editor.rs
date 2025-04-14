@@ -1,6 +1,10 @@
 // Spacing/sizing configuration
 
-use {crate::designer::state::SpacingScale, dioxus::prelude::*, std::collections::HashMap};
+use std::collections::HashMap;
+
+use dioxus::prelude::*;
+
+use crate::designer::state::SpacingScale;
 
 #[derive(Props, PartialEq, Clone)]
 pub struct SpacingEditorProps {

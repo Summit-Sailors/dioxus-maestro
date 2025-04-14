@@ -1,4 +1,8 @@
-use {crate::chart_options::ChartOptions, maestro_toast::ctx::use_toast, plotters::prelude::*, plotters_canvas::CanvasBackend};
+use maestro_toast::ctx::use_toast;
+use plotters::prelude::*;
+use plotters_canvas::CanvasBackend;
+
+use crate::chart_options::ChartOptions;
 
 pub fn render_candlestick_chart(canvas_id: &str, data: Vec<(f32, f32, f32, f32, f32)>, options: ChartOptions) -> Result<(), Box<dyn std::error::Error>> {
 	let root = CanvasBackend::new(canvas_id).expect("failed to create CanvasBackend").into_drawing_area();
@@ -19,7 +23,9 @@ pub fn render_candlestick_chart(canvas_id: &str, data: Vec<(f32, f32, f32, f32, 
 	Ok(())
 }
 
-use {dioxus::prelude::*, dioxus_logger::tracing::info, maestro_toast::toast_info::ToastInfo};
+use dioxus::prelude::*;
+use dioxus_logger::tracing::info;
+use maestro_toast::toast_info::ToastInfo;
 
 pub fn use_candle_stick_hook(canvas_id: String, data: Memo<Option<Vec<(f32, f32, f32, f32, f32)>>>, options: ChartOptions) {
 	let mut toast = use_toast();

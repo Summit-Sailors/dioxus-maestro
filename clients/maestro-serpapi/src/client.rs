@@ -1,10 +1,9 @@
-use {
-	crate::{
-		request_type::{Device, ETimeFrame, Engine, OutputFormat, SafeSearch, SearchRequest, SearchType},
-		response_type::SearchResponse,
-		routes::SerpApiRoute,
-	},
-	reqwest::Client,
+use reqwest::Client;
+
+use crate::{
+	request_type::{Device, ETimeFrame, Engine, OutputFormat, SafeSearch, SearchRequest, SearchType},
+	response_type::SearchResponse,
+	routes::SerpApiRoute,
 };
 
 #[bon::builder]

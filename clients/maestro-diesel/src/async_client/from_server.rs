@@ -1,7 +1,6 @@
-use {
-	super::{AsyncDieselConn, AsyncDieselPool},
-	dioxus::prelude::*,
-};
+use dioxus::prelude::*;
+
+use super::{AsyncDieselConn, AsyncDieselPool};
 
 pub async fn extract_diesel_pool() -> Result<AsyncDieselPool, ServerFnError> {
 	let FromContext(pool): FromContext<AsyncDieselPool> = extract().await.expect("There was a problem extracting connection pool from server");

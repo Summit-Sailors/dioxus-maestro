@@ -1,19 +1,19 @@
 #![allow(clippy::disallowed_types)]
-use {
-	crate::{cached_result::CachedResult, result::QueryResult},
-	dioxus_lib::prelude::*,
-	futures_util::{
-		stream::{FuturesUnordered, StreamExt},
-		Future,
-	},
-	instant::Instant,
-	std::{
-		any::TypeId,
-		collections::{HashMap, HashSet},
-		hash::Hash,
-		sync::{Arc, RwLock},
-	},
+use std::{
+	any::TypeId,
+	collections::{HashMap, HashSet},
+	hash::Hash,
+	sync::{Arc, RwLock},
 };
+
+use dioxus_lib::prelude::*;
+use futures_util::{
+	Future,
+	stream::{FuturesUnordered, StreamExt},
+};
+use instant::Instant;
+
+use crate::{cached_result::CachedResult, result::QueryResult};
 
 pub fn use_init_query_client<T, E, K>() -> UseQueryClient<T, E, K>
 where

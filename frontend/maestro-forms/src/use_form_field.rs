@@ -1,9 +1,7 @@
-use {
-	dioxus::prelude::*,
-	serde::{Deserialize, Serialize},
-	serde_json::Value,
-	validator::Validate,
-};
+use dioxus::prelude::*;
+use serde::{Deserialize, Serialize};
+use serde_json::Value;
+use validator::Validate;
 
 #[derive(Debug, PartialEq)]
 pub struct FormField {

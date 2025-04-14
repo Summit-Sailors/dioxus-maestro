@@ -1,4 +1,5 @@
-use {dioxus::prelude::*, tailwind_fuse::*};
+use dioxus::prelude::*;
+use tailwind_fuse::*;
 
 #[derive(Debug, Clone, PartialEq, Props)]
 pub struct RangeProps {

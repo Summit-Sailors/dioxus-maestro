@@ -1,14 +1,13 @@
-use {
-	crate::{
-		components::{form::form_content::FormContent, ui::features::Features},
-		models::user::{Role, User},
-	},
-	dioxus::prelude::*,
-	maestro_forms::{
-		fields::form::{Form, FormResult},
-		use_formik::use_init_form_ctx,
-	},
-	maestro_toast::{ctx::use_toast, toast_info::ToastInfo},
+use dioxus::prelude::*;
+use maestro_forms::{
+	fields::form::{Form, FormResult},
+	use_formik::use_init_form_ctx,
+};
+use maestro_toast::{ctx::use_toast, toast_info::ToastInfo};
+
+use crate::{
+	components::{form::form_content::FormContent, ui::features::Features},
+	models::user::{Role, User},
 };
 
 async fn simulate_submission(delay_ms: u64) -> Result<(), String> {
@@ -17,11 +16,7 @@ async fn simulate_submission(delay_ms: u64) -> Result<(), String> {
 	let success_rate = 95;
 	let success = js_sys::Math::random() * 100.0 < success_rate as f64;
 
-	if success {
-		Ok(())
-	} else {
-		Err("server error".to_string())
-	}
+	if success { Ok(()) } else { Err("server error".to_string()) }
 }
 
 #[component]

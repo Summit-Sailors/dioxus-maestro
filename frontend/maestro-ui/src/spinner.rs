@@ -1,8 +1,6 @@
-use {
-	dioxus::prelude::*,
-	dioxus_free_icons::{icons::fa_solid_icons::FaSpinner, Icon},
-	tailwind_fuse::*,
-};
+use dioxus::prelude::*;
+use dioxus_free_icons::{Icon, icons::fa_solid_icons::FaSpinner};
+use tailwind_fuse::*;
 
 #[derive(Clone, PartialEq, Props)]
 pub struct FreeIconSpinnerProps {

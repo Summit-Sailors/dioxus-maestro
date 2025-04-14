@@ -1,11 +1,11 @@
-use {
-	super::{
-		client::AnthropicError,
-		response::{Block, ResponseMessage, StopReason, Usage},
-	},
-	futures::StreamExt,
-	serde::{Deserialize, Serialize},
-	std::{pin::Pin, task::Poll},
+use std::{pin::Pin, task::Poll};
+
+use futures::StreamExt;
+use serde::{Deserialize, Serialize};
+
+use super::{
+	client::AnthropicError,
+	response::{Block, ResponseMessage, StopReason, Usage},
 };
 
 #[derive(Debug, Serialize, Deserialize)]

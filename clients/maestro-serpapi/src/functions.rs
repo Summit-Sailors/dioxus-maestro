@@ -1,15 +1,13 @@
+use dioxus::{
+	logger::tracing::{debug, error},
+	prelude::*,
+};
+use readability::Readable;
+use serde::{Deserialize, Serialize};
 #[cfg(feature = "server")]
 use {
 	crate::client::serpapi_request, chrome_fastapi::codegen::Client as ChromeClient, chrome_fastapi::codegen::types::UrlRequest, futures::future::join_all,
 	readability::ExtractOptions, std::io::Cursor, tokio_retry2::Retry, tokio_retry2::strategy::ExponentialBackoff, url::Url,
-};
-use {
-	dioxus::{
-		logger::tracing::{debug, error},
-		prelude::*,
-	},
-	readability::Readable,
-	serde::{Deserialize, Serialize},
 };
 
 #[derive(Debug, Serialize, Deserialize)]
