@@ -8,6 +8,7 @@ use {
 	},
 	consts::{EXAMPLE, EXAMPLE_ANATOMY},
 	dioxus::prelude::*,
+	dioxus_logger::tracing::info,
 	maestro_headless::{
 		range::{Range, RangeRoot, RangeThumb, RangeTrack},
 		shared::EOrientation,
@@ -26,6 +27,7 @@ pub fn RangePage() -> Element {
 	let mut switch = use_signal(|| false);
 	let orientation = use_memo(move || if switch() { EOrientation::Vertical } else { EOrientation::Horizontal });
 
+	info!("{:?}", value());
 	use_effect(move || {
 		if double() {
 			if value.peek().len() == 1 {

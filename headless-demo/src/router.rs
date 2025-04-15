@@ -2,8 +2,8 @@ use {
 	crate::{
 		layout::Layout,
 		pages::{
-			AccordionPage, AspectRatioPage, AvatarPage, ButtonPage, CheckboxPage, CollapsiblePage, DialogPage, Home, HoverCardPage, PopoverPage, ProgressBarPage,
-			RadioPage, RangePage, SelectPage, SeparatorPage, SwitchPage, TabsPage, TogglePage, TooltipPage,
+			AccordionPage, AspectRatioPage, AvatarPage, ButtonPage, CheckboxPage, CollapsiblePage, DialogPage, HeadlessHome, Home, HoverCardPage, PopoverPage,
+			ProgressBarPage, RadioPage, RangePage, SelectPage, SeparatorPage, SwitchPage, TabsPage, TogglePage, TooltipPage,
 		},
 	},
 	dioxus::prelude::*,
@@ -16,6 +16,8 @@ pub enum Route {
 	#[route("/")]
 	Home {},
 	#[nest("/headless")]
+	#[route("/")]
+	HeadlessHome {},
 	#[nest("/components")]
 	#[route("/accordion")]
 	AccordionPage {},
@@ -59,6 +61,7 @@ impl Route {
 	pub fn name(&self) -> &'static str {
 		match self {
 			Route::Home {} => "Home",
+			Route::HeadlessHome {} => "Headless",
 			Route::AccordionPage {} => "Accordion",
 			Route::AspectRatioPage {} => "Aspect Ratio",
 			Route::AvatarPage {} => "Avatar",
@@ -78,5 +81,28 @@ impl Route {
 			Route::TogglePage {} => "Toggle & ToggleGroup",
 			Route::TooltipPage {} => "Tooltip",
 		}
+	}
+
+	pub fn get_headless_routes() -> Vec<Route> {
+		Vec::from([
+			Route::AccordionPage {},
+			Route::AspectRatioPage {},
+			Route::AvatarPage {},
+			Route::ButtonPage {},
+			Route::CheckboxPage {},
+			Route::CollapsiblePage {},
+			Route::DialogPage {},
+			Route::HoverCardPage {},
+			Route::PopoverPage {},
+			Route::ProgressBarPage {},
+			Route::RadioPage {},
+			Route::RangePage {},
+			Route::SelectPage {},
+			Route::SeparatorPage {},
+			Route::SwitchPage {},
+			Route::TabsPage {},
+			Route::TogglePage {},
+			Route::TooltipPage {},
+		])
 	}
 }

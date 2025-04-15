@@ -280,8 +280,7 @@ pub fn AccordionContent(props: AccordionContentProps) -> Element {
 	attrs.push(Attribute::new("--maestro-headless-accordion-width", if width() > 0.0 { Some(format!("{}px", width())) } else { None }, Some("style"), false));
 
 	rsx! {
-		Presence {
-			present: *accordion_item_context.open.read(),
+		Presence { present: *accordion_item_context.open.read(),
 			div {
 				id: accordion_item_context.content_id.to_string(),
 				role: "region",

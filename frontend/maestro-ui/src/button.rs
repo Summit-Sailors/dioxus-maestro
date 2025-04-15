@@ -2,75 +2,143 @@ use {dioxus::prelude::*, tailwind_fuse::*};
 
 #[derive(TwClass)]
 #[tw(
-	class = "inline-flex px-4 py-3 items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors ring-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
+	class = "inline-flex w-fit px-3 py-2 items-center justify-center gap-2 whitespace-nowrap font-medium text-foreground transition-colors ring-ring ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
 )]
 pub struct ButtonClass {
 	pub variant: ButtonVariant,
 	pub size: ButtonSize,
+	pub round: ButtonRound,
+}
+
+#[derive(PartialEq, TwVariant)]
+pub enum ButtonRound {
+	#[tw(class = "rounded-xs")]
+	Xs,
+	#[tw(class = "rounded-sm")]
+	Sm,
+	#[tw(default, class = "rounded-md")]
+	Md,
+	#[tw(class = "rounded-lg")]
+	Lg,
+	#[tw(class = "rounded-full")]
+	Full,
 }
 
 #[derive(PartialEq, TwVariant)]
 pub enum ButtonVariant {
-	#[tw(default, class = "bg-blue-500 text-white hover:bg-blue-700")]
-	Default,
-	#[tw(class = "bg-transparent border border-gray-700")]
+	#[tw(default, class = "text-primary-foreground bg-primary-background hover:bg-primary-background/90")]
+	Primary,
+	#[tw(class = "text-secondary-foreground bg-secondary-background hover:bg-secondary-background/90")]
+	Secondary,
+	#[tw(class = "bg-background border border-border hover:bg-accent")]
 	Outline,
-	#[tw(class = "hover:bg-gray-300")]
+	#[tw(class = "hover:bg-accent")]
 	Ghost,
-	#[tw(class = "text-blue-600 underline-offset-4 hover:underline")]
+	#[tw(class = "text-link underline-offset-3 hover:underline")]
 	Link,
-	#[tw(class = "w-fit h-fit !p-0 text-gray-700")]
-	Icon,
+	#[tw(class = "text-danger-foreground bg-danger-background hover:bg-danger-background/90")]
+	Danger,
+	#[tw(class = "text-danger-foreground bg-danger-background hover:bg-danger-background/90")]
+	Muted,
 }
 
 #[derive(PartialEq, TwVariant)]
 pub enum ButtonSize {
-	#[tw(default, class = "h-10")]
-	Default,
-	#[tw(class = "rounded-md h-9")]
+	#[tw(class = "h-8")]
+	Xs,
+	#[tw(class = "h-9")]
 	Sm,
-	#[tw(class = "rounded-md h-11")]
+	#[tw(default, class = "h-10")]
+	Md,
+	#[tw(class = "h-11")]
 	Lg,
-	#[tw(class = "rounded-md h-12")]
+	#[tw(class = "h-12")]
 	Xl,
-	#[tw(class = "w-12 h-12 !p-0")]
-	IconXl,
-	#[tw(class = "w-11 h-11 !p-0")]
-	IconLg,
-	#[tw(class = "w-10 h-10 !p-0")]
-	IconMd,
-	#[tw(class = "w-9 h-9 !p-0")]
-	IconSm,
 }
 
 #[derive(Clone, PartialEq, Props)]
 pub struct ButtonProps {
-	#[props(default = ButtonVariant::Default)]
+	#[props(default = ButtonVariant::Primary)]
 	pub variant: ButtonVariant,
-	#[props(default = ButtonSize::Default)]
+	#[props(default = ButtonRound::Md)]
+	pub round: ButtonRound,
+	#[props(default = ButtonSize::Md)]
 	pub size: ButtonSize,
+	#[props(default = ReadOnlySignal::new(Signal::new(String::new())))]
+	pub class: ReadOnlySignal<String>,
+
+	#[props(default = ReadOnlySignal::new(Signal::new(false)))]
+	pub pending: ReadOnlySignal<bool>,
+	#[props(default = ReadOnlySignal::new(Signal::new(false)))]
+	pub disabled: ReadOnlySignal<bool>,
+	#[props(default = None)]
 	pub onclick: Option<EventHandler<Event<MouseData>>>,
-	#[props(default = String::new())]
-	pub class: String,
-	pub style: Option<String>,
-	pub children: Element,
+	#[props(default = None)]
+	pub onkeydown: Option<EventHandler<Event<KeyboardData>>>,
+	#[props(default = None)]
+	pub onkeyup: Option<EventHandler<Event<KeyboardData>>>,
+	#[props(default = None)]
+	pub onfocus: Option<EventHandler<Event<FocusData>>>,
+	#[props(default = None)]
+	pub onblur: Option<EventHandler<Event<FocusData>>>,
+	#[props(default = None)]
+	pub onmousedown: Option<EventHandler<Event<MouseData>>>,
+	#[props(default = None)]
+	pub onmouseup: Option<EventHandler<Event<MouseData>>>,
+	#[props(default = None)]
+	pub onmouseenter: Option<EventHandler<Event<MouseData>>>,
+	#[props(default = None)]
+	pub onmouseleave: Option<EventHandler<Event<MouseData>>>,
+	#[props(optional, default = None)]
+	pub onmounted: Option<EventHandler<Event<MountedData>>>,
+
 	#[props(extends = GlobalAttributes, extends = button)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = None)]
+	pub children: Element,
 }
-
-// class may be extended also by using "maestro-button" classname
 
 #[component]
 pub fn Button(props: ButtonProps) -> Element {
-	let class = ButtonClass { variant: props.variant, size: props.size }.with_class(tw_merge!(props.class.clone(), "maestro-button"));
+	let ButtonProps {
+		variant,
+		round,
+		size,
+		class,
+		pending,
+		disabled,
+		onclick,
+		onkeydown,
+		onkeyup,
+		onfocus,
+		onblur,
+		onmousedown,
+		onmouseup,
+		onmouseenter,
+		onmouseleave,
+		onmounted,
+		attributes,
+		children,
+	} = props;
+	let class = ButtonClass { variant, size, round }.with_class(class().clone());
 
 	rsx! {
-		button {
+		maestro_headless::button::Button {
 			class,
-			style: props.style.unwrap_or_default(),
-			onclick: move |event| props.onclick.unwrap_or_default().call(event),
-			..props.attributes,
-			{props.children}
+			pending,
+			disabled,
+			onclick,
+			onkeydown,
+			onkeyup,
+			onfocus,
+			onblur,
+			onmousedown,
+			onmouseup,
+			onmouseenter,
+			onmouseleave,
+			onmounted,
+			extra_attributes: attributes,
+			{children}
 		}
 	}
 }
