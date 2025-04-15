@@ -44,7 +44,7 @@ pub mod web {
 	}
 }
 
-#[cfg(feature = "desktop")]
+#[cfg(all(feature = "desktop", not(feature = "web")))]
 pub mod desktop {
 	use std::{
 		sync::{Arc, Mutex},
@@ -53,6 +53,7 @@ pub mod desktop {
 	};
 
 	use super::*;
+	use crate::theme::system::ThemeChangeCallback;
 
 	pub struct DesktopThemeDetector {
 		pub dark_theme: Arc<Mutex<bool>>,
@@ -94,13 +95,14 @@ pub mod desktop {
 			{
 				use std::os::raw::{c_int, c_void};
 
+				#[cfg(target_os = "macos")]
 				use core_foundation::{
 					base::{CFAllocatorRef, CFRelease, CFTypeRef, kCFAllocatorDefault},
 					dictionary::{CFDictionaryGetValue, CFDictionaryRef},
 					string::{CFStringCreateWithCString, CFStringRef, kCFStringEncodingUTF8},
 				};
 
-				extern "C" {
+				unsafe extern "C" {
 					fn CFNotificationCenterAddObserver(
 						center: CFTypeRef,
 						observer: *const c_void,
@@ -116,18 +118,19 @@ pub mod desktop {
 				}
 
 				let dark_theme = self.dark_theme.clone();
-				let _: Box<ThemeChangeContext<F>> = Box::new(ThemeChangeContext { dark_theme, callback: Mutex::new(callback) });
+				let context = Box::new(ThemeChangeContext { dark_theme, callback: Mutex::new(callback) });
+				let context_ptr = Box::into_raw(context) as *mut c_void;
 
 				extern "C" fn theme_change_callback(info: *mut c_void, _observer: CFTypeRef, _name: CFStringRef, _object: *const c_void, _user_info: CFDictionaryRef) {
 					unsafe {
-						let context = &*(info as *mut ThemeChangeContext<dyn FnMut(bool)>);
+						let context = &*(info as *mut ThemeChangeContext);
 						let is_dark = macos_dark_mode();
 						// Update stored theme value
 						if let Ok(mut current) = context.dark_theme.lock() {
 							*current = is_dark;
 						}
 
-						if let Ok(mut callback) = context.callback.lock() {
+						if let Ok(callback) = context.callback.lock() {
 							callback(is_dark);
 						}
 					}
@@ -143,7 +146,7 @@ pub mod desktop {
 
 					CFNotificationCenterAddObserver(
 						notification_center,
-						std::ptr::null(),
+						context_ptr,
 						theme_change_callback,
 						notification_name,
 						std::ptr::null(),
@@ -238,7 +241,7 @@ pub mod desktop {
 			string::{CFStringGetCStringPtr, CFStringRef, kCFStringEncodingUTF8},
 		};
 
-		extern "C" {
+		unsafe extern "C" {
 			fn CFPreferencesCopyAppValue(key: CFStringRef, app_id: CFStringRef) -> CFTypeRef;
 			fn CFStringCreateWithCString(allocator: *const c_void, cstr: *const i8, encoding: u32) -> CFStringRef;
 			fn CFPreferencesSynchronize(app_id: CFStringRef, user: CFStringRef, host: CFStringRef) -> bool;
@@ -335,6 +338,7 @@ pub mod desktop {
 
 #[cfg(not(any(feature = "web", feature = "desktop")))]
 pub mod mobile {
+	use crate::system::{SystemThemeDetector, ThemeChangeCallback};
 	// Default implementation for unsupported platforms
 	pub struct DefaultThemeDetector;
 

@@ -18,7 +18,7 @@ pub fn ColorPicker(props: ColorPickerProps) -> Element {
 	let colors = props.colors.clone();
 
 	let make_color_handler = |field: &'static str| {
-		let on_change = props.on_change.clone();
+		let on_change = props.on_change;
 		let base_colors = props.colors.clone();
 
 		Rc::new(move |value: String| {

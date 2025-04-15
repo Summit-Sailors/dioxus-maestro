@@ -15,7 +15,7 @@ pub fn BorderRadiusEditor(props: BorderRadiusEditorProps) -> Element {
 	let border_radius = props.border_radius.clone();
 
 	let make_handler = |key: &'static str| {
-		let on_change = props.on_change.clone();
+		let on_change = props.on_change;
 		let base_border_radius = props.border_radius.clone();
 
 		move |event: Event<FormData>| {
@@ -49,7 +49,7 @@ pub fn BorderRadiusEditor(props: BorderRadiusEditorProps) -> Element {
 							r#type: "text",
 							class: "flex-grow border rounded px-2 py-1",
 							value: "{border_radius.sm}",
-							oninput: move |event| sm_handler(event),
+							oninput: sm_handler,
 						}
 						div { class: "border rounded ml-2 w-10 h-10 overflow-hidden",
 							div {
@@ -66,7 +66,7 @@ pub fn BorderRadiusEditor(props: BorderRadiusEditorProps) -> Element {
 							r#type: "text",
 							class: "flex-grow border rounded px-2 py-1",
 							value: "{border_radius.md}",
-							oninput: move |event| md_handler(event),
+							oninput: md_handler,
 						}
 						div { class: "border rounded ml-2 w-10 h-10 overflow-hidden",
 							div {
@@ -83,7 +83,7 @@ pub fn BorderRadiusEditor(props: BorderRadiusEditorProps) -> Element {
 							r#type: "text",
 							class: "flex-grow border rounded px-2 py-1",
 							value: "{border_radius.lg}",
-							oninput: move |event| lg_handler(event),
+							oninput: lg_handler,
 						}
 						div { class: "border rounded ml-2 w-10 h-10 overflow-hidden",
 							div {
@@ -100,7 +100,7 @@ pub fn BorderRadiusEditor(props: BorderRadiusEditorProps) -> Element {
 							r#type: "text",
 							class: "flex-grow border rounded px-2 py-1",
 							value: "{border_radius.xl}",
-							oninput: move |event| xl_handler(event),
+							oninput: xl_handler,
 						}
 						div { class: "border rounded ml-2 w-10 h-10 overflow-hidden",
 							div {
@@ -117,7 +117,7 @@ pub fn BorderRadiusEditor(props: BorderRadiusEditorProps) -> Element {
 							r#type: "text",
 							class: "flex-grow border rounded px-2 py-1",
 							value: "{border_radius.full}",
-							oninput: move |event| full_handler(event),
+							oninput: full_handler,
 						}
 						div { class: "border rounded ml-2 w-10 h-10 overflow-hidden",
 							div {

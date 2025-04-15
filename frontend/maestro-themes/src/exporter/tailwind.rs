@@ -1,5 +1,4 @@
 // Export to tailwind configs
-use std::{fs, path::Path};
 
 use crate::designer::state::DesignerState;
 

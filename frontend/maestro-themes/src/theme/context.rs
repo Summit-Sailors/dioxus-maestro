@@ -1,16 +1,7 @@
 //! Theme context and hooks (Unified context provider)
-use std::sync::atomic::AtomicUsize;
+use dioxus::prelude::*;
 
-use dioxus::{
-	logger::tracing::{Level, warn},
-	prelude::*,
-};
-
-use crate::theme::{
-	storage::{ThemeStorage, get_storage},
-	system::{SystemThemeDetector, get_system_theme_detector},
-	types::{ResolvedTheme, Theme},
-};
+use crate::theme::types::{ResolvedTheme, Theme};
 
 /// Theme context to be used throughout the application
 
@@ -46,13 +37,6 @@ pub fn set_document_theme(theme_class: &str) {
 		if let Some(document) = window.document() {
 			if let Some(element) = document.document_element() {
 				let _ = element.set_attribute("data-theme", theme_class);
-
-				// for tailwind class approach
-				if theme_class == "dark" {
-					let _ = element.class_list().add_1("dark");
-				} else {
-					let _ = element.class_list().remove_1("dark");
-				}
 			}
 		}
 	}

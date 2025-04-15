@@ -36,7 +36,7 @@ pub fn ThemeProvider(props: ThemeProviderProps) -> Element {
 		resolved_theme.set(new_theme.resolve(system_prefers_dark()));
 	});
 
-	let theme_ctx = ThemeContext { theme, resolved_theme: resolved_theme.clone(), system_prefers_dark: system_prefers_dark.clone(), set_theme };
+	let theme_ctx = ThemeContext { theme, resolved_theme, system_prefers_dark, set_theme };
 
 	// persist theme to storage when it changes
 	use_effect(move || {
@@ -63,6 +63,6 @@ pub fn ThemeProvider(props: ThemeProviderProps) -> Element {
 	let theme_class = resolved_theme().as_class();
 
 	rsx! {
-		div { class: "{theme_class}", {props.children} }
+		div { "data-theme": "{theme_class}", {props.children} }
 	}
 }

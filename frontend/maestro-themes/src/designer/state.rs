@@ -5,6 +5,7 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Default)]
 pub struct DesignerState {
 	/// Color palette for the theme
 	pub color: ColorPalette,
@@ -18,17 +19,6 @@ pub struct DesignerState {
 	pub shadow: ShadowSettings,
 }
 
-impl Default for DesignerState {
-	fn default() -> Self {
-		Self {
-			color: ColorPalette::default(),
-			typography: TypographySettings::default(),
-			spacing: SpacingScale::default(),
-			border_radius: BorderRadiusSettings::default(),
-			shadow: ShadowSettings::default(),
-		}
-	}
-}
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ColorPalette {

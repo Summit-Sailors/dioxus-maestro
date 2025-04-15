@@ -15,7 +15,7 @@ fn main() {
 fn App() -> Element {
 	rsx! {
 		ThemeProvider { default_theme: Some(Theme::Auto),
-			div { clas: "p-8 min-h-screen",
+			div { class: "p-8 min-h-screen",
 				h1 { class: "text-2xl font-bold mb-6", "Maestro Themes Demo" }
 
 				Tabs {}
@@ -26,7 +26,7 @@ fn App() -> Element {
 
 #[component]
 fn Tabs() -> Element {
-	let active_tab = use_signal(|| "demo");
+	let mut active_tab = use_signal(|| "demo");
 
 	rsx! {
 		div { class: "flex border-b mb-4",

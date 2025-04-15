@@ -1,4 +1,4 @@
-use std::fmt::{self, Display, Formatter};
+use std::fmt::{Display, Formatter};
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Theme {
@@ -63,7 +63,7 @@ impl ResolvedTheme {
 	pub fn as_class(&self) -> &'static str {
 		match self {
 			ResolvedTheme::Light => "light",
-			ResolvedTheme::Dark => "", // default is dark
+			ResolvedTheme::Dark => "dark",
 		}
 	}
 

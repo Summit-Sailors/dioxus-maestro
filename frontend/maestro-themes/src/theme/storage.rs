@@ -1,21 +1,19 @@
 // Platform specific storage for theme settings
 
-use std::fmt::Display;
-
 use crate::theme::types::Theme;
 
 #[derive(Debug)]
 pub enum ThemeStorageError {
-	WebStorageAccessError,
-	WebStorageSetError,
-	WebStorageGetError,
-	DesktopConfigDirError,
-	DesktopFileOpenError,
-	DesktopFileReadError,
-	DesktopFileCreateError,
-	DesktopFileWriteError,
-	ThemeSerializationError(String),
-	ThemeDeserializationError(String),
+	WebStorageAccess,
+	WebStorageSet,
+	WebStorageGet,
+	DesktopConfigDir,
+	DesktopFileOpen,
+	DesktopFileRead,
+	DesktopFileCreate,
+	DesktopFileWrite,
+	ThemeSerialization(String),
+	ThemeDeserialization(String),
 }
 
 pub type ThemeStorageResult<T> = Result<T, ThemeStorageError>;
@@ -28,9 +26,9 @@ pub trait ThemeStorage {
 
 #[cfg(feature = "web")]
 pub mod web {
-	use web_sys::{Storage, window};
+	use web_sys::window;
 
-	use super::*;
+	use crate::theme::storage::{Theme, ThemeStorage, ThemeStorageError, ThemeStorageResult};
 
 	pub struct WebStorage;
 
@@ -39,23 +37,23 @@ pub mod web {
 			window()
 				.and_then(|win| win.local_storage().ok())
 				.flatten()
-				.ok_or(ThemeStorageError::WebStorageAccessError)
-				.and_then(|storage| storage.set_item("maestro-ui-theme-v1", theme.as_str()).map_err(|_| ThemeStorageError::WebStorageSetError))
+				.ok_or(ThemeStorageError::WebStorageAccess)
+				.and_then(|storage| storage.set_item("maestro-ui-theme-v1", theme.as_str()).map_err(|_| ThemeStorageError::WebStorageSet))
 		}
 
 		fn get_theme(&self) -> ThemeStorageResult<Option<Theme>> {
-			window().and_then(|win| win.local_storage().ok()).flatten().ok_or(ThemeStorageError::WebStorageAccessError).and_then(|storage| {
+			window().and_then(|win| win.local_storage().ok()).flatten().ok_or(ThemeStorageError::WebStorageAccess).and_then(|storage| {
 				storage
 					.get_item("maestro-ui-theme-v1")
-					.map_err(|_e| ThemeStorageError::WebStorageGetError)?
-					.map(|theme_str| Theme::from_str_slice(&theme_str).map_err(|e| ThemeStorageError::ThemeDeserializationError(e)))
+					.map_err(|_e| ThemeStorageError::WebStorageGet)?
+					.map(|theme_str| Theme::from_str_slice(&theme_str).map_err(ThemeStorageError::ThemeDeserialization))
 					.transpose()
 			})
 		}
 	}
 }
 
-#[cfg(feature = "desktop")]
+#[cfg(all(feature = "desktop", not(feature = "web")))]
 pub mod desktop {
 	use std::{
 		fs::{self, File},
@@ -65,16 +63,16 @@ pub mod desktop {
 
 	use directories::ProjectDirs;
 
-	use super::*;
+	use crate::theme::storage::{Theme, ThemeStorage, ThemeStorageError, ThemeStorageResult};
 
 	pub struct DesktopStorage;
 
 	impl DesktopStorage {
 		fn get_config_path() -> ThemeStorageResult<PathBuf> {
-			ProjectDirs::from("com", "maestro", "dioxus").ok_or(ThemeStorageError::DesktopConfigDirError).map(|dirs| {
+			ProjectDirs::from("com", "maestro", "dioxus").ok_or(ThemeStorageError::DesktopConfigDir).map(|dirs| {
 				let config_dir = dirs.config_dir();
 				if !config_dir.exists() {
-					fs::create_dir_all(config_dir).map_err(|_| ThemeStorageError::DesktopConfigDirError)?;
+					fs::create_dir_all(config_dir).map_err(|_| ThemeStorageError::DesktopConfigDir)?;
 				}
 				config_dir.join("theme.txt")
 			})
@@ -85,14 +83,14 @@ pub mod desktop {
 		fn get_theme(&self) -> ThemeStorageResult<Option<Theme>> {
 			Self::get_config_path().and_then(|path| {
 				File::open(path)
-					.map_err(|_| ThemeStorageError::DesktopFileOpenError)
+					.map_err(|_| ThemeStorageError::DesktopFileOpen)
 					.and_then(|mut file| {
 						let mut contents = String::new();
-						file.read_to_string(&mut contents).map_err(|_| ThemeStorageError::DesktopFileReadError)?;
-						Theme::from_str_slice(contents.trim()).map(Some).map_err(|e| ThemeStorageError::ThemeDeserializationError(e))
+						file.read_to_string(&mut contents).map_err(|_| ThemeStorageError::DesktopFileRead)?;
+						Theme::from_str_slice(contents.trim()).map(Some).map_err(|e| ThemeStorageError::ThemeDeserialization(e))
 					})
 					.or_else(|e| match e {
-						ThemeStorageError::DesktopFileOpenError => Ok(None),
+						ThemeStorageError::DesktopFileOpen => Ok(None),
 						other_error => Err(other_error),
 					})
 			})
@@ -101,8 +99,8 @@ pub mod desktop {
 		fn set_theme(&self, theme: &Theme) -> ThemeStorageResult<()> {
 			Self::get_config_path().and_then(|path| {
 				File::create(path)
-					.map_err(|_| ThemeStorageError::DesktopFileCreateError)
-					.and_then(|mut file| file.write_all(theme.as_str().as_bytes()).map_err(|_| ThemeStorageError::DesktopFileWriteError))
+					.map_err(|_| ThemeStorageError::DesktopFileCreate)
+					.and_then(|mut file| file.write_all(theme.as_str().as_bytes()).map_err(|_| ThemeStorageError::DesktopFileWrite))
 			})
 		}
 	}
@@ -113,7 +111,7 @@ pub mod desktop {
 pub mod mobile {
 	use std::sync::{Arc, Mutex};
 
-	use super::*;
+	use crate::theme::storage::{Theme, ThemeStorage, ThemeStorageError, ThemeStorageResult};
 
 	pub struct MemoryStorage {
 		theme: Arc<Mutex<Option<Theme>>>,
@@ -137,12 +135,12 @@ pub mod mobile {
 					*guard = Some(theme.clone());
 					Ok(())
 				},
-				Err(_) => Err(ThemeStorageError::ThemeSerializationError("Failed to acquire lock".to_string()))?,
+				Err(_) => Err(ThemeStorageError::ThemeSerialization("Failed to acquire lock".to_string()))?,
 			}
 		}
 
 		fn get_theme(&self) -> ThemeStorageResult<Option<Theme>> {
-			self.theme.lock().map(|guard| guard.clone()).map_err(|_| ThemeStorageError::ThemeDeserializationError("Failed to acquire lock".to_string()))
+			self.theme.lock().map(|guard| guard.clone()).map_err(|_| ThemeStorageError::ThemeDeserialization("Failed to acquire lock".to_string()))
 		}
 	}
 }

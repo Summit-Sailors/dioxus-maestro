@@ -9,12 +9,42 @@ pub struct ShadowEditorProps {
 	pub on_change: EventHandler<ShadowSettings>,
 }
 
+#[derive(Props, PartialEq, Clone)]
+pub struct ShadowInputProps {
+	pub label: String,
+	pub value: String,
+	pub key_name: &'static str,
+	pub on_change: EventHandler<(&'static str, String)>,
+}
+
+#[component]
+fn ShadowInput(props: ShadowInputProps) -> Element {
+	rsx! {
+		div {
+			label { class: "block text-sm font-medium mb-1", "{props.label}" }
+			div { class: "flex items-center gap-4",
+				div {
+					class: "shadow-preview w-16 h-16 bg-white rounded",
+					style: "box-shadow: {props.value};",
+				}
+				textarea {
+					class: "flex-grow border rounded px-2 py-1 text-sm",
+					rows: "2",
+					value: "{props.value}",
+					oninput: move |event| props.on_change.call((props.key_name, event.value().clone())),
+				}
+			}
+		}
+	}
+}
+
 #[component]
 pub fn ShadowEditor(props: ShadowEditorProps) -> Element {
 	let shadow = props.shadow.clone();
+	let props_state = use_signal(|| props.clone());
 
-	let update_shadow = move |key: &'static str, value: String| {
-		let mut new_shadow = props.shadow.clone();
+	let update_shadow = use_callback(move |(key, value): (&'static str, String)| {
+		let mut new_shadow = props_state().shadow.clone();
 		match key {
 			"sm" => new_shadow.sm = value,
 			"md" => new_shadow.md = value,
@@ -23,87 +53,42 @@ pub fn ShadowEditor(props: ShadowEditorProps) -> Element {
 			"xxl" => new_shadow.xxl = value,
 			_ => {},
 		}
-		props.on_change.call(new_shadow);
-	};
+		props_state().on_change.call(new_shadow);
+	});
 
 	rsx! {
 		div { class: "shadow-editor",
 			h3 { class: "text-lg font-medium mb-3", "Shadows" }
 			div { class: "shadow-preview-grid space-y-4",
-				div {
-					label { class: "block text-sm font-medium mb-1", "Small (sm)" }
-					div { class: "flex items-center gap-4",
-						div {
-							class: "shadow-preview w-16 h-16 bg-white rounded",
-							style: "box-shadow: {shadow.sm};",
-						}
-						textarea {
-							class: "flex-grow border rounded px-2 py-1 text-sm",
-							rows: "2",
-							value: "{shadow.sm}",
-							oninput: move |event| update_shadow("sm", event.value().clone()),
-						}
-					}
+				ShadowInput {
+					label: "Small (sm)".to_string(),
+					value: shadow.sm.clone(),
+					key_name: "sm",
+					on_change: update_shadow,
 				}
-				div {
-					label { class: "block text-sm font-medium mb-1", "Medium (md)" }
-					div { class: "flex items-center gap-4",
-						div {
-							class: "shadow-preview w-16 h-16 bg-white rounded",
-							style: "box-shadow: {shadow.md};",
-						}
-						textarea {
-							class: "flex-grow border rounded px-2 py-1 text-sm",
-							rows: "2",
-							value: "{shadow.md}",
-							oninput: move |event| update_shadow("md", event.value().clone()),
-						}
-					}
+				ShadowInput {
+					label: "Medium (md)".to_string(),
+					value: shadow.md.clone(),
+					key_name: "md",
+					on_change: update_shadow,
 				}
-				div {
-					label { class: "block text-sm font-medium mb-1", "Large (lg)" }
-					div { class: "flex items-center gap-4",
-						div {
-							class: "shadow-preview w-16 h-16 bg-white rounded",
-							style: "box-shadow: {shadow.lg};",
-						}
-						textarea {
-							class: "flex-grow border rounded px-2 py-1 text-sm",
-							rows: "2",
-							value: "{shadow.lg}",
-							oninput: move |event| update_shadow("lg", event.value().clone()),
-						}
-					}
+				ShadowInput {
+					label: "Large (lg)".to_string(),
+					value: shadow.lg.clone(),
+					key_name: "lg",
+					on_change: update_shadow,
 				}
-				div {
-					label { class: "block text-sm font-medium mb-1", "Extra Large (xl)" }
-					div { class: "flex items-center gap-4",
-						div {
-							class: "shadow-preview w-16 h-16 bg-white rounded",
-							style: "box-shadow: {shadow.xl};",
-						}
-						textarea {
-							class: "flex-grow border rounded px-2 py-1 text-sm",
-							rows: "2",
-							value: "{shadow.xl}",
-							oninput: move |event| update_shadow("xl", event.value().clone()),
-						}
-					}
+				ShadowInput {
+					label: "Extra Large (xl)".to_string(),
+					value: shadow.xl.clone(),
+					key_name: "xl",
+					on_change: update_shadow,
 				}
-				div {
-					label { class: "block text-sm font-medium mb-1", "Extra Extra Large (xxl)" }
-					div { class: "flex items-center gap-4",
-						div {
-							class: "shadow-preview w-16 h-16 bg-white rounded",
-							style: "box-shadow: {shadow.xxl};",
-						}
-						textarea {
-							class: "flex-grow border rounded px-2 py-1 text-sm",
-							rows: "2",
-							value: "{shadow.xxl}",
-							oninput: move |event| update_shadow("xxl", event.value().clone()),
-						}
-					}
+				ShadowInput {
+					label: "Extra Extra Large (xxl)".to_string(),
+					value: shadow.xxl.clone(),
+					key_name: "xxl",
+					on_change: update_shadow,
 				}
 			}
 		}
