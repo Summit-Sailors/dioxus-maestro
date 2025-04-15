@@ -1105,13 +1105,6 @@
       }
     }
   }
-  .hover\:border-b-orange-300 {
-    &:hover {
-      @media (hover: hover) {
-        border-bottom-color: var(--color-orange-300);
-      }
-    }
-  }
   .hover\:border-b-orange-600\/50 {
     &:hover {
       @media (hover: hover) {
@@ -1593,13 +1586,6 @@
   .data-\[state\=active\]\:text-orange-600 {
     &[data-state="active"] {
       color: var(--color-orange-600);
-    }
-  }
-  .data-\[state\=active\]\:focus-visible\:border-b-neutral-100 {
-    &[data-state="active"] {
-      &:focus-visible {
-        border-bottom-color: var(--color-neutral-100);
-      }
     }
   }
   .data-\[orientation\=horizontal\]\:data-\[state\=active\]\:border-b-orange-600 {

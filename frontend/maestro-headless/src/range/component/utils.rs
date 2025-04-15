@@ -42,7 +42,7 @@ pub fn get_label(index: usize, total_values: usize) -> String {
 	if total_values > 2 {
 		format!("Value {} of {}", index + 1, total_values)
 	} else if total_values == 2 {
-		["Minimum", "Maximum"][index].to_string()
+		["Minimum", "Maximum"].get(index).map_or("", |v| v).to_string()
 	} else {
 		"".to_string()
 	}

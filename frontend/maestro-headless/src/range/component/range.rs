@@ -356,7 +356,7 @@ pub fn RangeThumb(props: RangeThumbProps) -> Element {
 	let mut size = use_signal(|| None::<web_sys::DomRect>);
 
 	use_effect(move || {
-		let thumbs = context.thumbs.peek();
+		let thumbs = context.thumbs.read();
 		let idx = thumbs.iter().position(|(uuid, _)| *uuid == id());
 		if let Some(i) = idx {
 			index.set(i as i32);
@@ -364,9 +364,7 @@ pub fn RangeThumb(props: RangeThumbProps) -> Element {
 	});
 
 	use_drop(move || {
-		spawn(async move {
-			context.thumbs.write().retain(|(uuid, _)| *uuid != id());
-		});
+		context.thumbs.write().retain(|(uuid, _)| *uuid != id());
 	});
 
 	use_effect(move || {
