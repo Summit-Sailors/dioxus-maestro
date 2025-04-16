@@ -1,10 +1,9 @@
-// Export to tailwind configs
-
 use crate::designer::state::DesignerState;
 
-/// Generate Tailwind v4 CSS configuration
-pub fn generate_tailwind_v4_css(state: &DesignerState) -> String {
-	format!(
+/// Generate Tailwind v4 CSS configuration with theme support
+pub fn generate_tailwind_v4_css(state: &DesignerState, with_themes: bool) -> String {
+	// Base theme configuration using CSS variables
+	let base_theme = format!(
 		r#"/**
 * Tailwind CSS v4 Configuration
 * Generated with CSS-first approach
@@ -14,124 +13,52 @@ pub fn generate_tailwind_v4_css(state: &DesignerState) -> String {
 
 /* Theme configuration using CSS variables */
 @theme {{
-/* Colors */
---primary: {};
---primary-foreground: white;
---secondary: {};
---secondary-foreground: white;
---accent: {};
---accent-foreground: white;
---background: {};
---foreground: {};
---card: {};
---card-foreground: {};
---border: {};
---ring: {};
---destructive: {};
---destructive-foreground: {};
---muted: {};
---muted-foreground: {};
+  /* Colors */
+  --primary: {};
+  --primary-foreground: white;
+  --secondary: {};
+  --secondary-foreground: white;
+  --accent: {};
+  --accent-foreground: white;
+  --background: {};
+  --foreground: {};
+  --card: {};
+  --card-foreground: {};
+  --border: {};
+  --ring: {};
+  --destructive: {};
+  --destructive-foreground: {};
+  --muted: {};
+  --muted-foreground: {};
 
-/* Typography */
---font-sans: {};
---font-heading: {};
---font-size-base: {};
---line-height-normal: {};
+  /* Typography */
+  --font-sans: {};
+  --font-heading: {};
+  --font-size-base: {};
+  --line-height-normal: {};
 
-/* Font Weights */
-{}
+  /* Font Weights */
+  {}
 
-/* Spacing */
---spacing-unit: {};
-{}
+  /* Spacing */
+  --spacing-unit: {};
+  {}
 
-/* Border Radius */
---radius-sm: {};
---radius-md: {};
---radius-lg: {};
---radius-xl: {};
---radius-full: {};
+  /* Border Radius */
+  --radius-sm: {};
+  --radius-md: {};
+  --radius-lg: {};
+  --radius-xl: {};
+  --radius-full: {};
 
-/* Shadows */
---shadow-sm: {};
---shadow-md: {};
---shadow-lg: {};
---shadow-xl: {};
---shadow-2xl: {};
-}}
-
-/* Base element styles using cascade layers */
-@layer base {{
-body {{
-  font-family: var(--font-sans);
-  font-size: var(--font-size-base);
-  line-height: var(--line-height-normal);
-  background-color: var(--background);
-  color: var(--foreground);
-}}
-
-h1, h2, h3, h4, h5, h6 {{
-  font-family: var(--font-heading);
-}}
-}}
-
-/* Optional explicit configuration using @config directive */
-@config {{
-theme: {{
-  colors: {{
-    primary: 'var(--primary)',
-    'primary-foreground': 'var(--primary-foreground)',
-    secondary: 'var(--secondary)',
-    'secondary-foreground': 'var(--secondary-foreground)',
-    accent: 'var(--accent)',
-    'accent-foreground': 'var(--accent-foreground)',
-    background: 'var(--background)',
-    foreground: 'var(--foreground)',
-    card: 'var(--card)',
-    'card-foreground': 'var(--card-foreground)',
-    border: 'var(--border)',
-    ring: 'var(--ring)',
-    destructive: 'var(--destructive)',
-    'destructive-foreground': 'var(--destructive-foreground)',
-    muted: 'var(--muted)',
-    'muted-foreground': 'var(--muted-foreground)',
-  }},
-  fontFamily: {{
-    sans: ['var(--font-sans)'],
-    heading: ['var(--font-heading)'],
-  }},
-  fontSize: {{
-    base: 'var(--font-size-base)',
-  }},
-  lineHeight: {{
-    normal: 'var(--line-height-normal)',
-  }},
-  borderRadius: {{
-    sm: 'var(--radius-sm)',
-    DEFAULT: 'var(--radius-md)',
-    md: 'var(--radius-md)',
-    lg: 'var(--radius-lg)',
-    xl: 'var(--radius-xl)',
-    full: 'var(--radius-full)',
-  }},
-  boxShadow: {{
-    sm: 'var(--shadow-sm)',
-    DEFAULT: 'var(--shadow-md)',
-    md: 'var(--shadow-md)',
-    lg: 'var(--shadow-lg)',
-    xl: 'var(--shadow-xl)',
-    '2xl': 'var(--shadow-2xl)',
-  }},
-  /* Note: In v4, you can directly reference CSS variables in spacing config */
-  spacing: {{
-    /* Reference to the variables defined in @theme */
-  }},
-}},
-plugins: [
-  /* Any plugins can be included here */
-]
-}}
-"#,
+  /* Shadows */
+  --shadow-sm: {};
+  --shadow-md: {};
+  --shadow-lg: {};
+  --shadow-xl: {};
+  --shadow-2xl: {};
+}}"#,
+		// Parameters remain the same
 		state.color.primary,
 		state.color.secondary,
 		state.color.accent,
@@ -162,12 +89,177 @@ plugins: [
 		state.shadow.lg,
 		state.shadow.xl,
 		state.shadow.xxl
-	)
+	);
+
+	// If theme support is enabled, build an integrated theme system
+	if with_themes {
+		format!(
+			r#"{}
+
+/* Define dark variant based on data-theme attribute */
+@variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* Light theme (default) variables */
+:root {{
+  /* Map theme variables to UI variables */
+  --bg-color: var(--background);
+  --text-color: var(--foreground);
+  --border-color: var(--border);
+  --input-bg: var(--muted);
+  --card-bg: var(--card);
+  --card-text: var(--card-foreground);
+  --accent-bg: var(--accent);
+  --accent-text: var(--accent-foreground);
+  --primary-bg: var(--primary);
+  --primary-text: var(--primary-foreground);
+  --secondary-bg: var(--secondary);
+  --secondary-text: var(--secondary-foreground);
+  --muted-text: var(--muted-foreground);
+  
+  /* Interactive states */
+  --hover-bg: color-mix(in srgb, var(--background) 95%, var(--foreground) 5%);
+  --focus-ring: var(--ring);
+  --highlight-color: rgba(90, 200, 90, 0.2);
+  
+  /* Form Controls */
+  --range-thumb-ring: var(--primary);
+  --range-thumb-bg: var(--background);
+  --range-track-bg: color-mix(in srgb, var(--primary) 40%, var(--background) 60%);
+  --range-track-hover: color-mix(in srgb, var(--primary) 60%, var(--background) 40%);
+}}
+
+/* Dark theme specific variables */
+[data-theme="dark"] {{
+  /* Override with dark-specific values */
+  --bg-color: #111827; /* Dark background */
+  --text-color: #f9fafb; /* Light text */
+  --border-color: #374151; /* Darker border */
+  --input-bg: #1f2937; /* Darker input background */
+  --card-bg: #1f2937; /* Darker card background */
+  --card-text: #f9fafb; /* Light card text */
+  --muted-text: #9ca3af; /* gray-400 */
+  
+  /* Interactive states for dark theme */
+  --hover-bg: #374151; /* gray-700 */
+  --highlight-color: rgba(34, 197, 94, 0.2); /* green-500 with opacity */
+  
+  /* Form Controls for dark theme */
+  --range-thumb-ring: var(--primary);
+  --range-thumb-bg: #1f2937; /* gray-800 */
+  --range-track-bg: #4b5563; /* gray-600 */
+  --range-track-hover: #6b7280; /* gray-500 */
+}}
+
+/* Base element styles using cascade layers */
+@layer base {{
+  body {{
+      font-family: var(--font-sans);
+      font-size: var(--font-size-base);
+      line-height: var(--line-height-normal);
+      background-color: var(--bg-color);
+      color: var(--text-color);
+  }}
+
+  h1, h2, h3, h4, h5, h6 {{
+      font-family: var(--font-heading);
+  }}
+}}
+
+/* Component styling using theme variables */
+@layer components {{
+  /* Form elements */
+  input, textarea, select {{
+      background-color: var(--input-bg);
+      color: var(--text-color);
+      border-color: var(--border-color);
+  }}
+  
+  /* Cards */
+  .card {{
+      background-color: var(--card-bg);
+      color: var(--card-text);
+      border-color: var(--border-color);
+      box-shadow: var(--shadow-sm);
+  }}
+  
+  /* Buttons */
+  .btn-primary {{
+      background-color: var(--primary-bg);
+      color: var(--primary-text);
+  }}
+  
+  .btn-secondary {{
+      background-color: var(--secondary-bg);
+      color: var(--secondary-text);
+  }}
+  
+  .btn-accent {{
+      background-color: var(--accent-bg);
+      color: var(--accent-text);
+  }}
+
+  /* Form Range Input Styling */
+  input[type="range"]::-webkit-slider-thumb {{
+      cursor: pointer;
+      background-color: var(--range-thumb-bg);
+      box-shadow: 0 0 0 2px var(--range-thumb-ring);
+  }}
+
+  [data-theme="dark"] input[type="range"]::-webkit-slider-thumb {{
+      box-shadow: 0 0 0 2px var(--range-thumb-ring), 0 0 0 1px #4b5563;
+  }}
+
+  input[type="range"]::-webkit-slider-runnable-track {{
+      width: 100%;
+      height: 0.125rem;
+      cursor: pointer;
+      background-color: var(--range-track-bg);
+      border-radius: 0.25rem;
+  }}
+
+  input[type="range"]:hover::-webkit-slider-runnable-track {{
+      background-color: var(--range-track-hover);
+  }}
+}}
+
+/* Animation definitions */
+@keyframes highlight {{
+  0% {{ background-color: var(--highlight-color); }}
+  100% {{ background-color: transparent; }}
+}}
+
+.highlight {{
+  animation: highlight 1s ease-out;
+}}"#,
+			base_theme
+		)
+	} else {
+		// Return just the base theme if theme support is not enabled
+		format!(
+			r#"{}
+
+/* Base element styles using cascade layers */
+@layer base {{
+  body {{
+      font-family: var(--font-sans);
+      font-size: var(--font-size-base);
+      line-height: var(--line-height-normal);
+      background-color: var(--background);
+      color: var(--foreground);
+  }}
+
+  h1, h2, h3, h4, h5, h6 {{
+      font-family: var(--font-heading);
+  }}
+}}"#,
+			base_theme
+		)
+	}
 }
 
-/// Generate CSS variables from theme
-pub fn generate_theme_css(state: &DesignerState) -> String {
-	format!(
+/// Generate CSS variables from theme with support for light/dark themes
+pub fn generate_theme_css(state: &DesignerState, with_themes: bool) -> String {
+	let base_theme = format!(
 		r#"/**
 * Generated theme CSS variables
 * Compatible with Tailwind CSS v4
@@ -219,22 +311,6 @@ pub fn generate_theme_css(state: &DesignerState) -> String {
 --shadow-lg: {};
 --shadow-xl: {};
 --shadow-xxl: {};
-}}
-
-/* Base element styles using modern cascade layers approach */
-@layer base {{
-body {{
-  font-family: var(--font-family);
-  font-size: var(--base-size);
-  line-height: var(--line-height);
-  background-color: var(--color-background);
-  color: var(--color-foreground);
-}}
-
-h1, h2, h3, h4, h5, h6 {{
-  font-family: var(--heading-font-family);
-}}
-}}
 "#,
 		state.color.primary,
 		state.color.secondary,
@@ -266,14 +342,119 @@ h1, h2, h3, h4, h5, h6 {{
 		state.shadow.lg,
 		state.shadow.xl,
 		state.shadow.xxl
-	)
+	);
+
+	if with_themes {
+		format!(
+			r#"{base}
+
+/* Light theme (default) */
+:root {{
+  /* Theme functional variables mapped to design tokens */
+  --bg-color: var(--color-background);
+  --text-color: var(--color-foreground);
+  --border-color: var(--color-border);
+  --input-bg: var(--color-muted);
+  --card-bg: var(--color-card);
+  --card-text: var(--color-card-foreground);
+  
+  /* Additional light theme variables */
+  --highlight-color: rgba(90, 200, 90, 0.3);
+  --shadow-color: rgba(0, 0, 0, 0.1);
+}}
+
+/* Dark theme specific variables */
+[data-theme="dark"] {{
+  /* Dark theme overrides */
+  --bg-color: #111827; /* Dark background */
+  --text-color: #f9fafb; /* Light text */
+  --border-color: #374151; /* Darker border */
+  --input-bg: #1f2937; /* Darker input background */
+  --card-bg: #1f2937; /* Darker card background */
+  --card-text: #f9fafb; /* Light card text */
+  
+  /* Additional dark theme variables */
+  --highlight-color: rgba(90, 200, 90, 0.2);
+  --shadow-color: rgba(0, 0, 0, 0.5);
+}}
+
+/* Base element styles */
+@layer base {{
+body {{
+  font-family: var(--font-family);
+  font-size: var(--base-size);
+  line-height: var(--line-height);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}}
+
+h1, h2, h3, h4, h5, h6 {{
+  font-family: var(--heading-font-family);
+}}
+
+/* Form controls with theme variables */
+input, textarea, select {{
+  background-color: var(--input-bg);
+  color: var(--text-color);
+  border-color: var(--border-color);
+}}
+
+/* Input customization */
+input[type="range"]::-webkit-slider-thumb {{
+  background-color: var(--input-bg);
+}}
+
+[data-theme="dark"] input[type="range"]::-webkit-slider-thumb {{
+  @apply ring-offset-gray-800;
+}}
+
+[data-theme="light"] input[type="range"]::-webkit-slider-thumb {{
+  @apply ring-offset-gray-100;
+}}
+
+/* Animations */
+@keyframes highlight {{
+  0% {{ background-color: var(--highlight-color); }}
+  100% {{ background-color: transparent; }}
+}}
+
+.highlight {{
+  animation: highlight 1s ease-out;
+}}
+}}
+"#,
+			base = base_theme
+		)
+	} else {
+		format!(
+			r#"{base}
+}}
+
+/* Base element styles using modern cascade layers approach */
+@layer base {{
+body {{
+  font-family: var(--font-family);
+  font-size: var(--base-size);
+  line-height: var(--line-height);
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}}
+
+h1, h2, h3, h4, h5, h6 {{
+  font-family: var(--heading-font-family);
+}}
+}}
+"#,
+			base = base_theme
+		)
+	}
 }
 
-/// Generate Tailwind config from theme (For compatibility or projects not using CSS-first approach)
-pub fn generate_tailwind_config(state: &DesignerState) -> String {
+/// Generate Tailwind config from theme with theme mode support
+pub fn generate_tailwind_config(state: &DesignerState, with_themes: bool) -> String {
 	let spacing_values = state.spacing.scale.iter().map(|(key, value)| format!("      '{}': '{}',", key, value)).collect::<Vec<String>>().join("\n");
 
-	format!(
+	let base_config = format!(
 		r#"/**
 * Generated Tailwind CSS configuration
 * For Tailwind v4 compatibility
@@ -329,9 +510,6 @@ theme: {{
     }},
   }},
 }},
-// In v4, the PostCSS plugin and CLI are separate
-plugins: [],
-}}
 "#,
 		state.color.primary,
 		state.color.secondary,
@@ -363,11 +541,34 @@ plugins: [],
 		state.shadow.lg,
 		state.shadow.xl,
 		state.shadow.xxl
-	)
+	);
+
+	if with_themes {
+		format!(
+			r#"{}
+// Theme variants configuration
+darkMode: ['class', '[data-theme="dark"]'],
+// In v4, the PostCSS plugin and CLI are separate
+plugins: [],
+}}
+"#,
+			base_config
+		)
+	} else {
+		format!(
+			r#"{}
+// In v4, the PostCSS plugin and CLI are separate
+plugins: [],
+}}
+"#,
+			base_config
+		)
+	}
 }
 
 /// Generate Rust code for theme
 pub fn generate_rust_theme(state: &DesignerState) -> String {
+	// Implementation remains the same...
 	let font_weights = state
 		.typography
 		.font_weights

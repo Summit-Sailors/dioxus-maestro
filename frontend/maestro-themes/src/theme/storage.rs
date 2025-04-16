@@ -72,7 +72,7 @@ pub mod desktop {
 			ProjectDirs::from("com", "maestro", "dioxus").ok_or(ThemeStorageError::DesktopConfigDir).map(|dirs| {
 				let config_dir = dirs.config_dir();
 				if !config_dir.exists() {
-					fs::create_dir_all(config_dir).map_err(|_| ThemeStorageError::DesktopConfigDir)?;
+					fs::create_dir_all(config_dir).map_err(|_| ThemeStorageError::DesktopConfigDir);
 				}
 				config_dir.join("theme.txt")
 			})

@@ -82,6 +82,7 @@ pub fn set_document_theme(theme_class: &str) {
 		#[cfg(target_os = "macos")]
 		{
 			use cocoa::appkit::{NSAppearance, NSAppearanceNameVibrantDark, NSAppearanceNameVibrantLight, NSWindow};
+			use dioxus_desktop::tao::platform::macos::WindowExtMacOS;
 			use objc::{msg_send, sel, sel_impl};
 
 			let is_dark = theme_class == "dark";

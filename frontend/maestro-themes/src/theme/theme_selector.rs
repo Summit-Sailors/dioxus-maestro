@@ -30,7 +30,7 @@ pub fn ThemeSelect() -> Element {
 			},
 			Theme::Auto => rsx! {
 				Icon { icon: BsGearFill, width: 16, height: 16 }
-				span { "Auto (System)" }
+				span { "Auto" }
 			},
 		})
 	};
@@ -87,7 +87,7 @@ pub fn ThemeSelect() -> Element {
 						),
 						onclick: move |_| set_theme(Theme::Auto),
 						Icon { icon: BsGearFill, width: 16, height: 16 }
-						span { " Auto (System)" }
+						span { " Auto" }
 					}
 				}
 			})}

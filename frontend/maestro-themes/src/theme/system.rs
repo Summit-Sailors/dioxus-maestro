@@ -60,7 +60,7 @@ pub mod desktop {
 	}
 
 	// for mac
-	struct ThemeChangeContext<F: FnMut(bool) + 'static> {
+	struct ThemeChangeContext<F: FnMut(bool) + 'static + ?Sized> {
 		dark_theme: Arc<Mutex<bool>>,
 		callback: Mutex<F>,
 	}
@@ -119,18 +119,25 @@ pub mod desktop {
 
 				let dark_theme = self.dark_theme.clone();
 				let context = Box::new(ThemeChangeContext { dark_theme, callback: Mutex::new(callback) });
-				let context_ptr = Box::into_raw(context) as *mut c_void;
+				let context_ptr = Box::into_raw(context);
 
-				extern "C" fn theme_change_callback(info: *mut c_void, _observer: CFTypeRef, _name: CFStringRef, _object: *const c_void, _user_info: CFDictionaryRef) {
+				extern "C" fn theme_change_callback(
+					info: *mut ThemeChangeContext<Box<dyn ThemeChangeCallback>>,
+					_observer: CFTypeRef,
+					_name: CFStringRef,
+					_object: *const c_void,
+					_user_info: CFDictionaryRef,
+				) {
 					unsafe {
-						let context = &*(info as *mut ThemeChangeContext);
+						let context = &mut *info;
+						let context = &mut *context;
 						let is_dark = macos_dark_mode();
 						// Update stored theme value
 						if let Ok(mut current) = context.dark_theme.lock() {
 							*current = is_dark;
 						}
 
-						if let Ok(callback) = context.callback.lock() {
+						if let Ok(mut callback) = context.callback.lock() {
 							callback(is_dark);
 						}
 					}
@@ -146,7 +153,7 @@ pub mod desktop {
 
 					CFNotificationCenterAddObserver(
 						notification_center,
-						context_ptr,
+						context_ptr as *const _,
 						theme_change_callback,
 						notification_name,
 						std::ptr::null(),

@@ -2,7 +2,6 @@
 use dioxus::prelude::*;
 use maestro_themes::{
 	designer::{DesignerState, ThemeDesigner},
-	exporter::{ExportFormat, export_theme, save_export_result},
 	theme::{provider::ThemeProvider, types::Theme},
 };
 use tailwind_fuse::tw_join;
@@ -106,20 +105,20 @@ fn DemoComponents() -> Element {
 fn CustomizeTheme() -> Element {
 	let on_export = move |state: DesignerState| {
 		// Export to CSS
-		let css_result = export_theme(&state, ExportFormat::CssVariables);
-		let _ = save_export_result(&css_result, std::path::Path::new("./theme-export"));
+		// let css_result = export_theme(&state, ExportFormat::CssVariables);
+		// let _ = save_export_result(&css_result, std::path::Path::new("./theme-export"));
 
-		// Export to Tailwind
-		let tailwind_result = export_theme(&state, ExportFormat::TailwindV4);
-		let _ = save_export_result(&tailwind_result, std::path::Path::new("./theme-export"));
+		// // Export to Tailwind
+		// let tailwind_result = export_theme(&state, ExportFormat::TailwindV4);
+		// let _ = save_export_result(&tailwind_result, std::path::Path::new("./theme-export"));
 
-		// Export to Rust code
-		let rust_result = export_theme(&state, ExportFormat::RustCode);
-		let _ = save_export_result(&rust_result, std::path::Path::new("./theme-export"));
+		// // Export to Rust code
+		// let rust_result = export_theme(&state, ExportFormat::RustCode);
+		// let _ = save_export_result(&rust_result, std::path::Path::new("./theme-export"));
 
-		// Export to Tailwind Config
-		let tw_config_result = export_theme(&state, ExportFormat::TailwindConfig);
-		let _ = save_export_result(&tw_config_result, std::path::Path::new("./theme-export"));
+		// // Export to Tailwind Config
+		// let tw_config_result = export_theme(&state, ExportFormat::TailwindConfig);
+		// let _ = save_export_result(&tw_config_result, std::path::Path::new("./theme-export"));
 
 		println!("Themes exported to the ./theme-export directory!")
 	};
