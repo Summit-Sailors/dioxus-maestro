@@ -19,78 +19,80 @@ pub fn ThemeSelect() -> Element {
 	};
 
 	let get_label = |theme: Theme| {
-		rsx!(match theme {
-			Theme::Light => rsx! {
-				Icon { icon: BsSun, width: 16, height: 16 }
-				span { "Light" }
-			},
-			Theme::Dark => rsx! {
-				Icon { icon: BsMoon, width: 16, height: 16 }
-				span { "Dark" }
-			},
-			Theme::Auto => rsx! {
-				Icon { icon: BsGearFill, width: 16, height: 16 }
-				span { "Auto" }
-			},
-		})
+		rsx!(
+      match theme {
+          Theme::Light => rsx! {
+            Icon { icon: BsSun, width: 16, height: 16 }
+            span { "Light" }
+          },
+          Theme::Dark => rsx! {
+            Icon { icon: BsMoon, width: 16, height: 16 }
+            span { "Dark" }
+          },
+          Theme::Auto => rsx! {
+            Icon { icon: BsGearFill, width: 16, height: 16 }
+            span { "Auto" }
+          },
+      }
+    )
 	};
 
 	rsx! {
-		div { class: "relative inline-block w-48",
-			button {
-				class: tw_merge!(
-						"w-full flex items-center justify-between p-2.5 text-sm text-left rounded-lg border shadow-sm transition",
-						"bg-white dark:bg-gray-800", "text-black dark:text-white",
-						"border-gray-300 dark:border-gray-600",
-						"hover:shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
-				),
-				onclick: move |_| {
-						is_open.set(!is_open());
-				},
-				{get_label(current_theme)}
-				Icon {
-					icon: BsCaretDownFill,
-					class: tw_merge!(
-							"ml-2 transition-transform", if is_open() { "rotate-180" } else { "rotate-0" }
-					),
-				}
-			}
+    div { class: "relative inline-block w-48",
+      button {
+        class: tw_merge!(
+            "w-full flex items-center justify-between p-2.5 text-sm text-left rounded-lg border shadow-sm transition",
+            "bg-white dark:bg-gray-800", "text-black dark:text-white",
+            "border-gray-300 dark:border-gray-600",
+            "hover:shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
+        ),
+        onclick: move |_| {
+            is_open.set(!is_open());
+        },
+        {get_label(current_theme)}
+        Icon {
+          icon: BsCaretDownFill,
+          class: tw_merge!(
+              "ml-2 transition-transform", if is_open() { "rotate-180" } else { "rotate-0" }
+          ),
+        }
+      }
 
-			{is_open().then(|| rsx! {
-				div {
-					class: tw_merge!(
-							"absolute z-10 mt-2 w-full rounded-lg shadow-lg border",
-							"bg-white dark:bg-gray-700", "border-gray-300 dark:border-gray-600"
-					),
-					button {
-						class: tw_merge!(
-								"flex items-center w-full px-4 py-2 text-sm text-left",
-								"hover:bg-gray-100 dark:hover:bg-gray-600"
-						),
-						onclick: move |_| set_theme(Theme::Light),
-						Icon { icon: BsSun, width: 16, height: 16 }
-						span { " Light" }
-					}
-					button {
-						class: tw_merge!(
-								"flex items-center w-full px-4 py-2 text-sm text-left",
-								"hover:bg-gray-100 dark:hover:bg-gray-600"
-						),
-						onclick: move |_| set_theme(Theme::Dark),
-						Icon { icon: BsMoon, width: 16, height: 16 }
-						span { " Dark" }
-					}
-					button {
-						class: tw_merge!(
-								"flex items-center w-full px-4 py-2 text-sm text-left",
-								"hover:bg-gray-100 dark:hover:bg-gray-600"
-						),
-						onclick: move |_| set_theme(Theme::Auto),
-						Icon { icon: BsGearFill, width: 16, height: 16 }
-						span { " Auto" }
-					}
-				}
-			})}
-		}
-	}
+      {is_open().then(|| rsx! {
+        div {
+          class: tw_merge!(
+              "absolute z-10 mt-2 w-full rounded-lg shadow-lg border",
+              "bg-white dark:bg-gray-700", "border-gray-300 dark:border-gray-600"
+          ),
+          button {
+            class: tw_merge!(
+                "flex items-center w-full px-4 py-2 text-sm text-left",
+                "hover:bg-gray-100 dark:hover:bg-gray-600"
+            ),
+            onclick: move |_| set_theme(Theme::Light),
+            Icon { icon: BsSun, width: 16, height: 16 }
+            span { " Light" }
+          }
+          button {
+            class: tw_merge!(
+                "flex items-center w-full px-4 py-2 text-sm text-left",
+                "hover:bg-gray-100 dark:hover:bg-gray-600"
+            ),
+            onclick: move |_| set_theme(Theme::Dark),
+            Icon { icon: BsMoon, width: 16, height: 16 }
+            span { " Dark" }
+          }
+          button {
+            class: tw_merge!(
+                "flex items-center w-full px-4 py-2 text-sm text-left",
+                "hover:bg-gray-100 dark:hover:bg-gray-600"
+            ),
+            onclick: move |_| set_theme(Theme::Auto),
+            Icon { icon: BsGearFill, width: 16, height: 16 }
+            span { " Auto" }
+          }
+        }
+      })}
+    }
+  }
 }

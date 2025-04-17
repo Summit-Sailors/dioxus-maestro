@@ -40,8 +40,8 @@ pub fn ThemeProvider(props: ThemeProviderProps) -> Element {
 
 	// persist theme to storage when it changes
 	use_effect(move || {
-		let theme_class = resolved_theme().as_class();
-		set_document_theme(theme_class);
+		let theme_class = resolved_theme().to_string().to_lowercase();
+		set_document_theme(theme_class.as_str());
 	});
 
 	// apply theme to document
@@ -60,9 +60,9 @@ pub fn ThemeProvider(props: ThemeProviderProps) -> Element {
 	provide_context(theme_ctx);
 
 	// Render the children with the theme
-	let theme_class = resolved_theme().as_class();
+	let theme_class = resolved_theme().to_string();
 
 	rsx! {
-		div { "data-theme": "{theme_class}", {props.children} }
-	}
+    div { "data-theme": "{theme_class}", {props.children} }
+  }
 }

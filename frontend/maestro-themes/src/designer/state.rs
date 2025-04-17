@@ -4,9 +4,12 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-#[derive(Default)]
+use crate::theme::types::Theme;
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, Default)]
 pub struct DesignerState {
+	/// Document theme light/dark
+	pub doc_theme: Theme,
 	/// Color palette for the theme
 	pub color: ColorPalette,
 	/// Typography settings
@@ -18,7 +21,6 @@ pub struct DesignerState {
 	// Shadow settings
 	pub shadow: ShadowSettings,
 }
-
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ColorPalette {
@@ -148,6 +150,7 @@ impl Default for ShadowSettings {
 
 #[derive(Clone, Debug)]
 pub enum ThemedesignerAction {
+	UpdateDocTheme { value: Theme },
 	UpdateColor { key: String, value: String },
 	UpdateFontFamiliy { value: String },
 	UpdateHeadingFontFamily { value: String },
@@ -163,6 +166,9 @@ pub enum ThemedesignerAction {
 impl DesignerState {
 	pub fn apply_action(&mut self, action: ThemedesignerAction) {
 		match action {
+			ThemedesignerAction::UpdateDocTheme { value } => {
+				self.doc_theme = value; // default_theme for ThemeProvider
+			},
 			ThemedesignerAction::UpdateColor { key, value } => match key.as_str() {
 				"primary" => self.color.primary = value,
 				"secondary" => self.color.secondary = value,

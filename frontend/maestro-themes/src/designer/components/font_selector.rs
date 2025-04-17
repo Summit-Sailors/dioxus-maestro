@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-use super::state::TypographySettings;
+use crate::designer::state::TypographySettings;
 
 #[derive(Props, PartialEq, Clone)]
 pub struct FontSelectorProps {
@@ -49,7 +49,8 @@ pub fn FontSelector(props: FontSelectorProps) -> Element {
 		update_typography(new_typography);
 	};
 
-	let common_fonts = ["Inter, system-ui, sans-serif",
+	let common_fonts = [
+		"Inter, system-ui, sans-serif",
 		"Arial, sans-serif",
 		"Helvetica, sans-serif",
 		"Times New Roman",
@@ -59,7 +60,8 @@ pub fn FontSelector(props: FontSelectorProps) -> Element {
 		"Segoe UI",
 		"Roboto, sans-serif",
 		"Open Sans, sans-serif",
-		"Lato, sans-serif"];
+		"Lato, sans-serif",
+	];
 
 	rsx! {
 		div { class: "typography-editor",

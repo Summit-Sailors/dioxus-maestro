@@ -11,7 +11,7 @@ pub struct ThemeContext {
 	pub theme: Signal<Option<Theme>>,
 	/// Actual theme being applied
 	pub resolved_theme: Signal<ResolvedTheme>,
-	/// System preference (true means dark mode)
+	/// System preference
 	pub system_prefers_dark: Signal<bool>,
 	/// Function to set theme
 	pub set_theme: Callback<Theme>,
@@ -25,7 +25,7 @@ pub fn use_theme() -> ThemeContext {
 /// Current theme class for CSS
 pub fn use_theme_class() -> Memo<String> {
 	let theme_ctx = use_theme();
-	use_memo(move || theme_ctx.resolved_theme.read().as_class().to_string())
+	use_memo(move || theme_ctx.resolved_theme.read().to_string().to_lowercase())
 }
 
 // Update document class for theming

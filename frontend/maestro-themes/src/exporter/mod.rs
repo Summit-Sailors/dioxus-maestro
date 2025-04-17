@@ -1,24 +1,53 @@
 mod tailwind;
 
-pub use tailwind::{generate_rust_theme, generate_tailwind_config, generate_tailwind_v4_css, generate_theme_css};
+use crate::designer::state::DesignerState;
+
+/// Theme Export Format
+#[derive(Debug, PartialEq, Clone, Default, strum_macros::EnumIter, strum_macros::Display, strum_macros::EnumString)]
+pub enum ExportFormat {
+	#[default]
+	TailwindConfig,
+	CSSVariable,
+	RustCode,
+	TailwindCSS,
+}
+
+impl ExportFormat {
+	pub fn extension(&self) -> &'static str {
+		match self {
+			ExportFormat::TailwindConfig => "js",
+			ExportFormat::CSSVariable => "css",
+			ExportFormat::RustCode => "rs",
+			ExportFormat::TailwindCSS => "css",
+		}
+	}
+
+	pub fn language(&self) -> &'static str {
+		match self {
+			ExportFormat::TailwindConfig => "javascript",
+			ExportFormat::CSSVariable => "css",
+			ExportFormat::RustCode => "rust",
+			ExportFormat::TailwindCSS => "css",
+		}
+	}
+}
 
 /// Theme integration options for exporters
-#[derive(Default)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct ThemeOptions {
 	/// Enable light/dark theme mode support
-	pub with_themes: bool,
+	pub with_doc_themes: bool,
+	pub format: ExportFormat,
 }
 
 /// Export theme to various formats
-pub fn export_theme(state: &crate::designer::state::DesignerState, theme_options: Option<ThemeOptions>) -> std::collections::HashMap<String, String> {
-	let options = theme_options.unwrap_or_default();
+pub fn export_theme(state: &DesignerState, theme_options: &ThemeOptions) -> String {
+	let options = theme_options;
 
-	let mut exports = std::collections::HashMap::new();
-
-	// standard theme exports
-	exports.insert("tailwind.css".to_string(), tailwind::generate_tailwind_v4_css(state, options.with_themes));
-	exports.insert("theme.css".to_string(), tailwind::generate_theme_css(state, options.with_themes));
-	exports.insert("tailwind.config.js".to_string(), tailwind::generate_tailwind_config(state, options.with_themes));
-	exports.insert("theme.rs".to_string(), tailwind::generate_rust_theme(state));
-	exports
+	match options.format {
+		ExportFormat::TailwindConfig => tailwind::generate_tailwind_config(state, options.with_doc_themes),
+		ExportFormat::CSSVariable => tailwind::generate_theme_variables(state),
+		ExportFormat::RustCode => tailwind::generate_rust_theme(state),
+		ExportFormat::TailwindCSS => tailwind::generate_tailwind_v4_css(state, options.with_doc_themes),
+	}
 }

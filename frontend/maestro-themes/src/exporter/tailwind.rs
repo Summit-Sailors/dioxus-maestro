@@ -96,7 +96,7 @@ pub fn generate_tailwind_v4_css(state: &DesignerState, with_themes: bool) -> Str
 		format!(
 			r#"{}
 
-/* Define dark variant based on data-theme attribute */
+/* Dark variant based on data-theme attribute */
 @variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 /* Light theme (default) variables */
@@ -258,38 +258,39 @@ pub fn generate_tailwind_v4_css(state: &DesignerState, with_themes: bool) -> Str
 }
 
 /// Generate CSS variables from theme with support for light/dark themes
-pub fn generate_theme_css(state: &DesignerState, with_themes: bool) -> String {
+pub fn generate_theme_variables(state: &DesignerState) -> String {
+	// Base theme configuration using updated naming convention for consistency with Tailwind v4
 	let base_theme = format!(
 		r#"/**
 * Generated theme CSS variables
 * Compatible with Tailwind CSS v4
 */
-:root {{
+
+/* Theme configuration using CSS variables */
+@theme {{
 /* Colors */
---color-primary: {};
---color-primary-foreground: white;
---color-secondary: {};
---color-secondary-foreground: white;
---color-accent: {};
---color-accent-foreground: white;
---color-background: {};
---color-foreground: {};
-
---color-card: {};
---color-card-foreground: {};
---color-border: {};
---color-ring: {}; /* Note: In Tailwind v4, ring defaults to 1px */
-
---color-destructive: {};
---color-destructive-foreground: {};
---color-muted: {};
---color-muted-foreground: {};
+--primary: {};
+--primary-foreground: white;
+--secondary: {};
+--secondary-foreground: white;
+--accent: {};
+--accent-foreground: white;
+--background: {};
+--foreground: {};
+--card: {};
+--card-foreground: {};
+--border: {};
+--ring: {};
+--destructive: {};
+--destructive-foreground: {};
+--muted: {};
+--muted-foreground: {};
 
 /* Typography */
---font-family: {};
---heading-font-family: {};
---base-size: {};
---line-height: {};
+--font-sans: {};
+--font-heading: {};
+--font-size-base: {};
+--line-height-normal: {};
 
 /* Font Weights */
 {}
@@ -310,7 +311,23 @@ pub fn generate_theme_css(state: &DesignerState, with_themes: bool) -> String {
 --shadow-md: {};
 --shadow-lg: {};
 --shadow-xl: {};
---shadow-xxl: {};
+--shadow-2xl: {};
+}}
+
+/* Base element styles using cascade layers */
+@layer base {{
+body {{
+    font-family: var(--font-sans);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-normal);
+    background-color: var(--background);
+    color: var(--foreground);
+}}
+
+h1, h2, h3, h4, h5, h6 {{
+    font-family: var(--font-heading);
+}}
+}}
 "#,
 		state.color.primary,
 		state.color.secondary,
@@ -329,9 +346,9 @@ pub fn generate_theme_css(state: &DesignerState, with_themes: bool) -> String {
 		state.typography.heading_font_family,
 		state.typography.base_size,
 		state.typography.line_height,
-		state.typography.font_weights.iter().map(|(name, weight)| format!("  --font-weight-{}: {};", name, weight)).collect::<Vec<String>>().join("\n  "),
+		state.typography.font_weights.iter().map(|(name, weight)| format!("  --font-weight-{}: {};", name, weight)).collect::<Vec<String>>().join("\n"),
 		state.spacing.unit,
-		state.spacing.scale.iter().map(|(key, value)| format!("  --spacing-{}: {};", key, value)).collect::<Vec<String>>().join("\n  "),
+		state.spacing.scale.iter().map(|(key, value)| format!("  --spacing-{}: {};", key, value)).collect::<Vec<String>>().join("\n"),
 		state.border_radius.sm,
 		state.border_radius.md,
 		state.border_radius.lg,
@@ -343,170 +360,88 @@ pub fn generate_theme_css(state: &DesignerState, with_themes: bool) -> String {
 		state.shadow.xl,
 		state.shadow.xxl
 	);
-
-	if with_themes {
-		format!(
-			r#"{base}
-
-/* Light theme (default) */
-:root {{
-  /* Theme functional variables mapped to design tokens */
-  --bg-color: var(--color-background);
-  --text-color: var(--color-foreground);
-  --border-color: var(--color-border);
-  --input-bg: var(--color-muted);
-  --card-bg: var(--color-card);
-  --card-text: var(--color-card-foreground);
-  
-  /* Additional light theme variables */
-  --highlight-color: rgba(90, 200, 90, 0.3);
-  --shadow-color: rgba(0, 0, 0, 0.1);
-}}
-
-/* Dark theme specific variables */
-[data-theme="dark"] {{
-  /* Dark theme overrides */
-  --bg-color: #111827; /* Dark background */
-  --text-color: #f9fafb; /* Light text */
-  --border-color: #374151; /* Darker border */
-  --input-bg: #1f2937; /* Darker input background */
-  --card-bg: #1f2937; /* Darker card background */
-  --card-text: #f9fafb; /* Light card text */
-  
-  /* Additional dark theme variables */
-  --highlight-color: rgba(90, 200, 90, 0.2);
-  --shadow-color: rgba(0, 0, 0, 0.5);
-}}
-
-/* Base element styles */
-@layer base {{
-body {{
-  font-family: var(--font-family);
-  font-size: var(--base-size);
-  line-height: var(--line-height);
-  background-color: var(--bg-color);
-  color: var(--text-color);
-}}
-
-h1, h2, h3, h4, h5, h6 {{
-  font-family: var(--heading-font-family);
-}}
-
-/* Form controls with theme variables */
-input, textarea, select {{
-  background-color: var(--input-bg);
-  color: var(--text-color);
-  border-color: var(--border-color);
-}}
-
-/* Input customization */
-input[type="range"]::-webkit-slider-thumb {{
-  background-color: var(--input-bg);
-}}
-
-[data-theme="dark"] input[type="range"]::-webkit-slider-thumb {{
-  @apply ring-offset-gray-800;
-}}
-
-[data-theme="light"] input[type="range"]::-webkit-slider-thumb {{
-  @apply ring-offset-gray-100;
-}}
-
-/* Animations */
-@keyframes highlight {{
-  0% {{ background-color: var(--highlight-color); }}
-  100% {{ background-color: transparent; }}
-}}
-
-.highlight {{
-  animation: highlight 1s ease-out;
-}}
-}}
-"#,
-			base = base_theme
-		)
-	} else {
-		format!(
-			r#"{base}
-}}
-
-/* Base element styles using modern cascade layers approach */
-@layer base {{
-body {{
-  font-family: var(--font-family);
-  font-size: var(--base-size);
-  line-height: var(--line-height);
-  background-color: var(--color-background);
-  color: var(--color-foreground);
-}}
-
-h1, h2, h3, h4, h5, h6 {{
-  font-family: var(--heading-font-family);
-}}
-}}
-"#,
-			base = base_theme
-		)
-	}
+	base_theme
 }
 
-/// Generate Tailwind config from theme with theme mode support
+/// Generate Tailwind config from theme with theme mode support (for Tailwind v3  and below)
 pub fn generate_tailwind_config(state: &DesignerState, with_themes: bool) -> String {
-	let spacing_values = state.spacing.scale.iter().map(|(key, value)| format!("      '{}': '{}',", key, value)).collect::<Vec<String>>().join("\n");
+	// font weights mapping
+	let font_weights = state.typography.font_weights.iter().map(|(name, weight)| format!(" '{}': '{}',", name, weight)).collect::<Vec<String>>().join("\n");
+
+	// spacing values mapping
+	let spacing_values = state.spacing.scale.iter().map(|(key, value)| format!(" '{}': '{}',", key, value)).collect::<Vec<String>>().join("\n");
 
 	let base_config = format!(
 		r#"/**
 * Generated Tailwind CSS configuration
-* For Tailwind v4 compatibility
+* For Tailwind v3 compatibility
 */
 module.exports = {{
 theme: {{
   extend: {{
     colors: {{
-      'primary': '{}',
+      primary: '{}',
       'primary-foreground': 'white',
-      'secondary': '{}',
+      secondary: '{}',
       'secondary-foreground': 'white',
-      'accent': '{}',
-      'background': '{}',
-      'foreground': '{}',
-      'card': '{}',
+      accent: '{}',
+      'accent-foreground': 'white',
+      background: '{}',
+      foreground: '{}',
+      card: '{}',
       'card-foreground': '{}',
-      'border': '{}',
-      'ring': '{}',
-      'destructive': '{}',
+      border: '{}',
+      ring: '{}',
+      destructive: '{}',
       'destructive-foreground': '{}',
-      'muted': '{}',
+      muted: '{}',
       'muted-foreground': '{}',
+      // Add theme UI mapping for consistent variables
+      'hover-bg': 'color-mix(in srgb, var(--background) 95%, var(--foreground) 5%)',
+      'highlight': 'rgba(90, 200, 90, 0.2)',
     }},
     fontFamily: {{
-      'sans': ['{}'],
-      'heading': ['{}'],
+      sans: ['{}'],
+      heading: ['{}'],
     }},
     fontSize: {{
-      'base': '{}',
+      base: '{}',
     }},
     lineHeight: {{
-      'normal': '{}',
+      normal: '{}',
+    }},
+    fontWeight: {{
+{}
     }},
     spacing: {{
+      unit: '{}',
 {}
     }},
     borderRadius: {{
-      'sm': '{}',
-      'DEFAULT': '{}',
-      'md': '{}',
-      'lg': '{}',
-      'xl': '{}',
-      'full': '{}',
+      sm: '{}',
+      DEFAULT: '{}',
+      md: '{}',
+      lg: '{}',
+      xl: '{}',
+      full: '{}',
     }},
     boxShadow: {{
-      'sm': '{}',
-      'DEFAULT': '{}',
-      'md': '{}',
-      'lg': '{}',
-      'xl': '{}',
+      sm: '{}',
+      DEFAULT: '{}',
+      md: '{}',
+      lg: '{}',
+      xl: '{}',
       '2xl': '{}',
+    }},
+    // Add animation from v4 example
+    keyframes: {{
+      highlight: {{
+        '0%': {{ backgroundColor: 'var(--highlight-color, rgba(90, 200, 90, 0.2))' }},
+        '100%': {{ backgroundColor: 'transparent' }},
+      }},
+    }},
+    animation: {{
+      highlight: 'highlight 1s ease-out',
     }},
   }},
 }},
@@ -528,6 +463,8 @@ theme: {{
 		state.typography.heading_font_family,
 		state.typography.base_size,
 		state.typography.line_height,
+		font_weights,
+		state.spacing.unit,
 		spacing_values,
 		state.border_radius.sm,
 		state.border_radius.md,
@@ -548,20 +485,105 @@ theme: {{
 			r#"{}
 // Theme variants configuration
 darkMode: ['class', '[data-theme="dark"]'],
-// In v4, the PostCSS plugin and CLI are separate
-plugins: [],
+
+// Form element styling
+plugins: [
+  function(addComponents) {{
+    addComponents({{
+      '.card': {{
+        backgroundColor: 'var(--card, white)',
+        color: 'var(--card-foreground, #020617)',
+        borderColor: 'var(--border, #e2e8f0)',
+        boxShadow: 'var(--shadow-sm)',
+      }},
+      '.btn-primary': {{
+        backgroundColor: 'var(--primary, #3b82f6)',
+        color: 'var(--primary-foreground, white)',
+      }},
+      '.btn-secondary': {{
+        backgroundColor: 'var(--secondary, #6b7280)',
+        color: 'var(--secondary-foreground, white)',
+      }},
+      '.btn-accent': {{
+        backgroundColor: 'var(--accent, #f59e0b)',
+        color: 'var(--accent-foreground, white)',
+      }},
+      'input[type="range"]::-webkit-slider-thumb': {{
+        cursor: 'pointer',
+        backgroundColor: 'var(--range-thumb-bg, var(--background))',
+        boxShadow: '0 0 0 2px var(--range-thumb-ring, var(--primary))',
+      }},
+      'input[type="range"]::-webkit-slider-runnable-track': {{
+        width: '100%',
+        height: '0.125rem',
+        cursor: 'pointer',
+        backgroundColor: 'var(--range-track-bg, color-mix(in srgb, var(--primary) 40%, var(--background) 60%))',
+        borderRadius: '0.25rem',
+      }},
+      'input[type="range"]:hover::-webkit-slider-runnable-track': {{
+        backgroundColor: 'var(--range-track-hover, color-mix(in srgb, var(--primary) 60%, var(--background) 40%))',
+      }},
+      '.highlight': {{
+        animation: 'highlight 1s ease-out',
+      }}
+    }})
+  }},
+  function(addBase) {{
+    addBase({{
+      'body': {{
+        fontFamily: 'var(--font-sans, {})',
+        fontSize: 'var(--font-size-base, {})',
+        lineHeight: 'var(--line-height-normal, {})',
+        backgroundColor: 'var(--background, white)',
+        color: 'var(--foreground, #020617)',
+      }},
+      'h1, h2, h3, h4, h5, h6': {{
+        fontFamily: 'var(--font-heading, {})',
+      }},
+      // Add dark mode specific styles
+      '[data-theme="dark"]': {{
+        '--background': '#111827',
+        '--foreground': '#f9fafb',
+        '--border': '#374151',
+        '--muted': '#1f2937',
+        '--card': '#1f2937',
+        '--card-foreground': '#f9fafb',
+        '--muted-foreground': '#9ca3af',
+        '--hover-bg': '#374151',
+        '--highlight-color': 'rgba(34, 197, 94, 0.2)',
+        '--range-thumb-bg': '#1f2937',
+        '--range-track-bg': '#4b5563',
+        '--range-track-hover': '#6b7280',
+      }}
+    }})
+  }},
+],
 }}
 "#,
-			base_config
+			base_config, state.typography.font_family, state.typography.base_size, state.typography.line_height, state.typography.heading_font_family
 		)
 	} else {
 		format!(
 			r#"{}
-// In v4, the PostCSS plugin and CLI are separate
-plugins: [],
+plugins: [
+  function(addBase) {{
+    addBase({{
+      'body': {{
+        fontFamily: 'var(--font-sans, {})',
+        fontSize: 'var(--font-size-base, {})',
+        lineHeight: 'var(--line-height-normal, {})',
+        backgroundColor: 'var(--background, white)',
+        color: 'var(--foreground, #020617)',
+      }},
+      'h1, h2, h3, h4, h5, h6': {{
+        fontFamily: 'var(--font-heading, {})',
+      }}
+    }})
+  }},
+],
 }}
 "#,
-			base_config
+			base_config, state.typography.font_family, state.typography.base_size, state.typography.line_height, state.typography.heading_font_family
 		)
 	}
 }
