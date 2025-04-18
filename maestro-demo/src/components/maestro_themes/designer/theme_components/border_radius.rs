@@ -2,7 +2,7 @@
 
 use dioxus::prelude::*;
 
-use crate::designer::state::BorderRadiusSettings;
+use crate::components::maestro_themes::designer::BorderRadiusSettings;
 
 #[derive(Props, PartialEq, Clone)]
 pub struct BorderRadiusEditorProps {

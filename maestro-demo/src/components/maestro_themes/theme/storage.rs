@@ -1,6 +1,6 @@
 // Platform specific storage for theme settings
 
-use crate::theme::types::Theme;
+use super::types::Theme;
 
 #[derive(Debug)]
 pub enum ThemeStorageError {
@@ -30,7 +30,7 @@ pub mod web {
 
 	use web_sys::window;
 
-	use crate::theme::storage::{Theme, ThemeStorage, ThemeStorageError, ThemeStorageResult};
+	use crate::components::maestro_themes::theme::prelude::*;
 
 	pub struct WebStorage;
 
@@ -66,7 +66,7 @@ pub mod desktop {
 
 	use directories::ProjectDirs;
 
-	use crate::theme::storage::{Theme, ThemeStorage, ThemeStorageError, ThemeStorageResult};
+	use crate::components::maestro_themes::theme::storage::*;
 
 	pub struct DesktopStorage;
 
@@ -114,7 +114,7 @@ pub mod desktop {
 pub mod mobile {
 	use std::sync::{Arc, Mutex};
 
-	use crate::theme::storage::{Theme, ThemeStorage, ThemeStorageError, ThemeStorageResult};
+	use crate::components::maestro_themes::theme::storage::{Theme, ThemeStorage, ThemeStorageError, ThemeStorageResult};
 
 	pub struct MemoryStorage {
 		theme: Arc<Mutex<Option<Theme>>>,

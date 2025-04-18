@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::designer::state::SpacingScale;
+use crate::components::maestro_themes::designer::SpacingScale;
 
 #[derive(Props, PartialEq, Clone)]
 pub struct SpacingEditorProps {

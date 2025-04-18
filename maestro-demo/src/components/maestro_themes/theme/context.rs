@@ -1,7 +1,7 @@
 //! Theme context and hooks (Unified context provider)
 use dioxus::prelude::*;
 
-use crate::theme::types::{ResolvedTheme, Theme};
+use crate::components::maestro_themes::theme::types::{ResolvedTheme, Theme};
 
 /// Theme context to be used throughout the application
 
@@ -20,12 +20,6 @@ pub struct ThemeContext {
 // hooks to access theme context
 pub fn use_theme() -> ThemeContext {
 	use_context::<ThemeContext>()
-}
-
-/// Current theme class for CSS
-pub fn use_theme_class() -> Memo<String> {
-	let theme_ctx = use_theme();
-	use_memo(move || theme_ctx.resolved_theme.read().to_string().to_lowercase())
 }
 
 // Update document class for theming

@@ -2,7 +2,10 @@
 
 use async_std::task::sleep;
 use dioxus::prelude::*;
-use dioxus_free_icons::{Icon, icons::io_icons::IoCopyOutline};
+use dioxus_free_icons::{
+	Icon,
+	icons::io_icons::{IoCloseCircle, IoCopyOutline},
+};
 use maestro_hooks::clipboard::use_clipboard;
 use syntect::{
 	easy::HighlightLines,
@@ -12,8 +15,8 @@ use syntect::{
 };
 use tailwind_fuse::tw_join;
 
-use crate::{
-	designer::state::DesignerState,
+use crate::components::maestro_themes::{
+	designer::DesignerState,
 	exporter::{ThemeOptions, export_theme},
 };
 
@@ -21,10 +24,11 @@ use crate::{
 pub struct ThemeViewerProps {
 	pub state: DesignerState,
 	pub theme_options: ThemeOptions,
+	pub show_generated_themes: Signal<bool>,
 }
 
 #[component]
-pub fn ThemeViewer(props: ThemeViewerProps) -> Element {
+pub fn ThemeViewer(mut props: ThemeViewerProps) -> Element {
 	let theme_viewer_props = props.clone();
 	let mut is_generating = use_signal(|| false);
 	let mut stylesheet = use_signal(String::new);
@@ -83,47 +87,58 @@ pub fn ThemeViewer(props: ThemeViewerProps) -> Element {
 	});
 
 	rsx! {
-    div { class: "p-4 w-full max-w-lg mx-auto",
-      h1 { class: "text-2xl font-bold mb-4", "Stylesheet Preview" }
-      if is_generating() {
-        div { class: "p-4 mb-4 text-blue-700 bg-blue-100 rounded border border-blue-400",
-          "Generating stylesheet..."
-        }
-      }
-      div { class: "relative",
-        button {
-          r#type: "button",
-          class: "text-slate-300 hover:text-slate-100 transition-colors",
-          disabled: "{is_copying()}",
-          onclick: handle_copy,
-          title: "Copy Code",
-          Icon {
-            icon: IoCopyOutline,
-            width: 20,
-            height: 20,
-            class: "fill-none",
-          }
-        }
-        div {
-          class: tw_join!(
-              "absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white text-xs py-1 px-2 rounded transition-opacity duration-300 {}",
-              if copy_status().is_empty() { "opacity-0" } else { "opacity-100" }
-          ),
-          "{copy_status}"
-        }
-      }
-      if !stylesheet().is_empty() {
-        div {
-          class: "font-mono text-sm whitespace-pre p-4 mt-4",
-          // dangerous_inner_html to render the highlighted code
-          dangerous_inner_html: "{stylesheet()}",
-          label { class: "block mb-2 font-medium", "Generated Sheet:" }
-        }
-      } else if !is_generating() && stylesheet().is_empty() {
-        div { class: "p-4 mt-4 text-gray-100 bg-gray-100 rounded border border-gray-300 text-center",
-          "There was a problem generating the stylesheet."
-        }
-      }
-    }
-  }
+		div { class: "p-4 w-full max-w-lg mx-auto z-50",
+			h1 { class: "text-2xl font-bold mb-4", "Stylesheet Preview" }
+			if is_generating() {
+				div { class: "p-4 mb-4 text-blue-700 bg-blue-100 rounded border border-blue-400",
+					"Generating stylesheet..."
+				}
+			}
+			div { class: "relative",
+				button {
+					r#type: "button",
+					class: "text-slate-300 hover:text-slate-100 transition-colors",
+					disabled: "{is_copying()}",
+					onclick: handle_copy,
+					title: "Copy Code",
+					Icon {
+						icon: IoCopyOutline,
+						width: 20,
+						height: 20,
+						class: "fill-none",
+					}
+				}
+				div {
+					class: tw_join!(
+							"absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white text-xs py-1 px-2 rounded transition-opacity duration-300 {}",
+							if copy_status().is_empty() { "opacity-0" } else { "opacity-100" }
+					),
+					"{copy_status}"
+				}
+
+				button {
+					class: "px-4 py-2 border border-gray-300 rounded hover:bg-gray-100",
+					onclick: move |_| props.show_generated_themes.set(false),
+					Icon {
+						icon: IoCloseCircle,
+						width: 20,
+						height: 20,
+						class: "fill-none",
+					}
+				}
+			}
+			if !stylesheet().is_empty() {
+				div {
+					class: "font-mono text-sm whitespace-pre p-4 mt-4",
+					// dangerous_inner_html to render the highlighted code
+					dangerous_inner_html: "{stylesheet()}",
+					label { class: "block mb-2 font-medium", "Generated Sheet:" }
+				}
+			} else if !is_generating() && stylesheet().is_empty() {
+				div { class: "p-4 mt-4 text-gray-100 bg-gray-100 rounded border border-gray-300 text-center",
+					"There was a problem generating the stylesheet."
+				}
+			}
+		}
+	}
 }

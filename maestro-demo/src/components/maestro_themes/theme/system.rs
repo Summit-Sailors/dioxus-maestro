@@ -53,7 +53,7 @@ pub mod desktop {
 	};
 
 	use super::*;
-	use crate::theme::system::ThemeChangeCallback;
+	use crate::components::maestro_themes::theme::system::ThemeChangeCallback;
 
 	pub struct DesktopThemeDetector {
 		pub dark_theme: Arc<Mutex<bool>>,

@@ -1,6 +1,6 @@
 mod tailwind;
 
-use crate::designer::state::DesignerState;
+use super::designer::DesignerState;
 
 /// Theme Export Format
 #[derive(Debug, PartialEq, Clone, Default, strum_macros::EnumIter, strum_macros::Display, strum_macros::EnumString)]

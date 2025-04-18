@@ -1,4 +1,4 @@
-use crate::designer::state::DesignerState;
+use crate::components::maestro_themes::designer::DesignerState;
 
 /// Generate Tailwind v4 CSS configuration with theme support
 pub fn generate_tailwind_v4_css(state: &DesignerState, with_themes: bool) -> String {
@@ -234,7 +234,7 @@ pub fn generate_tailwind_v4_css(state: &DesignerState, with_themes: bool) -> Str
 			base_theme
 		)
 	} else {
-		// Return just the base theme if theme support is not enabled
+		// just the base theme if theme support is not enabled
 		format!(
 			r#"{}
 
@@ -312,21 +312,6 @@ pub fn generate_theme_variables(state: &DesignerState) -> String {
 --shadow-lg: {};
 --shadow-xl: {};
 --shadow-2xl: {};
-}}
-
-/* Base element styles using cascade layers */
-@layer base {{
-body {{
-    font-family: var(--font-sans);
-    font-size: var(--font-size-base);
-    line-height: var(--line-height-normal);
-    background-color: var(--background);
-    color: var(--foreground);
-}}
-
-h1, h2, h3, h4, h5, h6 {{
-    font-family: var(--font-heading);
-}}
 }}
 "#,
 		state.color.primary,

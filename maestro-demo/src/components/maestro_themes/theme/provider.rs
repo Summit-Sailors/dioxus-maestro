@@ -1,11 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::theme::{
-	context::{ThemeContext, set_document_theme},
-	storage::{ThemeStorageError, get_storage},
-	system::get_system_theme_detector,
-	types::{ResolvedTheme, Theme},
-};
+use crate::components::maestro_themes::theme::prelude::*;
 
 #[derive(Props, Clone, PartialEq)]
 pub struct ThemeProviderProps {
@@ -63,6 +58,6 @@ pub fn ThemeProvider(props: ThemeProviderProps) -> Element {
 	let theme_class = resolved_theme().to_string();
 
 	rsx! {
-    div { "data-theme": "{theme_class}", {props.children} }
-  }
+		div { "data-theme": "{theme_class}", {props.children} }
+	}
 }

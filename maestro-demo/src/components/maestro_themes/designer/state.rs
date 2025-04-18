@@ -4,7 +4,7 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::theme::types::Theme;
+use crate::components::maestro_themes::theme::prelude::Theme;
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, Default)]
 pub struct DesignerState {

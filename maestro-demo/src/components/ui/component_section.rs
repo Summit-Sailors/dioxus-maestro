@@ -5,6 +5,7 @@ pub struct ComponentSectionProps {
 	pub title: &'static str,
 	pub description: &'static str,
 	pub children: Element,
+	pub extra_styles: Option<String>,
 }
 
 #[component]

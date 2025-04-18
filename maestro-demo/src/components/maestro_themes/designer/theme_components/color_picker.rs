@@ -3,7 +3,7 @@ use std::rc::Rc;
 
 use dioxus::prelude::*;
 
-use crate::designer::state::ColorPalette;
+use crate::components::maestro_themes::designer::ColorPalette;
 
 #[derive(Props, PartialEq, Clone)]
 pub struct ColorPickerProps {
