@@ -206,8 +206,8 @@ pub fn MultiSelect<T: Clone + PartialEq + std::fmt::Display + 'static>(props: Mu
 													key: "{option.value}",
 													id: "{option.value}",
 													class: tw_merge!(
-															"flex w-full items-center py-2 hover:bg-gray-300 rounded px-3 cursor-pointer", &
-															props.option_class
+															"flex w-full items-center py-2 hover:bg-gray-300 rounded px-3 cursor-pointer maestro-multiselect-option",
+															& props.option_class
 													),
 													onclick: move |ev| {
 															ev.stop_propagation();

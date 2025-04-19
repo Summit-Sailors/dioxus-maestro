@@ -108,9 +108,15 @@ pub fn Select<T: Clone + PartialEq + std::fmt::Display + 'static>(props: SelectP
 	});
 
 	rsx! {
-		div { class: tw_merge!("flex flex-col gap-2 w-full relative min-h-12", & props.container_class),
+		div {
+			class: tw_merge!(
+					"flex flex-col gap-2 w-full relative min-h-12 maestro-select-container", & props
+					.container_class
+			),
 			if !props.label.is_empty() {
-				span { class: tw_merge!("text-gray-400", & props.label_class), {props.label} }
+				span { class: tw_merge!("text-gray-400 maestro-select-label", & props.label_class),
+					{props.label}
+				}
 			}
 			div {
 				class: tw_merge!(

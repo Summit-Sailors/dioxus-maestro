@@ -1,0 +1,41 @@
+@layer components {
+  /* Radio Component */
+  .maestro-radio__radio {
+    border-color: var(--maestro-radio-border);
+    --tw-ring-color: var(--maestro-radio-ring);
+  }
+
+  .maestro-radio__radio:hover {
+    border-color: var(--maestro-radio-hover-border);
+  }
+
+  .maestro-radio__checked {
+    background-color: var(--maestro-radio-bg) !important;
+    border-color: var(--maestro-radio-bg) !important;
+  }
+
+  .group:hover .maestro-radio__checked {
+    background-color: var(--maestro-radio-hover-bg) !important;
+    border-color: var(--maestro-radio-hover-border) !important;
+  }
+
+  /* Override classes - these will be used when a custom color is specified */
+  .maestro-radio__radio.maestro-primary {
+    border-color: var(--maestro-color-primary);
+    --tw-ring-color: var(--maestro-color-primary);
+  }
+
+  .maestro-radio__radio.maestro-primary:hover {
+    border-color: var(--maestro-color-primary-hover);
+  }
+
+  .maestro-radio__checked.maestro-primary {
+    background-color: var(--maestro-color-primary) !important;
+    border-color: var(--maestro-color-primary) !important;
+  }
+
+  .group:hover .maestro-radio__checked.maestro-primary {
+    background-color: var(--maestro-color-primary-hover) !important;
+    border-color: var(--maestro-color-primary-hover) !important;
+  }
+}

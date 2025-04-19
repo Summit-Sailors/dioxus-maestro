@@ -1,0 +1,241 @@
+/* Select Component CSS */
+
+@layer components {
+  /* Select Container */
+  .maestro-select-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+    position: relative;
+    min-height: 3rem;
+  }
+
+  /* Select Label */
+  .maestro-select-label {
+    color: var(--muted-foreground);
+    font-size: var(--font-size-base);
+  }
+
+  /* Select Button Wrapper */
+  .maestro-select-button__wrapper {
+    position: relative;
+    width: 100%;
+    cursor: pointer;
+  }
+
+  /* Select Button */
+  .maestro-select-button {
+    min-height: 3rem;
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    transition: color 0.15s linear, background-color 0.15s linear;
+    position: relative;
+    padding: 0.5rem 0.75rem;
+    width: 100%;
+    height: 100%;
+    background-color: var(--background);
+    color: var(--foreground);
+
+    /* Focus styles */
+    &:focus {
+      outline: none;
+    }
+
+    &:focus-visible {
+      outline: none;
+      @apply ring-2 ring-offset-2;
+      @apply ring-2 ring-offset-2 ring-[var(--ring)] ring-offset-[var(--background)];
+    }
+
+    /* Hover state */
+    &:hover {
+      border-color: color-mix(
+        in srgb,
+        var(--border) 70%,
+        var(--foreground) 30%
+      );
+    }
+
+    /* Value text */
+    span {
+      line-clamp: 1;
+      padding-right: 0.5rem;
+      text-align: left;
+    }
+
+    /* Placeholder styles */
+    .select-placeholder {
+      color: var(--muted-foreground);
+    }
+
+    /* Dropdown icon */
+    svg {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      margin-top: auto;
+      margin-bottom: auto;
+      right: 0.75rem;
+      transition: all 0.15s linear;
+      fill: none;
+      color: var(--foreground);
+
+      &.rotate-180 {
+        transform: rotate(180deg);
+      }
+    }
+  }
+
+  /* Dropdown Container */
+  .maestro-select-dropdown {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 1rem;
+    width: 100%;
+    left: 0;
+    right: 0;
+    top: 100%;
+    margin-top: 0.75rem;
+    border-radius: var(--radius-md);
+    max-height: 12rem;
+    overflow-y: auto;
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    z-index: 40;
+    box-shadow: var(--shadow-md);
+
+    /* Hidden state */
+    &.hidden {
+      display: none;
+      z-index: -40;
+    }
+
+    /* Search container */
+    .maestro-select-search_container {
+      position: relative;
+      padding: 0 0.75rem;
+      color: var(--muted-foreground);
+      margin-bottom: 0.5rem;
+
+      /* Search icon */
+      svg {
+        position: absolute;
+        top: 0.625rem;
+        left: 0.75rem;
+        color: var(--muted-foreground);
+        width: 1rem;
+        height: 1rem;
+      }
+
+      /* Input styling */
+      .maestro-select-search_input {
+        padding-left: 1.75rem;
+        padding-right: 1.75rem;
+        background-color: transparent;
+        border-color: var(--border);
+        color: var(--foreground);
+
+        &:focus-visible {
+          border-color: var(--primary);
+        }
+      }
+
+      /* Clear button */
+      .maestro-select-search_clear {
+        height: fit-content;
+        width: fit-content;
+        position: absolute;
+        top: 0.625rem;
+        right: 0.75rem;
+        color: var(--muted-foreground);
+        padding: 0;
+
+        &:hover {
+          color: var(--foreground);
+        }
+
+        &:focus-visible {
+          color: var(--foreground);
+        }
+
+        svg {
+          width: 1rem;
+          height: 1rem;
+        }
+      }
+    }
+
+    /* Option styling */
+    div[id] {
+      display: flex;
+      width: 100%;
+      align-items: center;
+      padding: 0.5rem 0.75rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      color: var(--foreground);
+
+      &:hover {
+        background-color: var(--hover-bg);
+      }
+
+      /* Checkmark icon */
+      svg {
+        fill: none;
+        margin-left: auto;
+        color: var(--primary);
+
+        &.opacity-0 {
+          opacity: 0;
+        }
+
+        &.opacity-100 {
+          opacity: 1;
+        }
+      }
+    }
+  }
+
+  /* Multi-select tag container */
+  .maestro-multiselect-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    max-width: 100%;
+    padding: 0.25rem;
+  }
+
+  /* Individual tag */
+  .maestro-multiselect-tag {
+    display: flex;
+    align-items: center;
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+
+    /* Remove button */
+    .maestro-multiselect-tag-remove {
+      margin-left: 0.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+
+      svg {
+        width: 0.75rem;
+        height: 0.75rem;
+      }
+
+      &:hover {
+        color: color-mix(in srgb, var(--primary-foreground) 80%, black 20%);
+      }
+    }
+  }
+}

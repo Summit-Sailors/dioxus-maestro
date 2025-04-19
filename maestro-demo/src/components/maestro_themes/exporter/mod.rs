@@ -1,3 +1,4 @@
+mod component_specific_styles;
 mod tailwind;
 
 use super::designer::DesignerState;
@@ -38,6 +39,8 @@ pub struct ThemeOptions {
 	/// Enable light/dark theme mode support
 	pub with_doc_themes: bool,
 	pub format: ExportFormat,
+	pub components_id: String,
+	pub stylesheet_path: String,
 }
 
 /// Export theme to various formats
@@ -48,6 +51,6 @@ pub fn export_theme(state: &DesignerState, theme_options: &ThemeOptions) -> Stri
 		ExportFormat::TailwindConfig => tailwind::generate_tailwind_config(state, options.with_doc_themes),
 		ExportFormat::CSSVariable => tailwind::generate_theme_variables(state),
 		ExportFormat::RustCode => tailwind::generate_rust_theme(state),
-		ExportFormat::TailwindCSS => tailwind::generate_tailwind_v4_css(state, options.with_doc_themes),
+		ExportFormat::TailwindCSS => tailwind::generate_tailwind_v4_css(state, options.clone()),
 	}
 }

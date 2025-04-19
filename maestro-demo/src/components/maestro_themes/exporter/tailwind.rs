@@ -1,7 +1,109 @@
-use crate::components::maestro_themes::designer::DesignerState;
+use super::ThemeOptions;
+use crate::components::maestro_themes::{designer::DesignerState, exporter::component_specific_styles::generate_component_stylesheet};
 
 /// Generate Tailwind v4 CSS configuration with theme support
-pub fn generate_tailwind_v4_css(state: &DesignerState, with_themes: bool) -> String {
+pub fn generate_tailwind_v4_css(state: &DesignerState, theme_options: ThemeOptions) -> String {
+	let component_specific_styles = generate_component_stylesheet(theme_options.components_id, theme_options.stylesheet_path);
+	let base_elements_styles = format!(
+		r#"/* Custom z-index values for toast elements */
+@layer utilities {{
+  .z-toast {{
+    z-index: 9999 !important;
+    }}
+
+  .line-clamp-1,
+  .line-clamp-2,
+  .line-clamp-3,
+  .line-clamp-4 {{
+    -webkit-line-clamp: var(--tw-line-clamp);
+    line-clamp: var(--tw-line-clamp);
+    }}
+    }}
+
+@keyframes highlight {{
+  0% {{
+    background: #8f8;
+    }}
+  100% {{
+    background: auto;
+    }}
+    }}
+
+.highlight {{
+  animation: highlight 1s;
+    }}
+
+/* Base element styles using cascade layers */
+@layer base {{
+  body {{
+    font-family: var(--font-sans);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-normal);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    }}
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {{
+    font-family: var(--font-heading);
+    }}
+
+  html {{
+    scroll-behavior: smooth;
+    height: 100%;
+    min-height: 100vh;
+    }}
+
+{}
+
+  .container {{
+    @apply mx-auto px-4;
+    }}
+
+  /* Container media queries remain unchanged */
+  @media (min-width: 640px) {{
+    .container {{
+      max-width: 584px;
+      padding: 0;
+    }}
+    }}
+
+  @media (min-width: 768px) {{
+    .container {{
+      max-width: 768px;
+    }}
+    }}
+
+  @media (min-width: 1024px) {{
+    .container {{
+      max-width: 854px;
+    }}
+    }}
+
+  @media (min-width: 1280px) {{
+    .container {{
+      max-width: 1066px;
+    }}
+    }}
+
+  @media (min-width: 1536px) {{
+    .container {{
+      max-width: 1260px;
+    }}
+    }}
+
+  @media (min-width: 1728px) {{
+    .container {{
+      max-width: 1440px;
+    }}
+    }}
+    }}"#,
+		component_specific_styles
+	);
 	// Base theme configuration using CSS variables
 	let base_theme = format!(
 		r#"/**
@@ -92,7 +194,7 @@ pub fn generate_tailwind_v4_css(state: &DesignerState, with_themes: bool) -> Str
 	);
 
 	// If theme support is enabled, build an integrated theme system
-	if with_themes {
+	if theme_options.with_doc_themes {
 		format!(
 			r#"{}
 
@@ -149,110 +251,16 @@ pub fn generate_tailwind_v4_css(state: &DesignerState, with_themes: bool) -> Str
   --range-track-bg: #4b5563; /* gray-600 */
   --range-track-hover: #6b7280; /* gray-500 */
 }}
-
-/* Base element styles using cascade layers */
-@layer base {{
-  body {{
-      font-family: var(--font-sans);
-      font-size: var(--font-size-base);
-      line-height: var(--line-height-normal);
-      background-color: var(--bg-color);
-      color: var(--text-color);
-  }}
-
-  h1, h2, h3, h4, h5, h6 {{
-      font-family: var(--font-heading);
-  }}
-}}
-
-/* Component styling using theme variables */
-@layer components {{
-  /* Form elements */
-  input, textarea, select {{
-      background-color: var(--input-bg);
-      color: var(--text-color);
-      border-color: var(--border-color);
-  }}
-  
-  /* Cards */
-  .card {{
-      background-color: var(--card-bg);
-      color: var(--card-text);
-      border-color: var(--border-color);
-      box-shadow: var(--shadow-sm);
-  }}
-  
-  /* Buttons */
-  .btn-primary {{
-      background-color: var(--primary-bg);
-      color: var(--primary-text);
-  }}
-  
-  .btn-secondary {{
-      background-color: var(--secondary-bg);
-      color: var(--secondary-text);
-  }}
-  
-  .btn-accent {{
-      background-color: var(--accent-bg);
-      color: var(--accent-text);
-  }}
-
-  /* Form Range Input Styling */
-  input[type="range"]::-webkit-slider-thumb {{
-      cursor: pointer;
-      background-color: var(--range-thumb-bg);
-      box-shadow: 0 0 0 2px var(--range-thumb-ring);
-  }}
-
-  [data-theme="dark"] input[type="range"]::-webkit-slider-thumb {{
-      box-shadow: 0 0 0 2px var(--range-thumb-ring), 0 0 0 1px #4b5563;
-  }}
-
-  input[type="range"]::-webkit-slider-runnable-track {{
-      width: 100%;
-      height: 0.125rem;
-      cursor: pointer;
-      background-color: var(--range-track-bg);
-      border-radius: 0.25rem;
-  }}
-
-  input[type="range"]:hover::-webkit-slider-runnable-track {{
-      background-color: var(--range-track-hover);
-  }}
-}}
-
-/* Animation definitions */
-@keyframes highlight {{
-  0% {{ background-color: var(--highlight-color); }}
-  100% {{ background-color: transparent; }}
-}}
-
-.highlight {{
-  animation: highlight 1s ease-out;
-}}"#,
-			base_theme
+    {}
+"#,
+			base_theme, base_elements_styles
 		)
 	} else {
 		// just the base theme if theme support is not enabled
 		format!(
 			r#"{}
-
-/* Base element styles using cascade layers */
-@layer base {{
-  body {{
-      font-family: var(--font-sans);
-      font-size: var(--font-size-base);
-      line-height: var(--line-height-normal);
-      background-color: var(--background);
-      color: var(--foreground);
-  }}
-
-  h1, h2, h3, h4, h5, h6 {{
-      font-family: var(--font-heading);
-  }}
-}}"#,
-			base_theme
+    {}"#,
+			base_theme, base_elements_styles
 		)
 	}
 }

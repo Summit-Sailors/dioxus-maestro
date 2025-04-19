@@ -1,0 +1,87 @@
+/* Checkbox Component CSS */
+
+@layer components {
+  /* Checkbox Container */
+  .maestro-checkbox__label {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+    color: var(--foreground);
+
+    /* Disabled state */
+    &.pointer-events-none {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Hover state */
+    &:hover .maestro-checkbox__checkbox {
+      border-color: color-mix(
+        in srgb,
+        var(--border) 70%,
+        var(--foreground) 30%
+      );
+    }
+  }
+
+  /* Actual checkbox (hidden) */
+  .maestro-checkbox__label input {
+    position: absolute;
+    width: 0;
+    height: 0;
+    opacity: 0;
+    z-index: -20;
+  }
+
+  /* Custom checkbox styling */
+  .maestro-checkbox__checkbox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    transition: all 0.15s linear;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background-color: transparent;
+    flex-shrink: 0;
+    margin-right: 0.5rem;
+
+    /* Focus styles */
+    input:focus-visible + & {
+      outline: none;
+      @apply ring-2 ring-offset-2;
+      @apply ring-2 ring-offset-2 ring-[var(--ring)] ring-offset-[var(--background)];
+    }
+
+    /* Checked state */
+    input:checked + & {
+      background-color: var(--primary);
+      border-color: var(--primary);
+    }
+  }
+
+  /* Checkmark icon styling */
+  .maestro-checkbox__checkbox svg {
+    fill: none;
+    width: 0.75rem;
+    height: 0.75rem;
+    transition: all 0.15s linear;
+    color: var(--primary-foreground);
+    flex-shrink: 0;
+    opacity: 0;
+  }
+
+  /* Checked icon state */
+  .maestro-checkbox__checkbox svg.maestro-checkbox__checked {
+    opacity: 1;
+    color: var(--primary-foreground);
+  }
+
+  /* Hover state for checkmark */
+  .maestro-checkbox__label:hover .maestro-checkbox__checkbox svg {
+    color: var(--primary-foreground);
+  }
+}

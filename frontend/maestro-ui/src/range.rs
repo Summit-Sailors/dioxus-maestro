@@ -46,6 +46,7 @@ pub fn Range(props: RangeProps) -> Element {
 				onfocus: move |e| props.onfocus.unwrap_or_default().call(e),
 				onblur: move |e| props.onblur.unwrap_or_default().call(e),
 				class: tw_merge!(
+						"maestro-range__input",
 						"appearance-none bg-transparent focus-visible:outline-none [&::-ms-track]:bg-transparent [&::-ms-track]:border-transparent [&::-ms-track]:text-transparent [&::-webkit-slider-thumb]:appearance-none",
 						"[&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:ring-2 [&::-webkit-slider-thumb]:ring-offset-1 [&::-webkit-slider-thumb]:ring-gray-900 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4",
 						"[&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-gray-800 [&::-webkit-slider-thumb]:-mt-2 [&::-webkit-slider-thumb]:z-10 [&::-webkit-slider-thumb]:transition-all [&::-webkit-slider-thumb]:ease-linear [&::-webkit-slider-thumb]:hover:ring-gray-900",

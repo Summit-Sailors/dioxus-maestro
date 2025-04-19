@@ -1,0 +1,70 @@
+@layer components {
+  /* Calendar Component */
+  .maestro-calendar-container {
+    background-color: var(--maestro-calendar-container-bg);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+      0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+
+  .maestro-calendar-header {
+    background-color: var(--maestro-calendar-header-bg);
+  }
+
+  .maestro-calendar-header h2 {
+    color: var(--maestro-calendar-header-text);
+  }
+
+  .maestro-calendar-header button {
+    color: var(--maestro-calendar-header-text);
+  }
+
+  .maestro-calendar-header button:hover {
+    background-color: var(--maestro-calendar-button-hover);
+  }
+
+  .maestro-calendar-days div {
+    color: var(--maestro-calendar-header-text);
+  }
+
+  .maestro-calendar-day {
+    color: var(--maestro-calendar-day-text);
+  }
+
+  .maestro-calendar-day__disabled {
+    color: var(--maestro-calendar-day-disabled-text);
+  }
+
+  .maestro-calendar-day__today {
+    background-color: var(--maestro-calendar-day-today-bg) !important;
+    color: var(--maestro-calendar-day-today-text) !important;
+  }
+
+  .maestro-calendar-day__selected {
+    background-color: var(--maestro-calendar-day-selected-bg) !important;
+  }
+
+  .maestro-calendar-day:not(.maestro-calendar-day__today):not(
+      .maestro-calendar-day__selected
+    ):not(.maestro-calendar-day__disabled):hover {
+    background-color: var(--maestro-calendar-day-hover-bg);
+  }
+
+  .maestro-calendar-footer {
+    background-color: var(--maestro-calendar-footer-bg);
+    border-top-color: var(--maestro-calendar-border-color);
+  }
+
+  .maestro-calendar-wrapper-container {
+    background-color: var(--maestro-calendar-container-bg);
+    border-color: var(--maestro-calendar-border-color);
+  }
+
+  /* Theme class modifiers */
+  .maestro-calendar-container.maestro-primary .maestro-calendar-day__today {
+    background-color: var(--maestro-color-primary) !important;
+  }
+
+  .maestro-calendar-container.maestro-primary .maestro-calendar-day__selected {
+    background-color: var(--maestro-color-primary-light) !important;
+  }
+}

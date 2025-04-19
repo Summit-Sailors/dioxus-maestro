@@ -1,0 +1,33 @@
+@layer components {
+  /* Toggle Switch Component */
+  .maestro-toggle__switch {
+    transition-property: background-color, border-color;
+    transition-duration: 150ms;
+    transition-timing-function: linear;
+  }
+
+  .maestro-toggle__switch[aria-checked="true"] {
+    background-color: var(--maestro-toggle-on-bg);
+  }
+
+  .maestro-toggle__switch[aria-checked="false"] {
+    background-color: var(--maestro-toggle-off-bg);
+  }
+
+  .maestro-toggle__handle {
+    background-color: var(--maestro-toggle-handle-bg);
+  }
+
+  .maestro-toggle__label {
+    color: var(--maestro-toggle-label-color);
+  }
+
+  /* Override classes for primary color */
+  .maestro-toggle__switch.maestro-primary[aria-checked="true"] {
+    background-color: var(--maestro-color-primary);
+  }
+
+  .maestro-toggle__switch.maestro-primary[aria-checked="true"]:hover {
+    background-color: var(--maestro-color-primary-hover);
+  }
+}

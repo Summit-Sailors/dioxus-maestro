@@ -1,0 +1,112 @@
+/* MultiSelect Component CSS - for the MultiSelect component */
+
+@layer components {
+  /* MultiSelect builds on top of the Select styles */
+  .maestro-multiselect-button {
+    height: auto !important;
+    min-height: 3rem;
+    flex-wrap: wrap;
+
+    /* Container for selected tags */
+    .maestro-multiselect-values {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+      max-width: 100%;
+    }
+
+    /* Empty placeholder */
+    .maestro-multiselect-placeholder {
+      color: var(--muted-foreground);
+    }
+  }
+
+  /* Tag styling for selected values */
+  .maestro-multiselect-tag {
+    display: inline-flex;
+    align-items: center;
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    border-radius: var(--radius-sm);
+    padding: 0.125rem 0.375rem;
+    margin: 0.125rem;
+    font-size: 0.75rem;
+    line-height: 1;
+    max-width: 100%;
+
+    /* Tag text */
+    span {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Remove button */
+    button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 0.25rem;
+      background-color: transparent;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      color: var(--primary-foreground);
+      opacity: 0.7;
+
+      &:hover {
+        opacity: 1;
+      }
+
+      svg {
+        width: 0.75rem;
+        height: 0.75rem;
+      }
+    }
+  }
+
+  /* MultiSelect dropdown options */
+  .maestro-multiselect-dropdown {
+    /* Option with checkbox */
+    .maestro-multiselect-option {
+      display: flex;
+      align-items: center;
+
+      /* Custom checkbox for multiselect option */
+      .maestro-multiselect-checkbox {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 1rem;
+        height: 1rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        margin-right: 0.5rem;
+        flex-shrink: 0;
+
+        /* Checked state */
+        &.checked {
+          background-color: var(--primary);
+          border-color: var(--primary);
+
+          svg {
+            opacity: 1;
+            color: var(--primary-foreground);
+          }
+        }
+
+        /* Checkmark icon */
+        svg {
+          width: 0.75rem;
+          height: 0.75rem;
+          opacity: 0;
+        }
+      }
+
+      /* Option label */
+      span {
+        flex-grow: 1;
+      }
+    }
+  }
+}

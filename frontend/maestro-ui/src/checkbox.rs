@@ -5,7 +5,9 @@ use tailwind_fuse::*;
 use crate::label::Label;
 
 #[derive(TwClass)]
-#[tw(class = "flex items-center justify-center w-6 h-6 transition-all ease-linear border border-gray-700 rounded bg-transparent shrink-0")]
+#[tw(
+	class = "flex items-center justify-center w-6 h-6 transition-all ease-linear border border-gray-700 rounded bg-transparent shrink-0 maestro-checkbox__checkbox"
+)]
 pub struct CheckboxClass {}
 
 #[derive(Clone, PartialEq, Props)]

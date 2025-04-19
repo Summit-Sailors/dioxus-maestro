@@ -54,8 +54,8 @@ pub fn Radio(props: RadioProps) -> Element {
 			div { class, tabindex: 0,
 				div {
 					class: tw_merge!(
-							"w-2 h-2 rounded-full transition-all ease-linear border border-gray-700", & props
-							.inner_class, if props.checked {
+							"w-2 h-2 rounded-full transition-all ease-linear border border-gray-700 maestro-radio__inner",
+							& props.inner_class, if props.checked {
 							format!("opacity-100 border border-gray-700 bg-gray-700 group-hover:bg-gray-900 group-hover:border-gray-900 {} {}",
 							& props.checked_class, "maestro-radio__checked") } else { "opacity-0".into() }
 					),

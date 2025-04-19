@@ -3,7 +3,7 @@ use tailwind_fuse::*;
 
 #[derive(TwClass)]
 #[tw(
-	class = "inline-flex px-4 py-3 items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors ring-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
+	class = "inline-flex px-4 py-3 items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors ring-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 maestro-button"
 )]
 pub struct ButtonClass {
 	pub variant: ButtonVariant,
@@ -12,35 +12,35 @@ pub struct ButtonClass {
 
 #[derive(PartialEq, TwVariant)]
 pub enum ButtonVariant {
-	#[tw(default, class = "bg-blue-500 text-white hover:bg-blue-700")]
+	#[tw(default, class = "variant-default")]
 	Default,
-	#[tw(class = "bg-transparent border border-gray-700")]
+	#[tw(class = "variant-outline")]
 	Outline,
-	#[tw(class = "hover:bg-gray-300")]
+	#[tw(class = "variant-ghost")]
 	Ghost,
-	#[tw(class = "text-blue-600 underline-offset-4 hover:underline")]
+	#[tw(class = "variant-link")]
 	Link,
-	#[tw(class = "w-fit h-fit !p-0 text-gray-700")]
+	#[tw(class = "variant-icon")]
 	Icon,
 }
 
 #[derive(PartialEq, TwVariant)]
 pub enum ButtonSize {
-	#[tw(default, class = "h-10")]
+	#[tw(default, class = "size-default")]
 	Default,
-	#[tw(class = "rounded-md h-9")]
+	#[tw(class = "size-sm")]
 	Sm,
-	#[tw(class = "rounded-md h-11")]
+	#[tw(class = "size-lg")]
 	Lg,
-	#[tw(class = "rounded-md h-12")]
+	#[tw(class = "size-xl")]
 	Xl,
-	#[tw(class = "w-12 h-12 !p-0")]
+	#[tw(class = "size-icon-xl")]
 	IconXl,
-	#[tw(class = "w-11 h-11 !p-0")]
+	#[tw(class = "size-icon-lg")]
 	IconLg,
-	#[tw(class = "w-10 h-10 !p-0")]
+	#[tw(class = "size-icon-md")]
 	IconMd,
-	#[tw(class = "w-9 h-9 !p-0")]
+	#[tw(class = "size-icon-sm")]
 	IconSm,
 }
 

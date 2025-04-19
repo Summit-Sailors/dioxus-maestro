@@ -1,0 +1,81 @@
+/* Input Component CSS */
+
+@layer components {
+  .maestro-input__wrapper {
+    width: 100%;
+    position: relative;
+  }
+
+  .maestro-input__input {
+    /* Base input styles */
+    display: flex;
+    height: 2.5rem;
+    width: 100%;
+    background-color: transparent;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    font-size: var(--font-size-base);
+    color: var(--foreground);
+    border-color: var(--border);
+
+    /* File input styles */
+    &::file-selector-button {
+      border: 0;
+      background-color: transparent;
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-medium);
+    }
+
+    /* Placeholder styles */
+    &::placeholder {
+      color: var(--muted-foreground);
+    }
+
+    /* Focus styles */
+    &:focus-visible {
+      outline: none;
+      @apply ring-2 ring-offset-2;
+      @apply ring-2 ring-offset-2 ring-[var(--ring)] ring-offset-[var(--background)];
+    }
+
+    /* Disabled state */
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    /* Variant: Default */
+    &.variant-default {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding-left: 0.75rem;
+      padding-right: 0.75rem;
+    }
+
+    /* Variant: Underlined */
+    &.variant-underlined {
+      border-top: none;
+      border-left: none;
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+      padding-top: 0.5rem;
+      padding-bottom: 0.25rem;
+      border-radius: 0;
+
+      &:focus-visible {
+        border-color: var(--primary);
+      }
+    }
+  }
+
+  /* Label component styles */
+  .maestro_label {
+    display: flex;
+    width: 100%;
+    position: relative;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: var(--font-size-base);
+    color: var(--foreground);
+  }
+}

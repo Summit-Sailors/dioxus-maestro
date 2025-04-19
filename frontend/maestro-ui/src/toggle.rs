@@ -106,9 +106,9 @@ pub fn RawToggleSwitch(
 	rsx! {
 		button {
 			class: tw_merge!(
-					"relative inline-flex h-6 w-11 items-center rounded-full transition-colors",
-					class, if state() { format!("bg-blue-600 {}", toggled_class) } else {
-					format!("bg-gray-500 {}", default_class) }
+					"relative inline-flex h-6 w-11 items-center rounded-full transition-colors maestro-toggle__switch",
+					class, if state() { format!("maestro-toggle__on {}", toggled_class) } else {
+					format!("maestro-toggle__off {}", default_class) }
 			),
 			r#type: "button",
 			role: "switch",
@@ -118,8 +118,8 @@ pub fn RawToggleSwitch(
 			},
 			div {
 				class: tw_merge!(
-						"absolute h-5 w-5 transform rounded-full bg-white transition-transform", if
-						state() { format!("translate-x-5 {}", toggled_translate_class) } else {
+						"absolute h-5 w-5 transform rounded-full bg-white transition-transform maestro-toggle__handle",
+						if state() { format!("translate-x-5 {}", toggled_translate_class) } else {
 						format!("translate-x-1 {}", default_translate_class) }
 				),
 			}

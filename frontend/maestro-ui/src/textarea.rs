@@ -5,7 +5,7 @@ use crate::input::InputVariant;
 
 #[derive(TwClass)]
 #[tw(
-	class = "ease-linear w-full bg-transparent border-gray-700 placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 disabled:pointer-events-none transition-colors resize-none max-h-48 min-h-11 n-scrollbar"
+	class = "ease-linear w-full bg-transparent border-gray-700 placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 disabled:pointer-events-none transition-colors resize-none max-h-48 min-h-11 n-scrollbar maestro-calendar-container"
 )]
 pub struct TextareaClass {
 	pub variant: InputVariant,
@@ -34,7 +34,12 @@ pub struct TextareaProps {
 
 #[component]
 pub fn Textarea(props: TextareaProps) -> Element {
-	let class = TextareaClass { variant: props.variant }.with_class(tw_merge!(&props.class, "maestro-textarea__textarea"));
+	let class = TextareaClass { variant: props.variant }.with_class(tw_merge!(&props.class, "maestro-textarea__textarea", {
+		match props.variant {
+			InputVariant::Default => "maestro-variant-default",
+			InputVariant::Underlined => "maestro-variant-underlined",
+		}
+	}));
 
 	rsx! {
 		div {

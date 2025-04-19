@@ -1,0 +1,48 @@
+@layer components {
+  /* Textarea Component */
+  .maestro-textarea__textarea {
+    border-color: var(--maestro-textarea-border);
+  }
+
+  .maestro-textarea__textarea::placeholder {
+    color: var(--maestro-textarea-placeholder);
+  }
+
+  .maestro-textarea__textarea:focus {
+    border-color: var(--maestro-color-primary);
+  }
+
+  .maestro-textarea__textarea:disabled {
+    opacity: var(--maestro-textarea-disabled-opacity);
+  }
+
+  /* Input variants - can be applied for consistency with other inputs */
+  .maestro-textarea__textarea.maestro-variant-outline {
+    border-width: 1px;
+    border-radius: 0.375rem; /* rounded-md */
+  }
+
+  .maestro-textarea__textarea.maestro-variant-filled {
+    border-bottom-width: 2px;
+    background-color: var(--maestro-color-neutral-lighter);
+    border-top-left-radius: 0.375rem;
+    border-top-right-radius: 0.375rem;
+  }
+
+  .maestro-textarea__textarea.maestro-variant-underlined {
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom-width: 1px;
+    border-radius: 0;
+  }
+
+  /* Primary color variant */
+  .maestro-textarea__textarea.maestro-primary {
+    border-color: var(--maestro-color-primary);
+  }
+
+  .maestro-textarea__textarea.maestro-primary:focus {
+    border-color: var(--maestro-color-primary-hover);
+  }
+}

@@ -1,9 +1,147 @@
 @import "tailwindcss";
 
+/* Theme config using CSS variables (This is exported from maestro_themes)*/
+@theme {
+  /* Colors */
+  --primary: #3b82f6;
+  --primary-foreground: white;
+  --secondary: #6b7280;
+  --secondary-foreground: white;
+  --accent: #f59e0b;
+  --accent-foreground: white;
+  --background: #ffffff;
+  --foreground: #020617;
+  --card: #ffffff;
+  --card-foreground: #020617;
+  --border: #e2e8f0;
+  --ring: #3b82f6;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+
+  /* Typography */
+  --font-sans: "Inter, system-ui, sans-serif";
+  --font-heading: "Inter, system-ui, sans-serif";
+  --font-size-base: 1rem;
+  --line-height-normal: 1.5;
+
+  /* Font Weights */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Spacing */
+  --spacing-unit: 0.25rem;
+  --spacing-0: 0px;
+  --spacing-1: 0.25rem;
+  --spacing-2: 0.5rem;
+  --spacing-3: 0.75rem;
+  --spacing-4: 1rem;
+  --spacing-5: 1.25rem;
+  --spacing-6: 1.5rem;
+  --spacing-8: 2rem;
+  --spacing-10: 2.5rem;
+  --spacing-12: 3rem;
+  --spacing-16: 4rem;
+  --spacing-20: 5rem;
+  --spacing-24: 6rem;
+  --spacing-32: 8rem;
+  --spacing-40: 10rem;
+  --spacing-48: 12rem;
+  --spacing-64: 16rem;
+
+  /* Border Radius */
+  --radius-sm: 0.125rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+    0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1),
+    0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+}
+/* Dark variant based on data-theme attribute */
+@variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* Light theme (default) variables */
+:root {
+  /* Map theme variables to UI variables */
+  --bg-color: var(--background);
+  --text-color: var(--foreground);
+  --border-color: var(--border);
+  --input-bg: var(--muted);
+  --card-bg: var(--card);
+  --card-text: var(--card-foreground);
+  --accent-bg: var(--accent);
+  --accent-text: var(--accent-foreground);
+  --primary-bg: var(--primary);
+  --primary-text: var(--primary-foreground);
+  --secondary-bg: var(--secondary);
+  --secondary-text: var(--secondary-foreground);
+  --muted-text: var(--muted-foreground);
+
+  /* Interactive states */
+  --hover-bg: color-mix(in srgb, var(--background) 95%, var(--foreground) 5%);
+  --focus-ring: var(--ring);
+  --highlight-color: rgba(90, 200, 90, 0.2);
+
+  /* Form Controls */
+  --range-thumb-ring: var(--primary);
+  --range-thumb-bg: var(--background);
+  --range-track-bg: color-mix(
+    in srgb,
+    var(--primary) 40%,
+    var(--background) 60%
+  );
+  --range-track-hover: color-mix(
+    in srgb,
+    var(--primary) 60%,
+    var(--background) 40%
+  );
+}
+
+/* Dark theme specific variables */
+[data-theme="dark"] {
+  /* Override with dark-specific values */
+  --bg-color: #111827; /* Dark background */
+  --text-color: #f9fafb; /* Light text */
+  --border-color: #374151; /* Darker border */
+  --input-bg: #1f2937; /* Darker input background */
+  --card-bg: #1f2937; /* Darker card background */
+  --card-text: #f9fafb; /* Light card text */
+  --muted-text: #9ca3af; /* gray-400 */
+
+  /* Interactive states for dark theme */
+  --hover-bg: #374151; /* gray-700 */
+  --highlight-color: rgba(34, 197, 94, 0.2); /* green-500 with opacity */
+
+  /* Form Controls for dark theme */
+  --range-thumb-ring: var(--primary);
+  --range-thumb-bg: #1f2937; /* gray-800 */
+  --range-track-bg: #4b5563; /* gray-600 */
+  --range-track-hover: #6b7280; /* gray-500 */
+}
+
 /* Define custom z-index values for toast elements */
 @layer utilities {
   .z-toast {
     z-index: 9999 !important;
+  }
+
+  .line-clamp-1,
+  .line-clamp-2,
+  .line-clamp-3,
+  .line-clamp-4 {
+    -webkit-line-clamp: var(--tw-line-clamp);
+    line-clamp: var(--tw-line-clamp);
   }
 }
 
@@ -20,197 +158,70 @@
   animation: highlight 1s;
 }
 
-/* base styles */
-html {
-  scroll-behavior: smooth;
-  height: 100%;
-  min-height: 100vh;
-}
-
-body {
-  --font-poppins: "Poppins", serif;
-  --color-primary-light: #4f46e5;
-  --color-primary-default: #3b82f6;
-  --color-primary-dark: #2563eb;
-  --color-danger: tomato;
-  @apply bg-slate-900 text-slate-100 flex flex-col max-h-screen h-full [&>div]:h-full;
-  font-family: var(--font-poppins);
-}
-
-/* Toast container overrides */
-.toast-scope {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 9999 !important;
-  isolation: isolate;
-  top: 0;
-  left: 0;
-}
-
-/* Override the wrapper divs for toast positions */
-.toast-scope [id^="wrap-"] {
-  @apply flex flex-col gap-2 max-h-[calc(100vh-2rem)] overflow-y-auto w-max max-w-[384px] sm:max-w-[90vw];
-  z-index: 9999 !important;
-  position: fixed !important;
-}
-
-/* Ensure each corner has proper positioning regardless of inline styles */
-#wrap-bottom-left {
-  bottom: 1.25rem !important;
-  left: 1.25rem !important;
-  right: auto !important;
-  top: auto !important;
-}
-
-#wrap-bottom-right {
-  bottom: 1.25rem !important;
-  right: 1.25rem !important;
-  left: auto !important;
-  top: auto !important;
-}
-
-#wrap-top-left {
-  top: 1.25rem !important;
-  left: 1.25rem !important;
-  right: auto !important;
-  bottom: auto !important;
-}
-
-#wrap-top-right {
-  top: 1.25rem !important;
-  right: 1.25rem !important;
-  left: auto !important;
-  bottom: auto !important;
-}
-
-/* Toast style enhancements with important background colors */
-.maestro-toast {
-  @apply transition-all duration-200 ease-in-out relative p-4 rounded-lg;
-  pointer-events: auto !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-  width: max-content;
-  max-width: 90vw;
-}
-
-/* Force specific background colors for each toast type */
-.maestro-toast__success {
-  background-color: #3c763d !important;
-  color: #dff0d8 !important;
-  border-color: #d6e9c6 !important;
-}
-
-.maestro-toast__error {
-  background-color: #a94442 !important;
-  color: #f2dede !important;
-  border-color: #ebccd1 !important;
-}
-
-.maestro-toast__warning {
-  background-color: #8a6d3b !important;
-  color: #fcf8e3 !important;
-  border-color: #faebcc !important;
-}
-
-.maestro-toast__info {
-  background-color: #31708f !important;
-  color: #d9edf7 !important;
-  border-color: #bce8f1 !important;
-}
-
-.maestro-toast__default {
-  background-color: #374151 !important; /* gray-700 */
-  color: #f9fafb !important; /* gray-50 */
-}
-
-/* Progress bar colors */
-.maestro-toast__success .progress-bar {
-  background-color: #d6e9c6 !important;
-}
-
-.maestro-toast__error .progress-bar {
-  background-color: #ebccd1 !important;
-}
-
-.maestro-toast__warning .progress-bar {
-  background-color: #faebcc !important;
-}
-
-.maestro-toast__info .progress-bar {
-  background-color: #bce8f1 !important;
-}
-
-.maestro-toast__default .progress-bar {
-  background-color: #6b7280 !important; /* gray-500 */
-}
-
-/* responsive toast containers */
-@media (max-width: 640px) {
-  .toast-scope [id^="wrap-"] {
-    max-width: calc(100vw - 2rem);
+/* Base element styles using cascade layers */
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-normal);
+    background-color: var(--bg-color);
+    color: var(--text-color);
   }
-  .maestro-toast {
-    width: 100%;
-    max-width: 100%;
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading);
   }
-}
 
-.container {
-  @apply mx-auto px-4;
-}
+  html {
+    scroll-behavior: smooth;
+    height: 100%;
+    min-height: 100vh;
+  }
 
-/* Container media queries remain unchanged */
-@media (min-width: 640px) {
   .container {
-    max-width: 584px;
-    padding: 0;
+    @apply mx-auto px-4;
   }
-}
 
-@media (min-width: 768px) {
-  .container {
-    max-width: 768px;
+  /* Container media queries remain unchanged */
+  @media (min-width: 640px) {
+    .container {
+      max-width: 584px;
+      padding: 0;
+    }
   }
-}
 
-@media (min-width: 1024px) {
-  .container {
-    max-width: 854px;
+  @media (min-width: 768px) {
+    .container {
+      max-width: 768px;
+    }
   }
-}
 
-@media (min-width: 1280px) {
-  .container {
-    max-width: 1066px;
+  @media (min-width: 1024px) {
+    .container {
+      max-width: 854px;
+    }
   }
-}
 
-@media (min-width: 1536px) {
-  .container {
-    max-width: 1260px;
+  @media (min-width: 1280px) {
+    .container {
+      max-width: 1066px;
+    }
   }
-}
 
-@media (min-width: 1728px) {
-  .container {
-    max-width: 1440px;
+  @media (min-width: 1536px) {
+    .container {
+      max-width: 1260px;
+    }
   }
-}
 
-/* Example of using the new colors */
-.bg-primary-light {
-  background-color: var(--color-primary-light);
-}
-
-.bg-primary-default {
-  background-color: var(--color-primary-default);
-}
-
-.bg-primary-dark {
-  background-color: var(--color-primary-dark);
-}
-
-.bg-danger {
-  background-color: var(--color-danger);
+  @media (min-width: 1728px) {
+    .container {
+      max-width: 1440px;
+    }
+  }
 }

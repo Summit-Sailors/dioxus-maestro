@@ -1,0 +1,167 @@
+/* Button Component CSS */
+
+@layer components {
+  .maestro-button {
+    /* Base button styles */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    transition-property: color, background-color, border-color;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+
+    /* Focus styles using theme variables */
+    outline: none;
+
+    /* Ring handling */
+    &:focus-visible {
+      outline: none;
+      @apply ring-2 ring-offset-2;
+      @apply ring-2 ring-offset-2 ring-[var(--ring)] ring-offset-[var(--background)];
+    }
+
+    /* Disabled state */
+    &:disabled {
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    /* SVG handling */
+    & svg {
+      pointer-events: none;
+      height: 1rem;
+      width: 1rem;
+      flex-shrink: 0;
+    }
+
+    /* Variant: Default */
+    &.variant-default {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+
+      &:hover {
+        background-color: color-mix(in srgb, var(--primary) 80%, black 20%);
+      }
+    }
+
+    /* Variant: Outline */
+    &.variant-outline {
+      background-color: transparent;
+      border: 1px solid var(--border);
+      color: var(--foreground);
+
+      &:hover {
+        background-color: color-mix(
+          in srgb,
+          var(--background) 95%,
+          var(--foreground) 5%
+        );
+      }
+    }
+
+    /* Variant: Ghost */
+    &.variant-ghost {
+      background-color: transparent;
+      color: var(--foreground);
+
+      &:hover {
+        background-color: color-mix(
+          in srgb,
+          var(--background) 95%,
+          var(--foreground) 5%
+        );
+      }
+    }
+
+    /* Variant: Link */
+    &.variant-link {
+      background-color: transparent;
+      color: var(--primary);
+      padding: 0;
+      text-underline-offset: 4px;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    /* Variant: Icon */
+    &.variant-icon {
+      width: fit-content;
+      height: fit-content;
+      padding: 0;
+      color: var(--foreground);
+      background-color: transparent;
+
+      &:hover {
+        color: color-mix(in srgb, var(--foreground) 80%, black 20%);
+      }
+    }
+
+    /* Button Sizes */
+    &.size-default {
+      height: 2.5rem;
+      padding: 0.5rem 1rem;
+    }
+
+    &.size-sm {
+      height: 2.25rem;
+      padding: 0.375rem 0.75rem;
+      border-radius: var(--radius-sm);
+    }
+
+    &.size-lg {
+      height: 2.75rem;
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius-md);
+    }
+
+    &.size-xl {
+      height: 3rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: var(--radius-lg);
+    }
+
+    /* Icon Button Sizes */
+    &.size-icon-xl {
+      width: 3rem;
+      height: 3rem;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    &.size-icon-lg {
+      width: 2.75rem;
+      height: 2.75rem;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    &.size-icon-md {
+      width: 2.5rem;
+      height: 2.5rem;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    &.size-icon-sm {
+      width: 2.25rem;
+      height: 2.25rem;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+}

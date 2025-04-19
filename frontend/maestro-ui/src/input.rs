@@ -3,7 +3,7 @@ use tailwind_fuse::*;
 
 #[derive(TwClass)]
 #[tw(
-	class = "flex h-10 w-full bg-transparent py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 border-gray-700 ring-offset-white ring-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2  disabled:cursor-not-allowed disabled:opacity-50"
+	class = "flex h-10 w-full bg-transparent py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 border-gray-700 ring-offset-white ring-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2  disabled:cursor-not-allowed disabled:opacity-50 maestro-input__input"
 )]
 pub struct InputClass {
 	pub variant: InputVariant,
@@ -11,9 +11,9 @@ pub struct InputClass {
 
 #[derive(PartialEq, TwVariant)]
 pub enum InputVariant {
-	#[tw(default, class = "border rounded-md px-3")]
+	#[tw(default, class = "variant-default")]
 	Default,
-	#[tw(class = "border-b pt-2 pb-1")]
+	#[tw(class = "variant-underlined")]
 	Underlined,
 }
 
@@ -43,11 +43,7 @@ pub fn Input(props: InputProps) -> Element {
 	let class = InputClass { variant: props.variant }.with_class(tw_merge!(&props.class, "maestro-input__input"));
 
 	rsx! {
-		div {
-			class: tw_merge!(
-					"w-full relative", & props.wrapper_class,
-					"maestro-input__wrapper"
-			),
+		div { class: tw_merge!("w-full relative", & props.wrapper_class, "maestro-input__wrapper"),
 			input {
 				class,
 				style: props.style.unwrap_or_default(),
