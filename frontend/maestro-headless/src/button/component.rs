@@ -60,7 +60,7 @@ pub fn Button(props: ButtonProps) -> Element {
 
 	rsx! {
 		button {
-			disabled: disabled(),
+			disabled: (pending() || disabled()).then_some(true),
 			aria_disabled: (disabled() || pending()).then_some(Some(true)),
 			"data-disabled": disabled().then_some(Some(true)),
 			"data-pressed": is_pressed().then_some(Some(true)),

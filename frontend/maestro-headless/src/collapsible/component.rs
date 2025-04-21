@@ -37,13 +37,15 @@ pub struct CollapsibleRootProps {
 
 	#[props(extends = div, extends = GlobalAttributes)]
 	attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	#[props(optional, default = None)]
 	pub children: Element,
 }
 
 #[component]
 pub fn CollapsibleRoot(props: CollapsibleRootProps) -> Element {
-	let CollapsibleRootProps { open, default_open, on_open_change, disabled, children, attributes } = props;
+	let CollapsibleRootProps { open, default_open, on_open_change, disabled, children, attributes, extra_attributes } = props;
 	let is_controlled = use_hook(move || open().is_some());
 	let (open, set_open) =
 		use_controllable_state(UseControllableStateParams { is_controlled, prop: open, default_prop: default_open, on_change: on_open_change });
@@ -57,6 +59,7 @@ pub fn CollapsibleRoot(props: CollapsibleRootProps) -> Element {
 			"data_disabled": disabled().then_some(Some(true)),
 			"data-state": if open() { "open" } else { "closed" },
 			..attributes,
+			..extra_attributes,
 			{children}
 		}
 	}
@@ -66,12 +69,17 @@ pub fn CollapsibleRoot(props: CollapsibleRootProps) -> Element {
 pub struct CollapsibleTriggerProps {
 	#[props(extends = GlobalAttributes, extends = button)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
 #[component]
 pub fn CollapsibleTrigger(props: CollapsibleTriggerProps) -> Element {
 	let context = use_context::<CollapsibleContext>();
+
+	let mut attrs = props.attributes.clone();
+	attrs.extend(props.extra_attributes.clone());
 
 	rsx! {
 		Button {
@@ -87,7 +95,7 @@ pub fn CollapsibleTrigger(props: CollapsibleTriggerProps) -> Element {
 					let open = *context.open.peek();
 					context.set_open.call(!open);
 			},
-			extra_attributes: props.attributes.clone(),
+			extra_attributes: attrs.clone(),
 			{props.children}
 		}
 	}
@@ -97,17 +105,20 @@ pub fn CollapsibleTrigger(props: CollapsibleTriggerProps) -> Element {
 pub struct CollapsibleContentProps {
 	#[props(extends = div, extends = GlobalAttributes)]
 	attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
 #[component]
 pub fn CollapsibleContent(props: CollapsibleContentProps) -> Element {
-	let CollapsibleContentProps { attributes, children } = props;
+	let CollapsibleContentProps { attributes, extra_attributes, children } = props;
 	let context = use_context::<CollapsibleContext>();
 	let mut current_ref = use_ref_provider();
 	let (width, height) = use_dimensions(current_ref, *context.open.peek());
 
 	let mut attrs = attributes.clone();
+	attrs.extend(extra_attributes);
 
 	attrs.push(Attribute::new(
 		"--maestro-headless-collapsible-height",

@@ -2,7 +2,8 @@ use {
 	crate::{
 		layout::Layout,
 		pages::{
-			AccordionPage, AspectRatioPage, AvatarPage, ButtonPage, CheckboxPage, CollapsiblePage, DialogPage, HeadlessHome, Home, HoverCardPage, PopoverPage,
+			AccordionPage, AccordionStyledPage, AspectRatioPage, AspectRatioStyledPage, AvatarPage, AvatarStyledPage, ButtonPage, ButtonStyledPage, CheckboxPage,
+			CheckboxStyledPage, CollapsiblePage, CollapsibleStyledPage, DialogPage, DialogStyledPage, HeadlessHome, Home, HoverCardPage, PopoverPage,
 			ProgressBarPage, RadioPage, RangePage, SelectPage, SeparatorPage, SwitchPage, TabsPage, TogglePage, TooltipPage,
 		},
 	},
@@ -55,6 +56,24 @@ pub enum Route {
 	TogglePage,
 	#[route("/tooltip")]
 	TooltipPage,
+	#[end_nest]
+	#[end_nest]
+	#[nest("/styled")]
+	#[nest("/components")]
+	#[route("/button")]
+	ButtonStyledPage,
+	#[route("/accordion")]
+	AccordionStyledPage,
+	#[route("/aspect-ratio")]
+	AspectRatioStyledPage {},
+	#[route("/avatar")]
+	AvatarStyledPage {},
+	#[route("/checkbox-&-group")]
+	CheckboxStyledPage,
+	#[route("/collapsible")]
+	CollapsibleStyledPage {},
+	#[route("/dialog")]
+	DialogStyledPage {},
 }
 
 impl Route {
@@ -62,13 +81,13 @@ impl Route {
 		match self {
 			Route::Home {} => "Home",
 			Route::HeadlessHome {} => "Headless",
-			Route::AccordionPage {} => "Accordion",
-			Route::AspectRatioPage {} => "Aspect Ratio",
-			Route::AvatarPage {} => "Avatar",
-			Route::ButtonPage {} => "Button",
-			Route::CheckboxPage {} => "Checkbox & CheckboxGroup",
-			Route::CollapsiblePage {} => "Collapsible",
-			Route::DialogPage {} => "Dialog",
+			Route::AccordionPage {} | Route::AccordionStyledPage {} => "Accordion",
+			Route::AspectRatioPage {} | Route::AspectRatioStyledPage {} => "Aspect Ratio",
+			Route::AvatarPage {} | Route::AvatarStyledPage {} => "Avatar",
+			Route::ButtonPage {} | Route::ButtonStyledPage {} => "Button",
+			Route::CheckboxPage {} | Route::CheckboxStyledPage {} => "Checkbox & CheckboxGroup",
+			Route::CollapsiblePage {} | Route::CollapsibleStyledPage {} => "Collapsible",
+			Route::DialogPage {} | Route::DialogStyledPage {} => "Dialog",
 			Route::HoverCardPage {} => "Hover Card",
 			Route::PopoverPage {} => "Popover",
 			Route::ProgressBarPage {} => "Progress Bar",
@@ -103,6 +122,29 @@ impl Route {
 			Route::TabsPage {},
 			Route::TogglePage {},
 			Route::TooltipPage {},
+		])
+	}
+
+	pub fn get_styled_routes() -> Vec<Route> {
+		Vec::from([
+			Route::AccordionStyledPage {},
+			Route::AspectRatioStyledPage {},
+			Route::AvatarStyledPage {},
+			Route::ButtonStyledPage {},
+			Route::CheckboxStyledPage {},
+			Route::CollapsibleStyledPage {},
+			Route::DialogStyledPage {},
+			// Route::HoverCardPage {},
+			// Route::PopoverPage {},
+			// Route::ProgressBarPage {},
+			// Route::RadioPage {},
+			// Route::RangePage {},
+			// Route::SelectPage {},
+			// Route::SeparatorPage {},
+			// Route::SwitchPage {},
+			// Route::TabsPage {},
+			// Route::TogglePage {},
+			// Route::TooltipPage {},
 		])
 	}
 }

@@ -18,7 +18,7 @@ pub fn Layout(children: Element) -> Element {
 	let is_headless = current_route.to_string().starts_with("/headless");
 	let is_styled = current_route.to_string().starts_with("/styled");
 
-	// let current_routes =
+	let current_routes = if is_headless { Route::get_headless_routes() } else { Route::get_styled_routes() };
 
 	rsx! {
 		ToastFrame { manager: toast }
@@ -48,9 +48,10 @@ pub fn Layout(children: Element) -> Element {
 				),
 				nav { class: "flex-1 flex flex-col h-full *:not-last:border-b *:border-b-neutral-700 overflow-y-auto *:focus-visible:bg-neutral-800 *:focus-visible:text-neutral-100 *:hover:bg-neutral-800 *:hover:text-neutral-100 *:transition-colors *:ease-linear *:px-6 *:py-3 *:ring-0 *:ring-offset-0 *:focus-visible:outline-none",
 					{
-							Route::iter()
+							current_routes
+									.iter()
 									.map(|route| {
-											let is_current = route == current_route;
+											let is_current = route == &current_route;
 											rsx! {
 												Link { to: route.clone(), class: if is_current { "text-orange-600" } else { "" }, "{route.name()}" }
 											}

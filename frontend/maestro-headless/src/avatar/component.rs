@@ -26,6 +26,8 @@ struct AvatarContextValue {
 pub struct AvatarRootProps {
 	#[props(extends = GlobalAttributes, extends = div)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
@@ -35,7 +37,7 @@ pub fn AvatarRoot(props: AvatarRootProps) -> Element {
 	use_context_provider::<AvatarContextValue>(|| AvatarContextValue { image_loading_status });
 
 	rsx! {
-		div { ..props.attributes.clone(),{props.children} }
+		div { ..props.attributes, ..props.extra_attributes,{props.children} }
 	}
 }
 
@@ -45,6 +47,8 @@ pub struct AvatarImageProps {
 	pub src: ReadOnlySignal<String>,
 	#[props(extends = GlobalAttributes, extends = img)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 }
 
 #[component]
@@ -92,7 +96,11 @@ pub fn AvatarImage(props: AvatarImageProps) -> Element {
 
 	if *context.image_loading_status.read() == ImageLoadingStatus::Loaded {
 		rsx! {
-			img { src: props.src.read().clone(), ..props.attributes.clone() }
+			img {
+				src: props.src.read().clone(),
+				..props.attributes,
+				..props.extra_attributes,
+			}
 		}
 	} else {
 		rsx! {}
@@ -106,6 +114,8 @@ pub struct AvatarFallbackProps {
 
 	#[props(extends = GlobalAttributes, extends = span)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	#[props(default = None)]
 	pub children: Element,
 }
@@ -127,7 +137,7 @@ pub fn AvatarFallback(props: AvatarFallbackProps) -> Element {
 
 	if can_render() && *context.image_loading_status.read() != ImageLoadingStatus::Loaded {
 		rsx! {
-			span { ..props.attributes.clone(),{props.children} }
+			span { ..props.attributes, ..props.extra_attributes,{props.children} }
 		}
 	} else {
 		rsx! {}

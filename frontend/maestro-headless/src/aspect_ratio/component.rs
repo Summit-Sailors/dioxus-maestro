@@ -7,6 +7,8 @@ pub struct AspectRatioRootProps {
 
 	#[props(extends = div, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
@@ -18,6 +20,7 @@ pub fn AspectRatioRoot(props: AspectRatioRootProps) -> Element {
 			width: "100%",
 			padding_bottom: "{100.0 / props.ratio}%",
 			..props.attributes,
+			..props.extra_attributes,
 			div {
 				position: "absolute",
 				top: 0,

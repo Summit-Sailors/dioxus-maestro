@@ -80,14 +80,19 @@ pub struct DialogTriggerProps {
 	disabled: ReadOnlySignal<bool>,
 	#[props(extends = GlobalAttributes, extends = button)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	#[props(optional)]
 	pub children: Element,
 }
 
 #[component]
 pub fn DialogTrigger(props: DialogTriggerProps) -> Element {
-	let DialogTriggerProps { attributes, disabled, children } = props;
+	let DialogTriggerProps { attributes, disabled, extra_attributes, children } = props;
 	let mut context = use_context::<DialogContext>();
+
+	let mut attrs = attributes.clone();
+	attrs.extend(extra_attributes);
 
 	rsx! {
 		Button {
@@ -99,7 +104,7 @@ pub fn DialogTrigger(props: DialogTriggerProps) -> Element {
 			aria_expanded: *context.open.read(),
 			aria_controls: context.content_id.to_string(),
 			"data-state": if *context.open.read() { "open" } else { "closed" },
-			extra_attributes: attributes.clone(),
+			extra_attributes: attrs.clone(),
 			{children}
 		}
 	}
@@ -107,15 +112,15 @@ pub fn DialogTrigger(props: DialogTriggerProps) -> Element {
 
 #[derive(Clone, PartialEq, Props)]
 pub struct DialogOverlayProps {
-	#[props(extends = GlobalAttributes)]
+	#[props(extends = GlobalAttributes, extends = div)]
 	pub attributes: Vec<Attribute>,
-	pub children: Element,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 }
 
 #[component]
 pub fn DialogOverlay(props: DialogOverlayProps) -> Element {
 	let mut context = use_context::<DialogContext>();
-	// let mut node_ref = use_signal(|| None::<Rc<MountedData>>);
 	let mut node_ref = use_ref_provider();
 
 	rsx! {
@@ -126,7 +131,7 @@ pub fn DialogOverlay(props: DialogOverlayProps) -> Element {
 				onmounted: move |event| node_ref.set(Some(event.data())),
 				onclick: move |_| context.toggle(false),
 				..props.attributes,
-				{props.children}
+				..props.extra_attributes,
 			}
 		}
 	}
@@ -136,6 +141,8 @@ pub fn DialogOverlay(props: DialogOverlayProps) -> Element {
 pub struct DialogContentProps {
 	#[props(extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
@@ -150,6 +157,9 @@ pub fn DialogContent(props: DialogContentProps) -> Element {
 
 	use_escape(handle_close, context.open);
 
+	let mut attrs = props.attributes.clone();
+	attrs.extend(props.extra_attributes.clone());
+
 	rsx! {
 		Presence { present: *context.open.read(),
 			FocusTrap {
@@ -159,7 +169,7 @@ pub fn DialogContent(props: DialogContentProps) -> Element {
 				aria_modal: true,
 				aria_labelledby: context.trigger_id.to_string(),
 				"data-state": if *context.open.read() { "open" } else { "closed" },
-				extra_attributes: props.attributes.clone(),
+				extra_attributes: attrs.clone(),
 				{props.children}
 			}
 		}
@@ -170,13 +180,15 @@ pub fn DialogContent(props: DialogContentProps) -> Element {
 pub struct DialogHeaderProps {
 	#[props(extends = GlobalAttributes, extends=div)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
 #[component]
 pub fn DialogHeader(props: DialogTitleProps) -> Element {
 	rsx! {
-		div { ..props.attributes,{props.children} }
+		div { ..props.attributes, ..props.extra_attributes,{props.children} }
 	}
 }
 
@@ -184,13 +196,15 @@ pub fn DialogHeader(props: DialogTitleProps) -> Element {
 pub struct DialogFooterProps {
 	#[props(extends = GlobalAttributes, extends=div)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
 #[component]
 pub fn DialogFooter(props: DialogTitleProps) -> Element {
 	rsx! {
-		div { ..props.attributes,{props.children} }
+		div { ..props.attributes, ..props.extra_attributes,{props.children} }
 	}
 }
 
@@ -198,13 +212,15 @@ pub fn DialogFooter(props: DialogTitleProps) -> Element {
 pub struct DialogBodyProps {
 	#[props(extends = GlobalAttributes, extends=div)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
 #[component]
 pub fn DialogBody(props: DialogTitleProps) -> Element {
 	rsx! {
-		div { ..props.attributes,{props.children} }
+		div { ..props.attributes, ..props.extra_attributes,{props.children} }
 	}
 }
 
@@ -212,12 +228,14 @@ pub fn DialogBody(props: DialogTitleProps) -> Element {
 pub struct DialogTitleProps {
 	#[props(extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	pub children: Element,
 }
 #[component]
 pub fn DialogTitle(props: DialogTitleProps) -> Element {
 	rsx! {
-		h2 { ..props.attributes,{props.children} }
+		h2 { ..props.attributes, ..props.extra_attributes,{props.children} }
 	}
 }
 
@@ -225,13 +243,15 @@ pub fn DialogTitle(props: DialogTitleProps) -> Element {
 pub struct DialogDescriptionProps {
 	#[props(extends = GlobalAttributes, extends=div)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
 #[component]
 pub fn DialogDescription(props: DialogDescriptionProps) -> Element {
 	rsx! {
-		div { ..props.attributes,{props.children} }
+		div { ..props.attributes, ..props.extra_attributes,{props.children} }
 	}
 }
 
@@ -240,18 +260,23 @@ pub struct DialogCloseProps {
 	pub children: Element,
 	#[props(extends = GlobalAttributes, extends = button)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 }
 
 #[component]
 pub fn DialogClose(props: DialogCloseProps) -> Element {
 	let mut context = use_context::<DialogContext>();
 
+	let mut attrs: Vec<Attribute> = props.attributes.clone();
+	attrs.extend(props.extra_attributes.clone());
+
 	rsx! {
 		Button {
 			r#type: "button",
 			aria_label: "Close popup",
 			onclick: move |_| context.toggle(false),
-			extra_attributes: props.attributes.clone(),
+			extra_attributes: attrs.clone(),
 			{props.children}
 		}
 	}

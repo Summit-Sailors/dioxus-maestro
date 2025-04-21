@@ -9,10 +9,28 @@ use {
 	uuid::Uuid,
 };
 
-#[derive(Clone, PartialEq, Debug, Copy)]
+#[derive(Clone, PartialEq, Debug, Copy, strum_macros::Display, strum_macros::EnumIter, strum_macros::EnumString)]
 pub enum AccordionVariant {
 	Single,
 	Multiple,
+}
+
+impl Default for AccordionVariant {
+	fn default() -> Self {
+		Self::Single
+	}
+}
+
+impl TryFrom<&String> for AccordionVariant {
+	type Error = String;
+
+	fn try_from(v: &String) -> Result<Self, Self::Error> {
+		match v.as_str() {
+			"Single" => Ok(AccordionVariant::Single),
+			"Multiple" => Ok(AccordionVariant::Multiple),
+			_ => Err(format!("'{}' is not a valid AccordionVariant", v)),
+		}
+	}
 }
 
 #[derive(Clone, PartialEq, Debug, Copy)]
@@ -97,16 +115,18 @@ pub struct AccordionRootProps {
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]
 	pub disabled: ReadOnlySignal<bool>,
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(AccordionVariant::Single)))]
-	variant: ReadOnlySignal<AccordionVariant>,
+	pub variant: ReadOnlySignal<AccordionVariant>,
 
 	#[props(extends = ul, extends = GlobalAttributes)]
-	attributes: Vec<Attribute>,
+	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
 #[component]
 pub fn AccordionRoot(props: AccordionRootProps) -> Element {
-	let AccordionRootProps { value, default_value, on_value_change, orientation, collapsible, disabled, variant, attributes, children } = props;
+	let AccordionRootProps { value, default_value, on_value_change, orientation, collapsible, disabled, variant, attributes, extra_attributes, children } = props;
 	let is_controlled = use_hook(move || value().is_some());
 	let (value, set_value) =
 		use_controllable_state(UseControllableStateParams { is_controlled, prop: value, default_prop: default_value, on_change: on_value_change });
@@ -129,6 +149,7 @@ pub fn AccordionRoot(props: AccordionRootProps) -> Element {
 			},
 			onkeydown: handle_key_down,
 			..attributes,
+			..extra_attributes,
 			{children}
 		}
 	}
@@ -142,13 +163,15 @@ pub struct AccordionItemProps {
 
 	#[props(extends = li, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	#[props(optional, default = None)]
 	pub children: Element,
 }
 
 #[component]
 pub fn AccordionItem(props: AccordionItemProps) -> Element {
-	let AccordionItemProps { value, disabled, attributes, children } = props;
+	let AccordionItemProps { value, disabled, attributes, extra_attributes, children } = props;
 	let accordion_context = use_context::<AccordionContext>();
 
 	let cloned_value = value.clone();
@@ -169,6 +192,7 @@ pub fn AccordionItem(props: AccordionItemProps) -> Element {
 			aria_orientation: accordion_context.orientation.read().to_string(),
 			"data-orientation": accordion_context.orientation.read().to_string(),
 			..attributes,
+			..extra_attributes,
 			{children}
 		}
 	}
@@ -178,6 +202,8 @@ pub fn AccordionItem(props: AccordionItemProps) -> Element {
 pub struct AccordionTriggerProps {
 	#[props(extends = GlobalAttributes, extends = button)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
@@ -189,6 +215,9 @@ pub fn AccordionTrigger(props: AccordionTriggerProps) -> Element {
 
 	let variant = *accordion_context.variant.read();
 	let collapsible = *accordion_context.collapsible.read();
+
+	let mut attrs = props.attributes.clone();
+	attrs.extend(props.extra_attributes.clone());
 
 	rsx! {
 		Button {
@@ -232,7 +261,7 @@ pub fn AccordionTrigger(props: AccordionTriggerProps) -> Element {
 							}
 					}
 			},
-			extra_attributes: props.attributes.clone(),
+			extra_attributes: attrs.clone(),
 			{props.children}
 		}
 	}
@@ -242,6 +271,8 @@ pub fn AccordionTrigger(props: AccordionTriggerProps) -> Element {
 pub struct AccordionHeaderProps {
 	#[props(extends = div, extends = GlobalAttributes)]
 	attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
@@ -255,6 +286,7 @@ pub fn AccordionHeader(props: AccordionHeaderProps) -> Element {
 			aria_orientation: accordion_context.orientation.read().to_string(),
 			"data-orientation": accordion_context.orientation.read().to_string(),
 			..props.attributes,
+			..props.extra_attributes,
 			{props.children}
 		}
 	}
@@ -264,6 +296,8 @@ pub fn AccordionHeader(props: AccordionHeaderProps) -> Element {
 pub struct AccordionContentProps {
 	#[props(extends = div, extends = GlobalAttributes)]
 	attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
@@ -275,6 +309,7 @@ pub fn AccordionContent(props: AccordionContentProps) -> Element {
 	let (width, height) = use_dimensions(current_ref, *accordion_item_context.open.peek());
 
 	let mut attrs = props.attributes.clone();
+	attrs.extend(props.extra_attributes.clone());
 
 	attrs.push(Attribute::new("--maestro-headless-accordion-height", if height() > 0.0 { Some(format!("{}px", height())) } else { None }, Some("style"), false));
 	attrs.push(Attribute::new("--maestro-headless-accordion-width", if width() > 0.0 { Some(format!("{}px", width())) } else { None }, Some("style"), false));
