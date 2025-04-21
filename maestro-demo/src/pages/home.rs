@@ -20,7 +20,10 @@ pub fn HomePage() -> Element {
 					class: "mt-8 sm:mt-10 lg:mt-16 grid gap-6 sm:gap-8 grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 animate-fade-up",
 					{
 							Route::iter()
-									.filter(|route| route.name() != "Home" && route.name() != "Not Found")
+									.filter(|route| {
+											route.name() != "Home" && route.name() != "Not Found"
+													&& route.name() != "Theme Designer"
+									})
 									.map(|route| {
 											rsx! {
 												FeatureCard {

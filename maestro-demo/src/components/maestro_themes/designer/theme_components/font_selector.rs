@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::components::maestro_themes::designer::TypographySettings;
+use crate::components::maestro_themes::designer::state::TypographySettings;
 
 #[derive(Props, PartialEq, Clone)]
 pub struct FontSelectorProps {

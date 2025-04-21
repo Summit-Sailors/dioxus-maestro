@@ -1,9 +1,9 @@
 use super::ThemeOptions;
-use crate::components::maestro_themes::{designer::DesignerState, exporter::component_specific_styles::generate_component_stylesheet};
+use crate::components::maestro_themes::{designer::state::DesignerState, exporter::component_styles::get_component_styles};
 
 /// Generate Tailwind v4 CSS configuration with theme support
 pub fn generate_tailwind_v4_css(state: &DesignerState, theme_options: ThemeOptions) -> String {
-	let component_specific_styles = generate_component_stylesheet(theme_options.components_id, theme_options.stylesheet_path);
+	let component_specific_styles = get_component_styles(&theme_options.components_id).expect("An error occurred while getting component styles");
 	let base_elements_styles = format!(
 		r#"/* Custom z-index values for toast elements */
 @layer utilities {{
@@ -28,6 +28,8 @@ pub fn generate_tailwind_v4_css(state: &DesignerState, theme_options: ThemeOptio
     background: auto;
     }}
     }}
+  
+  {}
 
 .highlight {{
   animation: highlight 1s;
@@ -57,8 +59,6 @@ pub fn generate_tailwind_v4_css(state: &DesignerState, theme_options: ThemeOptio
     height: 100%;
     min-height: 100vh;
     }}
-
-{}
 
   .container {{
     @apply mx-auto px-4;

@@ -4,18 +4,18 @@ use maestro_demo::router::Route;
 
 fn App() -> Element {
 	rsx! {
-		document::Stylesheet { href: asset!("./assets/main.css") }
-		SuspenseBoundary {
-			fallback: |context: SuspenseContext| rsx! {
-				if let Some(placeholder) = context.suspense_placeholder() {
-					{placeholder}
-				} else {
-					"Getting everything ready for you..."
-				}
-			},
-			Router::<Route> {}
-		}
-	}
+    document::Stylesheet { href: asset!("./assets/main.css") }
+    SuspenseBoundary {
+      fallback: |context: SuspenseContext| rsx! {
+        if let Some(placeholder) = context.suspense_placeholder() {
+          {placeholder}
+        } else {
+          "Getting everything ready for you..."
+        }
+      },
+      Router::<Route> {}
+    }
+  }
 }
 
 fn main() {

@@ -275,6 +275,9 @@ fn get_source_code(route: &Route) -> HashMap<String, String> {
 		Route::AnthropicDemo {} => {
 			code_map.insert("anthropic".to_string(), String::from(include_str!("clients/utilities/anthropic_demo.rs")));
 		},
+		Route::ThemeDesigner { components_id: _ } => {
+			code_map.insert("anthropic".to_string(), String::from(""));
+		},
 		Route::NotFound { route: _ } => {
 			code_map.insert("not found".to_string(), String::from(""));
 		},

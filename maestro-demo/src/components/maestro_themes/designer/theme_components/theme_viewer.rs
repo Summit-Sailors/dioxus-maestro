@@ -16,7 +16,7 @@ use syntect::{
 use tailwind_fuse::tw_join;
 
 use crate::components::maestro_themes::{
-	designer::DesignerState,
+	designer::state::DesignerState,
 	exporter::{ThemeOptions, export_theme},
 };
 

@@ -81,6 +81,7 @@ pub fn UIDemo() -> Element {
 			ComponentSection {
 				title: "Buttons",
 				description: "Various button styles, sizes, and types with different variants",
+				section_id: Some(String::from("buttons")),
 				div {
 					id: "maestro-ui-buttons",
 					class: "grid grid-cols-1 md:grid-cols-3 gap-6 md:w-4/5 mx-auto w-full",
@@ -146,6 +147,7 @@ pub fn UIDemo() -> Element {
 			ComponentSection {
 				title: "Input Fields",
 				description: "Text inputs with different variants and states",
+				section_id: Some(String::from("input-and-labels")),
 				div {
 					id: "maestro-ui-inputs",
 					class: "space-y-4 text-left md:w-4/5 mx-auto w-full",
@@ -192,7 +194,7 @@ pub fn UIDemo() -> Element {
 			ComponentSection {
 				title: "Selection Components",
 				description: "Single and multiple selection components",
-
+				section_id: Some(String::from("select-and-multiselect")),
 				div {
 					id: "maestro-ui-select",
 					class: "space-y-6 text-left md:w-4/5 mx-auto w-full",
@@ -308,7 +310,7 @@ pub fn UIDemo() -> Element {
 			ComponentSection {
 				title: "Toggle and Radio",
 				description: "Toggle switches and radio buttons",
-
+				section_id: Some(String::from("toggle-and-radio")),
 				div {
 					id: "maestro-ui-toggle-radio",
 					class: "space-y-6 md:w-4/5 mx-auto w-full flex flex-col items-center",
@@ -364,7 +366,7 @@ pub fn UIDemo() -> Element {
 			ComponentSection {
 				title: "Textarea and Loading",
 				description: "Textarea component with multiple configurations and loading spinner",
-
+				section_id: Some(String::from("textarea-spinner-range")),
 				div {
 					id: "maestro-ui-textarea-spinner",
 					class: "space-y-6 text-left md:w-4/5 mx-auto w-full",

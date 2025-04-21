@@ -1,7 +1,7 @@
-mod component_specific_styles;
-mod tailwind;
+use super::designer::state::DesignerState;
 
-use super::designer::DesignerState;
+mod component_styles;
+mod tailwind;
 
 /// Theme Export Format
 #[derive(Debug, PartialEq, Clone, Default, strum_macros::EnumIter, strum_macros::Display, strum_macros::EnumString)]
@@ -40,7 +40,6 @@ pub struct ThemeOptions {
 	pub with_doc_themes: bool,
 	pub format: ExportFormat,
 	pub components_id: String,
-	pub stylesheet_path: String,
 }
 
 /// Export theme to various formats

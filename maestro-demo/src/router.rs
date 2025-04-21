@@ -6,6 +6,7 @@ use crate::{
 		db::{diesel_demo::DieselDemo, sqlx_demo::SqlxDemo},
 		utilities::{alpaca_demo::AlpacaDemo, anthropic_demo::AnthropicDemo, apalis_demo::ApalisDemo, serpapi_demo::SerpApiDemo},
 	},
+	components::maestro_themes::designer::{ThemeDesignerLayout, theme_components::prelude::ThemeDesigner},
 	layout::Layout,
 	pages::{
 		calendar::CalendarDemo, form::FormsDemo, home::HomePage, hooks::HooksDemo, not_found::NotFound, plotters::PlottersDemo, query::CompleteQueryDemo,
@@ -62,6 +63,12 @@ pub enum Route {
       #[end_nest]
     #[end_nest]
   #[end_layout]
+  #[layout(ThemeDesignerLayout)]
+  #[route("/themes/:components_id")]
+  ThemeDesigner {
+    components_id: String,
+  },
+  #[end_layout]
   #[route("/:..route")]
   NotFound {route: Vec<String>}
 }
@@ -84,6 +91,7 @@ impl Route {
 			Route::ApalisDemo {} => "Apalis",
 			Route::AlpacaDemo {} => "Alpaca",
 			Route::AnthropicDemo {} => "Anthropic",
+			Route::ThemeDesigner { components_id: _ } => "Theme Designer",
 			Route::NotFound { route: _ } => "Not Found",
 		}
 	}
@@ -108,6 +116,7 @@ impl Route {
 			Route::ApalisDemo {} => "A Apalis utility designed to make integrating Apalis into your Dioxus app easier",
 			Route::AlpacaDemo {} => "A Alpaca utility designed to make connecting to and using Alpaca with your Dioxus apps easier",
 			Route::AnthropicDemo {} => "A utility designed to make connecting to and using Anthropic with your Dioxus apps easier",
+			Route::ThemeDesigner { components_id: _ } => "The Dioxus Maestro Pre-theming component",
 			Route::NotFound { route: _ } => "Page was not Found",
 		}
 	}

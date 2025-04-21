@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@layer theme, base, components, utilities;
+
 /* Theme config using CSS variables (This is exported from maestro_themes)*/
 @theme {
   /* Colors */

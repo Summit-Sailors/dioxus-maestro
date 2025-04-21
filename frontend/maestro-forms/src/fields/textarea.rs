@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use dioxus::prelude::*;
-use dioxus_sdk::utils::timing::use_debounce;
+use dioxus_sdk::time::use_debounce;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use validator::Validate;
@@ -53,10 +53,10 @@ where
 					}
 			},
 			onfocus: move |evt| {
-				if let Some(handler) = &props.onfocus {
-						handler.call(evt);
-				}
-		},
+					if let Some(handler) = &props.onfocus {
+							handler.call(evt);
+					}
+			},
 			..props.attributes,
 		}
 	}
