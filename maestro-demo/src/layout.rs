@@ -3,17 +3,14 @@ use std::collections::HashMap;
 use dioxus::prelude::*;
 use dioxus_free_icons::{
 	Icon,
-	icons::{
-		bs_icons::{BsLayoutSidebar, BsLayoutSidebarReverse},
-		io_icons::IoLogoGithub,
-	},
+	icons::bs_icons::{BsLayoutSidebar, BsLayoutSidebarReverse},
 };
 use maestro_toast::{init::use_init_toast_ctx, toast_frame_component::ToastFrame};
 use maestro_ui::button::{Button, ButtonSize, ButtonVariant};
 use tailwind_fuse::{tw_join, tw_merge};
 
 use crate::{
-	components::{backdrop::Backdrop, editor::code_viewer::CodeEditor, logo_light::LogoLight},
+	components::{backdrop::Backdrop, editor::code_viewer::CodeEditor, ui::navbar::NavBar},
 	router::Route,
 };
 
@@ -27,7 +24,7 @@ pub fn Layout(children: Element) -> Element {
 		// sidebar
 		nav {
 			class: tw_join!(
-					"relative py-6 sm:px-5 px-0 z-50 bg-slate-900 border-l border-l-slate-700",
+					"relative py-6 sm:px-5 px-0 z-50 bg-[var(--bg-color)] border-l border-l-[var(--border-color)]",
 					"transform transition-transform duration-300 ease-in-out", (current_route.name()
 					== "Home").then_some("hidden lg:hidden translate-x-0")
 			),
@@ -35,7 +32,7 @@ pub fn Layout(children: Element) -> Element {
 				variant: ButtonVariant::Icon,
 				size: ButtonSize::IconMd,
 				r#type: "button",
-				class: "text-slate-300 hover:text-slate-100 xl:hidden transition-colors mx-auto",
+				class: "text-[var(--muted-text)] hover:text-[var(--text-color)] xl:hidden transition-colors mx-auto",
 				onclick: move |_| menu_open.set(true),
 				Icon { icon: BsLayoutSidebar, class: "w-5 h-5" }
 			}
@@ -49,7 +46,7 @@ pub fn Layout(children: Element) -> Element {
 					Outlet::<Route> {}
 				},
 				_ => rsx! {
-					div { class: "flex-1 grid xl:grid-cols-[1fr_358px] sm:grid-cols-[1fr_80px] grid-cols-[1fr_42px] overflow-y-auto relative overflow-x-hidden",
+					div { class: "flex-1 grid xl:grid-cols-[1fr_358px] sm:grid-cols-[1fr_80px] grid-cols-[1fr_42px] overflow-y-auto relative overflow-x-hidden bg-[var(--bg-color)] text-[var(--text-color)]",
 						CodeEditor {
 							title: current_route.name(),
 							code_map: get_source_code(&current_route),
@@ -72,39 +69,17 @@ pub fn Layout(children: Element) -> Element {
 				href: "https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap",
 			}
 		}
-
 		ToastFrame { manager: toast }
-
-		div { id: "maestro-demo", class: "flex flex-col h-screen",
+		div {
+			id: "maestro-demo",
+			class: "flex flex-col h-screen bg-[var(--bg-color)] text-[var(--text-color)]",
 			Backdrop { show: menu_open }
-			header {
-				id: "maestro-demo-header",
-				class: "py-4 sticky top-0 left-0 w-full bg-slate-900 z-30 shadow-[0_0_30px_4px] shadow-slate-500/20 border-b border-b-slate-700",
-				div { class: "container flex justify-between items-center w-full text-slate-100 gap-4",
-					LogoLight { class: "w-32 h-auto" }
 
-					h1 { class: "lg:text-xl text-lg font-semibold hidden sm:block",
-						"Dioxus Maestro"
-					}
-					a {
-						href: "https://github.com/Summit-Sailors/dioxus-maestro/tree/maestro-demo/demo",
-						target: "_blank",
-						class: "flex items-center space-x-2 text-xl text-slate-300 hover:text-slate-100 transition ring-0 ring-offset-0 focus-visible:outline-none",
-						Icon {
-							icon: IoLogoGithub,
-							width: 16,
-							height: 16,
-							class: "w-8 h-8 text-slate-100",
-						}
-						span { class: "hidden lg:block", "View On GitHub" }
-					}
-				}
-			}
-
+			NavBar {}
 			// main Content
 			main {
 				id: "maestro-demo-main",
-				class: "flex-1 flex flex-col overflow-hidden",
+				class: "flex-1 flex flex-col overflow-hidden bg-[var(--card-bg)] text-[var(--card-text)]",
 				{content}
 			}
 		}
@@ -117,14 +92,15 @@ fn NavigationMenu(close_menu: Signal<bool>) -> Element {
 		div {
 			id: "maestro-demo-nav",
 			class: tw_merge!(
-					"h-full xl:w-full w-80 bg-slate-900 xl:sticky overflow-y-auto absolute transition-all ease-linear duration-300 top-0 -right-80 z-50 px-5 xl:px-0 py-6 xl:py-0 flex gap-4 xl:border-l-0 border-l border-l-slate-600 xl:border-t-0 border-t border-t-slate-600",
+					"h-full xl:w-full w-80 bg-[var(--bg-color)] xl:sticky overflow-y-auto absolute transition-all ease-linear duration-300 top-0 -right-80 z-50 px-5 xl:px-0 py-6 xl:py-0 flex gap-4",
+					"xl:border-l-0 border-l border-l-[var(--border-color)] xl:border-t-0 border-t border-t-[var(--border-color)]",
 					(close_menu()).then_some("right-0")
 			),
 			Button {
 				variant: ButtonVariant::Icon,
 				size: ButtonSize::IconMd,
 				r#type: "button",
-				class: "text-slate-300 hover:text-slate-100 xl:hidden transition-colors",
+				class: "text-[var(--muted-text)] hover:text-[var(--text-color)] xl:hidden transition-colors",
 				onclick: move |_| close_menu.set(false),
 				Icon { icon: BsLayoutSidebarReverse, class: "w-5 h-5" }
 			}
@@ -198,9 +174,11 @@ fn render_section(title: &str, routes: &[(Route, &str)], mut close_menu: Signal<
 				Link {
 					to: route.clone(),
 					class: tw_join!(
-							"block px-4 py-2 transition-colors w-full text-left text-slate-200 font-small text-xl",
-							"hover:bg-slate-800/20 hover:text-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-600",
-							(use_route::< Route > () == * route).then_some("bg-slate-800 text-slate-100")
+							"block px-4 py-2 transition-colors w-full text-left font-small text-xl text-[var(--muted-text)]",
+							"hover:bg-[color-mix(in_oklch,var(--bg-color)_80%,black)] hover:text-[var(--text-color)]",
+							"focus:outline-none focus:ring-2 focus:ring-[var(--border-color)]", (use_route::<
+							Route > () == * route)
+							.then_some("bg-[color-mix(in_oklch,var(--bg-color)_60%,black)] text-[var(--text-color)]")
 					),
 					onclick: move |_| close_menu.set(false),
 					"{name}"

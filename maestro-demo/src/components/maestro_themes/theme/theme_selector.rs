@@ -5,11 +5,11 @@ use dioxus_free_icons::{
 };
 use tailwind_fuse::tw_merge;
 
-use crate::components::maestro_themes::theme::{context::use_theme, types::Theme};
+use crate::components::maestro_themes::theme::types::Theme;
 
 #[component]
 pub fn ThemeSelect() -> Element {
-	let theme_ctx = use_theme();
+	let theme_ctx = crate::components::maestro_themes::theme::context::use_theme();
 	let current_theme = theme_ctx.theme.read().clone().unwrap_or(Theme::Auto);
 	let mut is_open = use_signal(|| false);
 
@@ -36,7 +36,7 @@ pub fn ThemeSelect() -> Element {
 	};
 
 	rsx! {
-		div { class: "relative inline-block w-48",
+		div { class: "relative inline-block w-24",
 			button {
 				class: tw_merge!(
 						"w-full flex items-center justify-between p-2.5 text-sm text-left rounded-lg border shadow-sm transition",

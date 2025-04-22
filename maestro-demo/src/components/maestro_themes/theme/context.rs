@@ -5,7 +5,7 @@ use crate::components::maestro_themes::theme::types::{ResolvedTheme, Theme};
 
 /// Theme context to be used throughout the application
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Default)]
 pub struct ThemeContext {
 	/// Theme preference (e.g., "light", "dark", "auto")
 	pub theme: Signal<Option<Theme>>,
@@ -23,7 +23,7 @@ pub fn use_theme() -> ThemeContext {
 }
 
 // Update document class for theming
-#[cfg(feature = "web")]
+#[cfg(all(any(feature = "web", feature = "desktop"), not(feature = "server")))]
 pub fn set_document_theme(theme_class: &str) {
 	use web_sys::window;
 

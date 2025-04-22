@@ -18,7 +18,7 @@ pub struct DesignerState {
 	pub spacing: SpacingScale,
 	/// Border radius settings
 	pub border_radius: BorderRadiusSettings,
-	// Shadow settings
+	/// Shadow settings
 	pub shadow: ShadowSettings,
 }
 

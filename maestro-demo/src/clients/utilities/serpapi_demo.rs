@@ -107,11 +107,11 @@ pub fn SerpApiDemo() -> Element {
 										"{result.title}"
 									}
 								}
-								p { class: "text-sm text-gray-600", "{result.displayed_link}" }
+								p { class: "text-sm text-[color:var(--text-color)]600", "{result.displayed_link}" }
 								if let Some(snippet) = &result.snippet {
 									p { class: "mt-2", "{snippet}" }
 								}
-								p { class: "text-sm text-gray-500 mt-2",
+								p { class: "text-sm text-[color:var(--text-color)]500 mt-2",
 									"Position: {result.position}"
 								}
 							}

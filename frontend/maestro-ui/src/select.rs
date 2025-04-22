@@ -114,7 +114,7 @@ pub fn Select<T: Clone + PartialEq + std::fmt::Display + 'static>(props: SelectP
 					.container_class
 			),
 			if !props.label.is_empty() {
-				span { class: tw_merge!("text-gray-400 maestro-select-label", & props.label_class),
+				span { class: tw_merge!("text-[color:var(--text-color)]400 maestro-select-label", & props.label_class),
 					{props.label}
 				}
 			}
@@ -160,7 +160,7 @@ pub fn Select<T: Clone + PartialEq + std::fmt::Display + 'static>(props: SelectP
 					if props.is_searchable {
 						div {
 							class: tw_merge!(
-									"relative px-3 text-gray-500 maestro-select-search_container", & props
+									"relative px-3 text-[color:var(--text-color)]500 maestro-select-search_container", & props
 									.search_input_container_class
 							),
 							Icon {
@@ -183,7 +183,7 @@ pub fn Select<T: Clone + PartialEq + std::fmt::Display + 'static>(props: SelectP
 								r#type: "button",
 								size: ButtonSize::IconSm,
 								class: tw_merge!(
-										"h-fit w-fit absolute top-2.5 right-3 text-gray-500 hover:text-gray-700 focus-visible:text-gray-700 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-none focus-visible:ring-offset-0 maestro-select-search_clear",
+										"h-fit w-fit absolute top-2.5 right-3 text-[color:var(--text-color)]500 hover:text-[color:var(--text-color)]700 focus-visible:text-[color:var(--text-color)]700 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-none focus-visible:ring-offset-0 maestro-select-search_clear",
 										& props.search_clear_class
 								),
 								onclick: move |event: Event<MouseData>| {

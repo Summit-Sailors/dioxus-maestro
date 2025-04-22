@@ -53,17 +53,18 @@ pub fn FormsDemo() -> Element {
 	rsx! {
 		div {
 			id: "maestro-form",
-			class: "flex flex-col lg:gap-16 sm:gap-8 gap-6",
+			class: "p-4 text-[color:var(--text-color)] bg-[color:var(--bg-color)] rounded-lg shadow-[var(--shadow-lg)]",
 			div { class: "flex flex-col gap-3",
-				h1 { class: "text-slate-100 text-center text-2xl sm:text-3xl lg:text-4xl 2xl:text-5xl font-semibold",
+				h1 { class: "text-[color:var(--text-color)] text-center text-3xl font-bold mb-2",
 					"Maestro Form"
 				}
-				p { class: "text-slate-300 text-center text-base lg:text-xl 2xl:text-2xl",
+				p { class: "text-[color:var(--muted-text)] text-center text-base lg:text-xl 2xl:text-2xl",
 					"A powerful, type-safe form management solution for Dioxus applications that brings the best of Formik's paradigms to Rust."
 				}
 			}
-
-			div { id: "maestro-form-features", class: "flex space-x-2",
+			div {
+				id: "maestro-form-features",
+				class: "flex space-x-2 bg-[color:var(--card-bg)] text-[color:var(--card-text)] p-4 rounded-[var(--radius-md)] shadow-[var(--shadow-md)]",
 				Features {
 					title: "Features".to_string(),
 					features: vec![
@@ -80,7 +81,6 @@ pub fn FormsDemo() -> Element {
 					],
 				}
 			}
-
 			Form {
 				form,
 				onsubmit: on_submit,

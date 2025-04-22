@@ -149,7 +149,7 @@ pub fn Calendar(display_props: CalendarDisplayProps, select_props: CalendarSelec
 						button {
 							onclick: move |_| display_year -= 1,
 							class: tw_merge!(
-									"p-1 rounded-full hover:bg-gray-200 mr-1 text-gray-600",
+									"p-1 rounded-full hover:bg-gray-200 mr-1 text-[color:var(--text-color)]600",
 									month_toggle_button_class
 							),
 							Icon { class: "h-6 w-6", icon: LdChevronsLeft }
@@ -165,13 +165,13 @@ pub fn Calendar(display_props: CalendarDisplayProps, select_props: CalendarSelec
 									}
 							},
 							class: tw_merge!(
-									"p-1 rounded-full hover:bg-gray-200 mr-1 text-gray-600",
+									"p-1 rounded-full hover:bg-gray-200 mr-1 text-[color:var(--text-color)]600",
 									month_toggle_button_class
 							),
 							Icon { class: "h-6 w-6", icon: LdChevronLeft }
 						}
 					}
-					h2 { class: tw_merge!("text-lg font-semibold text-gray-800", header_class),
+					h2 { class: tw_merge!("text-lg font-semibold text-[color:var(--text-color)]800", header_class),
 						"{display_month()} {display_year()}"
 					}
 					div {
@@ -186,7 +186,7 @@ pub fn Calendar(display_props: CalendarDisplayProps, select_props: CalendarSelec
 									}
 							},
 							class: tw_merge!(
-									"p-1 rounded-full hover:bg-gray-200 mr-1 text-gray-600",
+									"p-1 rounded-full hover:bg-gray-200 mr-1 text-[color:var(--text-color)]600",
 									month_toggle_button_class
 							),
 							Icon { class: "h-6 w-6", icon: LdChevronRight }
@@ -194,7 +194,7 @@ pub fn Calendar(display_props: CalendarDisplayProps, select_props: CalendarSelec
 						button {
 							onclick: move |_| display_year += 1,
 							class: tw_merge!(
-									"p-1 rounded-full hover:bg-gray-200 mr-1 text-gray-600",
+									"p-1 rounded-full hover:bg-gray-200 mr-1 text-[color:var(--text-color)]600",
 									month_toggle_button_class
 							),
 							Icon { class: "h-6 w-6", icon: LdChevronsRight }
@@ -204,7 +204,7 @@ pub fn Calendar(display_props: CalendarDisplayProps, select_props: CalendarSelec
 				div { class: tw_merge!("p-4 maestro-calendar-body", body_class),
 					div { class: tw_merge!("grid !grid-cols-6 gap-2 mb-2 maestro-calendar-days", days_class),
 						for day in ECalendarDay::iter() {
-							div { class: "text-center text-sm font-medium text-gray-600",
+							div { class: "text-center text-sm font-medium text-[color:var(--text-color)]600",
 								"{day}"
 							}
 						}
@@ -213,8 +213,8 @@ pub fn Calendar(display_props: CalendarDisplayProps, select_props: CalendarSelec
 						if empty_cells < 6 {
 							for _ in 0..=empty_cells {
 								div {
-									class: "h-10 w-10 rounded-full flex items-center justify-center text-sm text-gray-900 maestro-calendar-day",
-									class: "text-gray-400 cursor-not-allowed maestro-calendar-day__disabled",
+									class: "h-10 w-10 rounded-full flex items-center justify-center text-sm text-[color:var(--text-color)]900 maestro-calendar-day",
+									class: "text-[color:var(--text-color)]400 cursor-not-allowed maestro-calendar-day__disabled",
 								}
 							}
 						}
@@ -295,7 +295,7 @@ pub fn CalendarDayComponent(delta: u8, display_props: CalendarDisplayProps, sele
 		return rsx! {
 			div {
 				class: tw_merge!(
-						"h-10 w-10 rounded-full flex items-center justify-center text-sm text-gray-900 maestro-calendar-day",
+						"h-10 w-10 rounded-full flex items-center justify-center text-sm text-[color:var(--text-color)]900 maestro-calendar-day",
 						day_class
 				),
 				""
@@ -322,13 +322,13 @@ pub fn CalendarDayComponent(delta: u8, display_props: CalendarDisplayProps, sele
 			disabled: is_disabled,
 			key: delta,
 			class: tw_merge!(
-					"h-10 w-10 rounded-full flex items-center justify-center text-sm text-gray-900 maestro-calendar-day relative",
+					"h-10 w-10 rounded-full flex items-center justify-center text-sm text-[color:var(--text-color)]900 maestro-calendar-day relative",
 					day_class, is_today
 					.then_some(tw_merge!("bg-blue-500 text-white maestro-calendar-day__today", &
 					day_today_class)), (selected_date() == this_display_date)
 					.then_some(tw_merge!("bg-blue-200 maestro-calendar-day__selected", &
 					day_selected_class)), is_disabled
-					.then_some(tw_merge!("text-gray-500 cursor-not-allowed maestro-calendar-day__disabled",
+					.then_some(tw_merge!("text-[color:var(--text-color)]500 cursor-not-allowed maestro-calendar-day__disabled",
 					day_disabled_class)), (! is_today && selected_date() != this_display_date && !
 					is_disabled).then_some(tw_merge!("hover:bg-gray-100", hover_day_class))
 			),

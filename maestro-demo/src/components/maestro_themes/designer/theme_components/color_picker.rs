@@ -58,9 +58,9 @@ pub fn ColorPicker(props: ColorPickerProps) -> Element {
 	let muted_foreground_handler = make_color_handler("muted_foreground");
 
 	rsx! {
-		div { class: "color-picker-container",
-			h3 { class: "text-lg font-medium mb-3", "Colors" }
-			div { class: "color-picker-grid",
+		div { class: "p-6 bg-[var(--card-bg)] text-[var(--card-text)] rounded-lg shadow-md",
+			h3 { class: "text-lg font-medium mb-4", "Colors" }
+			div { class: "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4",
 				ColorInput {
 					label: "Primary",
 					value: colors.primary,
@@ -143,19 +143,19 @@ fn ColorInput(props: ColorInputProps) -> Element {
 	let handle_change = move |evt: Event<FormData>| props.on_change.call(evt.value());
 
 	rsx! {
-		div { class: "color-input-group",
-			label { class: "block text-sm font-medium mb-2", "{props.label}" }
-			div { class: "color-input-wrapper flex items-center space-x-2",
+		div { class: "flex flex-col gap-2",
+			label { class: "text-sm font-medium", "{props.label}" }
+			div { class: "flex items-center gap-2",
 				input {
 					r#type: "color",
 					value: "{props.value}",
-					class: "color-picker h-8 w-8 rounded",
+					class: "h-8 w-8 rounded border border-[var(--border-color)] bg-[var(--input-bg)] cursor-pointer",
 					oninput: handle_change,
 				}
 				input {
 					r#type: "text",
 					value: "{props.value}",
-					class: "color-text-input text-sm border rounded px-2 py-1 w-28",
+					class: "text-sm border border-[var(--border-color)] bg-[var(--input-bg)] rounded px-2 py-1 w-28 text-[var(--text-color)]",
 					oninput: handle_change,
 				}
 			}

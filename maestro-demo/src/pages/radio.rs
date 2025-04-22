@@ -53,11 +53,13 @@ pub fn RadioDemo() -> Element {
 	rsx! {
 		div {
 			id: "maestro-radio",
-			class: "grid justify-center grid-cols-1 p-4 space-y-6 bg-slate-900 rounded-lg",
+			class: "grid justify-center grid-cols-1 p-4 space-y-6 bg-[color:var(--bg-color)] text-[color:var(--text-color)] rounded-lg",
 
 			div { id: "maestro-radio-header", class: "mb-4",
-				h1 { class: "text-slate-100 text-center text-3xl font-bold mb-2", "Maestro Radio" }
-				p { class: "text-slate-300 text-center",
+				h1 { class: "text-[color:var(--text-color)] text-center text-3xl font-bold mb-2",
+					"Maestro Radio"
+				}
+				p { class: "text-[color:var(--muted-text)] text-center",
 					"Maestro Radio is a state management utility for Dioxus that takes reactive state to the next level with its innovative channel-based approach. Unlike traditional state management solutions,
 				Maestro Radio provides a flexible, granular, and type-safe mechanism for managing complex application states."
 				}
@@ -86,28 +88,22 @@ pub fn RadioDemo() -> Element {
 
 				div {
 					id: "maestro-radio-controls",
-					class: "bg-slate-900 p-4 rounded-xl shadow-lg border border-slate-700",
-					h2 { class: "text-xl text-slate-100 text-center font-semibold mb-4",
-						"Counter Controls"
-					}
+					class: "bg-[color:var(--card-bg)] text-[color:var(--card-text)] p-4 rounded-xl shadow-md border border-[color:var(--border-color)]",
+					h2 { class: "text-xl text-center font-semibold mb-4", "Counter Controls" }
 					CounterControls {}
 				}
 
 				div {
 					id: "maestro-radio-display",
-					class: "bg-slate-900 p-4 rounded-xl shadow-lg border border-slate-700",
-					h2 { class: "text-xl text-slate-100 text-center font-semibold mb-4",
-						"Counter Display"
-					}
+					class: "bg-[color:var(--card-bg)] text-[color:var(--card-text)] p-4 rounded-xl shadow-md border border-[color:var(--border-color)]",
+					h2 { class: "text-xl text-center font-semibold mb-4", "Counter Display" }
 					CounterDisplay {}
 				}
 
 				div {
 					id: "maestro-radio-monitor",
-					class: "lg:col-span-1 bg-slate-900 p-4 rounded-xl shadow-lg border border-slate-700",
-					h2 { class: "text-xl text-slate-100 text-center font-semibold mb-4",
-						"Channel Monitor"
-					}
+					class: "lg:col-span-1 bg-[color:var(--card-bg)] text-[color:var(--card-text)] p-4 rounded-xl shadow-md border border-[color:var(--border-color)]",
+					h2 { class: "text-xl text-center font-semibold mb-4", "Channel Monitor" }
 					ChannelMonitor {}
 				}
 			}
@@ -148,17 +144,17 @@ fn CounterControls() -> Element {
 	rsx! {
 		div { class: "grid grid-cols-1 space-y-2 rounded-lg",
 			button {
-				class: "flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition",
+				class: "flex-1 px-4 py-2 bg-[color:var(--primary-bg)] text-[color:var(--primary-text)] rounded-lg shadow-md hover:bg-blue-600 transition",
 				onclick: handle_increment,
 				"+"
 			}
 			button {
-				class: "flex-1 px-4 py-2 bg-yellow-500 text-white rounded-lg shadow-md hover:bg-yellow-600 transition",
+				class: "flex-1 px-4 py-2 bg-[color:var(--secondary-bg)] text-[color:var(--secondary-text)] rounded-lg shadow-md hover:bg-yellow-600 transition",
 				onclick: handle_decrement,
 				"-"
 			}
 			button {
-				class: "flex-1 px-4 py-2 bg-red-500 text-white rounded-lg shadow-md hover:bg-red-600 transition",
+				class: "flex-1 px-4 py-2 bg-[color:var(--destructive)] text-[color:var(--destructive-foreground)] rounded-lg shadow-md hover:bg-red-600 transition",
 				onclick: handle_reset,
 				"Reset"
 			}
@@ -168,18 +164,16 @@ fn CounterControls() -> Element {
 
 #[component]
 fn CounterDisplay() -> Element {
-	// separate radios for each action
 	let increment_radio = use_radio(CounterChannel::Increment);
 	let _decrement_radio = use_radio(CounterChannel::Decrement);
 	let _reset_radio = use_radio(CounterChannel::Reset);
 
-	// reading the latest state from any of the radios (they all share the same state)
 	let state = increment_radio.read();
 
 	rsx! {
-		div { class: "space-y-4 text-center bg-slate-800 border border-slate-700 rounded-lg p-2",
-			div { class: "text-5xl font-bold text-slate-200", "{state.count}" }
-			div { class: "text-sm text-slate-400", "Last update: {state.last_update}" }
+		div { class: "space-y-4 text-center bg-[color:var(--card-bg)] text-[color:var(--card-text)] border border-[color:var(--border-color)] rounded-lg p-2",
+			div { class: "text-5xl font-bold", "{state.count}" }
+			div { class: "text-sm text-[color:var(--muted-text)]", "Last update: {state.last_update}" }
 		}
 	}
 }
@@ -207,9 +201,9 @@ fn ChannelMonitor() -> Element {
 #[component]
 fn ChannelCard(channel: CounterChannel, value: i32) -> Element {
 	rsx! {
-		div { class: "p-4 bg-slate-800 rounded-lg border border-slate-700 shadow-md",
-			div { class: "font-bold text-slate-200 mb-2 text-lg", "{channel} Channel" }
-			div { class: "text-3xl font-bold text-slate-200", "{value}" }
+		div { class: "p-4 bg-[color:var(--card-bg)] text-[color:var(--card-text)] rounded-lg border border-[color:var(--border-color)] shadow-md",
+			div { class: "font-bold mb-2 text-lg", "{channel} Channel" }
+			div { class: "text-3xl font-bold", "{value}" }
 		}
 	}
 }

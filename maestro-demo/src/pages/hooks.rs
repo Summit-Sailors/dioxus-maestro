@@ -53,7 +53,7 @@ pub fn HooksDemo() -> Element {
 	rsx! {
 		div {
 			id: "maestro-hooks",
-			class: "hooks-demo bg-slate-900 p-4 rounded-lg shadow-lg space-y-6",
+			class: "hooks-demo bg-[color:var(--bg-color)] p-4 rounded-lg shadow-lg space-y-6",
 
 			div { id: "maestro-hooks-header", class: "mb-8",
 				h1 { class: "text-slate-100 text-center text-3xl font-bold mb-2", "Maestro Hooks" }
@@ -114,14 +114,14 @@ pub fn HooksDemo() -> Element {
 					HookSection::Clipboard => rsx! {
 						section {
 							id: "maestro-hooks-clipboard",
-							class: "clipboard-demo bg-slate-900 p-6 rounded-lg shadow",
+							class: "clipboard-demo bg-[color:var(--bg-color)] p-6 rounded-lg shadow",
 							h2 { class: "text-lg text-slate-100 text-center font-bold mb-4", "Clipboard Hook" }
 							p { class: "text-slate-300 text-center mb-4",
 								"A unified clipboard interface that works seamlessly across desktop and web platforms with comprehensive error handling."
 							}
 							input {
 								class: tw_join!(
-										"md:w-4/5 mx-auto w-full flex justify-center bg-slate-900 border border-slate-500 text-slate-100 rounded px-3 py-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none placeholder-slate-500"
+										"md:w-4/5 mx-auto w-full flex justify-center bg-[color:var(--bg-color)] border border-slate-500 text-slate-100 rounded px-3 py-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none placeholder-slate-500"
 								),
 								placeholder: "Type something to copy",
 								value: "{clipboard_content}",
@@ -194,7 +194,7 @@ pub fn HooksDemo() -> Element {
 					HookSection::Memo => rsx! {
 						section {
 							id: "maestro-hooks-memo",
-							class: "memo-demo bg-slate-900 p-6 rounded-lg shadow",
+							class: "memo-demo bg-[color:var(--bg-color)] p-6 rounded-lg shadow",
 							h2 { class: "text-lg text-center text-slate-100 font-bold mb-4", "Explicit Memo Hook" }
 							div { class: "flex space-x-4 justify-center mb-8",
 								button {
@@ -258,7 +258,7 @@ pub fn HooksDemo() -> Element {
 					HookSection::Pagination => rsx! {
 						section {
 							id: "maestro-hooks-pagination",
-							class: "pagination-demo bg-slate-900 p-6 rounded-lg shadow",
+							class: "pagination-demo bg-[color:var(--bg-color)] p-6 rounded-lg shadow",
 							h2 { class: "text-lg font-bold text-slate-100 text-center mb-4", "Pagination Hook" }
 							table { class: "w-auto mx-auto text-center border-collapse shadow border border-slate-700 rounded-md mb-6",
 								tr {
@@ -315,7 +315,7 @@ pub fn HooksDemo() -> Element {
 							div { class: "flex justify-center text-slate-200 items-center gap-4 mb-4",
 								"Items per page: "
 								select {
-									class: "border bg-slate-900 border-slate-500 rounded p-1",
+									class: "border bg-[color:var(--bg-color)] border-slate-500 rounded p-1",
 									value: "{*pagination.page_size.read()}",
 									onchange: move |e: FormEvent| {
 											if let Ok(size) = e.value().parse::<i32>() {

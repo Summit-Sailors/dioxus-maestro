@@ -7,12 +7,14 @@ use crate::router::Route;
 #[component]
 pub fn HomePage() -> Element {
 	rsx! {
-		div { id: "home-page", class: "overflow-y-auto",
+		div {
+			id: "home-page",
+			class: "overflow-y-auto bg-[color:var(--bg-color)]",
 			div { class: "container flex flex-col animate-fade-in py-7 sm:py-10 lg:py-16",
-				h1 { class: "2xl:text-5xl lg:text-4xl text-2xl sm:text-3xl font-semibold text-center",
+				h1 { class: "2xl:text-5xl lg:text-4xl text-2xl sm:text-3xl font-semibold text-center text-[color:var(--text-color)]",
 					"Welcome to the Maestro Demo App"
 				}
-				p { class: "mt-3 text-base lg:text-xl 2xl:text-2xl text-center",
+				p { class: "mt-3 text-base lg:text-xl 2xl:text-2xl text-center text-[color:var(--muted-text)]",
 					"Explore the capabilities of our components and utilities."
 				}
 				div {
@@ -39,10 +41,6 @@ pub fn HomePage() -> Element {
 						description: "Currently we are working on development of new amazing utilities for Dioxus and always open for any suggestions and requests :)",
 					}
 				}
-				FeatureCard {
-					title: "Next...",
-					description: "Currently we are working on development of new amazing utilities for Dioxus and always open for any suggestions and requests :)",
-				}
 			}
 		}
 	}
@@ -51,15 +49,19 @@ pub fn HomePage() -> Element {
 #[component]
 pub fn FeatureCard(title: &'static str, description: String, route: Option<Route>) -> Element {
 	rsx! {
-		div { class: "py-6 px-5 bg-slate-800/70 rounded transition-all flex flex-col gap-4 border border-slate-700 hover:border-slate-600 items-center",
+		div { class: "py-6 px-5 rounded transition-all flex flex-col gap-4 border hover:border-[color:var(--hover-bg)] items-center
+									bg-[color:var(--card-bg)] border-[color:var(--border-color)] text-[color:var(--card-text)]",
 			h2 { class: "lg:text-2xl text-xl font-medium", "{title}" }
-			p { class: "text-slate-300 xl:text-lg text-base mb-6 text-center", "{description}" }
+			p { class: "xl:text-lg text-base mb-6 text-center text-[color:var(--muted-text)]",
+				"{description}"
+			}
 			if let Some(route) = route {
 				Link {
 					to: route,
 					class: "mt-auto ring-0 ring-offset-0 focus-visible:outline-none",
 					Button {
-						class: "w-fit text-lg bg-indigo-600 text-slate-100 hover:bg-indigo-700 ring-indigo-700 ring-offset-slate-800/70 focus:outline-none",
+						class: "w-fit text-lg text-[color:var(--primary-text)] bg-[color:var(--primary-bg)] hover:bg-[color:var(--hover-bg)]
+															ring-[color:var(--focus-ring)] ring-offset-[color:var(--card-bg)] focus:outline-none",
 						variant: ButtonVariant::Default,
 						size: ButtonSize::Lg,
 						r#type: "button",

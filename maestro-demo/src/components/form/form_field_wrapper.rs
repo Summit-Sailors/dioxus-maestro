@@ -20,14 +20,15 @@ pub fn FormFieldWrapper(props: FormFieldWrapperProps) -> Element {
 	let show_validation = props.show_validation;
 	let has_error = show_validation && !props.field.errors.read().is_empty() && *props.field.touched.read();
 
-	let label_class = tw_join!("block text-sm text-slate-200 font-medium mb-1", if has_error { "text-red-500" } else { "text-slate-200" });
+	let label_class =
+		tw_join!("block text-sm text-[color:var(--text-color)] font-medium mb-1", if has_error { "text-red-500" } else { "text-[color:var(--text-color)]" });
 
 	rsx! {
 		div { class: "form-group grid",
 			label { class: "{label_class}",
 				"{props.label}"
 				if props.required.unwrap_or(false) {
-					span { class: "text-red-500 ml-1", "*" }
+					span { class: "text-[color:var(--destructive)] ml-1", "*" }
 				}
 			}
 			div { class: "relative",
@@ -36,14 +37,14 @@ pub fn FormFieldWrapper(props: FormFieldWrapperProps) -> Element {
 					p { class: "mt-1 text-sm text-slate-400", "{help_text}" }
 				}
 				{(has_error).then(|| rsx! {
-					div { class: "text-red-500 text-sm mt-1", "{props.field.errors.read().join(\", \")}" }
+					div { class: "text-[color:var(--destructive)] text-sm mt-1", "{props.field.errors.read().join(\", \")}" }
 				})}
 				{
 						(show_validation && *props.field.touched.read())
 								.then(|| rsx! {
 									div { class: "absolute top-2.5 right-2",
 										if has_error {
-											i { class: "fas fa-exclamation-circle text-red-500" }
+											i { class: "fas fa-exclamation-circle text-[color:var(--destructive)]" }
 										} else {
 											i { class: "fas fa-check-circle text-green-500" }
 										}

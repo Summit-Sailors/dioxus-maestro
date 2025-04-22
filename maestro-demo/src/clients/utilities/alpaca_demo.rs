@@ -263,7 +263,7 @@ pub fn AlpacaDemo() -> Element {
 								}
 						} else {
 								rsx! {
-									div { class: "p-4 bg-gray-100 text-gray-800 rounded", "No data available" }
+									div { class: "p-4 bg-gray-100 text-[color:var(--text-color)]800 rounded", "No data available" }
 								}
 						}
 				}
@@ -392,46 +392,46 @@ fn ExtendedStockStats(bars: Vec<NewBar>) -> Element {
 		div { class: "space-y-6",
 			div { class: "mt-4 grid grid-cols-1 md:grid-cols-3 gap-4",
 				div { class: "p-4 border rounded",
-					h3 { class: "font-medium text-gray-600", "Period Change" }
+					h3 { class: "font-medium text-[color:var(--text-color)]600", "Period Change" }
 					p { class: "text-xl {change_class}",
 						"{period_change:.2} ({period_change_percent:.2}%)"
 					}
 				}
 
 				div { class: "p-4 border rounded",
-					h3 { class: "font-medium text-gray-600", "Price Range" }
+					h3 { class: "font-medium text-[color:var(--text-color)]600", "Price Range" }
 					p { class: "text-xl", "Low: {lowest_price:.2} - High: {highest_price:.2}" }
-					p { class: "text-sm text-gray-500", "Avg: {avg_price:.2}" }
+					p { class: "text-sm text-[color:var(--text-color)]500", "Avg: {avg_price:.2}" }
 				}
 
 				div { class: "p-4 border rounded",
-					h3 { class: "font-medium text-gray-600", "Volume" }
+					h3 { class: "font-medium text-[color:var(--text-color)]600", "Volume" }
 					p { class: "text-xl", "Total: {total_volume}" }
-					p { class: "text-sm text-gray-500", "Avg: {avg_volume}" }
+					p { class: "text-sm text-[color:var(--text-color)]500", "Avg: {avg_volume}" }
 				}
 			}
 
 			// advanced statistics
 			div { class: "mt-4 grid grid-cols-1 md:grid-cols-3 gap-4",
 				div { class: "p-4 border rounded",
-					h3 { class: "font-medium text-gray-600", "Volatility" }
+					h3 { class: "font-medium text-[color:var(--text-color)]600", "Volatility" }
 					p { class: "text-xl", "{volatility:.4}" }
 				}
 
 				div { class: "p-4 border rounded",
-					h3 { class: "font-medium text-gray-600", "Price Movement" }
+					h3 { class: "font-medium text-[color:var(--text-color)]600", "Price Movement" }
 					div { class: "flex items-center justify-between",
 						span { class: "text-green-600", "Up: {up_days}" }
 						span { class: "text-red-600", "Down: {down_days}" }
-						span { class: "text-gray-600", "Flat: {flat_days}" }
+						span { class: "text-[color:var(--text-color)]600", "Flat: {flat_days}" }
 					}
 				}
 
 
 				div { class: "p-4 border rounded",
-					h3 { class: "font-medium text-gray-600", "Latest Price" }
+					h3 { class: "font-medium text-[color:var(--text-color)]600", "Latest Price" }
 					p { class: "text-xl {change_class}", "{latest_bar.close:.2}" }
-					p { class: "text-sm text-gray-500",
+					p { class: "text-sm text-[color:var(--text-color)]500",
 						{format!("{}", latest_bar.time.format("%Y-%m-%d %H:%M"))}
 					}
 				}

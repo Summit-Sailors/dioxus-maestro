@@ -74,7 +74,7 @@ pub fn DieselDemo() -> Element {
 			} else if let Some(err) = error() {
 				div { class: "text-red-500 text-center", "Error: {err}" }
 			} else if users.is_empty() {
-				div { class: "text-center text-gray-50", "No Users found" }
+				div { class: "text-center text-[color:var(--text-color)]50", "No Users found" }
 			} else {
 				div { class: "flex flex-col items-center justify-center mt-4 w-full",
 					// pagination info
@@ -92,9 +92,9 @@ pub fn DieselDemo() -> Element {
 														class: "border border-slate-700 rounded-xl p-4 bg-gray-800 text-slate-100 shadow transition hover:shadow-lg hover:border-slate-500",
 														key: "{item.id}",
 														p { class: "text-xl font-bold text-white", "{item.username}" }
-														p { class: "text-sm text-gray-300", "{item.email:?}" }
-														p { class: "text-sm text-gray-300", "{item.age.unwrap_or(0)} years old" }
-														p { class: "text-sm text-gray-400 italic", "Role: {item.role:?}" }
+														p { class: "text-sm text-[color:var(--text-color)]300", "{item.email:?}" }
+														p { class: "text-sm text-[color:var(--text-color)]300", "{item.age.unwrap_or(0)} years old" }
+														p { class: "text-sm text-[color:var(--text-color)]400 italic", "Role: {item.role:?}" }
 													}
 												}
 										})

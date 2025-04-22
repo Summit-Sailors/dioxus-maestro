@@ -298,7 +298,7 @@ pub fn BatchOperationsDemo() -> Element {
 	};
 
 	rsx! {
-		div { class: "p-6 bg-slate-900 rounded-lg shadow-lg",
+		div { class: "p-6 bg-[color:var(--bg-color)] rounded-lg shadow-lg",
 			h3 { class: "text-2xl text-slate-100 text-center font-bold mb-4", "Batch Operations" }
 
 			div { class: "mb-4 p-2 bg-slate-800 rounded text-center text-slate-300",

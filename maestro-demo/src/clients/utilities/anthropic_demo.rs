@@ -94,7 +94,7 @@ pub fn AnthropicDemo() -> Element {
 
 					// system prompt input
 					div { class: "flex-1",
-						label { class: "block text-sm font-medium text-gray-300", "System Prompt" }
+						label { class: "block text-sm font-medium text-[color:var(--text-color)]300", "System Prompt" }
 						input {
 							class: "mt-1 block w-full rounded-md border border-gray-600 bg-gray-800 text-white placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500",
 							placeholder: "Enter system prompt...",
@@ -105,7 +105,7 @@ pub fn AnthropicDemo() -> Element {
 
 					// temperature slider
 					div { class: "w-64",
-						label { class: "block text-sm font-medium text-gray-300",
+						label { class: "block text-sm font-medium text-[color:var(--text-color)]300",
 							"Temperature: {temperature}"
 						}
 						input {
@@ -135,7 +135,7 @@ pub fn AnthropicDemo() -> Element {
 												div {
 													class: tw_join!(
 															if is_user { "bg-blue-600 text-white p-3 rounded-lg max-w-3/4" } else {
-															"bg-gray-700 text-gray-100 p-3 rounded-lg max-w-3/4" }
+															"bg-gray-700 text-[color:var(--text-color)]100 p-3 rounded-lg max-w-3/4" }
 													),
 													p { style: "white-space: pre-wrap;", "{message.content}" }
 													{

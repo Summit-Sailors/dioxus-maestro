@@ -90,14 +90,14 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
 	let highlighted_code = highlight_code(&current_code, &props.language);
 
 	let action_buttons = rsx! {
-		div { class: "text-slate-100 z-10 bg-slate-900 sticky top-0 left-0 px-5 py-6",
+		div { class: "text-[color:var(--text-color)] z-10 bg-[color:var(--bg-color)] sticky top-0 left-0 px-5 py-6",
 			div { class: "flex flex-col sm:flex-row gap-4 items-center sm:items-start sm:justify-center",
 				div { class: "relative",
 					Button {
 						variant: ButtonVariant::Icon,
 						size: ButtonSize::IconMd,
 						r#type: "button",
-						class: "text-slate-300 hover:text-slate-100 transition-colors",
+						class: "text-[color:var(--muted-foreground)] hover:text-[color:var(--text-color)] transition-colors",
 						disabled: "{is_copying()}",
 						onclick: handle_copy,
 						title: "Copy Code",
@@ -110,7 +110,7 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
 					}
 					div {
 						class: tw_join!(
-								"absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white text-xs py-1 px-2 rounded transition-opacity duration-300 {}",
+								"absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-[color:var(--bg-color)] text-[color:var(--text-color)] text-xs py-1 px-2 rounded transition-opacity duration-300 {}",
 								if copy_status().is_empty() { "opacity-0" } else { "opacity-100" }
 						),
 						"{copy_status}"
@@ -135,14 +135,16 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
 	};
 
 	rsx! {
-		div { class: "grid sm:grid-cols-[108px_1fr] grid-cols-[42px_1fr]  overflow-y-auto",
-			div { class: "border-r border-r-slate-700 relative", {action_buttons.clone()} }
+		div { class: "grid sm:grid-cols-[108px_1fr] grid-cols-[42px_1fr] overflow-y-auto",
+			div { class: "border-r border-[color:var(--border-color)] relative",
+				{action_buttons.clone()}
+			}
 
-			div { class: "lg:px-16 lg:py-16 sm:py-8 sm:px-6 py-6 px-4 bg-slate-900 h-full w-full flex flex-col overflow-x-hidden",
+			div { class: "lg:px-16 lg:py-16 sm:py-8 sm:px-6 py-6 px-4 bg-[color:var(--bg-color)] h-full w-full flex flex-col overflow-x-hidden",
 				// code section
 				if is_expanded() {
-					div { class: "bg-slate-900 flex-1 flex flex-col",
-						h2 { class: "text-slate-100 text-center text-2xl sm:text-3xl lg:text-4xl 2xl:text-5xl font-semibold mb-3",
+					div { class: "bg-[color:var(--bg-color)] flex-1 flex flex-col",
+						h2 { class: "text-[color:var(--text-color)] text-center text-2xl sm:text-3xl lg:text-4xl 2xl:text-5xl font-semibold mb-3",
 							"Source Code"
 						}
 
@@ -154,15 +156,15 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
 								onchange: move |value| selected_file.set(value),
 								label: "Single Select",
 								placeholder: "Select an option",
-								button_class: "text-slate-200 bg-slate-900",
-								dropdown_class: "text-slate-200 !bg-slate-900 border-slate-700",
-								option_class: "hover:bg-slate-800 text-slate-200",
+								button_class: "text-[color:var(--text-color)] bg-[color:var(--input-bg)]",
+								dropdown_class: "text-[color:var(--text-color)] bg-[color:var(--input-bg)] border-[color:var(--border-color)]",
+								option_class: "hover:bg-[color:var(--muted)] text-[color:var(--text-color)]",
 							}
 						}
 
-						div { class: "relative flex-1 rounded-lg flex flex-col bg-slate-950/20 lg:px-16 sm:px-6 px-2 py-8 h-full overflow-x-auto mt-8",
+						div { class: "relative flex-1 rounded-lg flex flex-col bg-[color:var(--muted)] lg:px-16 sm:px-6 px-2 py-8 h-full overflow-x-auto mt-8",
 
-							div { class: "flex justify-between items-center bg-slate-800 text-slate-300 text-xs px-4 py-2 rounded-t-md",
+							div { class: "flex justify-between items-center bg-[color:var(--secondary-bg)] text-[color:var(--secondary-text)] text-xs px-4 py-2 rounded-t-md",
 								span { class: "font-mono", "{selected_file()}" }
 								div { class: "flex gap-1",
 									span { class: "w-3 h-3 bg-red-500 rounded-full" }
@@ -172,7 +174,7 @@ pub fn CodeEditor(props: CodeEditorProps) -> Element {
 							}
 
 							div {
-								class: "font-mono text-sm whitespace-pre p-4",
+								class: "font-mono text-sm whitespace-pre p-4 text-[color:var(--text-color)]",
 								// dangerous_inner_html to render the highlighted code
 								dangerous_inner_html: "{highlighted_code}",
 							}

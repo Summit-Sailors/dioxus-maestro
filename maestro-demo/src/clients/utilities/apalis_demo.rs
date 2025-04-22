@@ -33,7 +33,7 @@ pub fn JobForm() -> Element {
 			h2 { class: "text-xl font-semibold text-white mb-4 text-center", "Add Email Job" }
 
 			div { class: "mb-4",
-				label { class: "block text-sm text-gray-300 mb-1", "To:" }
+				label { class: "block text-sm text-[color:var(--text-color)]300 mb-1", "To:" }
 				input {
 					class: "w-full p-2 rounded-md bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring focus:border-blue-500",
 					value: "{to}",
@@ -42,7 +42,7 @@ pub fn JobForm() -> Element {
 			}
 
 			div { class: "mb-4",
-				label { class: "block text-sm text-gray-300 mb-1", "Subject:" }
+				label { class: "block text-sm text-[color:var(--text-color)]300 mb-1", "Subject:" }
 				input {
 					class: "w-full p-2 rounded-md bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring focus:border-blue-500",
 					value: "{subject}",
@@ -51,7 +51,7 @@ pub fn JobForm() -> Element {
 			}
 
 			div { class: "mb-4",
-				label { class: "block text-sm text-gray-300 mb-1", "Body:" }
+				label { class: "block text-sm text-[color:var(--text-color)]300 mb-1", "Body:" }
 				textarea {
 					class: "w-full p-2 rounded-md bg-gray-700 text-white border border-gray-600 h-32 resize-none focus:outline-none focus:ring focus:border-blue-500",
 					value: "{body}",
@@ -66,7 +66,7 @@ pub fn JobForm() -> Element {
 			}
 
 			if !status().is_empty() {
-				div { class: "mt-4 text-sm text-gray-300 text-center",
+				div { class: "mt-4 text-sm text-[color:var(--text-color)]300 text-center",
 					p { "{status}" }
 				}
 			}
@@ -103,9 +103,9 @@ pub fn JobsList() -> Element {
 			}
 
 			if loading() {
-				p { class: "text-gray-400 text-center", "Loading jobs state..." }
+				p { class: "text-[color:var(--text-color)]400 text-center", "Loading jobs state..." }
 			} else {
-				pre { class: "bg-gray-900 text-gray-100 p-4 rounded-md whitespace-pre-wrap text-sm",
+				pre { class: "bg-gray-900 text-[color:var(--text-color)]100 p-4 rounded-md whitespace-pre-wrap text-sm",
 					{
 							{
 									jobs_states
@@ -155,7 +155,7 @@ pub fn ApalisDemo() -> Element {
 						],
 					}
 				}
-				p { class: "text-gray-400 text-center max-w-md",
+				p { class: "text-[color:var(--text-color)]400 text-center max-w-md",
 					"A simple demo of using apalis job scheduling in Dioxus"
 				}
 

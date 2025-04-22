@@ -176,10 +176,10 @@ pub fn get_components_section(components_section_id: &str) -> Result<VNode, Rend
 								label: "Single Select:",
 								placeholder: "Select an option",
 								placeholder_class: "text-slate-500",
-								dropdown_class: "bg-slate-900 border border-slate-700",
+								dropdown_class: "bg-[color:var(--bg-color)] border border-slate-700",
 								option_class: "hover:bg-slate-500 bg-slate-800 text-slate-100",
 								label_class: "text-slate-200",
-								button_class: "bg-slate-900 text-slate-200",
+								button_class: "bg-[color:var(--bg-color)] text-slate-200",
 							}
 							Select {
 								options: vec![
@@ -201,10 +201,10 @@ pub fn get_components_section(components_section_id: &str) -> Result<VNode, Rend
 								label: "Single Select with Search:",
 								placeholder: "Select an option",
 								placeholder_class: "text-slate-500",
-								dropdown_class: "bg-slate-900 border border-slate-700",
+								dropdown_class: "bg-[color:var(--bg-color)] border border-slate-700",
 								option_class: "hover:bg-slate-500 bg-slate-800 text-slate-100",
 								label_class: "text-slate-200",
-								button_class: "bg-slate-900 text-slate-200",
+								button_class: "bg-[color:var(--bg-color)] text-slate-200",
 								is_searchable: true,
 							}
 							MultiSelect {
@@ -227,10 +227,10 @@ pub fn get_components_section(components_section_id: &str) -> Result<VNode, Rend
 								label: "Multi Select:",
 								placeholder: "Select items...",
 								placeholder_class: "text-slate-500",
-								dropdown_class: "bg-slate-900 border border-slate-700",
+								dropdown_class: "bg-[color:var(--bg-color)] border border-slate-700",
 								option_class: "hover:bg-slate-500 bg-slate-800 text-slate-100",
 								label_class: "text-slate-200",
-								button_class: "bg-slate-900 text-slate-200",
+								button_class: "bg-[color:var(--bg-color)] text-slate-200",
 							}
 							MultiSelect {
 								options: vec![
@@ -252,10 +252,10 @@ pub fn get_components_section(components_section_id: &str) -> Result<VNode, Rend
 								label: "Multi Select With Search:",
 								placeholder: "Select items...",
 								placeholder_class: "text-slate-500",
-								dropdown_class: "bg-slate-900 border border-slate-700",
+								dropdown_class: "bg-[color:var(--bg-color)] border border-slate-700",
 								option_class: "hover:bg-slate-500 bg-slate-800 text-slate-100",
 								label_class: "text-slate-200",
-								button_class: "bg-slate-900 text-slate-200",
+								button_class: "bg-[color:var(--bg-color)] text-slate-200",
 								is_searchable: true,
 							}
 						}

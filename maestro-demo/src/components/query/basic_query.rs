@@ -173,8 +173,8 @@ pub fn QueryDemo() -> Element {
 	};
 
 	rsx! {
-		div { class: "flex justify-center items-center rounded-lg shadow-lg bg-slate-900 py-4",
-			div { class: "flex flex-col items-center bg-slate-900 rounded-lg shadow-lg w-full p-4 max-w-lg",
+		div { class: "flex justify-center items-center rounded-lg shadow-lg bg-[color:var(--bg-color)] py-4",
+			div { class: "flex flex-col items-center bg-[color:var(--bg-color)] rounded-lg shadow-lg w-full p-4 max-w-lg",
 
 				h3 { class: "text-2xl text-slate-100 text-center font-bold mb-4", "Default Query" }
 

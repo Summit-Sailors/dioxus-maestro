@@ -28,7 +28,7 @@ pub fn CompleteQueryDemo() -> Element {
 	rsx! {
 		div {
 			id: "maestro-query",
-			class: "w-full bg-slate-900 p-4 rounded-lg shadow-lg",
+			class: "w-full bg-[color:var(--bg-color)] p-4 rounded-lg shadow-lg",
 
 			div { id: "maestro-query-header", class: "mb-8",
 				h1 { class: "text-slate-100 text-center text-3xl font-bold mb-2", "Maestro Query" }

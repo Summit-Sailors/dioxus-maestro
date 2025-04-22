@@ -180,7 +180,7 @@ pub fn PlottersDemo() -> Element {
 	rsx! {
 		div {
 			id: "maestro-plotters",
-			class: "p-4 bg-slate-900 rounded-lg w-full",
+			class: "p-4 bg-[color:var(--bg-color)] rounded-lg w-full",
 			div { id: "maestro-plotters-header", class: "mb-8",
 				h1 { class: "text-slate-100 text-center text-3xl font-bold mb-2", "Maestro Plotters" }
 				p { class: "text-slate-300 text-center",

@@ -101,8 +101,8 @@ pub fn ParallelQueriesDemo() -> Element {
 	});
 
 	rsx! {
-		div { class: "flex flex-col items-center justify-center rounded-lg shadow-lg p-6 bg-slate-900",
-			div { class: "w-full max-w-4xl bg-slate-900 rounded-lg shadow-lg p-6",
+		div { class: "flex flex-col items-center justify-center rounded-lg shadow-lg p-6 bg-[color:var(--bg-color)]",
+			div { class: "w-full max-w-4xl bg-[color:var(--bg-color)] rounded-lg shadow-lg p-6",
 				h3 { class: "text-2xl text-slate-100 text-center font-bold mb-6", "Parallel Queries" }
 
 				// department overview section

@@ -24,7 +24,7 @@ where
 
 	rsx! {
 
-		div { class: "flex flex-col justify-center bg-slate-900 lg:py-16 sm:py-8 py-6 gap-8",
+		div { class: "flex flex-col justify-center bg-[color:var(--bg-color)] lg:py-16 sm:py-8 py-6 gap-8",
 			div { class: "flex justify-center text-slate-300 hover:text-slate-100 transition",
 				// TODO: toggle button
 				Button {
@@ -110,7 +110,7 @@ where
 					// complete form state
 					div { class: "lex flex-col gap-3",
 						h3 { class: "font-mediun text-slate-200", "Complete Form State:" }
-						pre { class: "px-3 py-2 bg-slate-900 text-slate-200 rounded-md overflow-auto max-h-96",
+						pre { class: "px-3 py-2 bg-[color:var(--bg-color)] text-slate-200 rounded-md overflow-auto max-h-96",
 							code { class: "font-mono text-sm",
 								"{serde_json::to_string_pretty(&form.as_struct()).unwrap_or_else(|_| \"Serialization error\".to_string())}"
 							}

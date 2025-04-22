@@ -13,10 +13,10 @@ use crate::{
 pub fn FormContent(props: InnerComponentProps<User>) -> Element {
 	let roles = Role::VARIANTS.iter().map(|&s| s.to_string()).collect::<Vec<_>>();
 
-	let input_class = "border border-slate-300 px-3 w-full py-2 flex items-center min-h-11 rounded-md bg-slate-900 text-slate-200 ring-indigo-500 ring-offset-transparent focus:outline-none placeholder-slate-500";
+	let input_class = "border border-[color:var(--border-color)] px-3 w-full py-2 flex items-center min-h-11 rounded-md bg-[color:var(--input-bg)] text-[color:var(--text-color)] ring-[color:var(--focus-ring)] ring-offset-transparent focus:outline-none placeholder-[color:var(--muted-text)]";
 
 	rsx! {
-		div { class: "flex flex-col rounded-lg gap-6 bg-slate-950/20 lg:px-16 sm:px-6 px-2 py-8",
+		div { class: "flex flex-col rounded-lg gap-6 bg-[color:var(--card-bg)] text-[color:var(--card-text)] lg:px-16 sm:px-6 px-2 py-8",
 			FormFieldWrapper {
 				label: "Username",
 				field: props.form.get_form_field("username".to_string()),
@@ -81,9 +81,9 @@ pub fn FormContent(props: InnerComponentProps<User>) -> Element {
 					size: ButtonSize::Default,
 					variant: ButtonVariant::Default,
 					class: tw_join!(
-							"py-2 rounded-md text-slate-100 font-semibold transition-all duration-200 bg-indigo-600 hover:bg-indigo-700 ring-indigo-700 ring-offset-transparent",
+							"py-2 rounded-md font-semibold transition-all duration-200 bg-[color:var(--primary-bg)] text-[color:var(--primary-text)] hover:bg-[color:var(--hover-bg)] ring-[color:var(--focus-ring)] ring-offset-transparent",
 							(* props.form.is_submitting.read())
-							.then_some("bg-slate-500 cursor-not-allowed opacity-70")
+							.then_some("bg-[color:var(--border-color)] cursor-not-allowed opacity-70")
 					),
 					if *props.form.is_submitting.read() {
 						div { class: "flex items-center gap-2 justify-center",

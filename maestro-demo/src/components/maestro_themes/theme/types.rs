@@ -24,8 +24,9 @@ impl Theme {
 }
 
 /// Actual them applied (light or dark, not system)
-#[derive(Debug, Clone, PartialEq, strum_macros::EnumIter, strum_macros::Display, strum_macros::EnumString)]
+#[derive(Debug, Clone, PartialEq, strum_macros::EnumIter, strum_macros::Display, strum_macros::EnumString, Default)]
 pub enum ResolvedTheme {
 	Light,
+	#[default]
 	Dark,
 }

@@ -48,7 +48,7 @@ pub fn ThemeViewer(mut props: ThemeViewerProps) -> Element {
 			.find_syntax_by_token(lang)
 			.unwrap_or_else(|| syntax_set.find_syntax_by_extension(theme_viewer_props.theme_options.format.extension()).unwrap());
 
-		let theme = &theme_set.themes["GitHub"];
+		let theme = &theme_set.themes["base16-ocean.dark"];
 
 		// highlight code
 		let mut highlighter = HighlightLines::new(syntax, theme);
@@ -87,7 +87,7 @@ pub fn ThemeViewer(mut props: ThemeViewerProps) -> Element {
 	});
 
 	rsx! {
-		div { class: "p-4 w-full max-w-lg mx-auto z-50",
+		div { class: "p-4 w-full max-w-lg mx-auto z-[9999]",
 			h1 { class: "text-2xl font-bold mb-4", "Stylesheet Preview" }
 			if is_generating() {
 				div { class: "p-4 mb-4 text-blue-700 bg-blue-100 rounded border border-blue-400",
@@ -110,7 +110,7 @@ pub fn ThemeViewer(mut props: ThemeViewerProps) -> Element {
 				}
 				div {
 					class: tw_join!(
-							"absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white text-xs py-1 px-2 rounded transition-opacity duration-300 {}",
+							"absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-[color:var(--bg-color)] text-white text-xs py-1 px-2 rounded transition-opacity duration-300 {}",
 							if copy_status().is_empty() { "opacity-0" } else { "opacity-100" }
 					),
 					"{copy_status}"
@@ -135,7 +135,7 @@ pub fn ThemeViewer(mut props: ThemeViewerProps) -> Element {
 					label { class: "block mb-2 font-medium", "Generated Sheet:" }
 				}
 			} else if !is_generating() && stylesheet().is_empty() {
-				div { class: "p-4 mt-4 text-gray-100 bg-gray-100 rounded border border-gray-300 text-center",
+				div { class: "p-4 mt-4 text-[color:var(--text-color)]100 bg-gray-100 rounded border border-gray-300 text-center",
 					"There was a problem generating the stylesheet."
 				}
 			}

@@ -118,7 +118,7 @@ pub fn MultiSelect<T: Clone + PartialEq + std::fmt::Display + 'static>(props: Mu
 	rsx! {
 		div { class: tw_merge!("flex flex-col gap-2 w-full relative", & props.container_class),
 			if !props.label.is_empty() {
-				span { class: tw_merge!("text-gray-400", & props.label_class), {props.label} }
+				span { class: tw_merge!("text-[color:var(--text-color)]400", & props.label_class), {props.label} }
 			}
 			div {
 				class: tw_merge!(
@@ -127,7 +127,7 @@ pub fn MultiSelect<T: Clone + PartialEq + std::fmt::Display + 'static>(props: Mu
 				),
 				button {
 					class: tw_merge!(
-							"min-h-12 border items-center border-gray-500 rounded-md transition-colors ease-linear text-gray-800 relative flex py-2 px-3 w-full h-full focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-700 focus-visible:ring-offset-white maestro-multi-select-button",
+							"min-h-12 border items-center border-gray-500 rounded-md transition-colors ease-linear text-[color:var(--text-color)]800 relative flex py-2 px-3 w-full h-full focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-700 focus-visible:ring-offset-white maestro-multi-select-button",
 							& props.button_class
 					),
 					onfocusout: move |ev| {
@@ -162,7 +162,7 @@ pub fn MultiSelect<T: Clone + PartialEq + std::fmt::Display + 'static>(props: Mu
 					if props.is_searchable {
 						div {
 							class: tw_merge!(
-									"relative px-3 text-gray-500 maestro-multi-select-search_container", & props
+									"relative px-3 text-[color:var(--text-color)]500 maestro-multi-select-search_container", & props
 									.search_input_container_class
 							),
 							Icon {
@@ -185,7 +185,7 @@ pub fn MultiSelect<T: Clone + PartialEq + std::fmt::Display + 'static>(props: Mu
 								r#type: "button",
 								size: ButtonSize::IconSm,
 								class: tw_merge!(
-										"h-fit w-fit absolute top-2.5 right-3 text-gray-500 hover:text-gray-700 focus-visible:text-gray-700 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-none focus-visible:ring-offset-0 maestro-multi-select-search_clear",
+										"h-fit w-fit absolute top-2.5 right-3 text-[color:var(--text-color)]500 hover:text-[color:var(--text-color)]700 focus-visible:text-[color:var(--text-color)]700 focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-none focus-visible:ring-offset-0 maestro-multi-select-search_clear",
 										& props.search_clear_class
 								),
 								onclick: move |event: Event<MouseData>| {

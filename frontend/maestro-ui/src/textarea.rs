@@ -5,7 +5,7 @@ use crate::input::InputVariant;
 
 #[derive(TwClass)]
 #[tw(
-	class = "ease-linear w-full bg-transparent border-gray-700 placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 disabled:pointer-events-none transition-colors resize-none max-h-48 min-h-11 n-scrollbar maestro-calendar-container"
+	class = "ease-linear w-full bg-transparent border-gray-700 placeholder:text-[color:var(--text-color)]500 focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 disabled:pointer-events-none transition-colors resize-none max-h-48 min-h-11 n-scrollbar maestro-calendar-container"
 )]
 pub struct TextareaClass {
 	pub variant: InputVariant,

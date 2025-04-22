@@ -1,26 +1,31 @@
+/**
+* Tailwind CSS v4 Configuration
+* Generated with CSS-first approach
+*/
+
 @import "tailwindcss";
 
 @layer theme, base, components, utilities;
 
-/* Theme config using CSS variables (This is exported from maestro_themes)*/
+/* Theme configuration using CSS variables */
 @theme {
-  /* Colors */
-  --primary: #3b82f6;
+  /* Colors - Using OKLCH color space for wider gamut */
+  --primary: oklch(0.57 0.19 263.83);
   --primary-foreground: white;
-  --secondary: #6b7280;
+  --secondary: oklch(0.5 0.1 264);
   --secondary-foreground: white;
-  --accent: #f59e0b;
+  --accent: oklch(0.8 0.18 75.59);
   --accent-foreground: white;
-  --background: #ffffff;
-  --foreground: #020617;
-  --card: #ffffff;
-  --card-foreground: #020617;
-  --border: #e2e8f0;
-  --ring: #3b82f6;
-  --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
+  --background: oklch(0.99 0 0);
+  --foreground: oklch(0.2 0 0);
+  --card: oklch(0.99 0 0);
+  --card-foreground: oklch(0.2 0 0);
+  --border: oklch(0.9 0 0);
+  --ring: var(--primary);
+  --destructive: oklch(0.67 0.2 27.23);
+  --destructive-foreground: white;
+  --muted: oklch(0.95 0 0);
+  --muted-foreground: oklch(0.5 0 0);
 
   /* Typography */
   --font-sans: "Inter, system-ui, sans-serif";
@@ -34,25 +39,8 @@
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
 
-  /* Spacing */
-  --spacing-unit: 0.25rem;
-  --spacing-0: 0px;
-  --spacing-1: 0.25rem;
-  --spacing-2: 0.5rem;
-  --spacing-3: 0.75rem;
-  --spacing-4: 1rem;
-  --spacing-5: 1.25rem;
-  --spacing-6: 1.5rem;
-  --spacing-8: 2rem;
-  --spacing-10: 2.5rem;
-  --spacing-12: 3rem;
-  --spacing-16: 4rem;
-  --spacing-20: 5rem;
-  --spacing-24: 6rem;
-  --spacing-32: 8rem;
-  --spacing-40: 10rem;
-  --spacing-48: 12rem;
-  --spacing-64: 16rem;
+  /* Spacing - Simplified with dynamic utility values */
+  --spacing: 0.25rem;
 
   /* Border Radius */
   --radius-sm: 0.125rem;
@@ -70,6 +58,7 @@
     0 8px 10px -6px rgb(0 0 0 / 0.1);
   --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
 }
+
 /* Dark variant based on data-theme attribute */
 @variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
@@ -90,21 +79,21 @@
   --secondary-text: var(--secondary-foreground);
   --muted-text: var(--muted-foreground);
 
-  /* Interactive states */
-  --hover-bg: color-mix(in srgb, var(--background) 95%, var(--foreground) 5%);
+  /* Interactive states - Using color-mix() */
+  --hover-bg: color-mix(in oklch, var(--background) 95%, var(--foreground) 5%);
   --focus-ring: var(--ring);
-  --highlight-color: rgba(90, 200, 90, 0.2);
+  --highlight-color: color-mix(in oklch, oklch(0.8 0.2 120) 20%, transparent);
 
   /* Form Controls */
   --range-thumb-ring: var(--primary);
   --range-thumb-bg: var(--background);
   --range-track-bg: color-mix(
-    in srgb,
+    in oklch,
     var(--primary) 40%,
     var(--background) 60%
   );
   --range-track-hover: color-mix(
-    in srgb,
+    in oklch,
     var(--primary) 60%,
     var(--background) 40%
   );
@@ -112,27 +101,31 @@
 
 /* Dark theme specific variables */
 [data-theme="dark"] {
-  /* Override with dark-specific values */
-  --bg-color: #111827; /* Dark background */
-  --text-color: #f9fafb; /* Light text */
-  --border-color: #374151; /* Darker border */
-  --input-bg: #1f2937; /* Darker input background */
-  --card-bg: #1f2937; /* Darker card background */
-  --card-text: #f9fafb; /* Light card text */
-  --muted-text: #9ca3af; /* gray-400 */
+  /* Override with dark-specific values - Using OKLCH for consistency */
+  --bg-color: oklch(0.2 0 0); /* Dark background */
+  --text-color: oklch(0.97 0 0); /* Light text */
+  --border-color: oklch(0.3 0 0); /* Darker border */
+  --input-bg: oklch(0.25 0 0); /* Darker input background */
+  --card-bg: oklch(0.25 0 0); /* Darker card background */
+  --card-text: oklch(0.97 0 0); /* Light card text */
+  --muted-text: oklch(0.65 0 0); /* gray-400 */
 
   /* Interactive states for dark theme */
-  --hover-bg: #374151; /* gray-700 */
-  --highlight-color: rgba(34, 197, 94, 0.2); /* green-500 with opacity */
+  --hover-bg: oklch(0.3 0 0); /* gray-700 */
+  --highlight-color: color-mix(
+    in oklch,
+    oklch(0.7 0.2 142) 20%,
+    transparent
+  ); /* green with opacity */
 
   /* Form Controls for dark theme */
   --range-thumb-ring: var(--primary);
-  --range-thumb-bg: #1f2937; /* gray-800 */
-  --range-track-bg: #4b5563; /* gray-600 */
-  --range-track-hover: #6b7280; /* gray-500 */
+  --range-thumb-bg: oklch(0.25 0 0); /* gray-800 */
+  --range-track-bg: oklch(0.4 0 0); /* gray-600 */
+  --range-track-hover: oklch(0.5 0 0); /* gray-500 */
 }
 
-/* Define custom z-index values for toast elements */
+/* Custom z-index values for toast elements */
 @layer utilities {
   .z-toast {
     z-index: 9999 !important;
@@ -144,6 +137,21 @@
   .line-clamp-4 {
     -webkit-line-clamp: var(--tw-line-clamp);
     line-clamp: var(--tw-line-clamp);
+  }
+
+  /* New utility for transitions when elements appear */
+  .transition-appear {
+    @apply transition-all duration-200 starting:opacity-0 starting:scale-95;
+  }
+
+  /* Add some helpful not-variant examples */
+  .not-hover\:opacity-75:not(:hover) {
+    opacity: 0.75;
+  }
+
+  /* Container query helpers */
+  .container-responsive {
+    @apply @container;
   }
 }
 
@@ -227,3 +235,7 @@
     }
   }
 }
+
+/* component-specific styles */
+@import "./css/toast.css";
+@import "./css/buttons.css";

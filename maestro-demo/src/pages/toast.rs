@@ -74,11 +74,13 @@ pub fn ToastDemo() -> Element {
 	rsx! {
 		div {
 			id: "maestro-toast",
-			class: "bg-slate-900 rounded-lg shadow-md p-4 w-full",
+			class: "bg-[color:var(--bg-color)] rounded-lg shadow-md p-4 w-full",
 
 			div { id: "maestro-toast-header", class: "mb-8",
-				h1 { class: "text-slate-100 text-center text-3xl font-bold mb-2", "Maestro Toast" }
-				p { class: "text-slate-300 text-center",
+				h1 { class: "text-[color:var(--text-color)] text-center text-3xl font-bold mb-2",
+					"Maestro Toast"
+				}
+				p { class: "text-[color:var(--muted-text)] text-center",
 					"A powerful, flexible, and intuitive toast notification system designed specifically for Dioxus applications. While Dioxus provides basic UI capabilities,
 					our toast component takes notification management to the next level with its robust feature set and elegant design."
 				}

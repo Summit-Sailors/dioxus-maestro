@@ -7,7 +7,7 @@ mod types;
 
 pub mod prelude {
 	pub use super::{
-		context::{ThemeContext, set_document_theme, use_theme},
+		context::ThemeContext,
 		provider::ThemeProvider,
 		storage::{ThemeStorage, ThemeStorageError, ThemeStorageResult, get_storage},
 		system::get_system_theme_detector,

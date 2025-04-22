@@ -35,7 +35,7 @@ pub fn Range(props: RangeProps) -> Element {
 					.wrapper_class
 			),
 			if !props.label.is_empty() {
-				span { class: tw_merge!("text-gray-400 maestro-range__label", & props.label_class),
+				span { class: tw_merge!("text-[color:var(--text-color)]400 maestro-range__label", & props.label_class),
 					{props.label}
 				}
 			}
@@ -68,7 +68,7 @@ pub fn Range(props: RangeProps) -> Element {
 			}
 			span {
 				class: tw_merge!(
-						"text-xs text-left text-gray-400 maestro-range-value", & props.value_class
+						"text-xs text-left text-[color:var(--text-color)]400 maestro-range-value", & props.value_class
 				),
 				"{props.value}"
 			}

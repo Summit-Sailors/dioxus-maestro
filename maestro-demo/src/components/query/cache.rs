@@ -47,7 +47,7 @@ pub fn CacheDemo() -> Element {
 	};
 
 	rsx! {
-		div { class: "flex flex-col items-center gap-4 p-4 bg-slate-900 rounded-lg shadow-lg",
+		div { class: "flex flex-col items-center gap-4 p-4 bg-[color:var(--bg-color)] rounded-lg shadow-lg",
 
 			div { class: "space-y-4",
 
@@ -78,7 +78,7 @@ pub fn CacheDemo() -> Element {
 				}
 			}
 
-			div { class: "grid justify-center grid-cols-1 md:grid-cols-2 p-4 bg-slate-900 rounded-lg",
+			div { class: "grid justify-center grid-cols-1 md:grid-cols-2 p-4 bg-[color:var(--bg-color)] rounded-lg",
 				div { class: "text-center p-2 rounded",
 					p { class: "font-medium text-slate-200 text-center", "Cache Status:" }
 					p {
@@ -108,7 +108,7 @@ pub fn CacheDemo() -> Element {
 			}
 
 			// cached data display
-			div { class: "flex items-center p-4 bg-slate-900 rounded border border-slate-700",
+			div { class: "flex items-center p-4 bg-[color:var(--bg-color)] rounded border border-slate-700",
 				match cached_query.result().value() {
 						QueryResult::Loading(_) => rsx! {
 							div { class: "text-center text-blue-500", "Fetching fresh data..." }

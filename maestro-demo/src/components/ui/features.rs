@@ -21,7 +21,7 @@ pub fn Features(props: FeatureProps) -> Element {
 			div {
 				class: "flex items-center cursor-pointer gap-3",
 				onclick: move |_| is_expanded.toggle(),
-				span { class: "font-medium text-2xl text-slate-300 transition-colors hover:text-slate-100",
+				span { class: "font-medium text-2xl text-[color:var(--text-color)] transition-colors hover:text-[color:var(--primary-text)]",
 					"{props.title}"
 				}
 				span {
@@ -30,8 +30,8 @@ pub fn Features(props: FeatureProps) -> Element {
 						height: 16,
 						icon: IoChevronForward,
 						class: tw_join!(
-								"fill-none transition-transform duration-200", (is_expanded())
-								.then_some("rotate-90")
+								"fill-none transition-transform duration-200 text-[color:var(--text-color)]",
+								(is_expanded()).then_some("rotate-90")
 						),
 					}
 				}
@@ -57,18 +57,18 @@ pub fn Features(props: FeatureProps) -> Element {
 													None => (String::new(), feature.clone()),
 											};
 											rsx! {
-												li { class: "flex items-start gap-2 text-slate-100",
-													span { class: "w-5 h-5 flex items-center justify-center bg-indigo-500 rounded-full",
+												li { class: "flex items-start gap-2 text-[color:var(--card-text)]",
+													span { class: "w-5 h-5 flex items-center justify-center bg-[color:var(--primary-bg)] rounded-full shadow-sm",
 														Icon {
 															width: 16,
 															height: 16,
 															icon: FaCheck,
-															class: "text-slate-200 w-2 h-2",
+															class: "text-[color:var(--primary-text)] w-2 h-2",
 														}
 													}
 													span {
 														if !_feature.is_empty() {
-															span { class: "font-medium", "{_feature}" }
+															span { class: "font-medium text-[color:var(--text-color)]", "{_feature}" }
 															"{description}"
 														} else {
 															"{feature}"

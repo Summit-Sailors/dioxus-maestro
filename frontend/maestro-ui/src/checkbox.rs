@@ -58,9 +58,9 @@ pub fn Checkbox(props: CheckboxProps) -> Element {
 					height: 8,
 					icon: IoCheckmarkOutline {},
 					class: tw_merge!(
-							"fill-none w-2 h-2 transition-all ease-linear text-gray-700 shrink-0", & props
+							"fill-none w-2 h-2 transition-all ease-linear text-[color:var(--text-color)]700 shrink-0", & props
 							.inner_class, if props.checked {
-							format!("opacity-100 group-hover:text-gray-900 {} {}", & props.checked_class,
+							format!("opacity-100 group-hover:text-[color:var(--text-color)]900 {} {}", & props.checked_class,
 							"maestro-checkbox__checked") } else { "opacity-0".into() }
 					),
 				}

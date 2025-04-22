@@ -7,12 +7,9 @@ use strum::IntoEnumIterator;
 use tailwind_fuse::tw_merge;
 
 use super::prelude::*;
-use crate::components::{
-	backdrop::Backdrop,
-	maestro_themes::{
-		designer::state::{BorderRadiusSettings, ColorPalette, DesignerState, ShadowSettings, SpacingScale, TypographySettings},
-		exporter::{ExportFormat, ThemeOptions},
-	},
+use crate::components::maestro_themes::{
+	designer::state::{BorderRadiusSettings, ColorPalette, DesignerState, ShadowSettings, SpacingScale, TypographySettings},
+	exporter::{ExportFormat, ThemeOptions},
 };
 
 #[derive(Props, PartialEq, Clone)]
@@ -65,7 +62,7 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 			id: "theme-designer",
 			class: "theme-designer-container grid grid-cols-1 lg:grid-cols-3 gap-6",
 			div { class: "theme-designer-sidebar col-span-1 bg-white p-6 rounded-lg border",
-				Backdrop { show: show_theme_viewer }
+				// Backdrop { show: show_theme_viewer }
 				h2 { class: "text-xl font-bold mb-4", "Theme Customization" }
 
 				{
@@ -90,7 +87,7 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 							button {
 								class: tw_merge!(
 										"px-4 py-2 font-medium", if active_tab() == "colors" {
-										"border-b-2 border-blue-500 text-blue-500" } else { "text-gray-500" }
+										"border-b-2 border-blue-500 text-blue-500" } else { "text-[color:var(--text-color)]500" }
 								),
 								onclick: move |_| active_tab.set("colors"),
 								"Colors"
@@ -100,7 +97,7 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 							button {
 								class: tw_merge!(
 										"px-4 py-2 font-medium", if active_tab() == "typography" {
-										"border-b-2 border-blue-500 text-blue-500" } else { "text-gray-500" }
+										"border-b-2 border-blue-500 text-blue-500" } else { "text-[color:var(--text-color)]500" }
 								),
 								onclick: move |_| active_tab.set("typography"),
 								"Typography"
@@ -110,7 +107,7 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 							button {
 								class: tw_merge!(
 										"px-4 py-2 font-medium", if active_tab() == "spacing" {
-										"border-b-2 border-blue-500 text-blue-500" } else { "text-gray-500" }
+										"border-b-2 border-blue-500 text-blue-500" } else { "text-[color:var(--text-color)]500" }
 								),
 								onclick: move |_| active_tab.set("spacing"),
 								"Spacing"
@@ -120,7 +117,7 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 							button {
 								class: tw_merge!(
 										"px-4 py-2 font-medium", if active_tab() == "border-radius" {
-										"border-b-2 border-blue-500 text-blue-500" } else { "text-gray-500" }
+										"border-b-2 border-blue-500 text-blue-500" } else { "text-[color:var(--text-color)]500" }
 								),
 								onclick: move |_| active_tab.set("border-radius"),
 								"Border Radius"
@@ -130,7 +127,7 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 							button {
 								class: tw_merge!(
 										"px-4 py-2 font-medium", if active_tab() == "shadows" {
-										"border-b-2 border-blue-500 text-blue-500" } else { "text-gray-500" }
+										"border-b-2 border-blue-500 text-blue-500" } else { "text-[color:var(--text-color)]500" }
 								),
 								onclick: move |_| active_tab.set("shadows"),
 								"Shadows"
@@ -163,10 +160,10 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 								label: "Export Format: ",
 								placeholder: "Select an export format",
 								placeholder_class: "text-slate-500",
-								dropdown_class: "bg-slate-900 border border-slate-700",
+								dropdown_class: "bg-[color:var(--bg-color)] border border-slate-700",
 								option_class: "hover:bg-slate-500 bg-slate-800 text-slate-100",
 								label_class: "text-slate-200",
-								button_class: "bg-slate-900 text-slate-200",
+								button_class: "bg-[color:var(--bg-color)] text-slate-200",
 								is_searchable: false,
 							}
 						}
