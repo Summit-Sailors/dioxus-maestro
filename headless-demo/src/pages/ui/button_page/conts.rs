@@ -1,5 +1,5 @@
 pub const EXAMPLE: &str = "use dioxus::prelude::*;
-maestro_ui::button::{Button, ButtonRound, ButtonSize, ButtonVariant};
+maestro_ui::button::{Button, ButtonRound, ESize, ButtonVariant};
 
 let mut is_pending = use_signal(|| false);
 

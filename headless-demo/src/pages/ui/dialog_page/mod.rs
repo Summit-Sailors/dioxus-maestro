@@ -14,12 +14,14 @@ use {
 	},
 	maestro_headless::switch::{SwitchIndicator, SwitchRoot},
 	maestro_ui::{
-		button::{ButtonRound, ButtonSize, ButtonVariant},
 		dialog::{Dialog, DialogBody, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger},
+		shared::{ERound, ESize, EVariant},
 	},
 };
 
 mod consts;
+
+use std::str::FromStr;
 
 #[component]
 pub fn DialogStyledPage() -> Element {
@@ -35,9 +37,9 @@ pub fn DialogStyledPage() -> Element {
 					Dialog { default_open: false,
 						DialogTrigger {
 							class: "p-0 w-10 h-10",
-							round: ButtonRound::Full,
-							size: ButtonSize::Lg,
-							variant: ButtonVariant::Outline,
+							round: ERound::Full,
+							size: ESize::Lg,
+							variant: EVariant::Outline,
 							Icon { icon: BsThreeDots }
 						}
 						DialogContent { class: "h-96",

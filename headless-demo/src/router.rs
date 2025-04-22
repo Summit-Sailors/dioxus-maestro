@@ -3,8 +3,9 @@ use {
 		layout::Layout,
 		pages::{
 			AccordionPage, AccordionStyledPage, AspectRatioPage, AspectRatioStyledPage, AvatarPage, AvatarStyledPage, ButtonPage, ButtonStyledPage, CheckboxPage,
-			CheckboxStyledPage, CollapsiblePage, CollapsibleStyledPage, DialogPage, DialogStyledPage, HeadlessHome, Home, HoverCardPage, PopoverPage,
-			ProgressBarPage, RadioPage, RangePage, SelectPage, SeparatorPage, SwitchPage, TabsPage, TogglePage, TooltipPage,
+			CheckboxStyledPage, CollapsiblePage, CollapsibleStyledPage, DialogPage, DialogStyledPage, HeadlessHome, Home, HoverCardPage, HoverCardStyledPage,
+			PopoverPage, PopoverStyledPage, ProgressBarPage, ProgressBarStyledPage, RadioPage, RadioStyledPage, RangePage, RangeStyledPage, SelectPage,
+			SelectStyledPage, SeparatorPage, SeparatorStyledPage, SwitchPage, SwitchStyledPage, TabsPage, TabsStyledPage, TogglePage, TooltipPage,
 		},
 	},
 	dioxus::prelude::*,
@@ -74,6 +75,24 @@ pub enum Route {
 	CollapsibleStyledPage {},
 	#[route("/dialog")]
 	DialogStyledPage {},
+	#[route("/hover-card")]
+	HoverCardStyledPage {},
+	#[route("/popover")]
+	PopoverStyledPage {},
+	#[route("/progress")]
+	ProgressBarStyledPage {},
+	#[route("/radio-group")]
+	RadioStyledPage {},
+	#[route("/range")]
+	RangeStyledPage {},
+	#[route("/select")]
+	SelectStyledPage {},
+	#[route("/separator")]
+	SeparatorStyledPage {},
+	#[route("/switch")]
+	SwitchStyledPage {},
+	#[route("/tabs")]
+	TabsStyledPage {},
 }
 
 impl Route {
@@ -88,15 +107,15 @@ impl Route {
 			Route::CheckboxPage {} | Route::CheckboxStyledPage {} => "Checkbox & CheckboxGroup",
 			Route::CollapsiblePage {} | Route::CollapsibleStyledPage {} => "Collapsible",
 			Route::DialogPage {} | Route::DialogStyledPage {} => "Dialog",
-			Route::HoverCardPage {} => "Hover Card",
-			Route::PopoverPage {} => "Popover",
-			Route::ProgressBarPage {} => "Progress Bar",
-			Route::RadioPage {} => "Radio Group",
-			Route::RangePage {} => "Range",
-			Route::SelectPage {} => "Select",
-			Route::SeparatorPage {} => "Separator",
-			Route::SwitchPage {} => "Switch",
-			Route::TabsPage {} => "Tabs",
+			Route::HoverCardPage {} | Route::HoverCardStyledPage {} => "Hover Card",
+			Route::PopoverPage {} | Route::PopoverStyledPage {} => "Popover",
+			Route::ProgressBarPage {} | Route::ProgressBarStyledPage {} => "Progress Bar",
+			Route::RadioPage {} | Route::RadioStyledPage {} => "Radio Group",
+			Route::RangePage {} | Route::RangeStyledPage {} => "Range",
+			Route::SelectPage {} | Route::SelectStyledPage {} => "Select",
+			Route::SeparatorPage {} | Route::SeparatorStyledPage {} => "Separator",
+			Route::SwitchPage {} | Route::SwitchStyledPage {} => "Switch",
+			Route::TabsPage {} | Route::TabsStyledPage {} => "Tabs",
 			Route::TogglePage {} => "Toggle & ToggleGroup",
 			Route::TooltipPage {} => "Tooltip",
 		}
@@ -134,15 +153,15 @@ impl Route {
 			Route::CheckboxStyledPage {},
 			Route::CollapsibleStyledPage {},
 			Route::DialogStyledPage {},
-			// Route::HoverCardPage {},
-			// Route::PopoverPage {},
-			// Route::ProgressBarPage {},
-			// Route::RadioPage {},
-			// Route::RangePage {},
-			// Route::SelectPage {},
-			// Route::SeparatorPage {},
-			// Route::SwitchPage {},
-			// Route::TabsPage {},
+			Route::HoverCardStyledPage {},
+			Route::PopoverStyledPage {},
+			Route::ProgressBarStyledPage {},
+			Route::RadioStyledPage {},
+			Route::RangeStyledPage {},
+			Route::SelectStyledPage {},
+			Route::SeparatorStyledPage {},
+			Route::SwitchStyledPage {},
+			Route::TabsStyledPage {},
 			// Route::TogglePage {},
 			// Route::TooltipPage {},
 		])

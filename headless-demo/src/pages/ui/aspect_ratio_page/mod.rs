@@ -6,10 +6,7 @@ use {
 	consts::EXAMPLE,
 	dioxus::prelude::*,
 	maestro_headless::range::{Range, RangeRoot, RangeThumb, RangeTrack},
-	maestro_ui::{
-		aspect_ratio::AspectRatio,
-		button::{Button, ButtonVariant},
-	},
+	maestro_ui::{aspect_ratio::AspectRatio, button::Button, shared::EVariant},
 };
 
 mod consts;
@@ -75,7 +72,7 @@ pub fn AspectRatioStyledPage() -> Element {
 					p {
 						"Wraps the content to constrain to a given ratio. Inherits all the props and behaviour of the"
 						Button {
-							variant: ButtonVariant::Link,
+							variant: EVariant::Link,
 							class: "text-orange-500 hover:text-orange-600",
 							Link { to: Route::AccordionPage {}, tabindex: "-1", "headless accordion" }
 						}

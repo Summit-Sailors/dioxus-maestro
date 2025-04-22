@@ -17,20 +17,21 @@ use {
 		switch::{SwitchIndicator, SwitchRoot},
 	},
 	maestro_ui::{
-		button::{Button, ButtonRound, ButtonSize, ButtonVariant},
-		shared::ESide,
+		button::Button,
+		shared::{ERound, ESide, ESize, EVariant},
 	},
 	std::time::Duration,
 	strum::IntoEnumIterator,
 };
 mod conts;
+use std::str::FromStr;
 
 #[component]
 pub fn ButtonStyledPage() -> Element {
 	let mut is_pending = use_signal(|| false);
-	let mut size = use_signal(|| Vec::from([ButtonSize::Md.to_string()]));
-	let mut round = use_signal(|| Vec::from([ButtonRound::Md.to_string()]));
-	let mut variant = use_signal(|| Vec::from([ButtonVariant::Primary.to_string()]));
+	let mut size = use_signal(|| Vec::from([ESize::Md.to_string()]));
+	let mut round = use_signal(|| Vec::from([ERound::Md.to_string()]));
+	let mut variant = use_signal(|| Vec::from([EVariant::Primary.to_string()]));
 	let mut disabled = use_signal(|| false);
 
 	rsx! {
@@ -58,7 +59,7 @@ pub fn ButtonStyledPage() -> Element {
 							side: ESide::Bottom,
 							side_offset: 10.0,
 							class: "rounded bg-neutral-900 text-neutral-200 border border-neutral-700 z-10 px-2 py-4 [&_*]:transition-all w-60 ",
-							for item in ButtonVariant::iter() {
+							for item in EVariant::iter() {
 								SelectOption {
 									key: item.to_string(),
 									value: item.to_string(),
@@ -87,7 +88,7 @@ pub fn ButtonStyledPage() -> Element {
 							side: ESide::Bottom,
 							side_offset: 10.0,
 							class: "rounded bg-neutral-900 text-neutral-200 border border-neutral-700 z-10 px-2 py-4 [&_*]:transition-all w-60 ",
-							for item in ButtonSize::iter() {
+							for item in ESize::iter() {
 								SelectOption {
 									key: item.to_string(),
 									value: item.to_string(),
@@ -116,7 +117,7 @@ pub fn ButtonStyledPage() -> Element {
 							side: ESide::Bottom,
 							side_offset: 10.0,
 							class: "rounded bg-neutral-900 text-neutral-200 border border-neutral-700 z-10 px-2 py-4 [&_*]:transition-all w-60 ",
-							for item in ButtonRound::iter() {
+							for item in ERound::iter() {
 								SelectOption {
 									key: item.to_string(),
 									value: item.to_string(),
@@ -145,17 +146,15 @@ pub fn ButtonStyledPage() -> Element {
 					Button {
 						pending: is_pending(),
 						disabled: disabled(),
-						size: ButtonSize::try_from(size().get(0).unwrap_or(&ButtonSize::default().to_string()))
+						size: ESize::from_str(size().get(0).unwrap_or(&ESize::default().to_string()))
 								.ok()
-								.unwrap_or(ButtonSize::default()),
-						variant: ButtonVariant::try_from(
-										variant().get(0).unwrap_or(&ButtonVariant::default().to_string()),
-								)
+								.unwrap_or(ESize::default()),
+						variant: EVariant::from_str(variant().get(0).unwrap_or(&EVariant::default().to_string()))
 								.ok()
-								.unwrap_or(ButtonVariant::default()),
-						round: ButtonRound::try_from(round().get(0).unwrap_or(&ButtonRound::default().to_string()))
+								.unwrap_or(EVariant::default()),
+						round: ERound::from_str(round().get(0).unwrap_or(&ERound::default().to_string()))
 								.ok()
-								.unwrap_or(ButtonRound::default()),
+								.unwrap_or(ERound::default()),
 						onclick: move |_| {
 								is_pending.set(true);
 								spawn(async move {
@@ -191,7 +190,7 @@ pub fn ButtonStyledPage() -> Element {
 					p {
 						"Inherits all the props and behaviour of the"
 						Button {
-							variant: ButtonVariant::Link,
+							variant: EVariant::Link,
 							class: "text-orange-500 hover:text-orange-600",
 							Link { to: Route::ButtonPage {}, tabindex: "-1", "headless button" }
 						}
@@ -206,20 +205,20 @@ pub fn ButtonStyledPage() -> Element {
 								},
 								PropsStruct {
 										prop: "variant".into(),
-										prop_default: "ButtonVariant::Primary".into(),
+										prop_default: "EVariant::Primary".into(),
 										prop_type: "bool".into(),
 										tooltip_text: Some("Determines the main look of the button".into()),
 								},
 								PropsStruct {
 										prop: "size".into(),
-										prop_default: "ButtonSize::Md".into(),
-										prop_type: "ButtonSize".into(),
+										prop_default: "ESize::Md".into(),
+										prop_type: "ESize".into(),
 										tooltip_text: Some("Determines the height of the button".into()),
 								},
 								PropsStruct {
 										prop: "round".into(),
-										prop_default: "ButtonRound::Md".into(),
-										prop_type: "ButtonRound".into(),
+										prop_default: "ERound::Md".into(),
+										prop_type: "ERound".into(),
 										tooltip_text: Some("Determines border radius of the button".into()),
 								},
 						]),

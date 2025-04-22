@@ -8,7 +8,6 @@ use {
 	},
 	consts::{EXAMPLE, EXAMPLE_ANATOMY},
 	dioxus::prelude::*,
-	dioxus_logger::tracing::info,
 	maestro_headless::{
 		range::{Range, RangeRoot, RangeThumb, RangeTrack},
 		shared::EOrientation,
@@ -27,7 +26,6 @@ pub fn RangePage() -> Element {
 	let mut switch = use_signal(|| false);
 	let orientation = use_memo(move || if switch() { EOrientation::Vertical } else { EOrientation::Horizontal });
 
-	info!("{:?}", value());
 	use_effect(move || {
 		if double() {
 			if value.peek().len() == 1 {
@@ -97,7 +95,7 @@ pub fn RangePage() -> Element {
 			div { class: "grow flex flex-col justify-center items-center rounded-md border border-neutral-800 bg-neutral-950 overflow-hidden",
 				div { class: "p-6 flex grow items-center justify-center w-full",
 					RangeRoot {
-						class: "data-[orientation=horizontal]:w-52 data-[orientation=vertical]:h-52 data-[orientation=vertical]:w-1 flex items-center data-[disabled=true]:opacity-50 data-[disabled=true]:cursor-auto data-[disabled=true]:pointer-events-none",
+						class: "relative data-[orientation=horizontal]:w-52 data-[orientation=vertical]:h-52 data-[orientation=vertical]:w-1 data-[orientation=vertical]:flex-col flex items-center data-[disabled=true]:opacity-50 data-[disabled=true]:cursor-auto data-[disabled=true]:pointer-events-none",
 						value: value(),
 						on_value_change: move |v| { value.set(v) },
 						min_steps_between_thumbs: if use_step() { 20.0 } else { 0.0 },

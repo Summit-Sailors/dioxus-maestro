@@ -1,5 +1,5 @@
 use {
-	crate::button::{ButtonClass, ButtonRound, ButtonSize, ButtonVariant},
+	crate::shared::{EClass, ERound, ESize, EVariant},
 	dioxus::prelude::*,
 	tailwind_fuse::*,
 };
@@ -52,7 +52,7 @@ pub struct CollapsibleTriggerProps {
 
 #[component]
 pub fn CollapsibleTrigger(props: CollapsibleTriggerProps) -> Element {
-	let class = ButtonClass { variant: ButtonVariant::Ghost, size: ButtonSize::Md, round: ButtonRound::Md }.with_class(props.class.clone());
+	let class = EClass { variant: EVariant::Ghost, size: ESize::Md, round: ERound::Md }.with_class(props.class.clone());
 	rsx! {
 		maestro_headless::collapsible::CollapsibleTrigger { class: class.clone(), extra_attributes: props.attributes.clone(), {props.children} }
 	}

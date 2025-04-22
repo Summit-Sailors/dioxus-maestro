@@ -34,7 +34,7 @@ impl TryFrom<&String> for AvatarSize {
 			"Md" => Ok(AvatarSize::Md),
 			"Lg" => Ok(AvatarSize::Lg),
 			"Xl" => Ok(AvatarSize::Xl),
-			_ => Err(format!("'{}' is not a valid ButtonSize", v)),
+			_ => Err(format!("'{}' is not a valid ESize", v)),
 		}
 	}
 }

@@ -1,17 +1,17 @@
 use {
-	crate::button::{ButtonClass, ButtonRound, ButtonSize, ButtonVariant},
+	crate::shared::{EClass, ERound, ESize, EVariant},
 	dioxus::prelude::*,
 	tailwind_fuse::*,
 };
 
 #[derive(Clone, PartialEq, Props)]
 pub struct ButtonProps {
-	#[props(default = ReadOnlySignal::new(Signal::new(ButtonVariant::Primary)))]
-	pub variant: ReadOnlySignal<ButtonVariant>,
-	#[props(default = ReadOnlySignal::new(Signal::new(ButtonRound::Md)))]
-	pub round: ReadOnlySignal<ButtonRound>,
-	#[props(default = ReadOnlySignal::new(Signal::new(ButtonSize::Md)))]
-	pub size: ReadOnlySignal<ButtonSize>,
+	#[props(default = ReadOnlySignal::new(Signal::new(EVariant::Primary)))]
+	pub variant: ReadOnlySignal<EVariant>,
+	#[props(default = ReadOnlySignal::new(Signal::new(ERound::Md)))]
+	pub round: ReadOnlySignal<ERound>,
+	#[props(default = ReadOnlySignal::new(Signal::new(ESize::Md)))]
+	pub size: ReadOnlySignal<ESize>,
 	#[props(default = ReadOnlySignal::new(Signal::new(String::new())))]
 	pub class: ReadOnlySignal<String>,
 
@@ -71,7 +71,7 @@ pub fn Button(props: ButtonProps) -> Element {
 		extra_attributes,
 		children,
 	} = props;
-	let class = ButtonClass { variant: variant(), size: size(), round: round() }.with_class(class().clone());
+	let class = EClass { variant: variant(), size: size(), round: round() }.with_class(class().clone());
 
 	let mut attrs = attributes.clone();
 	attrs.extend(extra_attributes);

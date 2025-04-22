@@ -45,12 +45,14 @@ pub struct ProgressRootProps {
 	max: f32,
 	#[props(extends = div, extends = GlobalAttributes)]
 	attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	children: Element,
 }
 
 #[component]
 pub fn ProgressRoot(props: ProgressRootProps) -> Element {
-	let ProgressRootProps { value, max, attributes, children } = props;
+	let ProgressRootProps { value, max, attributes, extra_attributes, children } = props;
 
 	let value = use_memo(move || if value() <= max && value() > 0.0 { value() } else { 0.0 });
 	let context = use_context_provider::<ProgressContext>(|| ProgressContext { value, max });
@@ -67,6 +69,7 @@ pub fn ProgressRoot(props: ProgressRootProps) -> Element {
 			"data-value": value(),
 			"data-max": max,
 			..attributes.clone(),
+			..extra_attributes.clone(),
 			{children.clone()}
 		}
 	}
@@ -76,6 +79,8 @@ pub fn ProgressRoot(props: ProgressRootProps) -> Element {
 pub struct ProgressIndicatorProps {
 	#[props(extends = div, extends = GlobalAttributes)]
 	attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	#[props(optional, default = None)]
 	children: Element,
 }
@@ -92,6 +97,7 @@ pub fn ProgressIndicator(props: ProgressIndicatorProps) -> Element {
 			"data-max": context.max,
 			transform: format!("translateX(-{}%)", transform()),
 			..props.attributes.clone(),
+			..props.extra_attributes.clone(),
 			{props.children.clone()}
 		}
 	}

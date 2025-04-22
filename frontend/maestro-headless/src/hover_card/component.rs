@@ -54,15 +54,20 @@ pub struct HoverCardRootProps {
 
 	#[props(extends = GlobalAttributes, extends = div)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	children: Element,
 }
 
 #[component]
 pub fn HoverCardRoot(props: HoverCardRootProps) -> Element {
-	let HoverCardRootProps { open, default_open, on_open_change, open_delay, close_delay, children, attributes } = props;
+	let HoverCardRootProps { open, default_open, on_open_change, open_delay, close_delay, children, attributes, extra_attributes } = props;
 	let is_controlled = use_hook(move || open().is_some());
 	let (open, set_open) =
 		use_controllable_state(UseControllableStateParams { is_controlled, prop: open, default_prop: default_open, on_change: on_open_change });
+
+	let mut attrs = attributes.clone();
+	attrs.extend(extra_attributes);
 
 	let mut open_timer_ref = use_signal(|| None::<i32>);
 	let mut close_timer_ref = use_signal(|| None::<i32>);
@@ -106,7 +111,7 @@ pub fn HoverCardRoot(props: HoverCardRootProps) -> Element {
 		Popper {
 			position: "relative",
 			"data-state": if open() { "open" } else { "closed" },
-			extra_attributes: attributes,
+			extra_attributes: attrs,
 			{children}
 		}
 	}
@@ -116,13 +121,15 @@ pub fn HoverCardRoot(props: HoverCardRootProps) -> Element {
 pub struct HoverCardTriggerProps {
 	#[props(extends = GlobalAttributes, extends = a)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	#[props(optional)]
 	pub children: Element,
 }
 
 #[component]
 pub fn HoverCardTrigger(props: HoverCardTriggerProps) -> Element {
-	let HoverCardTriggerProps { attributes, children } = props;
+	let HoverCardTriggerProps { attributes, extra_attributes, children } = props;
 
 	let context = use_context::<HoverCardContext>();
 
@@ -151,6 +158,7 @@ pub fn HoverCardTrigger(props: HoverCardTriggerProps) -> Element {
 						context.on_close.call(());
 				},
 				..attributes,
+				..extra_attributes,
 				{children}
 			}
 		}
@@ -179,13 +187,26 @@ pub struct HoverCardContentProps {
 	#[props(optional)]
 	#[props(extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
 #[component]
 pub fn HoverCardContent(props: HoverCardContentProps) -> Element {
-	let HoverCardContentProps { side, side_offset, align, align_offset, avoid_collisions, collision_padding, onmouseenter, onmouseleave, attributes, children } =
-		props;
+	let HoverCardContentProps {
+		side,
+		side_offset,
+		align,
+		align_offset,
+		avoid_collisions,
+		collision_padding,
+		onmouseenter,
+		onmouseleave,
+		attributes,
+		extra_attributes,
+		children,
+	} = props;
 
 	let context = use_context::<HoverCardContext>();
 
@@ -198,6 +219,7 @@ pub fn HoverCardContent(props: HoverCardContentProps) -> Element {
 	use_outside_click(current_ref, handle_close, context.open);
 
 	let mut attrs = attributes.clone();
+	attrs.extend(extra_attributes);
 	attrs.push(Attribute::new("--maestro-hover-card-anchor-height", "var(--maestro-popper-anchor-height)", Some("style"), false));
 	attrs.push(Attribute::new("--maestro-hover-card-anchor-width", "var(--maestro-popper-anchor-width)", Some("style"), false));
 	attrs.push(Attribute::new("--maestro-hover-card-content-height", "var(--maestro-popper-content-height)", Some("style"), false));
@@ -245,19 +267,24 @@ pub struct HoverCardArrowProps {
 	height: f32,
 	#[props(extends = svg, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	#[props(default = None)]
 	pub children: Option<Element>,
 }
 
 #[component]
 pub fn HoverCardArrow(props: HoverCardArrowProps) -> Element {
-	let HoverCardArrowProps { width, height, attributes, children } = props;
+	let HoverCardArrowProps { width, height, attributes, extra_attributes, children } = props;
+
+	let mut attrs = attributes.clone();
+	attrs.extend(extra_attributes);
 
 	rsx! {
 		PopperArrow {
 			width,
 			height,
-			extra_attributes: attributes.clone(),
+			extra_attributes: attrs,
 			children,
 		}
 	}

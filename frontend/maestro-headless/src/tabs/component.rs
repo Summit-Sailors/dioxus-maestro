@@ -35,12 +35,14 @@ pub struct TabsRootProps {
 
 	#[props(extends = div, extends = GlobalAttributes)]
 	attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
 #[component]
 pub fn TabsRoot(props: TabsRootProps) -> Element {
-	let TabsRootProps { value, default_value, on_value_change, children, orientation, attributes } = props;
+	let TabsRootProps { value, default_value, on_value_change, children, orientation, attributes, extra_attributes } = props;
 	let is_controlled = use_hook(move || value().is_some());
 	let (value, set_value) =
 		use_controllable_state(UseControllableStateParams { is_controlled, prop: value, default_prop: default_value, on_change: on_value_change });
@@ -53,6 +55,7 @@ pub fn TabsRoot(props: TabsRootProps) -> Element {
 			aria_orientation: orientation().to_string(),
 			"data-orientation": orientation().to_string(),
 			..attributes,
+			..extra_attributes,
 			{children}
 		}
 	}
@@ -62,6 +65,8 @@ pub fn TabsRoot(props: TabsRootProps) -> Element {
 pub struct TabsListProps {
 	#[props(extends = div, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	#[props(optional, default = None)]
 	pub children: Element,
 }
@@ -83,6 +88,7 @@ pub fn TabsList(props: TabsListProps) -> Element {
 			},
 			onkeydown: handle_key_down,
 			..props.attributes,
+			..props.extra_attributes,
 			{props.children}
 		}
 	}
@@ -96,16 +102,21 @@ pub struct TabsTriggerProps {
 
 	#[props(extends = GlobalAttributes, extends = button)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	#[props(optional, default = None)]
 	pub children: Element,
 }
 
 #[component]
 pub fn TabsTrigger(props: TabsTriggerProps) -> Element {
-	let TabsTriggerProps { value, disabled, attributes, children } = props;
+	let TabsTriggerProps { value, disabled, attributes, extra_attributes, children } = props;
 
 	let context = use_context::<TabsContext>();
 	let is_active = use_memo(move || value() == context.value.read().clone());
+
+	let mut attrs = attributes.clone();
+	attrs.extend(extra_attributes);
 
 	rsx! {
 		Button {
@@ -125,7 +136,7 @@ pub fn TabsTrigger(props: TabsTriggerProps) -> Element {
 			"data-orientation": context.orientation.read().to_string(),
 			onclick: move |_| { context.set_value.call(value()) },
 			onfocus: move |_| { context.set_value.call(value()) },
-			extra_attributes: attributes.clone(),
+			extra_attributes: attrs.clone(),
 			{children}
 		}
 	}
@@ -137,12 +148,14 @@ pub struct TabsContentProps {
 
 	#[props(extends = div, extends = GlobalAttributes)]
 	attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
 #[component]
 pub fn TabsContent(props: TabsContentProps) -> Element {
-	let TabsContentProps { value, attributes, children } = props;
+	let TabsContentProps { value, attributes, extra_attributes, children } = props;
 
 	let context = use_context::<TabsContext>();
 	let is_active = use_memo(move || value() == context.value.read().clone());
@@ -161,6 +174,7 @@ pub fn TabsContent(props: TabsContentProps) -> Element {
 			hidden: !is_present(),
 			onmounted: move |event: Event<MountedData>| current_ref.set(Some(event.data())),
 			..attributes,
+			..extra_attributes,
 			{children}
 		}
 	}

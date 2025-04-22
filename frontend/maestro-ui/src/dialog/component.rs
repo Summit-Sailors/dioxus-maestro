@@ -1,5 +1,5 @@
 use {
-	crate::button::{ButtonClass, ButtonRound, ButtonSize, ButtonVariant},
+	crate::shared::{EClass, ERound, ESize, EVariant},
 	dioxus::prelude::*,
 	dioxus_free_icons::{icons::ld_icons::LdX, Icon},
 	maestro_headless::dialog::DialogRootProps,
@@ -24,12 +24,12 @@ pub fn Dialog(props: DialogRootProps) -> Element {
 pub struct DialogTriggerProps {
 	#[props(default = String::new())]
 	pub class: String,
-	#[props(default = ReadOnlySignal::new(Signal::new(ButtonVariant::Primary)))]
-	pub variant: ReadOnlySignal<ButtonVariant>,
-	#[props(default = ReadOnlySignal::new(Signal::new(ButtonRound::Md)))]
-	pub round: ReadOnlySignal<ButtonRound>,
-	#[props(default = ReadOnlySignal::new(Signal::new(ButtonSize::Md)))]
-	pub size: ReadOnlySignal<ButtonSize>,
+	#[props(default = ReadOnlySignal::new(Signal::new(EVariant::Primary)))]
+	pub variant: ReadOnlySignal<EVariant>,
+	#[props(default = ReadOnlySignal::new(Signal::new(ERound::Md)))]
+	pub round: ReadOnlySignal<ERound>,
+	#[props(default = ReadOnlySignal::new(Signal::new(ESize::Md)))]
+	pub size: ReadOnlySignal<ESize>,
 	#[props(default = ReadOnlySignal::new(Signal::new(false)))]
 	disabled: ReadOnlySignal<bool>,
 	#[props(extends = GlobalAttributes, extends = button)]
@@ -41,7 +41,7 @@ pub struct DialogTriggerProps {
 #[component]
 pub fn DialogTrigger(props: DialogTriggerProps) -> Element {
 	let DialogTriggerProps { class, attributes, disabled, variant, round, size, children } = props;
-	let class = ButtonClass { variant: variant(), size: size(), round: round() }.with_class(class.clone());
+	let class = EClass { variant: variant(), size: size(), round: round() }.with_class(class.clone());
 
 	rsx! {
 		maestro_headless::dialog::DialogTrigger { disabled, extra_attributes: attributes, class, {children} }
@@ -196,12 +196,12 @@ pub fn DialogDescription(props: DialogDescriptionProps) -> Element {
 pub struct DialogCloseProps {
 	#[props(default = String::new())]
 	pub class: String,
-	#[props(default = ReadOnlySignal::new(Signal::new(ButtonVariant::Primary)))]
-	pub variant: ReadOnlySignal<ButtonVariant>,
-	#[props(default = ReadOnlySignal::new(Signal::new(ButtonRound::Md)))]
-	pub round: ReadOnlySignal<ButtonRound>,
-	#[props(default = ReadOnlySignal::new(Signal::new(ButtonSize::Md)))]
-	pub size: ReadOnlySignal<ButtonSize>,
+	#[props(default = ReadOnlySignal::new(Signal::new(EVariant::Primary)))]
+	pub variant: ReadOnlySignal<EVariant>,
+	#[props(default = ReadOnlySignal::new(Signal::new(ERound::Md)))]
+	pub round: ReadOnlySignal<ERound>,
+	#[props(default = ReadOnlySignal::new(Signal::new(ESize::Md)))]
+	pub size: ReadOnlySignal<ESize>,
 	pub children: Element,
 	#[props(extends = GlobalAttributes, extends = button)]
 	pub attributes: Vec<Attribute>,
@@ -209,7 +209,7 @@ pub struct DialogCloseProps {
 
 #[component]
 pub fn DialogClose(props: DialogCloseProps) -> Element {
-	let class = ButtonClass { variant: *props.variant.read(), size: *props.size.read(), round: *props.round.read() }.with_class(props.class.clone());
+	let class = EClass { variant: *props.variant.read(), size: *props.size.read(), round: *props.round.read() }.with_class(props.class.clone());
 	rsx! {
 		maestro_headless::dialog::DialogClose { class, extra_attributes: props.attributes, {props.children} }
 	}

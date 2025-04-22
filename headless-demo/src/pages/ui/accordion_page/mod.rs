@@ -12,8 +12,8 @@ use {
 	maestro_headless::switch::{SwitchIndicator, SwitchRoot},
 	maestro_ui::{
 		accordion::{Accordion, AccordionContent, AccordionItem, AccordionTrigger, AccordionVariant},
-		button::{Button, ButtonVariant},
-		shared::EOrientation,
+		button::Button,
+		shared::{EOrientation, EVariant},
 	},
 };
 
@@ -128,7 +128,7 @@ pub fn AccordionStyledPage() -> Element {
 						}
 						" variables for colors and animations or adjust provided example"
 						Button {
-							variant: ButtonVariant::Link,
+							variant: EVariant::Link,
 							class: "text-orange-500 hover:text-orange-600",
 							Link { to: Route::AccordionPage {}, tabindex: "-1", "headless accordion" }
 						}
@@ -139,7 +139,7 @@ pub fn AccordionStyledPage() -> Element {
 					span {
 						"Inherits all the props and behaviour of the"
 						Button {
-							variant: ButtonVariant::Link,
+							variant: EVariant::Link,
 							class: "text-orange-500 hover:text-orange-600",
 							Link { to: Route::AccordionPage {}, tabindex: "-1", "headless accordion" }
 						}

@@ -1,5 +1,5 @@
 use {
-	crate::checkbox::{Checkbox, CheckboxProps},
+	crate::checkbox::{Checkbox, CheckboxClass, CheckboxIndicatorClass, CheckboxIndicatorVariant, CheckboxProps},
 	dioxus::prelude::*,
 	maestro_headless::shared::EOrientation,
 	tailwind_fuse::*,
@@ -33,7 +33,7 @@ pub struct CheckboxGroupProps {
 #[component]
 pub fn CheckboxGroup(props: CheckboxGroupProps) -> Element {
 	let CheckboxGroupProps { class, value, default_value, on_value_change, disabled, required, orientation, attributes, extra_attributes, children } = props;
-	let class = tw_merge!("flex data-[orientation=vertical]:flex-col gap-3 data-[orientation=horizontal]:items-center", class());
+	let class = tw_merge!("flex data-[orientation=vertical]:flex-col gap-3 data-[orientation=horizontal]:items-center data-[disabled=true]:opacity-50 data-[disabled=true]:*:pointer-events-none data-[disabled=true]:*:cursor-auto", class());
 
 	rsx! {
 		maestro_headless::checkbox_group::CheckboxGroup {
@@ -70,20 +70,37 @@ pub fn CheckboxGroupItem(props: CheckboxProps) -> Element {
 	let mut attrs = attributes.clone();
 	attrs.extend(extra_attributes);
 
+	let class = CheckboxClass { size: size(), round: round() }.with_class(class().clone());
+	let indicator_class = CheckboxIndicatorClass { variant: indicator_variant() }.with_class(indicator_class().clone());
+
 	rsx! {
-		Checkbox {
-			indicator_class,
-			indicator_variant,
-			round,
-			size,
+		maestro_headless::checkbox_group::CheckboxGroupItem {
 			class,
-			checked,
-			default_checked,
-			on_change,
 			value,
 			disabled,
-			required,
 			extra_attributes: attrs,
+			maestro_headless::checkbox_group::CheckboxGroupIndicator {
+				if indicator_variant() == CheckboxIndicatorVariant::Square {
+					span { class: indicator_class.clone() }
+				} else {
+					svg {
+						stroke: "currentColor",
+						fill: "currentColor",
+						stroke_width: "0",
+						view_box: "0 0 512 512",
+						height: "16px",
+						width: "16px",
+						xmlns: "http://www.w3.org/2000/svg",
+						path {
+							fill: "none",
+							stroke_linecap: "round",
+							stroke_linejoin: "round",
+							stroke_width: "32",
+							d: "M416 128 192 384l-96-96",
+						}
+					}
+				}
+			}
 		}
 	}
 }

@@ -19,11 +19,13 @@
   --color-muted: var(--color-neutral-500);
   --color-muted-foreground: var(--color-neutral-50);
   --color-accent: var(--color-teal-800);
-  --color-accent-foreground: var(--color-neutral-900);
+  --color-accent-foreground: var(--color-neutral-100);
   --color-danger: var(--color-red-600);
   --color-border: var(--color-neutral-700);
   --color-input: var(--color-teal-300);
   --color-ring: var(--color-teal-300);
+  --color-popover: var(--color-neutral-700);
+  --color-popover-foreground: var(--color-neutral-50);
   --animate-fade-in: fade-in 0.5s linear;
   --animate-fade-out: fade-out 0.3s linear;
   --animate-slide-in: slide-in 0.5s linear;
