@@ -20,7 +20,7 @@
   --foreground: oklch(0.2 0 0);
   --card: oklch(0.99 0 0);
   --card-foreground: oklch(0.2 0 0);
-  --border: oklch(0.9 0 0);
+  --border-color: oklch(0.75 0 0);
   --ring: var(--primary);
   --destructive: oklch(0.67 0.2 27.23);
   --destructive-foreground: white;
@@ -78,9 +78,13 @@
   --secondary-bg: var(--secondary);
   --secondary-text: var(--secondary-foreground);
   --muted-text: var(--muted-foreground);
+  --maestro-toggle-on-bg: var(--primary);
+  --maestro-toggle-off-bg: var(--muted);
+  --maestro-toggle-handle-bg: var(--foreground);
+  --hover-text-color: var(--text-color);
 
   /* Interactive states - Using color-mix() */
-  --hover-bg: color-mix(in oklch, var(--background) 95%, var(--foreground) 5%);
+  --hover-bg: color-mix(in oklch, var(--foreground) 6%, var(--background) 94%);
   --focus-ring: var(--ring);
   --highlight-color: color-mix(in oklch, oklch(0.8 0.2 120) 20%, transparent);
 
@@ -104,14 +108,22 @@
   /* Override with dark-specific values - Using OKLCH for consistency */
   --bg-color: oklch(0.2 0 0); /* Dark background */
   --text-color: oklch(0.97 0 0); /* Light text */
-  --border-color: oklch(0.3 0 0); /* Darker border */
+  --border-color: oklch(0.4 0 0); /* Darker border */
   --input-bg: oklch(0.25 0 0); /* Darker input background */
   --card-bg: oklch(0.25 0 0); /* Darker card background */
   --card-text: oklch(0.97 0 0); /* Light card text */
   --muted-text: oklch(0.65 0 0); /* gray-400 */
+  --maestro-toggle-on-bg: var(--primary);
+  --maestro-toggle-off-bg: oklch(0.3 0 0); /* Slightly lighter than bg-color */
+  --maestro-toggle-handle-bg: oklch(0.9 0 0); /* Light enough for contrast */
+  --hover-text-color: var(--text-color);
 
   /* Interactive states for dark theme */
-  --hover-bg: oklch(0.3 0 0); /* gray-700 */
+  --hover-bg: color-mix(
+    in oklch,
+    var(--text-color) 6%,
+    var(--bg-color) 94%
+  ); /* gray-700 */
   --highlight-color: color-mix(
     in oklch,
     oklch(0.7 0.2 142) 20%,
@@ -137,6 +149,11 @@
   .line-clamp-4 {
     -webkit-line-clamp: var(--tw-line-clamp);
     line-clamp: var(--tw-line-clamp);
+  }
+
+  .hoverable:hover {
+    background-color: var(--hover-bg);
+    color: var(--hover-text-color);
   }
 
   /* New utility for transitions when elements appear */
@@ -239,3 +256,6 @@
 /* component-specific styles */
 @import "./css/toast.css";
 @import "./css/buttons.css";
+@import "./css/toggle.css";
+@import "./css/calendar.css";
+@import "./css/theme_designer.css";

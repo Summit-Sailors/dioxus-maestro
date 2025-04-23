@@ -101,21 +101,21 @@ pub fn UIDemo() -> Element {
 						"Outline"
 					}
 					Button {
-						class: "text-[color:var(--muted-foreground)] hover:underline",
+						class: "text-[color:var(--muted-foreground)] hover:underline hover:bg-[color:oklch(0.9_0_0)",
 						variant: ButtonVariant::Ghost,
 						r#type: "reset",
 						onclick: move |_| handle_button_click("Ghost Button clicked!".to_string()),
 						"Ghost"
 					}
 					Button {
-						class: "px-2 py-1 bg-[color:var(--muted)] text-[color:var(--foreground)] text-sm hover:bg-[color:oklch(0.9_0_0)]",
+						class: "px-2 py-1 bg-[color:var(--primary)] text-[color:var(--foreground)] text-sm hover:bg-[color:oklch(0.9_0_0)]",
 						size: ButtonSize::Sm,
 						r#type: "button",
 						onclick: move |_| handle_button_click("Small Submit Button clicked!".to_string()),
 						"Small"
 					}
 					Button {
-						class: "rounded-lg text-[color:var(--foreground)] bg-[color:var(--background)] hover:bg-[color:oklch(0.9_0_0)]",
+						class: "rounded-lg text-[color:var(--foreground)] bg-[color:var(--primary)] hover:bg-[color:oklch(0.9_0_0)]",
 						size: ButtonSize::Xl,
 						r#type: "button",
 						onclick: move |_| handle_button_click("Large Ghost Button clicked!".to_string()),
@@ -129,7 +129,7 @@ pub fn UIDemo() -> Element {
 						"Link"
 					}
 					Button {
-						class: "px-6 py-3 bg-[color:var(--muted)] hover:bg-[color:var(--primary)] text-[color:var(--foreground)]",
+						class: "px-6 py-3 bg-[color:var(--primary)] hover:bg-[color:oklch(0.9_0_0)] text-[color:var(--foreground)]",
 						variant: ButtonVariant::Icon,
 						size: ButtonSize::IconLg,
 						r#type: "button",

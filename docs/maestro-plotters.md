@@ -87,8 +87,8 @@ fn AnalyticsDashboard() -> Element {
   rsx! {
     div { class: "grid grid-cols-2 gap-8",
       // Bar Chart
-      div { class: "bg-white rounded-lg p-6",
-        canvas { 
+      div { class: "bg-[color:var(--bg-color)] rounded-lg p-6",
+        canvas {
           id: "bar-chart",
           width: "500",
           height: "500"
@@ -132,7 +132,7 @@ let heatmap_data = Memo::new(move || {
       ])
     })
   });
-  
+
   let heatmap_labels = Memo::new(move || {
     use_explicit_memo((), || {
       Some(vec!["Q1", "Q2", "Q3", "Q4"])
@@ -180,9 +180,9 @@ Maestro Plotters works seamlessly with responsive design patterns:
 
 ```rust
 rsx! {
-  div { 
+  div {
     class: "aspect-square", // Maintains aspect ratio
-    canvas { 
+    canvas {
       id: "chart",
       width: "500",
       height: "500",

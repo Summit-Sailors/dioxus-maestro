@@ -24,7 +24,7 @@ fn ShadowInput(props: ShadowInputProps) -> Element {
 			label { class: "block text-sm font-medium mb-1", "{props.label}" }
 			div { class: "flex items-center gap-4",
 				div {
-					class: "shadow-preview w-16 h-16 bg-white rounded",
+					class: "shadow-preview w-16 h-16 bg-[color:var(--bg-color)] rounded",
 					style: "box-shadow: {props.value};",
 				}
 				textarea {

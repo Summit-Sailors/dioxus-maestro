@@ -30,4 +30,8 @@
   .maestro-toggle__switch.maestro-primary[aria-checked="true"]:hover {
     background-color: var(--maestro-color-primary-hover);
   }
+  .maestro-toggle__handle {
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+  }
 }

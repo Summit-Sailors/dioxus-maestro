@@ -81,7 +81,7 @@ pub fn FormContent(props: InnerComponentProps<User>) -> Element {
 					size: ButtonSize::Default,
 					variant: ButtonVariant::Default,
 					class: tw_join!(
-							"py-2 rounded-md font-semibold transition-all duration-200 bg-[color:var(--primary-bg)] text-[color:var(--primary-text)] hover:bg-[color:var(--hover-bg)] ring-[color:var(--focus-ring)] ring-offset-transparent",
+							"py-2 rounded-md font-semibold transition-all duration-200 bg-[color:var(--primary-bg)] text-[color:var(--primary-text)] hover:bg-[color:oklch(0.52_0.19_263.83)] ring-[color:var(--focus-ring)] ring-offset-transparent",
 							(* props.form.is_submitting.read())
 							.then_some("bg-[color:var(--border-color)] cursor-not-allowed opacity-70")
 					),

@@ -110,9 +110,6 @@ pub fn set_document_theme(theme_class: &str) {
 			// Changing system theme might require elevated permissions
 			// so this might not work in all environments
 		}
-
-		// Emit a theme change event that can be caught by other components (TODO)
-		// emit("theme_change", theme_class);
 	}
 }
 

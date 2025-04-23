@@ -2,9 +2,7 @@ use dioxus::prelude::*;
 use tailwind_fuse::*;
 
 #[derive(TwClass)]
-#[tw(
-	class = "inline-flex px-4 py-3 items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors ring-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 maestro-button"
-)]
+#[tw(class = "px-4 py-3 text-sm font-medium disabled:pointer-events-none disabled:opacity-50 maestro-button")]
 pub struct ButtonClass {
 	pub variant: ButtonVariant,
 	pub size: ButtonSize,

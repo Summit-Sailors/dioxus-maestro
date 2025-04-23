@@ -137,7 +137,7 @@ pub fn Calendar(display_props: CalendarDisplayProps, select_props: CalendarSelec
 		CalendarMaybeWrapper { is_full, selected_date, wrapper_class,
 			div {
 				class: tw_merge!(
-						"w-full max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden maestro-calendar-container",
+						"w-full max-w-md mx-auto bg-[color:var(--bg-color)] shadow-lg rounded-lg overflow-hidden maestro-calendar-container",
 						container_class
 				),
 				div {
@@ -261,7 +261,7 @@ pub fn CalendarMaybeWrapper(CalendarMaybeWrapperProps { is_full, children, selec
 				}
 				div {
 					class: tw_merge!(
-							"absolute min-w-[448px] top-20 mt-6 z-50 bg-white shadow-lg rounded-lg border maestro-calendar-wrapper-container",
+							"absolute min-w-[448px] top-20 mt-6 z-50 bg-[color:var(--bg-color)] shadow-lg rounded-lg border maestro-calendar-wrapper-container",
 							if is_open() { "block" } else { "hidden" }
 					),
 					{children}

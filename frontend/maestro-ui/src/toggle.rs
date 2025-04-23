@@ -57,7 +57,7 @@ pub fn ToggleSwitch(props: ToggleSwitchProps) -> Element {
 							rsx! {
 								if EToggleSwitchLabelPlacement::Left == label_placement {
 									span {
-										class: tw_merge!("text-lg text-[color:var(--text-color)]500", & props.label_class),
+										class: tw_merge!("text-lg text-[color:var(--text-color)]", & props.label_class),
 										aria_label: label,
 										{label}
 									}
@@ -72,7 +72,7 @@ pub fn ToggleSwitch(props: ToggleSwitchProps) -> Element {
 								}
 								if EToggleSwitchLabelPlacement::Right == label_placement {
 									span {
-										class: tw_merge!("text-lg text-[color:var(--text-color)]500", & props.label_class),
+										class: tw_merge!("text-lg text-[color:var(--text-color)]", & props.label_class),
 										aria_label: label,
 										{label}
 									}
@@ -118,7 +118,7 @@ pub fn RawToggleSwitch(
 			},
 			div {
 				class: tw_merge!(
-						"absolute h-5 w-5 transform rounded-full bg-white transition-transform maestro-toggle__handle",
+						"absolute h-5 w-5 transform rounded-full transition-transform maestro-toggle__handle",
 						if state() { format!("translate-x-5 {}", toggled_translate_class) } else {
 						format!("translate-x-1 {}", default_translate_class) }
 				),

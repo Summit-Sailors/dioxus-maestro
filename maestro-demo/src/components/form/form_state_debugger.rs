@@ -26,7 +26,7 @@ where
 		div { class: "flex flex-col justify-center bg-[color:var(--bg-color)] lg:py-16 sm:py-8 py-6 gap-8 text-[color:var(--text-color)]",
 			div { class: "flex justify-center transition hover:text-[color:var(--highlight-color)]",
 				Button {
-					class: "bg-[color:var(--primary-bg)] text-[color:var(--primary-text)] hover:bg-[color:var(--hover-bg)]",
+					class: "bg-[color:var(--primary-bg)] text-[color:var(--primary-text)] hover:bg-[color:oklch(0.52_0.19_263.83)]",
 					r#type: "button",
 					onclick: move |_| show_debug.toggle(),
 					if show_debug() {

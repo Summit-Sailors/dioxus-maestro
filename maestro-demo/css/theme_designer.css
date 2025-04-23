@@ -1,0 +1,318 @@
+/**
+ * Theme Designer Component Styles
+ * Extending the Tailwind CSS v4 Configuration
+ */
+
+@layer components {
+  /* Theme Designer Layout */
+  .theme-designer-container {
+    height: 100vh;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 1024px) {
+    .theme-designer-container {
+      grid-template-columns: 1fr 2fr;
+    }
+  }
+
+  /* Sidebar and Preview scrolling */
+  .theme-designer-sidebar,
+  .theme-preview-wrapper {
+    height: 100%;
+    overflow-y: auto;
+    max-height: 100vh;
+    scrollbar-width: thin;
+    background-color: var(--card-bg);
+    color: var(--card-text);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+  }
+
+  .theme-designer-sidebar::-webkit-scrollbar,
+  .theme-preview-wrapper::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .theme-designer-sidebar::-webkit-scrollbar-thumb,
+  .theme-preview-wrapper::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: var(--radius-full);
+  }
+
+  /* Tab handling for responsive design */
+  .theme-designer-tabs ul {
+    display: flex;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .theme-designer-tabs button {
+    padding: 0.5rem 1rem;
+    font-weight: var(--font-weight-medium);
+    transition: all 0.2s ease;
+    color: var(--text-color);
+    position: relative;
+  }
+
+  .theme-designer-tabs button:hover {
+    color: var(--primary-bg);
+  }
+
+  /* Active tab styling */
+  .theme-designer-tabs button.active,
+  .theme-designer-tabs button[aria-selected="true"] {
+    color: var(--primary-bg);
+  }
+
+  /* Tab panels */
+  .tab-panel {
+    background-color: var(--input-bg);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .tab-panel.hidden {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+  }
+
+  /* Accordion-like behavior for mobile */
+  @media (max-width: 640px) {
+    .theme-designer-tabs ul {
+      flex-direction: column;
+      border-bottom: none;
+    }
+
+    .theme-designer-tabs li {
+      width: 100%;
+      margin-right: 0;
+    }
+
+    .theme-designer-tabs button {
+      width: 100%;
+      text-align: left;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+      border-left: 2px solid transparent;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .theme-designer-tabs button::after {
+      content: "+";
+      font-size: 1.25rem;
+      transition: transform 0.2s ease;
+    }
+
+    .theme-designer-tabs button[aria-selected="true"]::after {
+      content: "−";
+      transform: rotate(0deg);
+    }
+
+    .theme-designer-tabs button[aria-selected="true"] {
+      border-bottom: 1px solid var(--border-color);
+      border-left: 2px solid var(--primary-bg);
+      background-color: var(--hover-bg);
+    }
+
+    /* Improved tab panel transitions for accordion behavior */
+    .tab-panel {
+      transition: max-height 0.3s ease-in-out, opacity 0.2s ease-in-out,
+        padding 0.2s ease-in-out;
+    }
+  }
+
+  /* Theme actions styling */
+  .theme-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 2rem;
+  }
+
+  .theme-actions button {
+    flex: 1;
+    min-width: 100px;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+  }
+
+  .theme-actions button:first-child {
+    background-color: var(--primary-bg);
+    color: var(--primary-text);
+  }
+
+  .theme-actions button:first-child:hover {
+    background-color: var(--secondary-bg);
+  }
+
+  .theme-actions button:last-child {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+  }
+
+  .theme-actions button:last-child:hover {
+    background-color: var(--hover-bg);
+  }
+
+  /* Responsive Layout */
+  @media (max-width: 768px) {
+    .theme-designer-container {
+      height: auto;
+      overflow: visible;
+    }
+
+    .theme-designer-sidebar,
+    .theme-preview-wrapper {
+      height: auto;
+      max-height: none;
+      overflow: visible;
+    }
+
+    /* Config section styling for mobile */
+    #theming-config {
+      flex-direction: column;
+    }
+
+    #theming-config > div {
+      width: 100%;
+    }
+  }
+
+  /* Animation for theme viewer */
+  .transition-appear {
+    transition: all 0.2s ease-out;
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .transition-appear.starting {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  /* Extend existing styles from main.css */
+  .select-wrapper select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 16px 12px;
+    padding-right: 2.5rem;
+  }
+
+  input[type="range"] {
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    background-color: var(--range-track-bg);
+    border-radius: var(--radius-full);
+    outline: none;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background-color: var(--range-thumb-bg);
+    border: 2px solid var(--range-thumb-ring);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+  }
+
+  input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background-color: var(--range-thumb-bg);
+    border: 2px solid var(--range-thumb-ring);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+  }
+
+  input[type="range"]:hover {
+    background-color: var(--range-track-hover);
+  }
+
+  /* Input styling for the theme designer */
+  .theme-designer-sidebar input[type="text"],
+  .theme-designer-sidebar input[type="number"] {
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    border-radius: var(--radius-md);
+    padding: 0.5rem 0.75rem;
+    width: 100%;
+    transition: border-color 0.2s ease;
+  }
+
+  .theme-designer-sidebar input[type="text"]:focus,
+  .theme-designer-sidebar input[type="number"]:focus {
+    border-color: var(--primary-bg);
+    outline: none;
+    box-shadow: 0 0 0 2px
+      color-mix(in oklch, var(--primary-bg) 25%, transparent);
+  }
+
+  /* Color picker styling */
+  .color-swatch {
+    width: 24px;
+    height: 24px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+
+  .color-swatch:hover {
+    transform: scale(1.1);
+  }
+
+  /* For the color picker popup */
+  .color-picker-popup {
+    position: absolute;
+    z-index: 10;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    padding: 1rem;
+  }
+
+  .transition-appear {
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .transition-appear.starting {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+
+  /* Scrollbar styling for the popup */
+  .max-h-\[80vh\]::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .max-h-\[80vh\]::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: var(--radius-full);
+  }
+
+  .fixed.inset-0 {
+    animation: fadeIn 0.2s ease-out forwards;
+  }
+}

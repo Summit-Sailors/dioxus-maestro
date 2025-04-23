@@ -26,7 +26,7 @@ pub fn ComponentSection(props: ComponentSectionProps) -> Element {
 
 	rsx! {
 		section { class: "mb-12 text-[color:var(--text-color)] text-center w-full",
-			div { class: "flex justify-between items-center mb-2",
+			div { class: "flex sm:flex-col justify-between items-center mb-2",
 				h2 { class: "text-2xl font-semibold text-[color:var(--text-color)]",
 					"{props.title}"
 				}
@@ -34,7 +34,7 @@ pub fn ComponentSection(props: ComponentSectionProps) -> Element {
 						if props.section_id.is_some() {
 								rsx! {
 									button {
-										class: "px-3 py-1 bg-[color:var(--primary-bg)] hover:bg-[color:var(--hover-bg)] text-[color:var(--primary-text)] rounded-md flex items-center gap-2 transition-colors",
+										class: "px-3 py-1 bg-[color:var(--primary-bg)] hover:bg-[color:oklch(0.52_0.19_263.83)] text-[color:var(--primary-text)] rounded-md flex items-center gap-2 transition-colors",
 										onclick: handle_theme_designer_click,
 										"Customize Theme"
 									}

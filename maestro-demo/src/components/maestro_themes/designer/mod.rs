@@ -24,12 +24,14 @@ pub fn ThemeDesignerLayout(children: Element) -> Element {
 			}
 		}
 		ToastFrame { manager: toast }
-		div { id: "maestro-theming", class: "flex flex-col h-screen",
+		div {
+			id: "maestro-theming",
+			class: "flex flex-col h-screen bg-[var(--bg-color)] text-[var(--text-color)]",
 			NavBar {}
 			// main Content
 			main {
 				id: "maestro-themes-main",
-				class: "flex-1 flex flex-col overflow-hidden",
+				class: "flex-1 flex p-6 flex-col overflow-hidden bg-[var(--card-bg)] text-[var(--card-text)] mt-4",
 				{content}
 			}
 		}

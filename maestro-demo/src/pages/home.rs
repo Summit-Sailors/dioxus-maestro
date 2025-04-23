@@ -60,7 +60,7 @@ pub fn FeatureCard(title: &'static str, description: String, route: Option<Route
 					to: route,
 					class: "mt-auto ring-0 ring-offset-0 focus-visible:outline-none",
 					Button {
-						class: "w-fit text-lg text-[color:var(--primary-text)] bg-[color:var(--primary-bg)] hover:bg-[color:var(--hover-bg)]
+						class: "w-fit text-lg text-[color:var(--primary-text)] bg-[color:var(--primary-bg)] hover:bg-[color:oklch(0.52_0.19_263.83)]
 															ring-[color:var(--focus-ring)] ring-offset-[color:var(--card-bg)] focus:outline-none",
 						variant: ButtonVariant::Default,
 						size: ButtonSize::Lg,

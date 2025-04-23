@@ -109,7 +109,7 @@ pub fn JobsList() -> Element {
 			if loading() {
 				p { class: "text-[color:var(--muted-text)] text-center", "Loading jobs state..." }
 			} else {
-				pre { class: "bg-[color:var(--background)] text-[color:var(--text-color)] p-4 rounded-md whitespace-pre-wrap text-sm",
+				pre { class: "bg-[color:var(--bg-color)] text-[color:var(--text-color)] p-4 rounded-md whitespace-pre-wrap text-sm",
 					{
 							{
 									jobs_states

@@ -12,13 +12,11 @@ pub struct FontSelectorProps {
 pub fn FontSelector(props: FontSelectorProps) -> Element {
 	let mut typography = use_signal(|| props.typography.clone());
 
-	// update typography and notify parent on change
 	let mut update_typography = move |new_typography: TypographySettings| {
 		typography.set(new_typography.clone());
 		props.on_change.call(new_typography);
 	};
 
-	// a handler factory functions that don't capture props directly
 	let mut handle_font_family = move |value: String| {
 		let mut new_typography = typography.read().clone();
 		new_typography.font_family = value;
@@ -64,109 +62,97 @@ pub fn FontSelector(props: FontSelectorProps) -> Element {
 	];
 
 	rsx! {
-		div { class: "typography-editor",
-			h3 { class: "text-lg font-medium mb-3", "Typography" }
+		div { class: "p-4 bg-[var(--card-bg)] text-[var(--card-text)] rounded-xl shadow-md",
+			h3 { class: "text-lg font-semibold mb-4", "Typography" }
 
-			div { class: "mb-4",
+			div { class: "mb-6",
 				label { class: "block text-sm font-medium mb-1", "Font Family" }
 				select {
-					class: "w-full border rounded px-2 py-1",
+					class: "w-full bg-[var(--input-bg)] text-[var(--text-color)] border border-[var(--border-color)] rounded-md px-3 py-2",
 					value: "{typography().font_family}",
 					oninput: move |event| handle_font_family(event.value()),
-					{
-							common_fonts
-									.iter()
-									.map(|font| {
-											rsx! {
-												option { value: "{font}", "{font}" }
-											}
-									})
-					}
+					{common_fonts.iter().map(|font| rsx! {
+						option { value: "{font}", "{font}" }
+					})}
 				}
 				input {
 					r#type: "text",
-					class: "w-full border rounded px-2 py-1 mt-2",
+					class: "w-full mt-2 bg-[var(--input-bg)] text-[var(--text-color)] border border-[var(--border-color)] rounded-md px-3 py-2",
 					value: "{typography().font_family}",
 					oninput: move |event| handle_font_family(event.value()),
 					placeholder: "Or enter custom font stack",
 				}
 			}
 
-			div { class: "mb-4",
+			div { class: "mb-6",
 				label { class: "block text-sm font-medium mb-1", "Heading Font Family" }
 				select {
-					class: "w-full border rounded px-2 py-1",
+					class: "w-full bg-[var(--input-bg)] text-[var(--text-color)] border border-[var(--border-color)] rounded-md px-3 py-2",
 					value: "{typography().heading_font_family}",
 					oninput: move |event| handle_heading_font_family(event.value()),
-					{
-							common_fonts
-									.iter()
-									.map(|font| {
-											rsx! {
-												option { value: "{font}", "{font}" }
-											}
-									})
-					}
+					{common_fonts.iter().map(|font| rsx! {
+						option { value: "{font}", "{font}" }
+					})}
 				}
 				input {
 					r#type: "text",
-					class: "w-full border rounded px-2 py-1 mt-2",
+					class: "w-full mt-2 bg-[var(--input-bg)] text-[var(--text-color)] border border-[var(--border-color)] rounded-md px-3 py-2",
 					value: "{typography().heading_font_family}",
-					oninput: move |event| handle_font_family(event.value()),
+					oninput: move |event| handle_heading_font_family(event.value()),
 					placeholder: "Or enter custom font stack",
 				}
 			}
-		}
 
-		div { class: "grid grid-cols-2 gap-4 mb-4",
-			div {
-				label { class: "block text-sm font-medium mb-1", "Base Size" }
-				input {
-					r#type: "text",
-					class: "w-full border rounded px-2 py-1",
-					value: "{typography().base_size}",
-					oninput: move |event| handle_base_size(event.value()),
+			div { class: "grid grid-cols-2 gap-4 mb-6",
+				div {
+					label { class: "block text-sm font-medium mb-1", "Base Size" }
+					input {
+						r#type: "text",
+						class: "w-full bg-[var(--input-bg)] text-[var(--text-color)] border border-[var(--border-color)] rounded-md px-3 py-2",
+						value: "{typography().base_size}",
+						oninput: move |event| handle_base_size(event.value()),
+					}
+				}
+
+				div {
+					label { class: "block text-sm font-medium mb-1", "Line Height" }
+					input {
+						r#type: "text",
+						class: "w-full bg-[var(--input-bg)] text-[var(--text-color)] border border-[var(--border-color)] rounded-md px-3 py-2",
+						value: "{typography().line_height}",
+						oninput: move |event| handle_line_height(event.value()),
+					}
 				}
 			}
 
-			div {
-				label { class: "block text-sm font-medium mb-1", "Line Height" }
-				input {
-					r#type: "text",
-					class: "w-full border rounded px-2 py-1",
-					value: "{typography().line_height}",
-					oninput: move |event| handle_line_height(event.value()),
-				}
-			}
-		}
-
-		h4 { class: "text-md font-medium mb-2 mt-4", "Font Weights" }
-		div { class: "grid grid-cols-2 gap-4",
-			{
-					let _ = typography()
-							.font_weights
-							.iter()
-							.map(|(name, weight)| {
-									let name_clone = name.clone();
-									rsx! {
-										div { key: "{name}",
-											label { class: "block text-sm font-medium mb-1", "{name}" }
-											input {
-												r#type: "number",
-												min: "100",
-												max: "900",
-												step: "100",
-												class: "w-full border rounded px-2 py-1",
-												value: "{weight}",
-												oninput: move |event| {
-														if let Ok(val) = event.value().parse::<u32>() {
-																handle_font_weight(name_clone.clone(), val);
-														}
-												},
+			h4 { class: "text-md font-semibold mb-3", "Font Weights" }
+			div { class: "grid grid-cols-2 gap-4",
+				{
+						let _ = typography()
+								.font_weights
+								.iter()
+								.map(|(name, weight)| {
+										let name_clone = name.clone();
+										rsx! {
+											div { key: "{name}",
+												label { class: "block text-sm font-medium mb-1", "{name}" }
+												input {
+													r#type: "number",
+													min: "100",
+													max: "900",
+													step: "100",
+													class: "w-full bg-[var(--input-bg)] text-[var(--text-color)] border border-[var(--border-color)] rounded-md px-3 py-2",
+													value: "{weight}",
+													oninput: move |event| {
+															if let Ok(val) = event.value().parse::<u32>() {
+																	handle_font_weight(name_clone.clone(), val);
+															}
+													},
+												}
 											}
 										}
-									}
-							});
+								});
+				}
 			}
 		}
 	}

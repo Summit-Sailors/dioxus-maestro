@@ -40,7 +40,7 @@ pub fn ThemeSelect() -> Element {
 			button {
 				class: tw_merge!(
 						"w-full flex items-center justify-between p-2.5 text-sm text-left rounded-lg border shadow-sm transition",
-						"bg-white dark:bg-gray-800", "text-black dark:text-white",
+						"bg-[color:var(--bg-color)]", "text-[color:var(--text-color)]",
 						"border-gray-300 dark:border-gray-600",
 						"hover:shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
 				),
@@ -60,7 +60,7 @@ pub fn ThemeSelect() -> Element {
 				div {
 					class: tw_merge!(
 							"absolute z-10 mt-2 w-full rounded-lg shadow-lg border",
-							"bg-white dark:bg-gray-700", "border-gray-300 dark:border-gray-600"
+							"bg-[color:var(--bg-color)]", "border-gray-300 dark:border-gray-600"
 					),
 					button {
 						class: tw_merge!(

@@ -101,10 +101,9 @@ pub fn BorderRadiusEditor(props: BorderRadiusEditorProps) -> Element {
 										let modified = is_modified(key);
 										rsx! {
 											div { key: "{key}",
-												div { class: "flex justify-between items-center mb-1",
-
+												// label and reset button row
+												div { class: "flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-1",
 													label { class: "text-sm font-medium text-muted-foreground", "{label}" }
-													// Only show reset button if value is modified
 													{
 															if modified {
 																	rsx! {
@@ -119,60 +118,57 @@ pub fn BorderRadiusEditor(props: BorderRadiusEditorProps) -> Element {
 																	rsx! {}
 															}
 													}
-
-													div { class: "flex items-center space-x-2",
-														// Main input
-														div { class: "flex-grow relative",
-															input {
-																r#type: "text",
-																class: "w-full border border-border bg-input-bg text-sm px-3 py-1.5 rounded-md focus:outline-none focus:ring-2 focus:ring-ring",
-																value: "{value}",
-																oninput: input_handler,
-															}
-														}
-														// Preview box
-														div { class: "w-10 h-10 rounded-md border border-border overflow-hidden flex items-center justify-center",
-															div {
-																class: "w-full h-full bg-muted",
-																style: "border-radius: {value};",
-															}
+												}
+												// input and preview row
+												div { class: "flex flex-col sm:flex-row sm:items-center gap-2",
+													div { class: "flex-grow relative",
+														input {
+															r#type: "text",
+															class: "w-full border border-border bg-input-bg text-sm px-3 py-1.5 rounded-md focus:outline-none focus:ring-2 focus:ring-ring",
+															value: "{value}",
+															oninput: input_handler,
 														}
 													}
-
-													// Quick preset buttons
-													div { class: "mt-2 flex flex-wrap gap-1",
-														{
-																size_presets
-																		.iter()
-																		.map(|(preset_name, preset_value)| {
-																				let preset_handler = {
-																						let key = key.to_string();
-																						let preset_value = preset_value.to_string();
-																						let on_change = props.on_change;
-																						let base_radius = props.border_radius.clone();
-																						move |_| {
-																								let mut new_radius = base_radius.clone();
-																								match key.as_str() {
-																										"sm" => new_radius.sm = preset_value.clone(),
-																										"md" => new_radius.md = preset_value.clone(),
-																										"lg" => new_radius.lg = preset_value.clone(),
-																										"xl" => new_radius.xl = preset_value.clone(),
-																										"full" => new_radius.full = preset_value.clone(),
-																										_ => {}
-																								}
-																								on_change.call(new_radius);
-																						}
-																				};
-																				rsx! {
-																					button {
-																						r#type: "button",
-																						class: "text-xs px-2 py-1 bg-muted hover:bg-hover-bg rounded border border-border text-muted-foreground hover:text-foreground",
-																						onclick: preset_handler,
-																						"{preset_name}"
-																					}
-																				}
-																		})
+													div { class: "w-10 h-10 rounded-md border border-border overflow-hidden flex items-center justify-center shrink-0",
+														div {
+															class: "w-full h-full bg-muted",
+															style: "border-radius: {value};",
 														}
+													}
+												}
+												// preset buttons
+												div { class: "mt-2 flex flex-wrap gap-1",
+													{
+															size_presets
+																	.iter()
+																	.map(|(preset_name, preset_value)| {
+																			let preset_handler = {
+																					let key = key.to_string();
+																					let preset_value = preset_value.to_string();
+																					let on_change = props.on_change;
+																					let base_radius = props.border_radius.clone();
+																					move |_| {
+																							let mut new_radius = base_radius.clone();
+																							match key.as_str() {
+																									"sm" => new_radius.sm = preset_value.clone(),
+																									"md" => new_radius.md = preset_value.clone(),
+																									"lg" => new_radius.lg = preset_value.clone(),
+																									"xl" => new_radius.xl = preset_value.clone(),
+																									"full" => new_radius.full = preset_value.clone(),
+																									_ => {}
+																							}
+																							on_change.call(new_radius);
+																					}
+																			};
+																			rsx! {
+																				button {
+																					r#type: "button",
+																					class: "text-xs px-2 py-1 bg-muted hover:bg-hover-bg rounded border border-border text-muted-foreground hover:text-foreground",
+																					onclick: preset_handler,
+																					"{preset_name}"
+																				}
+																			}
+																	})
 													}
 												}
 											}

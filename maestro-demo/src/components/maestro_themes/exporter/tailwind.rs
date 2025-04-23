@@ -28,8 +28,6 @@ pub fn generate_tailwind_v4_css(state: &DesignerState, theme_options: ThemeOptio
     background: auto;
     }}
     }}
-  
-  {}
 
 .highlight {{
   animation: highlight 1s;
@@ -101,7 +99,8 @@ pub fn generate_tailwind_v4_css(state: &DesignerState, theme_options: ThemeOptio
       max-width: 1440px;
     }}
     }}
-    }}"#,
+  }}
+  {}"#,
 		component_specific_styles
 	);
 	// Base theme configuration using CSS variables

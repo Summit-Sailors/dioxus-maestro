@@ -7,9 +7,15 @@ use strum::IntoEnumIterator;
 use tailwind_fuse::tw_merge;
 
 use super::prelude::*;
-use crate::components::maestro_themes::{
-	designer::state::{BorderRadiusSettings, ColorPalette, DesignerState, ShadowSettings, SpacingScale, TypographySettings},
-	exporter::{ExportFormat, ThemeOptions},
+use crate::{
+	components::{
+		backdrop::Backdrop,
+		maestro_themes::{
+			designer::state::{BorderRadiusSettings, ColorPalette, DesignerState, ShadowSettings, SpacingScale, TypographySettings},
+			exporter::{ExportFormat, ThemeOptions},
+		},
+	},
+	router::Route,
 };
 
 #[derive(Props, PartialEq, Clone)]
@@ -57,18 +63,34 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 		state.with_mut(|s| s.shadow = shadow);
 	};
 
+	// to navigate home
+	let navigator = use_navigator();
+
+	// Function to check if a tab is active
+	let is_tab_active = move |tab: &str| -> bool { active_tab() == tab };
+
 	rsx! {
 		div {
 			id: "theme-designer",
-			class: "theme-designer-container grid grid-cols-1 lg:grid-cols-3 gap-6",
-			div { class: "theme-designer-sidebar col-span-1 bg-white p-6 rounded-lg border",
-				// Backdrop { show: show_theme_viewer }
-				h2 { class: "text-xl font-bold mb-4", "Theme Customization" }
+			class: "theme-designer-container flex flex-col md:flex-row gap-6",
+			div { class: "theme-designer-sidebar col-span-1 bg-[color:var(--card-bg)] p-6 rounded-lg border border-[color:var(--border-color)] shadow-md overflow-y-auto w-full md:w-3/4",
+				h2 { class: "text-xl font-semibold mb-6 text-[color:var(--card-text)]",
+					"Theme Customization"
+				}
+
+				button {
+					class: "px-4 py-2 bg-[color:var(--primary-bg)] text-[color:var(--primary-text)] rounded-[var(--radius-md)] hover:bg-[color:var(--secondary-bg)] transition-all duration-200 flex items-center gap-2 mb-6 w-full sm:w-auto",
+					onclick: move |_| {
+							navigator.push(Route::HomePage {});
+					},
+					"Go Home"
+				}
 
 				{
 						if show_theme_viewer() {
 								rsx! {
-									div {
+									Backdrop { show: show_theme_viewer }
+									div { class: "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-3xl max-h-[80vh] overflow-y-auto bg-[color:var(--card-bg)] p-6 rounded-lg border border-[color:var(--border-color)] shadow-xl z-50 transition-appear",
 										ThemeViewer {
 											state: state(),
 											theme_options: theme_options(),
@@ -82,52 +104,72 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 				}
 
 				div { class: "theme-designer-tabs mb-6",
-					ul { class: "flex border-b",
-						li { class: "mr-2",
+					ul { class: "flex flex-wrap sm:border-b border-[color:var(--border-color)]",
+						li { class: "mr-2 w-full sm:w-auto",
 							button {
 								class: tw_merge!(
-										"px-4 py-2 font-medium", if active_tab() == "colors" {
-										"border-b-2 border-blue-500 text-blue-500" } else { "text-[color:var(--text-color)]500" }
+										"px-4 py-2 font-medium transition-all w-full text-left sm:text-center", if
+										is_tab_active("colors") {
+										"border-b-2 sm:border-b-2 border-l-2 sm:border-l-0 border-[color:var(--primary-bg)] text-[color:var(--primary-bg)] bg-[color:var(--hover-bg)] sm:bg-transparent"
+										} else {
+										"text-[color:var(--text-color)] hover:text-[color:var(--primary-bg)] border-b sm:border-b-0 border-[color:var(--border-color)]"
+										}
 								),
 								onclick: move |_| active_tab.set("colors"),
 								"Colors"
 							}
 						}
-						li { class: "mr-2",
+						li { class: "mr-2 w-full sm:w-auto",
 							button {
 								class: tw_merge!(
-										"px-4 py-2 font-medium", if active_tab() == "typography" {
-										"border-b-2 border-blue-500 text-blue-500" } else { "text-[color:var(--text-color)]500" }
+										"px-4 py-2 font-medium transition-all w-full text-left sm:text-center", if
+										is_tab_active("typography") {
+										"border-b-2 sm:border-b-2 border-l-2 sm:border-l-0 border-[color:var(--primary-bg)] text-[color:var(--primary-bg)] bg-[color:var(--hover-bg)] sm:bg-transparent"
+										} else {
+										"text-[color:var(--text-color)] hover:text-[color:var(--primary-bg)] border-b sm:border-b-0 border-[color:var(--border-color)]"
+										}
 								),
 								onclick: move |_| active_tab.set("typography"),
 								"Typography"
 							}
 						}
-						li { class: "mr-2",
+						li { class: "mr-2 w-full sm:w-auto",
 							button {
 								class: tw_merge!(
-										"px-4 py-2 font-medium", if active_tab() == "spacing" {
-										"border-b-2 border-blue-500 text-blue-500" } else { "text-[color:var(--text-color)]500" }
+										"px-4 py-2 font-medium transition-all w-full text-left sm:text-center", if
+										is_tab_active("spacing") {
+										"border-b-2 sm:border-b-2 border-l-2 sm:border-l-0 border-[color:var(--primary-bg)] text-[color:var(--primary-bg)] bg-[color:var(--hover-bg)] sm:bg-transparent"
+										} else {
+										"text-[color:var(--text-color)] hover:text-[color:var(--primary-bg)] border-b sm:border-b-0 border-[color:var(--border-color)]"
+										}
 								),
 								onclick: move |_| active_tab.set("spacing"),
 								"Spacing"
 							}
 						}
-						li { class: "mr-2",
+						li { class: "mr-2 w-full sm:w-auto",
 							button {
 								class: tw_merge!(
-										"px-4 py-2 font-medium", if active_tab() == "border-radius" {
-										"border-b-2 border-blue-500 text-blue-500" } else { "text-[color:var(--text-color)]500" }
+										"px-4 py-2 font-medium transition-all w-full text-left sm:text-center", if
+										is_tab_active("border-radius") {
+										"border-b-2 sm:border-b-2 border-l-2 sm:border-l-0 border-[color:var(--primary-bg)] text-[color:var(--primary-bg)] bg-[color:var(--hover-bg)] sm:bg-transparent"
+										} else {
+										"text-[color:var(--text-color)] hover:text-[color:var(--primary-bg)] border-b sm:border-b-0 border-[color:var(--border-color)]"
+										}
 								),
 								onclick: move |_| active_tab.set("border-radius"),
 								"Border Radius"
 							}
 						}
-						li { class: "mr-2",
+						li { class: "mr-2 w-full sm:w-auto",
 							button {
 								class: tw_merge!(
-										"px-4 py-2 font-medium", if active_tab() == "shadows" {
-										"border-b-2 border-blue-500 text-blue-500" } else { "text-[color:var(--text-color)]500" }
+										"px-4 py-2 font-medium transition-all w-full text-left sm:text-center", if
+										is_tab_active("shadows") {
+										"border-b-2 sm:border-b-2 border-l-2 sm:border-l-0 border-[color:var(--primary-bg)] text-[color:var(--primary-bg)] bg-[color:var(--hover-bg)] sm:bg-transparent"
+										} else {
+										"text-[color:var(--text-color)] hover:text-[color:var(--primary-bg)] border-b sm:border-b-0 border-[color:var(--border-color)]"
+										}
 								),
 								onclick: move |_| active_tab.set("shadows"),
 								"Shadows"
@@ -138,9 +180,11 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 
 				div { class: "theme-designer-tab-content",
 					// Options
-					div { id: "theming-config", class: "flex items-center",
+					div {
+						id: "theming-config",
+						class: "flex flex-col md:flex-row flex-wrap items-center justify-between gap-4 mb-4 p-4 bg-[color:var(--bg-color)] rounded-[var(--radius-md)]",
 
-						div {
+						div { class: "flex-1 min-w-[200px]",
 							Select {
 								options: ExportFormat::iter()
 										.map(|format| {
@@ -159,16 +203,16 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 								onchange: move |value| export_format.set(value),
 								label: "Export Format: ",
 								placeholder: "Select an export format",
-								placeholder_class: "text-slate-500",
-								dropdown_class: "bg-[color:var(--bg-color)] border border-slate-700",
-								option_class: "hover:bg-slate-500 bg-slate-800 text-slate-100",
-								label_class: "text-slate-200",
-								button_class: "bg-[color:var(--bg-color)] text-slate-200",
+								placeholder_class: "text-[color:var(--muted-text)]",
+								dropdown_class: "bg-[color:var(--bg-color)] border border-[color:var(--border-color)] shadow-md rounded-[var(--radius-md)]",
+								option_class: "hover:bg-[color:var(--hover-bg)] text-[color:var(--text-color)] py-2 px-3",
+								label_class: "text-[color:var(--text-color)] font-medium",
+								button_class: "bg-[color:var(--input-bg)] text-[color:var(--text-color)] border border-[color:var(--border-color)] rounded-[var(--radius-md)]",
 								is_searchable: false,
 							}
 						}
 
-						div {
+						div { class: "flex-1 min-w-[200px] flex justify-end md:justify-start",
 							ToggleSwitch {
 								state: with_doc_theme,
 								label_states: Some(ToggleSwitchLabelStatesProp {
@@ -181,7 +225,11 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 					}
 
 					// Colors tab
-					div { class: tw_merge!("tab-panel", if active_tab() != "colors" { "hidden" } else { "" }),
+					div {
+						class: tw_merge!(
+								"tab-panel p-4 bg-[color:var(--input-bg)] rounded-[var(--radius-md)] transition-all",
+								if active_tab() != "colors" { "hidden" } else { "" }
+						),
 						ColorPicker {
 							colors: state().color.clone(),
 							on_change: update_color_palette,
@@ -189,7 +237,11 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 					}
 
 					// Typography tab
-					div { class: tw_merge!("tab-panel", if active_tab() != "typography" { "hidden" } else { "" }),
+					div {
+						class: tw_merge!(
+								"tab-panel p-4 bg-[color:var(--input-bg)] rounded-[var(--radius-md)] transition-all",
+								if active_tab() != "typography" { "hidden" } else { "" }
+						),
 						FontSelector {
 							typography: state().typography.clone(),
 							on_change: update_typography,
@@ -197,7 +249,11 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 					}
 
 					// Spacing tab
-					div { class: tw_merge!("tab-panel", if active_tab() != "spacing" { "hidden" } else { "" }),
+					div {
+						class: tw_merge!(
+								"tab-panel p-4 bg-[color:var(--input-bg)] rounded-[var(--radius-md)] transition-all",
+								if active_tab() != "spacing" { "hidden" } else { "" }
+						),
 						SpacingEditor {
 							spacing: state().spacing.clone(),
 							on_change: update_spacing,
@@ -205,7 +261,11 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 					}
 
 					// Border Radius tab
-					div { class: tw_merge!("tab-panel", if active_tab() != "border-radius" { "hidden" } else { "" }),
+					div {
+						class: tw_merge!(
+								"tab-panel p-4 bg-[color:var(--input-bg)] rounded-[var(--radius-md)] transition-all",
+								if active_tab() != "border-radius" { "hidden" } else { "" }
+						),
 						BorderRadiusEditor {
 							border_radius: state().border_radius.clone(),
 							on_change: update_border_radius,
@@ -213,7 +273,11 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 					}
 
 					// Shadows tab
-					div { class: tw_merge!("tab-panel", if active_tab() != "shadows" { "hidden" } else { "" }),
+					div {
+						class: tw_merge!(
+								"tab-panel p-4 bg-[color:var(--input-bg)] rounded-[var(--radius-md)] transition-all",
+								if active_tab() != "shadows" { "hidden" } else { "" }
+						),
 						ShadowEditor {
 							shadow: state().shadow.clone(),
 							on_change: update_shadow,
@@ -221,21 +285,21 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 					}
 				}
 
-				div { class: "theme-actions mt-6 flex space-x-4",
+				div { class: "theme-actions mt-8 flex flex-wrap gap-4",
 					button {
-						class: "px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600",
+						class: "px-4 py-2 bg-[color:var(--primary-bg)] text-[color:var(--primary-text)] rounded-[var(--radius-md)] hover:bg-[color:var(--secondary-bg)] transition-all duration-200 shadow-sm flex-1",
 						onclick: move |_| show_theme_viewer.set(true),
 						"Export"
 					}
 					button {
-						class: "px-4 py-2 border border-gray-300 rounded hover:bg-gray-100",
+						class: "px-4 py-2 bg-[color:var(--bg-color)] text-[color:var(--text-color)] border border-[color:var(--border-color)] rounded-[var(--radius-md)] hover:bg-[color:var(--hover-bg)] transition-all duration-200 flex-1",
 						onclick: reset_theme,
 						"Reset"
 					}
 				}
 			}
 
-			div { class: "theme-preview-wrapper col-span-1 lg:col-span-2",
+			div { class: "theme-preview-wrapper col-span-1 lg:col-span-2 bg-[color:var(--bg-color)] p-6 rounded-lg border border-[color:var(--border-color)] shadow-lg w-full md:w-1/4",
 				ThemePreview {
 					state: state(),
 					with_doc_theme: with_doc_theme(),

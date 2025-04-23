@@ -100,7 +100,7 @@ pub fn Select<T: Clone + PartialEq + std::fmt::Display + 'static>(props: SelectP
 				height: 16,
 				icon: IoChevronDownOutline,
 				class: tw_merge!(
-						"absolute top-0 bottom-0 my-auto right-3 transition-all ease-linear fill-none",
+						"transition-all ease-linear fill-current text-[color:var(--text-color)]",
 						(is_opened()).then_some("rotate-180")
 				),
 			}
@@ -114,7 +114,10 @@ pub fn Select<T: Clone + PartialEq + std::fmt::Display + 'static>(props: SelectP
 					.container_class
 			),
 			if !props.label.is_empty() {
-				span { class: tw_merge!("text-[color:var(--text-color)]400 maestro-select-label", & props.label_class),
+				span {
+					class: tw_merge!(
+							"text-[color:var(--text-color)]400 maestro-select-label", & props.label_class
+					),
 					{props.label}
 				}
 			}
@@ -147,7 +150,9 @@ pub fn Select<T: Clone + PartialEq + std::fmt::Display + 'static>(props: SelectP
 						),
 						"{display_value}"
 					}
-					{icon_down}
+					div { class: "absolute inset-y-0 right-3 flex items-center pointer-events-none",
+						{icon_down}
+					}
 				}
 				div {
 					class: tw_merge!(
@@ -160,8 +165,8 @@ pub fn Select<T: Clone + PartialEq + std::fmt::Display + 'static>(props: SelectP
 					if props.is_searchable {
 						div {
 							class: tw_merge!(
-									"relative px-3 text-[color:var(--text-color)]500 maestro-select-search_container", & props
-									.search_input_container_class
+									"relative px-3 text-[color:var(--text-color)]500 maestro-select-search_container",
+									& props.search_input_container_class
 							),
 							Icon {
 								width: 16,

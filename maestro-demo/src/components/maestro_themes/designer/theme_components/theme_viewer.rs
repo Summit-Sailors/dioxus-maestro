@@ -87,17 +87,17 @@ pub fn ThemeViewer(mut props: ThemeViewerProps) -> Element {
 	});
 
 	rsx! {
-		div { class: "p-4 w-full max-w-lg mx-auto z-[9999]",
-			h1 { class: "text-2xl font-bold mb-4", "Stylesheet Preview" }
+		div { class: "p-4 w-full max-w-lg mx-auto z-[9999] overflow-y-auto bg-[var(--card-bg)] text-[var(--card-text)] rounded-xl shadow-lg",
+			h1 { class: "text-2xl font-bold mb-4 text-[var(--text-color)]", "Stylesheet Preview" }
 			if is_generating() {
-				div { class: "p-4 mb-4 text-blue-700 bg-blue-100 rounded border border-blue-400",
+				div { class: "p-4 mb-4 text-[var(--text-color)] bg-[var(--highlight-color)] rounded border border-[var(--border-color)]",
 					"Generating stylesheet..."
 				}
 			}
-			div { class: "relative",
+			div { class: "relative flex items-center justify-between gap-2 mb-2",
 				button {
 					r#type: "button",
-					class: "text-slate-300 hover:text-slate-100 transition-colors",
+					class: "text-[var(--muted-text)] hover:text-[var(--text-color)] transition-colors",
 					disabled: "{is_copying()}",
 					onclick: handle_copy,
 					title: "Copy Code",
@@ -110,14 +110,13 @@ pub fn ThemeViewer(mut props: ThemeViewerProps) -> Element {
 				}
 				div {
 					class: tw_join!(
-							"absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-[color:var(--bg-color)] text-white text-xs py-1 px-2 rounded transition-opacity duration-300 {}",
+							"absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs py-1 px-2 rounded transition-opacity duration-300 bg-[var(--accent-bg)] text-[var(--accent-text)]",
 							if copy_status().is_empty() { "opacity-0" } else { "opacity-100" }
 					),
 					"{copy_status}"
 				}
-
 				button {
-					class: "px-4 py-2 border border-gray-300 rounded hover:bg-gray-100",
+					class: "px-4 py-2 border border-[color:var(--border-color)] rounded hover:bg-[var(--hover-bg)] text-[color:var(--text-color)]",
 					onclick: move |_| props.show_generated_themes.set(false),
 					Icon {
 						icon: IoCloseCircle,
@@ -128,14 +127,25 @@ pub fn ThemeViewer(mut props: ThemeViewerProps) -> Element {
 				}
 			}
 			if !stylesheet().is_empty() {
-				div {
-					class: "font-mono text-sm whitespace-pre p-4 mt-4",
-					// dangerous_inner_html to render the highlighted code
-					dangerous_inner_html: "{stylesheet()}",
-					label { class: "block mb-2 font-medium", "Generated Sheet:" }
+				div { class: "relative flex-1 rounded-lg flex flex-col bg-[color:var(--bg-color)] lg:px-16 sm:px-6 px-2 py-8 h-full overflow-x-auto mt-8",
+
+					div { class: "flex w-full justify-between items-center bg-[color:var(--secondary-bg)] text-[color:var(--secondary-text)] text-xs px-4 py-2 rounded-t-md",
+						span { class: "font-mono", "Generated Stylesheet" }
+						div { class: "flex gap-1",
+							span { class: "w-3 h-3 bg-red-500 rounded-full" }
+							span { class: "w-3 h-3 bg-yellow-500 rounded-full" }
+							span { class: "w-3 h-3 bg-green-500 rounded-full" }
+						}
+					}
+
+					div {
+						class: "font-mono text-sm whitespace-pre p-4 text-[color:var(--text-color)]",
+						// dangerous_inner_html to render the highlighted code
+						dangerous_inner_html: "{stylesheet()}",
+					}
 				}
 			} else if !is_generating() && stylesheet().is_empty() {
-				div { class: "p-4 mt-4 text-[color:var(--text-color)]100 bg-gray-100 rounded border border-gray-300 text-center",
+				div { class: "p-4 mt-4 text-[var(--muted-text)] bg-[var(--input-bg)] rounded border border-[var(--border-color)] text-center",
 					"There was a problem generating the stylesheet."
 				}
 			}
