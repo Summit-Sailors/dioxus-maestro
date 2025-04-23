@@ -31,8 +31,10 @@ pub fn CompleteQueryDemo() -> Element {
 			class: "w-full bg-[color:var(--bg-color)] p-4 rounded-lg shadow-lg",
 
 			div { id: "maestro-query-header", class: "mb-8",
-				h1 { class: "text-slate-100 text-center text-3xl font-bold mb-2", "Maestro Query" }
-				p { class: "text-slate-300 text-center",
+				h1 { class: "text-[color:var(--text-color)] text-center text-3xl font-bold mb-2",
+					"Maestro Query"
+				}
+				p { class: "text-[color:var(--muted-text)] text-center",
 					"A powerful and flexible query management system for Dioxus applications that provides advanced caching, synchronization, and state management capabilities."
 				}
 			}
@@ -61,12 +63,13 @@ pub fn CompleteQueryDemo() -> Element {
 
 			div {
 				id: "maestro-query-nav",
-				class: "flex flex-wrap sm:flex-nowrap space-x-2 sm:space-x-0 border-b border-slate-700 pb-4",
+				class: "flex flex-wrap sm:flex-nowrap space-x-2 sm:space-x-0 border-b border-[color:var(--border-color)] pb-4",
 				span {
 					class: tw_join!(
 							"py-2 px-2 cursor-pointer rounded text-sm sm:text-xs", if * active_section.read()
-							== QuerySection::Default { "text-white border-b-4 border-slate-500" } else {
-							"text-slate-300" }
+							== QuerySection::Default {
+							"text-[color:var(--text-primary)] border-b-4 border-[color:var(--accent-color)]"
+							} else { "text-[color:var(--text-secondary)]" }
 					),
 					onclick: move |_| active_section.set(QuerySection::Default),
 					"Default"
@@ -74,8 +77,9 @@ pub fn CompleteQueryDemo() -> Element {
 				span {
 					class: tw_join!(
 							"py-2 px-2 cursor-pointer rounded text-sm sm:text-xs", if * active_section.read()
-							== QuerySection::Cache { "text-white border-b-4 border-slate-500" } else {
-							"text-slate-300" }
+							== QuerySection::Cache {
+							"text-[color:var(--text-primary)] border-b-4 border-[color:var(--accent-color)]"
+							} else { "text-[color:var(--text-secondary)]" }
 					),
 					onclick: move |_| active_section.set(QuerySection::Cache),
 					"Cache"
@@ -83,8 +87,9 @@ pub fn CompleteQueryDemo() -> Element {
 				span {
 					class: tw_join!(
 							"py-2 px-2 cursor-pointer rounded text-sm sm:text-xs", if * active_section.read()
-							== QuerySection::Mutation { "text-white border-b-4 border-slate-500" } else {
-							"text-slate-300" }
+							== QuerySection::Mutation {
+							"text-[color:var(--text-primary)] border-b-4 border-[color:var(--accent-color)]"
+							} else { "text-[color:var(--text-secondary)]" }
 					),
 					onclick: move |_| active_section.set(QuerySection::Mutation),
 					"Mutation"
@@ -92,8 +97,9 @@ pub fn CompleteQueryDemo() -> Element {
 				span {
 					class: tw_join!(
 							"py-2 px-2 cursor-pointer rounded text-sm sm:text-xs", if * active_section.read()
-							== QuerySection::Parallel { "text-white border-b-4 border-slate-500" } else {
-							"text-slate-300" }
+							== QuerySection::Parallel {
+							"text-[color:var(--text-primary)] border-b-4 border-[color:var(--accent-color)]"
+							} else { "text-[color:var(--text-secondary)]" }
 					),
 					onclick: move |_| active_section.set(QuerySection::Parallel),
 					"Parallel"
@@ -101,8 +107,9 @@ pub fn CompleteQueryDemo() -> Element {
 				span {
 					class: tw_join!(
 							"py-2 px-2 cursor-pointer rounded text-sm sm:text-xs", if * active_section.read()
-							== QuerySection::Batch { "text-white border-b-4 border-slate-500" } else {
-							"text-slate-300" }
+							== QuerySection::Batch {
+							"text-[color:var(--text-primary)] border-b-4 border-[color:var(--accent-color)]"
+							} else { "text-[color:var(--text-secondary)]" }
 					),
 					onclick: move |_| active_section.set(QuerySection::Batch),
 					"Batch"

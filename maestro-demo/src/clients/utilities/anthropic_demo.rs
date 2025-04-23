@@ -65,10 +65,10 @@ pub fn AnthropicDemo() -> Element {
 	rsx! {
 		div { class: "container mx-auto p-4 flex flex-col max-h-screen",
 			div { class: "flex flex-col gap-3",
-				h1 { class: "text-slate-100 text-center text-2xl sm:text-3xl lg:text-4xl 2xl:text-5xl font-semibold",
+				h1 { class: "text-[color:var(--text-color)] text-center text-3xl font-bold mb-2",
 					"Maestro Anthropic"
 				}
-				p { class: "text-slate-300 text-center text-base lg:text-xl 2xl:text-2xl",
+				p { class: "text-[color:var(--muted-text)] text-center",
 					"A utility designed to make connecting to and using Anthropic with your Dioxus apps easier"
 				}
 			}
@@ -89,14 +89,16 @@ pub fn AnthropicDemo() -> Element {
 			}
 
 			// settings panel
-			div { class: "bg-gray-900 p-4 border-b border-gray-700",
+			div { class: "bg-[color:var(--card-bg)] p-4 border-b border-[color:var(--border)]",
 				div { class: "flex flex-col md:flex-row gap-4",
 
 					// system prompt input
 					div { class: "flex-1",
-						label { class: "block text-sm font-medium text-[color:var(--text-color)]300", "System Prompt" }
+						label { class: "block text-sm font-medium text-[color:var(--muted-foreground)]",
+							"System Prompt"
+						}
 						input {
-							class: "mt-1 block w-full rounded-md border border-gray-600 bg-gray-800 text-white placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500",
+							class: "mt-1 block w-full rounded-md border border-[color:var(--border)] bg-[color:var(--card-bg)] text-[color:var(--text-color)] placeholder-[color:var(--muted-foreground)] focus:border-[color:var(--ring)] focus:ring-[color:var(--ring)]",
 							placeholder: "Enter system prompt...",
 							value: "{system_prompt}",
 							oninput: move |e| system_prompt.set(e.value().clone()),
@@ -105,11 +107,11 @@ pub fn AnthropicDemo() -> Element {
 
 					// temperature slider
 					div { class: "w-64",
-						label { class: "block text-sm font-medium text-[color:var(--text-color)]300",
+						label { class: "block text-sm font-medium text-[color:var(--muted-foreground)]",
 							"Temperature: {temperature}"
 						}
 						input {
-							class: "mt-1 block w-full accent-blue-500 border border-gray-600 bg-gray-800 text-white placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500",
+							class: "mt-1 block w-full accent-[color:var(--primary)] border border-[color:var(--border)] bg-[color:var(--card-bg)] text-[color:var(--text-color)] focus:border-[color:var(--ring)] focus:ring-[color:var(--ring)]",
 							r#type: "range",
 							min: "0",
 							max: "1",
@@ -121,7 +123,8 @@ pub fn AnthropicDemo() -> Element {
 				}
 			}
 
-			div { class: "flex-1 overflow-y-auto p-4 space-y-4 bg-gray-800 max-h-screen rounded-2xl",
+
+			div { class: "flex-1 overflow-y-auto p-4 space-y-4 bg-[color:var(--card-bg)] max-h-screen rounded-2xl",
 				{
 						messages
 								.iter()
@@ -134,8 +137,11 @@ pub fn AnthropicDemo() -> Element {
 												class: tw_join!(if is_user { "flex justify-end" } else { "flex justify-start" }),
 												div {
 													class: tw_join!(
-															if is_user { "bg-blue-600 text-white p-3 rounded-lg max-w-3/4" } else {
-															"bg-gray-700 text-[color:var(--text-color)]100 p-3 rounded-lg max-w-3/4" }
+															if is_user {
+															"bg-[color:var(--primary)] text-[color:var(--primary-foreground)] p-3 rounded-lg max-w-3/4"
+															} else {
+															"bg-[color:var(--secondary)] text-[color:var(--secondary-foreground)] p-3 rounded-lg max-w-3/4"
+															}
 													),
 													p { style: "white-space: pre-wrap;", "{message.content}" }
 													{
@@ -158,10 +164,10 @@ pub fn AnthropicDemo() -> Element {
 					error()
 							.map(|err_msg| {
 									rsx! {
-										div { class: "bg-red-600 text-white p-3 my-2 rounded-lg",
+										div { class: "bg-[color:var(--destructive)] text-[color:var(--text-color)] p-3 my-2 rounded-lg",
 											p { "{err_msg}" }
 											button {
-												class: "ml-2 px-2 py-1 bg-red-700 rounded hover:bg-red-800",
+												class: "ml-2 px-2 py-1 bg-[color:var(--destructive)] rounded hover:bg-red-800",
 												onclick: move |_| error.set(None),
 												"Dismiss"
 											}
@@ -171,10 +177,10 @@ pub fn AnthropicDemo() -> Element {
 			}
 
 			// input area
-			div { class: "p-4 bg-gray-900 border-t border-gray-700",
+			div { class: "p-4 bg-[color:var(--card-bg)] border-t border-[color:var(--border)]",
 				div { class: "flex space-x-2",
 					input {
-						class: "flex-1 rounded-md border border-gray-600 bg-gray-800 text-white placeholder-gray-500 shadow-sm focus:border-blue-500 focus:ring-blue-500",
+						class: "flex-1 rounded-md border border-[color:var(--border)] bg-[color:var(--card-bg)] text-[color:var(--text-color)] placeholder-[color:var(--muted-foreground)] shadow-sm focus:border-[color:var(--ring)] focus:ring-[color:var(--ring)]",
 						placeholder: "Type a message...",
 						value: "{user_input}",
 						oninput: move |e| user_input.set(e.value().clone()),
@@ -187,7 +193,7 @@ pub fn AnthropicDemo() -> Element {
 						},
 					}
 					button {
-						class: "bg-blue-600 border border-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed",
+						class: "bg-[color:var(--primary)] border border-[color:var(--ring)] text-[color:var(--primary-foreground)] px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed",
 						disabled: "{is_loading() || user_input().trim().is_empty()}",
 						onclick: move |_| send_message(),
 						"Send"

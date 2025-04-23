@@ -58,7 +58,7 @@ pub fn FormsDemo() -> Element {
 				h1 { class: "text-[color:var(--text-color)] text-center text-3xl font-bold mb-2",
 					"Maestro Form"
 				}
-				p { class: "text-[color:var(--muted-text)] text-center text-base lg:text-xl 2xl:text-2xl",
+				p { class: "text-[color:var(--muted-text)] text-center",
 					"A powerful, type-safe form management solution for Dioxus applications that brings the best of Formik's paradigms to Rust."
 				}
 			}

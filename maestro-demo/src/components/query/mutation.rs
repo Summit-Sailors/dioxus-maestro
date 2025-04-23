@@ -32,39 +32,40 @@ pub fn SilentMutationDemo() -> Element {
 	};
 
 	rsx! {
-		div { class: "grid justify-center grid-cols-1 text-center p-4 border border-slate-700 bg-[color:var(--bg-color)] rounded-lg shadow-lg mt-4",
-			h3 { class: "text-xl text-slate-100 font-bold mb-4", "Silent vs. Normal Mutations" }
-			p { class: "mb-4 text-slate-200 font-bold",
+		div { class: "grid justify-center grid-cols-1 text-center p-4 border border-[color:var(--border)] bg-[color:var(--bg-color)] rounded-lg shadow-lg mt-4",
+			h3 { class: "text-xl text-[color:var(--text-color)] font-bold mb-4",
+				"Silent vs. Normal Mutations"
+			}
+			p { class: "mb-4 text-[color:var(--text-color)] font-bold",
 				"Counter: "
-				span { class: "text-yellow-500 font-bold", " {counter}" }
+				span { class: "text-[color:var(--accent)] font-bold", " {counter}" }
 			}
 			div { class: "space-x-2",
 				Button {
-					class: "bg-blue-500 text-white px-4 py-2 rounded",
+					class: "bg-[color:var(--primary)] text-[color:var(--primary-foreground)] px-4 py-2 rounded",
 					onclick: handle_normal_mutation,
 					"Normal"
 				}
 				Button {
-					class: "bg-green-500 text-white px-4 py-2 rounded",
+					class: "bg-[color:var(--accent)] text-[color:var(--accent-foreground)] px-4 py-2 rounded",
 					onclick: handle_silent_mutation,
 					"Silent"
 				}
 			}
-
-			div { class: "mt-4 text-slate-200 font-semibold",
+			div { class: "mt-4 text-[color:var(--text-color)] font-semibold",
 				"Mutation Status: "
 				match *silent_mutation.result() {
 						MutationResult::Loading(_) => rsx! {
-							span { class: "text-yellow-500", "Loading..." }
+							span { class: "text-[color:var(--accent)]", "Loading..." }
 						},
 						MutationResult::Ok(_) => rsx! {
-							span { class: "text-green-500", "Success" }
+							span { class: "text-[color:var(--accent)]", "Success" }
 						},
 						MutationResult::Err(_) => rsx! {
-							span { class: "text-red-500", "Error" }
+							span { class: "text-[color:var(--destructive)]", "Error" }
 						},
 						MutationResult::Pending => rsx! {
-							span { class: "text-slate-500", "Pending" }
+							span { class: "text-[color:var(--muted-foreground)]", "Pending" }
 						},
 				}
 			}
@@ -101,15 +102,15 @@ pub fn ManualMutationDemo() -> Element {
 	};
 
 	rsx! {
-		div { class: "flex flex-col items-center bg-[color:var(--bg-color)] p-4 border border-slate-700 shadow-lg rounded mt-4",
-			h3 { class: "text-xl font-bold text-slate-200 text-center mb-4", "Manual Mutation Control" }
-
+		div { class: "flex flex-col items-center bg-[color:var(--bg-color)] p-4 border border-[color:var(--border)] shadow-lg rounded mt-4",
+			h3 { class: "text-xl font-bold text-[color:var(--text-color)] text-center mb-4",
+				"Manual Mutation Control"
+			}
 			p { class: tw_join!("mb-4 text-center font-semibold", status_class()),
 				"Status: {status}"
 			}
-
 			Button {
-				class: "bg-blue-500 text-white px-4 py-2 rounded",
+				class: "bg-[color:var(--primary)] text-[color:var(--primary-foreground)] px-4 py-2 rounded",
 				onclick: handle_manual_mutation,
 				"Trigger Manual Mutation"
 			}

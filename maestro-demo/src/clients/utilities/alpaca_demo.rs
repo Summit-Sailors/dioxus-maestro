@@ -82,10 +82,10 @@ pub fn AlpacaDemo() -> Element {
 	rsx! {
 		div { class: "container mx-auto p-4",
 			div { class: "flex flex-col gap-3",
-				h1 { class: "text-slate-100 text-center text-2xl sm:text-3xl lg:text-4xl 2xl:text-5xl font-semibold",
+				h1 { class: "text-[color:var(--text-color)] text-center text-3xl font-bold mb-2",
 					"Maestro Alpaca"
 				}
-				p { class: "text-slate-300 text-center text-base lg:text-xl 2xl:text-2xl",
+				p { class: "text-[color:var(--muted-text)] text-center",
 					"A Alpaca utility designed to make connecting to and using Alpaca with your Dioxus apps easier"
 				}
 			}
@@ -99,15 +99,15 @@ pub fn AlpacaDemo() -> Element {
 				}
 			}
 
-			div { class: "grid grid-cols-1  gap-6 mb-8",
+			div { class: "grid grid-cols-1 gap-6 mb-8",
 				// data controls
-				div { class: "bg-gray-800 p-4 rounded shadow",
+				div { class: "bg-card text-card-foreground p-4 rounded shadow",
 					h2 { class: "text-xl font-semibold mb-4", "Market Data Controls" }
 					div { class: "grid grid-cols-1 md:grid-cols-2 gap-4 mb-4",
 						div {
 							label { class: "block text-sm font-medium mb-1", "Stock Symbol" }
 							select {
-								class: "w-full p-2 border rounded",
+								class: "w-full p-2 border border-border rounded bg-input-bg text-foreground",
 								value: "{selected_symbol}",
 								onchange: move |evt| {
 										let symbol = evt.value().clone();
@@ -129,7 +129,7 @@ pub fn AlpacaDemo() -> Element {
 						div {
 							label { class: "block text-sm font-medium mb-1", "Timeframe" }
 							select {
-								class: "w-full p-2 border rounded",
+								class: "w-full p-2 border border-border rounded bg-input-bg text-foreground",
 								value: format!("{:?}", selected_timeframe()),
 								onchange: move |evt| {
 										let timeframe_str = evt.value().clone();
@@ -153,7 +153,7 @@ pub fn AlpacaDemo() -> Element {
 						div {
 							label { class: "block text-sm font-medium mb-1", "Data Feed" }
 							select {
-								class: "w-full p-2 border rounded",
+								class: "w-full p-2 border border-border rounded bg-input-bg text-foreground",
 								value: format!("{:?}", selected_feed()),
 								onchange: move |evt| {
 										let feed_str = evt.value().clone();
@@ -174,7 +174,7 @@ pub fn AlpacaDemo() -> Element {
 						div {
 							label { class: "block text-sm font-medium mb-1", "Limit" }
 							input {
-								class: "w-full p-2 border rounded",
+								class: "w-full p-2 border border-border rounded bg-input-bg text-foreground",
 								r#type: "number",
 								min: "1",
 								max: "100",
@@ -190,7 +190,7 @@ pub fn AlpacaDemo() -> Element {
 
 					div { class: "flex justify-end",
 						button {
-							class: "px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600",
+							class: "px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90",
 							disabled: loading(),
 							onclick: move |_| fetch_data_clone(),
 
@@ -204,11 +204,11 @@ pub fn AlpacaDemo() -> Element {
 				}
 
 				// trading controls
-				div { class: "bg-gray-800 p-4 rounded shadow",
+				div { class: "bg-card text-card-foreground p-4 rounded shadow",
 					h2 { class: "text-xl font-semibold mb-4", "Trading Controls" }
 
 					button {
-						class: "px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 mb-4",
+						class: "px-4 py-2 bg-accent text-accent-foreground rounded hover:bg-accent/90 mb-4",
 						onclick: move |_| show_order_form.set(!show_order_form()),
 
 						if show_order_form() {
@@ -219,13 +219,13 @@ pub fn AlpacaDemo() -> Element {
 					}
 
 					if show_order_form() {
-						div { class: "border-t pt-4 mt-2",
+						div { class: "border-t border-border pt-4 mt-2",
 							div { class: "grid grid-cols-1 md:grid-cols-2 gap-4 mb-4",
 
 								div {
 									label { class: "block text-sm font-medium mb-1", "Quantity" }
 									input {
-										class: "w-full p-2 border rounded",
+										class: "w-full p-2 border border-border rounded bg-input-bg text-foreground",
 										r#type: "text",
 										value: "{order_quantity}",
 										oninput: move |evt| {
@@ -237,14 +237,14 @@ pub fn AlpacaDemo() -> Element {
 
 							div { class: "flex justify-end mt-4",
 								button {
-									class: "px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600",
+									class: "px-4 py-2 bg-accent text-accent-foreground rounded hover:bg-accent/90",
 									onclick: submit_order,
 									"Submit Order"
 								}
 							}
 
 							if let Some(status) = order_status() {
-								div { class: "mt-4 p-2 bg-blue-100 text-blue-800 rounded",
+								div { class: "mt-4 p-2 bg-primary/20 text-foreground rounded",
 									"{status}"
 								}
 							}
@@ -259,11 +259,11 @@ pub fn AlpacaDemo() -> Element {
 								}
 						} else if let Some(err) = error() {
 								rsx! {
-									div { class: "p-4 bg-red-100 text-red-800 rounded", "Error: {err}" }
+									div { class: "p-4 bg-destructive/20 text-destructive rounded", "Error: {err}" }
 								}
 						} else {
 								rsx! {
-									div { class: "p-4 bg-gray-100 text-[color:var(--text-color)]800 rounded", "No data available" }
+									div { class: "p-4 bg-muted text-muted-foreground rounded", "No data available" }
 								}
 						}
 				}
@@ -277,20 +277,20 @@ fn StockChart(bars: BarsDTO) -> Element {
 	let mut chart_type = use_signal(|| "table");
 
 	rsx! {
-		div { class: "bg-gray-800 p-4 rounded shadow w-full",
+		div { class: "bg-card text-card-foreground p-4 rounded shadow w-full",
 			div { class: "flex justify-between items-center mb-4",
 				h2 { class: "text-xl font-semibold", "Price History for {bars.symbol}" }
 
 				div { class: "flex space-x-2",
 					button {
-						class: "px-3 py-1 border rounded hover:bg-gray-400",
-						class: if chart_type() == "table" { "bg-blue-500" } else { "" },
+						class: "px-3 py-1 border border-border rounded hover:bg-hover-bg",
+						class: if chart_type() == "table" { "bg-primary text-primary-foreground" } else { "" },
 						onclick: move |_| chart_type.set("table"),
 						"Table View"
 					}
 					button {
-						class: "px-3 py-1 border rounded hover:bg-gray-400",
-						class: if chart_type() == "stats" { "bg-blue-500" } else { "" },
+						class: "px-3 py-1 border border-border rounded hover:bg-hover-bg",
+						class: if chart_type() == "stats" { "bg-primary text-primary-foreground" } else { "" },
 						onclick: move |_| chart_type.set("stats"),
 						"Statistics"
 					}
@@ -303,7 +303,7 @@ fn StockChart(bars: BarsDTO) -> Element {
 								div { class: "overflow-x-auto max-h-96",
 									table { class: "w-full border-collapse",
 										thead {
-											tr { class: "bg-gray-500",
+											tr { class: "bg-muted",
 												th { class: "p-2 text-left", "Time" }
 												th { class: "p-2 text-right", "Open" }
 												th { class: "p-2 text-right", "High" }
@@ -329,7 +329,7 @@ fn StockChart(bars: BarsDTO) -> Element {
 																			""
 																	};
 																	rsx! {
-																		tr { class: "border-b hover:bg-gray-400",
+																		tr { class: "border-b border-border hover:bg-hover-bg",
 																			td { class: "p-2 text-left", "{time}" }
 																			td { class: "p-2 text-right", "{bar.open:.2}" }
 																			td { class: "p-2 text-right", "{bar.high:.2}" }
@@ -391,47 +391,47 @@ fn ExtendedStockStats(bars: Vec<NewBar>) -> Element {
 	rsx! {
 		div { class: "space-y-6",
 			div { class: "mt-4 grid grid-cols-1 md:grid-cols-3 gap-4",
-				div { class: "p-4 border rounded",
-					h3 { class: "font-medium text-[color:var(--text-color)]600", "Period Change" }
+				div { class: "p-4 border border-border rounded",
+					h3 { class: "font-medium text-foreground", "Period Change" }
 					p { class: "text-xl {change_class}",
 						"{period_change:.2} ({period_change_percent:.2}%)"
 					}
 				}
 
-				div { class: "p-4 border rounded",
-					h3 { class: "font-medium text-[color:var(--text-color)]600", "Price Range" }
+				div { class: "p-4 border border-border rounded",
+					h3 { class: "font-medium text-foreground", "Price Range" }
 					p { class: "text-xl", "Low: {lowest_price:.2} - High: {highest_price:.2}" }
-					p { class: "text-sm text-[color:var(--text-color)]500", "Avg: {avg_price:.2}" }
+					p { class: "text-sm text-muted-foreground", "Avg: {avg_price:.2}" }
 				}
 
-				div { class: "p-4 border rounded",
-					h3 { class: "font-medium text-[color:var(--text-color)]600", "Volume" }
+				div { class: "p-4 border border-border rounded",
+					h3 { class: "font-medium text-foreground", "Volume" }
 					p { class: "text-xl", "Total: {total_volume}" }
-					p { class: "text-sm text-[color:var(--text-color)]500", "Avg: {avg_volume}" }
+					p { class: "text-sm text-muted-foreground", "Avg: {avg_volume}" }
 				}
 			}
 
 			// advanced statistics
 			div { class: "mt-4 grid grid-cols-1 md:grid-cols-3 gap-4",
-				div { class: "p-4 border rounded",
-					h3 { class: "font-medium text-[color:var(--text-color)]600", "Volatility" }
+				div { class: "p-4 border border-border rounded",
+					h3 { class: "font-medium text-foreground", "Volatility" }
 					p { class: "text-xl", "{volatility:.4}" }
 				}
 
-				div { class: "p-4 border rounded",
-					h3 { class: "font-medium text-[color:var(--text-color)]600", "Price Movement" }
+				div { class: "p-4 border border-border rounded",
+					h3 { class: "font-medium text-foreground", "Price Movement" }
 					div { class: "flex items-center justify-between",
 						span { class: "text-green-600", "Up: {up_days}" }
 						span { class: "text-red-600", "Down: {down_days}" }
-						span { class: "text-[color:var(--text-color)]600", "Flat: {flat_days}" }
+						span { class: "text-foreground", "Flat: {flat_days}" }
 					}
 				}
 
 
-				div { class: "p-4 border rounded",
-					h3 { class: "font-medium text-[color:var(--text-color)]600", "Latest Price" }
+				div { class: "p-4 border border-border rounded",
+					h3 { class: "font-medium text-foreground", "Latest Price" }
 					p { class: "text-xl {change_class}", "{latest_bar.close:.2}" }
-					p { class: "text-sm text-[color:var(--text-color)]500",
+					p { class: "text-sm text-muted-foreground",
 						{format!("{}", latest_bar.time.format("%Y-%m-%d %H:%M"))}
 					}
 				}

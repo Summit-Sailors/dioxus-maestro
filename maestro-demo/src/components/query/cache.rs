@@ -48,13 +48,12 @@ pub fn CacheDemo() -> Element {
 
 	rsx! {
 		div { class: "flex flex-col items-center gap-4 p-4 bg-[color:var(--bg-color)] rounded-lg shadow-lg",
-
 			div { class: "space-y-4",
-
-				h2 { class: "text-2xl font-bold text-slate-100 text-center", "Cache Management" }
-
+				h2 { class: "text-2xl font-bold text-[color:var(--text-color)] text-center",
+					"Cache Management"
+				}
 				div { class: "mt-4 space-y-2 items-center",
-					label { class: "block text-sm font-medium text-center text-slate-300",
+					label { class: "block text-sm font-medium text-center text-[color:var(--text-color)]",
 						"Stale Time: {stale_time}ms"
 					}
 					input {
@@ -67,36 +66,37 @@ pub fn CacheDemo() -> Element {
 						onchange: move |e| stale_time.set(e.value().parse().unwrap_or(2000)),
 					}
 				}
-
 				div { class: "items-center space-x-2",
 					input {
 						r#type: "checkbox",
 						checked: "{auto_refresh}",
 						onchange: move |e| auto_refresh.set(e.value().parse().unwrap_or(false)),
 					}
-					label { class: "text-sm font-medium text-slate-200", "Auto Refresh" }
+					label { class: "text-sm font-medium text-[color:var(--text-color)]",
+						"Auto Refresh"
+					}
 				}
 			}
-
 			div { class: "grid justify-center grid-cols-1 md:grid-cols-2 p-4 bg-[color:var(--bg-color)] rounded-lg",
 				div { class: "text-center p-2 rounded",
-					p { class: "font-medium text-slate-200 text-center", "Cache Status:" }
+					p { class: "font-medium text-[color:var(--text-color)] text-center",
+						"Cache Status:"
+					}
 					p {
 						class: tw_join!(
-								"p-4 rounded-lg border border-slate-700 transition-colors cursor-pointer", if
-								cached_query.result().is_fresh() { "text-green-500" } else { "text-yellow-500" }
+								"p-4 rounded-lg border border-[color:var(--border)] transition-colors cursor-pointer",
+								"text-[color:var(--accent)]"
 						),
 						{if cached_query.result().is_fresh() { "Fresh" } else { "Stale" }}
 					}
 				}
-
-
 				div { class: "text-center p-2 rounded",
-					p { class: "font-medium text-slate-200", "Query Status:" }
+					p { class: "font-medium text-[color:var(--text-color)]", "Query Status:" }
 					p {
 						class: tw_join!(
-								"p-4 rounded-lg border border-slate-700 transition-colors cursor-pointer", if
-								cached_query.result().is_fresh() { "text-blue-500" } else { "text-green-500" }
+								"p-4 rounded-lg border border-[color:var(--border)] transition-colors cursor-pointer",
+								if cached_query.result().is_fresh() { "text-[color:var(--primary)]" } else {
+								"text-[color:var(--accent)]" }
 						),
 						if cached_query.result().is_loading() {
 							"Loading..."
@@ -106,29 +106,27 @@ pub fn CacheDemo() -> Element {
 					}
 				}
 			}
-
 			// cached data display
-			div { class: "flex items-center p-4 bg-[color:var(--bg-color)] rounded border border-slate-700",
+			div { class: "flex items-center p-4 bg-[color:var(--bg-color)] rounded border border-[color:var(--border)]",
 				match cached_query.result().value() {
 						QueryResult::Loading(_) => rsx! {
-							div { class: "text-center text-blue-500", "Fetching fresh data..." }
+							div { class: "text-center text-[color:var(--primary)]", "Fetching fresh data..." }
 						},
 						QueryResult::Ok(data) => rsx! {
-							p { class: "font-medium text-center text-slate-100", "{data.value}" }
-							p { class: "text-sm text-slate-50 text-center",
+							p { class: "font-medium text-center text-[color:var(--text-color)]", "{data.value}" }
+							p { class: "text-sm text-[color:var(--text-color)] text-center",
 								{format!("Cache age: {}ms", data.timestamp.elapsed().as_millis())}
 							}
 						},
 						QueryResult::Err(e) => rsx! {
-							div { class: "text-center text-red-600", "Error: {e:?}" }
+							div { class: "text-center text-[color:var(--destructive)]", "Error: {e:?}" }
 						},
 				}
 			}
-
 			// actions
 			div { class: "flex items-center space-x-4",
 				Button {
-					class: "bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition",
+					class: "bg-[color:var(--primary)] hover:bg-[color:var(--hover-bg)] text-[color:var(--primary-foreground)] px-4 py-2 rounded transition",
 					onclick: force_refetch,
 					disabled: cached_query.result().is_loading(),
 					if cached_query.result().is_loading() {

@@ -50,7 +50,7 @@ pub fn HomePage() -> Element {
 pub fn FeatureCard(title: &'static str, description: String, route: Option<Route>) -> Element {
 	rsx! {
 		div { class: "py-6 px-5 rounded transition-all flex flex-col gap-4 border hover:border-[color:var(--hover-bg)] items-center
-									bg-[color:var(--card-bg)] border-[color:var(--border-color)] text-[color:var(--card-text)]",
+									bg-[color:var(--card-bg)] text-[color:var(--card-text)]",
 			h2 { class: "lg:text-2xl text-xl font-medium", "{title}" }
 			p { class: "xl:text-lg text-base mb-6 text-center text-[color:var(--muted-text)]",
 				"{description}"

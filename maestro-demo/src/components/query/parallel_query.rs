@@ -103,15 +103,18 @@ pub fn ParallelQueriesDemo() -> Element {
 	rsx! {
 		div { class: "flex flex-col items-center justify-center rounded-lg shadow-lg p-6 bg-[color:var(--bg-color)]",
 			div { class: "w-full max-w-4xl bg-[color:var(--bg-color)] rounded-lg shadow-lg p-6",
-				h3 { class: "text-2xl text-slate-100 text-center font-bold mb-6", "Parallel Queries" }
-
+				h3 { class: "text-2xl text-[color:var(--text-color)] text-center font-bold mb-6",
+					"Parallel Queries"
+				}
 				// department overview section
 				div { class: "space-y-6",
-					h2 { class: "text-xl font-bold text-center text-slate-200", "Department Overview" }
+					h2 { class: "text-xl font-bold text-center text-[color:var(--text-color)]",
+						"Department Overview"
+					}
 					div { class: "grid grid-cols-1 md:grid-cols-3 gap-4 text-center",
 						match departments_query.result().value() {
 								QueryResult::Loading(_) => rsx! {
-									div { class: "col-span-3 text-slate-500", "Loading departments..." }
+									div { class: "col-span-3 text-[color:var(--muted-foreground)]", "Loading departments..." }
 								},
 								QueryResult::Ok(deps) => rsx! {
 									{
@@ -123,13 +126,14 @@ pub fn ParallelQueriesDemo() -> Element {
 																div {
 																	key: dept.id.clone(),
 																	class: tw_join!(
-																			"p-4 rounded-lg border border-slate-800 transition-colors cursor-pointer", if
-																			is_selected { "border-blue-500" } else { "bg-slate-800" }
+																			"p-4 rounded-lg border border-[color:var(--border)] transition-colors cursor-pointer",
+																			if is_selected { "border-[color:var(--primary)]" } else {
+																			"bg-[color:var(--muted)]" }
 																	),
 																	onclick: move |_| selected_dept.set(Some(dept.id.clone())),
-																	h3 { class: "font-semibold text-lg text-slate-200", "{dept.name}" }
-																	p { class: "text-sm text-slate-300", "Location: {dept.location}" }
-																	p { class: "text-sm text-slate-300",
+																	h3 { class: "font-semibold text-lg text-[color:var(--text-color)]", "{dept.name}" }
+																	p { class: "text-sm text-[color:var(--text-color)]", "Location: {dept.location}" }
+																	p { class: "text-sm text-[color:var(--text-color)]",
 																		"Budget: "
 																		span { class: "font-medium", {format!("${:.2}", dept.budget)} }
 																	}
@@ -139,22 +143,21 @@ pub fn ParallelQueriesDemo() -> Element {
 									}
 								},
 								QueryResult::Err(_) => rsx! {
-									div { class: "col-span-3 text-center text-red-500", "Error loading departments" }
+									div { class: "col-span-3 text-center text-[color:var(--destructive)]", "Error loading departments" }
 								},
 						}
 					}
 				}
-
 				// department employees section
 				div { class: "space-y-6",
-					h2 { class: "text-xl font-bold text-center text-slate-200", "Department Employees" }
-
+					h2 { class: "text-xl font-bold text-center text-[color:var(--text-color)]",
+						"Department Employees"
+					}
 					if selected_dept().is_some() {
 						div { class: "grid grid-cols-1 md:grid-cols-2 gap-4",
-
 							match employees_query.result().value() {
 									QueryResult::Loading(_) => rsx! {
-										div { class: "col-span-2 text-center text-slate-500", "Loading employees..." }
+										div { class: "col-span-2 text-center text-[color:var(--muted-foreground)]", "Loading employees..." }
 									},
 									QueryResult::Ok(emps) => rsx! {
 										{
@@ -164,11 +167,11 @@ pub fn ParallelQueriesDemo() -> Element {
 																rsx! {
 																	div {
 																		key: emp.id.clone(),
-																		class: "p-4 bg-slate-800 rounded-lg border border-slate-800 shadow-sm",
+																		class: "p-4 bg-[color:var(--muted)] rounded-lg border border-[color:var(--border)] shadow-sm",
 																		div { class: "space-y-2 text-center",
 																			h4 { class: "font-semibold text-lg", "{emp.name}" }
-																			p { class: "text-sm text-slate-300", "{emp.title}" }
-																			p { class: "text-sm text-slate-300",
+																			p { class: "text-sm text-[color:var(--text-color)]", "{emp.title}" }
+																			p { class: "text-sm text-[color:var(--text-color)]",
 																				"Salary: "
 																				span { class: "font-medium", {format!("${:.2}", emp.salary)} }
 																			}
@@ -179,20 +182,19 @@ pub fn ParallelQueriesDemo() -> Element {
 										}
 									},
 									QueryResult::Err(_) => rsx! {
-										div { class: "col-span-2 text-center text-red-500", "Error loading employees" }
+										div { class: "col-span-2 text-center text-[color:var(--destructive)]", "Error loading employees" }
 									},
 							}
 						}
 					} else {
-						div { class: "text-center text-slate-300",
+						div { class: "text-center text-[color:var(--text-color)]",
 							"Select a department to view employees"
 						}
 					}
 				}
-
 				div { class: "flex justify-center gap-4 mt-6",
 					Button {
-						class: "bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600",
+						class: "bg-[color:var(--primary)] text-[color:var(--primary-foreground)] px-4 py-2 rounded-lg hover:bg-[color:var(--hover-bg)]",
 						onclick: move |_| {
 								query_client
 										.invalidate_queries(
@@ -203,7 +205,7 @@ pub fn ParallelQueriesDemo() -> Element {
 					}
 					if let Some(dept) = selected_dept() {
 						Button {
-							class: "bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600",
+							class: "bg-[color:var(--accent)] text-[color:var(--accent-foreground)] px-4 py-2 rounded-lg hover:bg-[color:var(--hover-bg)]",
 							onclick: move |_| query_client.invalidate_queries(&[String::from("employees"), dept.clone()]),
 							"Refresh Employees"
 						}

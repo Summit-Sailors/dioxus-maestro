@@ -29,44 +29,46 @@ pub fn JobForm() -> Element {
 	};
 
 	rsx! {
-		div { class: "bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-md",
-			h2 { class: "text-xl font-semibold text-white mb-4 text-center", "Add Email Job" }
+		div { class: "bg-[color:var(--card-bg)] p-6 rounded-[var(--radius-lg)] shadow-md w-full max-w-md",
+			h2 { class: "text-xl font-semibold text-[color:var(--card-text)] mb-4 text-center",
+				"Add Email Job"
+			}
 
 			div { class: "mb-4",
-				label { class: "block text-sm text-[color:var(--text-color)]300 mb-1", "To:" }
+				label { class: "block text-sm text-[color:var(--muted-text)] mb-1", "To:" }
 				input {
-					class: "w-full p-2 rounded-md bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring focus:border-blue-500",
+					class: "w-full p-2 rounded-[var(--radius-md)] bg-[color:var(--input-bg)] text-[color:var(--text-color)] border border-[color:var(--border-color)] focus:outline-none focus:ring focus:border-[color:var(--focus-ring)]",
 					value: "{to}",
 					oninput: move |e| to.set(e.value()),
 				}
 			}
 
 			div { class: "mb-4",
-				label { class: "block text-sm text-[color:var(--text-color)]300 mb-1", "Subject:" }
+				label { class: "block text-sm text-[color:var(--muted-text)] mb-1", "Subject:" }
 				input {
-					class: "w-full p-2 rounded-md bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring focus:border-blue-500",
+					class: "w-full p-2 rounded-[var(--radius-md)] bg-[color:var(--input-bg)] text-[color:var(--text-color)] border border-[color:var(--border-color)] focus:outline-none focus:ring focus:border-[color:var(--focus-ring)]",
 					value: "{subject}",
 					oninput: move |e| subject.set(e.value()),
 				}
 			}
 
 			div { class: "mb-4",
-				label { class: "block text-sm text-[color:var(--text-color)]300 mb-1", "Body:" }
+				label { class: "block text-sm text-[color:var(--muted-text)] mb-1", "Body:" }
 				textarea {
-					class: "w-full p-2 rounded-md bg-gray-700 text-white border border-gray-600 h-32 resize-none focus:outline-none focus:ring focus:border-blue-500",
+					class: "w-full p-2 rounded-[var(--radius-md)] bg-[color:var(--input-bg)] text-[color:var(--text-color)] border border-[color:var(--border-color)] h-32 resize-none focus:outline-none focus:ring focus:border-[color:var(--focus-ring)]",
 					value: "{body}",
 					oninput: move |e| body.set(e.value()),
 				}
 			}
 
 			button {
-				class: "w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition",
+				class: "w-full bg-[color:var(--primary-bg)] hover:bg-[color:var(--hover-bg)] text-[color:var(--primary-text)] font-semibold py-2 px-4 rounded-[var(--radius-md)] transition",
 				onclick: add_job,
 				"Add Job"
 			}
 
 			if !status().is_empty() {
-				div { class: "mt-4 text-sm text-[color:var(--text-color)]300 text-center",
+				div { class: "mt-4 text-sm text-[color:var(--muted-text)] text-center",
 					p { "{status}" }
 				}
 			}
@@ -93,19 +95,21 @@ pub fn JobsList() -> Element {
 	};
 
 	rsx! {
-		div { class: "bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-md mt-4 mb-4",
-			h2 { class: "text-xl font-semibold text-white mb-4 text-center", "Completed Email Jobs" }
+		div { class: "bg-[color:var(--card-bg)] p-6 rounded-[var(--radius-lg)] shadow-md w-full max-w-md mt-4 mb-4",
+			h2 { class: "text-xl font-semibold text-[color:var(--card-text)] mb-4 text-center",
+				"Completed Email Jobs"
+			}
 
 			button {
-				class: "w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition mb-4",
+				class: "w-full bg-[color:var(--primary-bg)] hover:bg-[color:var(--hover-bg)] text-[color:var(--primary-text)] font-semibold py-2 px-4 rounded-[var(--radius-md)] transition mb-4",
 				onclick: fetch_jobs,
 				"Refresh Job List"
 			}
 
 			if loading() {
-				p { class: "text-[color:var(--text-color)]400 text-center", "Loading jobs state..." }
+				p { class: "text-[color:var(--muted-text)] text-center", "Loading jobs state..." }
 			} else {
-				pre { class: "bg-gray-900 text-[color:var(--text-color)]100 p-4 rounded-md whitespace-pre-wrap text-sm",
+				pre { class: "bg-[color:var(--background)] text-[color:var(--text-color)] p-4 rounded-md whitespace-pre-wrap text-sm",
 					{
 							{
 									jobs_states
@@ -115,8 +119,8 @@ pub fn JobsList() -> Element {
 													rsx! {
 														div {
 															key: "{index}",
-															class: "border border-slate-700 rounded-xl p-4 bg-gray-800 text-slate-100 shadow transition hover:shadow-lg hover:border-slate-500",
-															p { class: "text-xl font-bold text-white", "{job_state}" }
+															class: "border border-[color:var(--border-color)] rounded-[var(--radius-xl)] p-4 bg-[color:var(--card-bg)] text-[color:var(--card-text)] shadow transition hover:shadow-lg hover:border-[color:var(--focus-ring)]",
+															p { class: "text-xl font-bold text-[color:var(--card-text)]", "{job_state}" }
 														}
 													}
 											})
@@ -131,13 +135,13 @@ pub fn JobsList() -> Element {
 #[component]
 pub fn ApalisDemo() -> Element {
 	rsx! {
-		div { class: "max-h-screen bg-gray-900 text-white flex items-center justify-center p-4",
+		div { class: "max-h-screen bg-[color:var(--bg-color)] text-[color:var(--text-color)] flex items-center justify-center p-4",
 			div { class: "flex flex-col items-center gap-6 w-full",
 				div { class: "flex flex-col gap-3",
-					h1 { class: "text-slate-100 text-center text-2xl sm:text-3xl lg:text-4xl 2xl:text-5xl font-semibold",
+					h1 { class: "text-[color:var(--text-color)] text-center text-3xl font-bold mb-2",
 						"Maestro Apalis"
 					}
-					p { class: "text-slate-300 text-center text-base lg:text-xl 2xl:text-2xl",
+					p { class: "text-[color:var(--muted-text)] text-center",
 						"A Apalis utility designed to make integrating Apalis into your Dioxus app easier"
 					}
 				}
@@ -155,7 +159,7 @@ pub fn ApalisDemo() -> Element {
 						],
 					}
 				}
-				p { class: "text-[color:var(--text-color)]400 text-center max-w-md",
+				p { class: "text-[color:var(--muted-text)] text-center max-w-md",
 					"A simple demo of using apalis job scheduling in Dioxus"
 				}
 

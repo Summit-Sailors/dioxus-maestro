@@ -41,19 +41,19 @@ pub fn SerpApiDemo() -> Element {
 	};
 
 	rsx! {
-		div { class: "w-full mx-auto p-4",
+		div { class: "w-full mx-auto p-4 bg-[color:var(--bg-color)] text-[color:var(--text-color)]",
 			div { class: "flex flex-col gap-3",
-				h1 { class: "text-slate-100 text-center text-2xl sm:text-3xl lg:text-4xl 2xl:text-5xl font-semibold",
+				h1 { class: "text-[color:var(--text-color)] text-center text-3xl font-bold mb-2",
 					"Maestro SerpAPI"
 				}
-				p { class: "text-slate-300 text-center text-base lg:text-xl 2xl:text-2xl",
+				p { class: "text-[color:var(--muted-text)] text-center",
 					"A serpapi utility designed to make your experience pleasant when integrating SerpAPI into your Dioxus app"
 				}
 			}
 
 			div {
 				id: "maestro-serpaip-features",
-				class: "flex space-x-2 mt-4 mb-4",
+				class: "flex flex-wrap gap-2 mt-4 mb-4",
 				Features {
 					title: "Features".to_string(),
 					features: vec![
@@ -63,7 +63,9 @@ pub fn SerpApiDemo() -> Element {
 					],
 				}
 			}
-			p { class: "mb-4", "Search for any topic using the power of SerpAPI!" }
+			p { class: "mb-4 text-[color:var(--text-color)]",
+				"Search for any topic using the power of SerpAPI!"
+			}
 
 			form {
 				onsubmit: move |_| on_search(state().query),
@@ -73,12 +75,12 @@ pub fn SerpApiDemo() -> Element {
 					placeholder: "Enter search query...",
 					value: "{state().query}",
 					oninput: on_query_change,
-					class: "flex-grow p-2 border rounded-l",
+					class: "flex-grow p-2 border border-[color:var(--border-color)] bg-[color:var(--input-bg)] text-[color:var(--text-color)] rounded-l focus:outline-none focus:ring-2 focus:ring-[color:var(--primary)]",
 				}
 				button {
 					r#type: "submit",
 					disabled: state().loading,
-					class: "bg-blue-500 text-white p-2 rounded-r hover:bg-blue-700 disabled:bg-blue-300",
+					class: "bg-[color:var(--primary)] text-white p-2 rounded-r hover:bg-[color:var(--primary-hover)] disabled:bg-[color:var(--primary-disabled)]",
 					if state().loading {
 						"Searching..."
 					} else {
@@ -88,30 +90,40 @@ pub fn SerpApiDemo() -> Element {
 			}
 
 			if state().loading {
-				div { class: "text-center p-4", "Loading results..." }
+				div { class: "text-center p-4 text-[color:var(--text-subtle)]", "Loading results..." }
 			} else if let Some(error) = &state().error {
 				div { class: "bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded",
 					"{error}"
 				}
 			} else if !state().results.is_empty() {
 				div {
-					h2 { class: "text-xl font-semibold mb-4", "Search Results" }
+					h2 { class: "text-xl font-semibold mb-4 text-[color:var(--text-heading)]",
+						"Search Results"
+					}
 					div { class: "space-y-4",
-						p { "Found: {state().results.len()} results" }
+						p { class: "text-[color:var(--text-subtle)]",
+							"Found: {state().results.len()} results"
+						}
 						for (index , result) in state.read().results.iter().enumerate() {
-							div { key: "{index}", class: "border p-4 rounded",
-								h3 { class: "text-lg font-medium text-blue-600",
+							div {
+								key: "{index}",
+								class: "border border-[color:var(--border-color)] p-4 rounded bg-[color:var(--result-bg)]",
+								h3 { class: "text-lg font-medium text-[color:var(--link-color)]",
 									a {
 										href: "{result.link}",
 										target: "_blank",
 										"{result.title}"
 									}
 								}
-								p { class: "text-sm text-[color:var(--text-color)]600", "{result.displayed_link}" }
-								if let Some(snippet) = &result.snippet {
-									p { class: "mt-2", "{snippet}" }
+								p { class: "text-sm text-[color:var(--text-muted)]",
+									"{result.displayed_link}"
 								}
-								p { class: "text-sm text-[color:var(--text-color)]500 mt-2",
+								if let Some(snippet) = &result.snippet {
+									p { class: "mt-2 text-[color:var(--text-color)]",
+										"{snippet}"
+									}
+								}
+								p { class: "text-sm text-[color:var(--text-muted)] mt-2",
 									"Position: {result.position}"
 								}
 							}
@@ -120,7 +132,9 @@ pub fn SerpApiDemo() -> Element {
 				}
 			} else {
 				div {
-					p { class: "text-center text-orange-400", "Try searching anything!" }
+					p { class: "text-center text-[color:var(--accent-orange)]",
+						"Try searching anything!"
+					}
 				}
 			}
 		}

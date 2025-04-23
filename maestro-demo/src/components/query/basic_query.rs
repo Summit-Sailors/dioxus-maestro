@@ -175,45 +175,47 @@ pub fn QueryDemo() -> Element {
 	rsx! {
 		div { class: "flex justify-center items-center rounded-lg shadow-lg bg-[color:var(--bg-color)] py-4",
 			div { class: "flex flex-col items-center bg-[color:var(--bg-color)] rounded-lg shadow-lg w-full p-4 max-w-lg",
-
-				h3 { class: "text-2xl text-slate-100 text-center font-bold mb-4", "Default Query" }
-
-				div { class: "w-full text-center text-slate-200 p-4",
+				h3 { class: "text-2xl text-[color:var(--text-color)] text-center font-bold mb-4",
+					"Default Query"
+				}
+				div { class: "w-full text-center text-[color:var(--text-color)] p-4",
 					h2 { class: "text-xl font-bold mb-2", "Admin User:" }
-
 					{
 							match admin_query.result().value().to_owned() {
 									QueryResult::Loading(Some(prev)) => rsx! {
 										div { class: "opacity-50",
 											"Loading... Previous data:"
-											table { class: "w-full border border-slate-700 rounded-lg",
-												tr { class: "bg-slate-800 text-slate-100",
+											table { class: "w-full border border-[color:var(--border)] rounded-lg",
+												tr { class: "bg-[color:var(--muted)] text-[color:var(--text-color)]",
 													th { class: "p-2", "Username" }
 													th { class: "p-2", "Role" }
 												}
 												tr {
-													td { class: "p-2 border border-slate-700", "{prev.username}" }
-													td { class: "p-2 border border-slate-700", "{prev.role}" }
+													td { class: "p-2 border border-[color:var(--border)]", "{prev.username}" }
+													td { class: "p-2 border border-[color:var(--border)]", "{prev.role}" }
 												}
 											}
 										}
 									},
 									QueryResult::Loading(None) => rsx! {
-										div { class: "text-slate-500", "Loading Admin..." }
+										div { class: "text-[color:var(--muted-foreground)]", "Loading Admin..." }
 									},
 									QueryResult::Ok(user) => rsx! {
-										table { class: "w-full border border-slate-700 rounded-lg",
-											tr { class: "bg-slate-800 text-slate-100",
-												th { class: "p-2 text-slate-400", "Username" }
-												th { class: "p-2 text-slate-400", "Role" }
+										table { class: "w-full border border-[color:var(--border)] rounded-lg",
+											tr { class: "bg-[color:var(--muted)] text-[color:var(--text-color)]",
+												th { class: "p-2 text-[color:var(--muted-foreground)]", "Username" }
+												th { class: "p-2 text-[color:var(--muted-foreground)]", "Role" }
 											}
 											tr {
-												td { class: "p-2 border border-slate-700", "{user.username}" }
-												td { class: "p-2 border border-slate-700", "{user.role}" }
+												td { class: "p-2 border border-[color:var(--border)]", "{user.username}" }
+												td { class: "p-2 border border-[color:var(--border)]", "{user.role}" }
 											}
 										}
 										Button {
-											class: tw_join!("bg-blue-500 text-white px-4 py-2 rounded mt-4", "bg-blue-500 text-white"),
+											class: tw_join!(
+													"bg-[color:var(--primary)] text-[color:var(--primary-foreground)] px-4 py-2 rounded mt-4",
+													"bg-[color:var(--primary)] text-[color:var(--primary-foreground)]"
+											),
 											onclick: move |_| handle_role_update.clone()(user.username.clone(), user.clone().role),
 											if is_loading() {
 												"Updating..."
@@ -223,29 +225,29 @@ pub fn QueryDemo() -> Element {
 										}
 									},
 									QueryResult::Err(err) => rsx! {
-										div { class: "text-red-500", "Error: {err}" }
+										div { class: "text-[color:var(--destructive)]", "Error: {err}" }
 									},
 							}
 					}
 				}
-
 				div { class: "w-full text-center mt-2 p-4",
-					h2 { class: "text-xl font-bold text-slate-200 mb-2", "Moderators:" }
-
+					h2 { class: "text-xl font-bold text-[color:var(--text-color)] mb-2",
+						"Moderators:"
+					}
 					{
 							match moderators.result().value() {
 									QueryResult::Loading(_) => rsx! {
-										div { class: "text-slate-500", "Loading moderators..." }
+										div { class: "text-[color:var(--muted-foreground)]", "Loading moderators..." }
 									},
 									QueryResult::Ok(users) => rsx! {
-										table { class: "w-full border border-slate-700 rounded-lg",
-											tr { class: "bg-slate-800 text-slate-100",
-												th { class: "p-2 text-slate-400", "Username" }
+										table { class: "w-full border border-[color:var(--border)] rounded-lg",
+											tr { class: "bg-[color:var(--muted)] text-[color:var(--text-color)]",
+												th { class: "p-2 text-[color:var(--muted-foreground)]", "Username" }
 											}
 											{users.iter().map(|user| rsx! {
 												tr {
 													td {
-														class: "p-2 border border-slate-700 text-slate-200",
+														class: "p-2 border border-[color:var(--border)] text-[color:var(--text-color)]",
 														key: "{user.username}",
 														"{user.username}"
 													}
@@ -254,7 +256,7 @@ pub fn QueryDemo() -> Element {
 										}
 									},
 									QueryResult::Err(err) => rsx! {
-										div { class: "text-red-500", "Error loading moderators: {err}" }
+										div { class: "text-[color:var(--destructive)]", "Error loading moderators: {err}" }
 									},
 							}
 					}

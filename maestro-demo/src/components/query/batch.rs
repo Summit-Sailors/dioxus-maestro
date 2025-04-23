@@ -89,12 +89,16 @@ async fn simulate_db_delay() {
 #[component]
 fn DataCard<T: DisplayData + 'static>(data: T) -> Element {
 	rsx! {
-		div { class: "bg-slate-700 p-4 rounded-lg shadow",
+		div { class: "bg-[color:var(--card)] p-4 rounded-lg shadow",
 			div { class: "flex justify-between items-start p-2",
-				h4 { class: "font-semibold text-lg text-slate-100", "{data.get_title()}" }
+				h4 { class: "font-semibold text-lg text-[color:var(--card-foreground)]",
+					"{data.get_title()}"
+				}
 			}
-			p { class: "text-slate-200 text-sm mb-2 line-clamp-2", "{data.get_content()}" }
-			div { class: "flex justify-between text-sm text-slate-500",
+			p { class: "text-[color:var(--card-foreground)] text-sm mb-2 line-clamp-2",
+				"{data.get_content()}"
+			}
+			div { class: "flex justify-between text-sm text-[color:var(--muted-foreground)]",
 				for (_ , value) in data.get_metadata() {
 					span { "{value}" }
 				}
@@ -107,7 +111,7 @@ fn render_query_state(query_result: &QueryResult<HashMap<String, String>, Error>
 	match query_result {
 		QueryResult::Ok(data) => {
 			rsx! {
-				div { class: "space-y-4 bg-slate-800",
+				div { class: "space-y-4 bg-[color:var(--muted)]",
 					for (key , value) in data.iter() {
 						div {
 							match key.as_str() {
@@ -115,7 +119,9 @@ fn render_query_state(query_result: &QueryResult<HashMap<String, String>, Error>
 											let items: Vec<User> = serde_json::from_str(value).unwrap_or_default();
 											rsx! {
 												div { class: "space-y-1",
-													h3 { class: "text-lg text-center font-semibold mb-2 text-slate-200", "Users ({items.len()})" }
+													h3 { class: "text-lg text-center font-semibold mb-2 text-[color:var(--foreground)]",
+														"Users ({items.len()})"
+													}
 													div { class: "grid grid-cols-1 gap-2",
 														for item in items {
 															DataCard { data: item }
@@ -128,7 +134,9 @@ fn render_query_state(query_result: &QueryResult<HashMap<String, String>, Error>
 											let items: Vec<Post> = serde_json::from_str(value).unwrap_or_default();
 											rsx! {
 												div { class: "space-y-4",
-													h3 { class: "text-lg text-center font-semibold mb-2 text-slate-200", "Posts ({items.len()})" }
+													h3 { class: "text-lg text-center font-semibold mb-2 text-[color:var(--foreground)]",
+														"Posts ({items.len()})"
+													}
 													div { class: "grid grid-cols-1 gap-2",
 														for item in items {
 															DataCard { data: item }
@@ -141,7 +149,9 @@ fn render_query_state(query_result: &QueryResult<HashMap<String, String>, Error>
 											let items: Vec<Comment> = serde_json::from_str(value).unwrap_or_default();
 											rsx! {
 												div { class: "space-y-4",
-													h3 { class: "text-lg text-center font-semibold mb-2 text-slate-200", "Comments ({items.len()})" }
+													h3 { class: "text-lg text-center font-semibold mb-2 text-[color:var(--foreground)]",
+														"Comments ({items.len()})"
+													}
 													div { class: "grid grid-cols-1 gap-2",
 														for item in items {
 															DataCard { data: item }
@@ -151,7 +161,7 @@ fn render_query_state(query_result: &QueryResult<HashMap<String, String>, Error>
 											}
 									}
 									_ => rsx! {
-										div { class: "bg-slate-700 p-4 rounded-lg shadow",
+										div { class: "bg-[color:var(--card)] p-4 rounded-lg shadow",
 											pre { class: "text-sm overflow-x-auto", "{value}" }
 										}
 									},
@@ -163,7 +173,7 @@ fn render_query_state(query_result: &QueryResult<HashMap<String, String>, Error>
 		},
 		QueryResult::Err(err) => {
 			rsx! {
-				div { class: "bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative",
+				div { class: "bg-[color:var(--destructive)] border border-[color:var(--destructive)] text-[color:var(--destructive-foreground)] px-4 py-3 rounded relative",
 					"Error: {err}"
 				}
 			}
@@ -171,7 +181,7 @@ fn render_query_state(query_result: &QueryResult<HashMap<String, String>, Error>
 		QueryResult::Loading(_) => {
 			rsx! {
 				div { class: "flex justify-center items-center p-8",
-					div { class: "animate-spin rounded-full h-8 w-8 border-b-2 border-slate-200" }
+					div { class: "animate-spin rounded-full h-8 w-8 border-b-2 border-[color:var(--foreground)]" }
 				}
 			}
 		},
@@ -299,41 +309,40 @@ pub fn BatchOperationsDemo() -> Element {
 
 	rsx! {
 		div { class: "p-6 bg-[color:var(--bg-color)] rounded-lg shadow-lg",
-			h3 { class: "text-2xl text-slate-100 text-center font-bold mb-4", "Batch Operations" }
-
-			div { class: "mb-4 p-2 bg-slate-800 rounded text-center text-slate-300",
+			h3 { class: "text-2xl text-[color:var(--foreground)] text-center font-bold mb-4",
+				"Batch Operations"
+			}
+			div { class: "mb-4 p-2 bg-[color:var(--muted)] rounded text-center text-[color:var(--foreground)]",
 				"Status: "
 				span {
 					class: match operation_status() {
-							"Idle" => "text-slate-500",
-							s if s.contains("Completed") => "text-green-500",
-							s if s.contains("failed") => "text-red-500",
-							_ => "text-blue-500",
+							"Idle" => "text-[color:var(--muted-foreground)]",
+							s if s.contains("Completed") => "text-[color:var(--accent)]",
+							s if s.contains("failed") => "text-[color:var(--destructive)]",
+							_ => "text-[color:var(--primary)]",
 					},
 					"{operation_status}"
 				}
 			}
-
 			div { class: "grid grid-cols-1 md:grid-cols-2 gap-4 mb-4",
-				div { class: "p-4 border border-slate-700 rounded shadow-md",
+				div { class: "p-4 border border-[color:var(--border)] rounded shadow-md",
 					{render_query_state(users_query.result().value())}
 				}
-				div { class: "p-4 border border-slate-700 rounded shadow-md",
+				div { class: "p-4 border border-[color:var(--border)] rounded shadow-md",
 					{render_query_state(posts_query.result().value())}
 				}
-				div { class: "p-4 border border-slate-700 rounded shadow-md",
+				div { class: "p-4 border border-[color:var(--border)] rounded shadow-md",
 					{render_query_state(comments_query.result().value())}
 				}
 			}
-
 			div { class: "flex justify-center gap-4 mt-6",
 				Button {
-					class: "bg-blue-500 text-white rounded hover:bg-blue-600",
+					class: "bg-[color:var(--primary)] text-[color:var(--primary-foreground)] rounded hover:bg-[color:var(--hover-bg)]",
 					onclick: handle_batch_invalidate,
 					"Invalidate All Queries"
 				}
 				Button {
-					class: "bg-green-500 text-white rounded hover:bg-green-600",
+					class: "bg-[color:var(--accent)] text-[color:var(--accent-foreground)] rounded hover:bg-[color:var(--hover-bg)]",
 					onclick: handle_batch_mutation,
 					"Run Batch Mutation"
 				}

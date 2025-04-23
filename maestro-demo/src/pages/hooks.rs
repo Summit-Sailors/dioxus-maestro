@@ -56,8 +56,10 @@ pub fn HooksDemo() -> Element {
 			class: "hooks-demo bg-[color:var(--bg-color)] p-4 rounded-lg shadow-lg space-y-6",
 
 			div { id: "maestro-hooks-header", class: "mb-8",
-				h1 { class: "text-slate-100 text-center text-3xl font-bold mb-2", "Maestro Hooks" }
-				p { class: "text-slate-300 text-center",
+				h1 { class: "text-[color:var(--text-color)] text-center text-3xl font-bold mb-2",
+					"Maestro Hooks"
+				}
+				p { class: "text-[color:var(--muted-text)] text-center",
 					"Enhanced hooks collection for Dioxus applications that provides type safety, cross-platform compatibility, and optimized performance."
 				}
 			}
@@ -80,12 +82,13 @@ pub fn HooksDemo() -> Element {
 
 			div {
 				id: "maestro-hooks-nav",
-				class: "flex flex-wrap sm:flex-nowrap space-x-2 sm:space-x-0 border-b border-slate-700 pb-4",
+				class: "flex flex-wrap sm:flex-nowrap space-x-2 sm:space-x-0 border-b border-[color:var(--border-color)] pb-4",
 				span {
 					class: tw_join!(
 							"py-2 px-2 cursor-pointer rounded text-sm sm:text-xs", if * active_section.read()
-							== HookSection::Clipboard { "text-white border-b-4 border-slate-500" } else {
-							"text-slate-300" }
+							== HookSection::Clipboard {
+							"text-[color:var(--text-color)] border-b-4 border-[color:var(--border-color)]" }
+							else { "text-[color:var(--muted-text)]" }
 					),
 					onclick: move |_| active_section.set(HookSection::Clipboard),
 					"Clipboard"
@@ -93,8 +96,9 @@ pub fn HooksDemo() -> Element {
 				span {
 					class: tw_join!(
 							"py-2 px-2 cursor-pointer rounded text-sm sm:text-xs", if * active_section.read()
-							== HookSection::Memo { "text-white border-b-4 border-slate-500" } else {
-							"text-slate-300" }
+							== HookSection::Memo {
+							"text-[color:var(--text-color)] border-b-4 border-[color:var(--border-color)]" }
+							else { "text-[color:var(--muted-text)]" }
 					),
 					onclick: move |_| active_section.set(HookSection::Memo),
 					"Memo"
@@ -102,8 +106,9 @@ pub fn HooksDemo() -> Element {
 				span {
 					class: tw_join!(
 							"py-2 px-2 cursor-pointer rounded text-sm sm:text-xs", if * active_section.read()
-							== HookSection::Pagination { "text-white border-b-4 border-slate-500" } else {
-							"text-slate-300" }
+							== HookSection::Pagination {
+							"text-[color:var(--text-color)] border-b-4 border-[color:var(--border-color)]" }
+							else { "text-[color:var(--muted-text)]" }
 					),
 					onclick: move |_| active_section.set(HookSection::Pagination),
 					"Pagination"
@@ -114,14 +119,16 @@ pub fn HooksDemo() -> Element {
 					HookSection::Clipboard => rsx! {
 						section {
 							id: "maestro-hooks-clipboard",
-							class: "clipboard-demo bg-[color:var(--bg-color)] p-6 rounded-lg shadow",
-							h2 { class: "text-lg text-slate-100 text-center font-bold mb-4", "Clipboard Hook" }
-							p { class: "text-slate-300 text-center mb-4",
+							class: "clipboard-demo bg-[color:var(--card-bg)] p-6 rounded-lg shadow",
+							h2 { class: "text-lg text-[color:var(--card-text)] text-center font-bold mb-4",
+								"Clipboard Hook"
+							}
+							p { class: "text-[color:var(--muted-text)] text-center mb-4",
 								"A unified clipboard interface that works seamlessly across desktop and web platforms with comprehensive error handling."
 							}
 							input {
 								class: tw_join!(
-										"md:w-4/5 mx-auto w-full flex justify-center bg-[color:var(--bg-color)] border border-slate-500 text-slate-100 rounded px-3 py-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none placeholder-slate-500"
+										"md:w-4/5 mx-auto w-full flex justify-center bg-[color:var(--input-bg)] border border-[color:var(--border-color)] text-[color:var(--text-color)] rounded px-3 py-2 shadow-sm focus:ring-2 focus:ring-[color:var(--focus-ring)] focus:outline-none placeholder-[color:var(--muted-text)]"
 								),
 								placeholder: "Type something to copy",
 								value: "{clipboard_content}",
@@ -140,14 +147,14 @@ pub fn HooksDemo() -> Element {
 													clipboard_content.set(String::new());
 											});
 									},
-									class: "rounded bg-blue-600 text-white py-2 px-4 hover:bg-blue-700",
+									class: "rounded bg-[color:var(--primary-bg)] text-[color:var(--primary-text)] py-2 px-4 hover:bg-[color:var(--hover-bg)]",
 									span { class: "flex items-center gap-2",
 										"Copy"
 										Icon {
 											width: 16,
 											height: 16,
 											icon: FaCopy,
-											class: "text-slate-50",
+											class: "text-[color:var(--primary-text)]",
 										}
 									}
 								}
@@ -164,19 +171,19 @@ pub fn HooksDemo() -> Element {
 													}
 											});
 									},
-									class: "rounded bg-green-500 text-white py-2 px-4 hover:bg-green-700",
+									class: "rounded bg-[color:var(--accent-bg)] text-[color:var(--accent-text)] py-2 px-4 hover:bg-[color:var(--hover-bg)]",
 									span { class: "flex items-center gap-2",
 										"Paste"
 										Icon {
 											width: 16,
 											height: 16,
 											icon: FaPaste,
-											class: "text-slate-50",
+											class: "text-[color:var(--accent-text)]",
 										}
 									}
 								}
 							}
-							p { class: "mt-2 text-sm text-slate-500 text-center", "{copy_status}" }
+							p { class: "mt-2 text-sm text-[color:var(--muted-text)] text-center", "{copy_status}" }
 						}
 						div { id: "maestro-hooks-clipboard-features", class: "flex mt-4",
 							Features {
@@ -194,26 +201,28 @@ pub fn HooksDemo() -> Element {
 					HookSection::Memo => rsx! {
 						section {
 							id: "maestro-hooks-memo",
-							class: "memo-demo bg-[color:var(--bg-color)] p-6 rounded-lg shadow",
-							h2 { class: "text-lg text-center text-slate-100 font-bold mb-4", "Explicit Memo Hook" }
+							class: "memo-demo bg-[color:var(--card-bg)] p-6 rounded-lg shadow",
+							h2 { class: "text-lg text-center text-[color:var(--card-text)] font-bold mb-4",
+								"Explicit Memo Hook"
+							}
 							div { class: "flex space-x-4 justify-center mb-8",
 								button {
 									onclick: move |_| total_items.set(total_items() + 10),
-									class: "rounded bg-blue-500 text-white py-2 px-4 hover:bg-blue-700",
+									class: "rounded bg-[color:var(--primary-bg)] text-[color:var(--primary-text)] py-2 px-4 hover:bg-[color:var(--hover-bg)]",
 									"+10"
 								}
 								button {
 									onclick: move |_| total_items.set((total_items() - 10).max(0)),
-									class: "rounded bg-red-500 text-white py-2 px-4 hover:bg-red-700",
+									class: "rounded bg-[color:var(--destructive)] text-[color:var(--destructive-foreground)] py-2 px-4 hover:bg-[color:var(--hover-bg)]",
 									"-10"
 								}
 							}
-							div { class: "bg-slate-800 p-2 rounded-md text-center shadow-inner",
-								p { class: "font-medium text-slate-300",
+							div { class: "bg-[color:var(--input-bg)] p-2 rounded-md text-center shadow-inner",
+								p { class: "font-medium text-[color:var(--muted-text)]",
 									"Total Items: "
-									span { class: "text-blue-500 font-bold", "{total_items}" }
+									span { class: "text-[color:var(--primary-bg)] font-bold", "{total_items}" }
 								}
-								p { class: "font-medium text-slate-300 mt-2",
+								p { class: "font-medium text-[color:var(--muted-text)] mt-2",
 									match *async_result.value().read_unchecked() {
 											Some(_) => rsx! {
 												"Memoized Result: "
@@ -224,11 +233,11 @@ pub fn HooksDemo() -> Element {
 																	.map(|c| {
 																			if c.is_numeric() {
 																					rsx! {
-																						span { class: "text-blue-500", "{c}" }
+																						span { class: "text-[color:var(--primary-bg)]", "{c}" }
 																					}
 																			} else {
 																					rsx! {
-																						span { class: "text-slate-200", "{c}" }
+																						span { class: "text-[color:var(--card-text)]", "{c}" }
 																					}
 																			}
 																	})
@@ -236,7 +245,7 @@ pub fn HooksDemo() -> Element {
 												}
 											},
 											None => rsx! {
-												span { class: "text-blue-400 animate-pulse", "Computing..." }
+												span { class: "text-[color:var(--primary-bg)] animate-pulse", "Computing..." }
 											},
 									}
 								}
@@ -258,49 +267,52 @@ pub fn HooksDemo() -> Element {
 					HookSection::Pagination => rsx! {
 						section {
 							id: "maestro-hooks-pagination",
-							class: "pagination-demo bg-[color:var(--bg-color)] p-6 rounded-lg shadow",
-							h2 { class: "text-lg font-bold text-slate-100 text-center mb-4", "Pagination Hook" }
-							table { class: "w-auto mx-auto text-center border-collapse shadow border border-slate-700 rounded-md mb-6",
+							class: "pagination-demo bg-[color:var(--card-bg)] p-6 rounded-lg shadow",
+							h2 { class: "text-lg font-bold text-[color:var(--card-text)] text-center mb-4",
+								"Pagination Hook"
+							}
+							table { class: "w-auto mx-auto text-center border-collapse shadow border border-[color:var(--border-color)] rounded-md mb-6",
 								tr {
-									td { class: "border rounded-md border-slate-500 px-4 py-2 text-slate-200",
+									td { class: "border rounded-md border-[color:var(--border-color)] px-4 py-2 text-[color:var(--card-text)]",
 										"Current Page:"
 									}
-									td { class: "border rounded-md border-slate-500 px-4 py-2 text-blue-500 font-bold",
+									td { class: "border rounded-md border-[color:var(--border-color)] px-4 py-2 text-[color:var(--primary-bg)] font-bold",
 										"{*pagination.page.read() + 1}"
 									}
 								}
 								tr {
-									td { class: "border rounded-md border-slate-500 px-4 py-2 text-slate-200",
+									td { class: "border rounded-md border-[color:var(--border-color)] px-4 py-2 text-[color:var(--card-text)]",
 										"Items per page:"
 									}
-									td { class: "border rounded-md border-slate-500 px-4 py-2 text-blue-500 font-bold",
+									td { class: "border rounded-md border-[color:var(--border-color)] px-4 py-2 text-[color:var(--primary-bg)] font-bold",
 										"{*pagination.page_size.read()}"
 									}
 								}
 								tr {
-									td { class: "border rounded-md border-slate-500 px-4 py-2 text-slate-200",
+									td { class: "border rounded-md border-[color:var(--border-color)] px-4 py-2 text-[color:var(--card-text)]",
 										"Total Pages:"
 									}
-									td { class: "border rounded-md border-slate-500 px-4 py-2 text-blue-500 font-bold",
+									td { class: "border rounded-md border-[color:var(--border-color)] px-4 py-2 text-[color:var(--primary-bg)] font-bold",
 										"{((*total_items.read() as f64) / (*pagination.page_size.read() as f64)).ceil() as i32}"
 									}
 								}
 								tr {
-									td { class: "border rounded-md border-slate-500 px-4 py-2 text-slate-200",
+									td { class: "border rounded-md border-[color:var(--border-color)] px-4 py-2 text-[color:var(--card-text)]",
 										"Current Index:"
 									}
-									td { class: "border rounded-md border-slate-500 px-4 py-2 text-blue-500 font-bold",
+									td { class: "border rounded-md border-[color:var(--border-color)] px-4 py-2 text-[color:var(--primary-bg)] font-bold",
 										"{*pagination.idx.read()}"
 									}
 								}
 								tr {
-									td { class: "border rounded-md border-slate-500 px-4 py-2 text-slate-200",
+									td { class: "border rounded-md border-[color:var(--border-color)] px-4 py-2 text-[color:var(--card-text)]",
 										"Pagination Status: "
 									}
 									td {
 										class: tw_join!(
-												"border rounded-md border-slate-500 px-4 py-2", if * pagination.touched.read() {
-												"text-green-500" } else { "text-slate-200" }
+												"border rounded-md border-[color:var(--border-color)] px-4 py-2", if * pagination
+												.touched.read() { "text-[color:var(--accent-bg)]" } else {
+												"text-[color:var(--card-text)]" }
 										),
 										span { class: "font-medium",
 											if *pagination.touched.read() {
@@ -312,10 +324,10 @@ pub fn HooksDemo() -> Element {
 									}
 								}
 							}
-							div { class: "flex justify-center text-slate-200 items-center gap-4 mb-4",
+							div { class: "flex justify-center text-[color:var(--card-text)] items-center gap-4 mb-4",
 								"Items per page: "
 								select {
-									class: "border bg-[color:var(--bg-color)] border-slate-500 rounded p-1",
+									class: "border bg-[color:var(--input-bg)] border-[color:var(--border-color)] rounded p-1 text-[color:var(--text-color)]",
 									value: "{*pagination.page_size.read()}",
 									onchange: move |e: FormEvent| {
 											if let Ok(size) = e.value().parse::<i32>() {
@@ -339,7 +351,7 @@ pub fn HooksDemo() -> Element {
 												.map(|item| {
 														rsx! {
 															div {
-																class: "border border-slate-800 rounded-md p-2 text-slate-50 bg-slate-500 shadow-sm text-center",
+																class: "border border-[color:var(--border-color)] rounded-md p-2 text-[color:var(--text-color)] bg-[color:var(--secondary-bg)] shadow-sm text-center",
 																key: "{item}",
 																"Item {item}"
 															}
@@ -347,30 +359,30 @@ pub fn HooksDemo() -> Element {
 												})
 								}
 							}
-							hr { class: "border border-slate-700 mt-4 w-full" }
+							hr { class: "border border-[color:var(--border-color)] mt-4 w-full" }
 							div { class: "flex space-x-4 mt-6 justify-center",
 								button {
 									disabled: "{*pagination.prev_idx_disabled.read()}",
 									onclick: move |_| pagination.prev_idx(),
-									class: "rounded bg-slate-500 text-white py-2 px-4 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed",
+									class: "rounded bg-[color:var(--muted)] text-[color:var(--text-color)] py-2 px-4 hover:bg-[color:var(--hover-bg)] disabled:opacity-50 disabled:cursor-not-allowed",
 									Icon { class: "h-6 w-6", icon: LdChevronLeft }
 								}
 								button {
 									disabled: "{*pagination.prev_page_disabled.read()}",
 									onclick: move |_| pagination.prev_page(),
-									class: "rounded bg-slate-500 text-white py-2 px-4 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed",
+									class: "rounded bg-[color:var(--muted)] text-[color:var(--text-color)] py-2 px-4 hover:bg-[color:var(--hover-bg)] disabled:opacity-50 disabled:cursor-not-allowed",
 									Icon { class: "h-6 w-6", icon: LdChevronsLeft }
 								}
 								button {
 									disabled: "{*pagination.next_page_disabled.read()}",
 									onclick: move |_| pagination.next_page(),
-									class: "rounded bg-slate-500 text-white py-2 px-4 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed",
+									class: "rounded bg-[color:var(--muted)] text-[color:var(--text-color)] py-2 px-4 hover:bg-[color:var(--hover-bg)] disabled:opacity-50 disabled:cursor-not-allowed",
 									Icon { class: "h-6 w-6", icon: LdChevronsRight }
 								}
 								button {
 									disabled: "{*pagination.next_idx_disabled.read()}",
 									onclick: move |_| pagination.next_idx(),
-									class: "rounded bg-slate-500 text-white py-2 px-4 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed",
+									class: "rounded bg-[color:var(--muted)] text-[color:var(--text-color)] py-2 px-4 hover:bg-[color:var(--hover-bg)] disabled:opacity-50 disabled:cursor-not-allowed",
 									Icon { class: "h-6 w-6", icon: LdChevronRight }
 								}
 							}

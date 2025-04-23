@@ -180,10 +180,12 @@ pub fn PlottersDemo() -> Element {
 	rsx! {
 		div {
 			id: "maestro-plotters",
-			class: "p-4 bg-[color:var(--bg-color)] rounded-lg w-full",
+			class: "p-4 bg-[color:var(--bg-color)] text-[color:var(--text-color)] rounded-[var(--radius-lg)] w-full",
 			div { id: "maestro-plotters-header", class: "mb-8",
-				h1 { class: "text-slate-100 text-center text-3xl font-bold mb-2", "Maestro Plotters" }
-				p { class: "text-slate-300 text-center",
+				h1 { class: "text-[color:var(--text-color)] text-center text-3xl font-bold mb-2",
+					"Maestro Plotters"
+				}
+				p { class: "text-[color:var(--muted-foreground)] text-center",
 					"A powerful, flexible, and reactive charting library for Dioxus applications built on top of the plotters crate."
 				}
 			}
@@ -210,17 +212,20 @@ pub fn PlottersDemo() -> Element {
 				}
 			}
 
-			h1 { class: "text-4xl font-bold mb-8 text-slate-400 text-center", "Analytics Dashboard" }
+			h1 { class: "text-4xl font-bold mb-8 text-[color:var(--muted-foreground)] text-center",
+				"Analytics Dashboard"
+			}
 
 			div {
 				id: "maestro-plotters-bar",
 				class: "grid grid-cols-1 md:grid-cols-2 gap-8",
-				// bar chart section
-				div { class: "bg-slate-800 text-center rounded-lg shadow-lg p-6 border border-slate-700 hover:shadow-xl transition-shadow",
-					h3 { class: "text-2xl font-bold mb-4 text-slate-200",
+				div { class: "bg-[color:var(--card-bg)] text-center rounded-[var(--radius-lg)] shadow-md p-6 border border-[color:var(--border)] hover:shadow-lg transition-shadow",
+					h3 { class: "text-2xl font-bold mb-4 text-[color:var(--card-foreground)]",
 						"Monthly Revenue Performance"
 					}
-					p { class: "text-slate-400 mb-4", "Year-to-date revenue breakdown by month" }
+					p { class: "text-[color:var(--muted-foreground)] mb-4",
+						"Year-to-date revenue breakdown by month"
+					}
 					div { class: "aspect-square",
 						canvas {
 							id: "bar-chart",
@@ -232,12 +237,13 @@ pub fn PlottersDemo() -> Element {
 					}
 				}
 
-				// line chart section
 				div {
 					id: "maestro-plotters-line",
-					class: "bg-slate-800 text-center rounded-lg shadow-lg p-6 border border-slate-700 hover:shadow-xl transition-shadow",
-					h3 { class: "text-2xl font-bold mb-4 text-slate-200", "Performance Trend Analysis" }
-					p { class: "text-slate-400 mb-4",
+					class: "bg-[color:var(--card-bg)] text-center rounded-[var(--radius-lg)] shadow-md p-6 border border-[color:var(--border)] hover:shadow-lg transition-shadow",
+					h3 { class: "text-2xl font-bold mb-4 text-[color:var(--card-foreground)]",
+						"Performance Trend Analysis"
+					}
+					p { class: "text-[color:var(--muted-foreground)] mb-4",
 						"Comparative analysis with previous year and targets"
 					}
 					div { class: "aspect-square",
@@ -251,14 +257,15 @@ pub fn PlottersDemo() -> Element {
 					}
 				}
 
-				// pie chart section
 				div {
 					id: "maestro-plotters-pie",
-					class: "bg-slate-800 text-center rounded-lg shadow-lg p-6 border border-slate-700 hover:shadow-xl transition-shadow",
-					h3 { class: "text-2xl font-bold mb-4 text-slate-200",
+					class: "bg-[color:var(--card-bg)] text-center rounded-[var(--radius-lg)] shadow-md p-6 border border-[color:var(--border)] hover:shadow-lg transition-shadow",
+					h3 { class: "text-2xl font-bold mb-4 text-[color:var(--card-foreground)]",
 						"Product Revenue Distribution"
 					}
-					p { class: "text-slate-400 mb-4", "Revenue breakdown by product category" }
+					p { class: "text-[color:var(--muted-foreground)] mb-4",
+						"Revenue breakdown by product category"
+					}
 					div { class: "aspect-square",
 						canvas {
 							id: "pie-chart",
@@ -278,14 +285,15 @@ pub fn PlottersDemo() -> Element {
 					}
 				}
 
-				// radar chart section
 				div {
 					id: "maestro-plotters-radar",
-					class: "bg-slate-800 text-center rounded-lg shadow-lg p-6 border border-slate-700 hover:shadow-xl transition-shadow",
-					h3 { class: "text-2xl font-bold mb-4 text-slate-200",
+					class: "bg-[color:var(--card-bg)] text-center rounded-[var(--radius-lg)] shadow-md p-6 border border-[color:var(--border)] hover:shadow-lg transition-shadow",
+					h3 { class: "text-2xl font-bold mb-4 text-[color:var(--card-foreground)]",
 						"Performance Metrics Overview"
 					}
-					p { class: "text-slate-400 mb-4", "Multi-dimensional performance analysis" }
+					p { class: "text-[color:var(--muted-foreground)] mb-4",
+						"Multi-dimensional performance analysis"
+					}
 					div { class: "aspect-square",
 						canvas {
 							id: "radar-chart",
@@ -297,14 +305,13 @@ pub fn PlottersDemo() -> Element {
 					}
 				}
 
-				// scatter plot section
 				div {
 					id: "maestro-plotters-scatter",
-					class: "bg-slate-800 text-center rounded-lg shadow-lg p-6 border border-slate-700 hover:shadow-xl transition-shadow",
-					h3 { class: "text-2xl font-bold mb-4 text-slate-200",
+					class: "bg-[color:var(--card-bg)] text-center rounded-[var(--radius-lg)] shadow-md p-6 border border-[color:var(--border)] hover:shadow-lg transition-shadow",
+					h3 { class: "text-2xl font-bold mb-4 text-[color:var(--card-foreground)]",
 						"Growth Correlation Analysis"
 					}
-					p { class: "text-slate-400 mb-4",
+					p { class: "text-[color:var(--muted-foreground)] mb-4",
 						"Revenue vs Customer Acquisition with key highlights"
 					}
 					div { class: "aspect-square",
@@ -329,12 +336,15 @@ pub fn PlottersDemo() -> Element {
 					}
 				}
 
-				// candlestick chart section
 				div {
 					id: "maestro-plotters-candlestick",
-					class: "bg-slate-800 text-center rounded-lg shadow-lg p-6 border border-slate-700 hover:shadow-xl transition-shadow",
-					h3 { class: "text-2xl font-bold mb-4 text-slate-200", "Stock Price Movement" }
-					p { class: "text-slate-400 mb-4", "Daily price movements with trading ranges" }
+					class: "bg-[color:var(--card-bg)] text-center rounded-[var(--radius-lg)] shadow-md p-6 border border-[color:var(--border)] hover:shadow-lg transition-shadow",
+					h3 { class: "text-2xl font-bold mb-4 text-[color:var(--card-foreground)]",
+						"Stock Price Movement"
+					}
+					p { class: "text-[color:var(--muted-foreground)] mb-4",
+						"Daily price movements with trading ranges"
+					}
 					div { class: "aspect-square",
 						canvas {
 							id: "candlestick-chart",
@@ -356,12 +366,15 @@ pub fn PlottersDemo() -> Element {
 					}
 				}
 
-				// Heatmap section
 				div {
 					id: "maestro-plotters-heatmap",
-					class: "bg-slate-800 text-center rounded-lg shadow-lg p-6 border border-slate-700 hover:shadow-xl transition-shadow",
-					h3 { class: "text-2xl font-bold mb-4 text-slate-200", "Performance Heat Map" }
-					p { class: "text-slate-400 mb-4", "Quarterly performance intensity analysis" }
+					class: "bg-[color:var(--card-bg)] text-center rounded-[var(--radius-lg)] shadow-md p-6 border border-[color:var(--border)] hover:shadow-lg transition-shadow",
+					h3 { class: "text-2xl font-bold mb-4 text-[color:var(--card-foreground)]",
+						"Performance Heat Map"
+					}
+					p { class: "text-[color:var(--muted-foreground)] mb-4",
+						"Quarterly performance intensity analysis"
+					}
 					div { class: "aspect-square",
 						canvas {
 							id: "heat-map",
