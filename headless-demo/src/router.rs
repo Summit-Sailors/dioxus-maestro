@@ -5,8 +5,8 @@ use {
 			AccordionPage, AccordionStyledPage, AspectRatioPage, AspectRatioStyledPage, AvatarPage, AvatarStyledPage, ButtonPage, ButtonStyledPage, CheckboxPage,
 			CheckboxStyledPage, CollapsiblePage, CollapsibleStyledPage, DialogPage, DialogStyledPage, HeadlessHome, Home, HoverCardPage, HoverCardStyledPage,
 			PopoverPage, PopoverStyledPage, ProgressBarPage, ProgressBarStyledPage, RadioPage, RadioStyledPage, RangePage, RangeStyledPage, SelectPage,
-			SelectStyledPage, SeparatorPage, SeparatorStyledPage, StyledHome, SwitchPage, SwitchStyledPage, TabsPage, TabsStyledPage, TogglePage, ToggleStyledPage,
-			TooltipPage, TooltipStyledPage,
+			SelectStyledPage, SeparatorPage, SeparatorStyledPage, SheetStyledPage, StyledHome, SwitchPage, SwitchStyledPage, TabsPage, TabsStyledPage, TogglePage,
+			ToggleStyledPage, TooltipPage, TooltipStyledPage,
 		},
 	},
 	dioxus::prelude::*,
@@ -92,6 +92,8 @@ pub enum Route {
 	SelectStyledPage {},
 	#[route("/separator")]
 	SeparatorStyledPage {},
+	#[route("/sheet")]
+	SheetStyledPage,
 	#[route("/switch")]
 	SwitchStyledPage {},
 	#[route("/tabs")]
@@ -126,6 +128,7 @@ impl Route {
 			Route::TabsPage {} | Route::TabsStyledPage {} => "Tabs",
 			Route::TogglePage {} | Route::ToggleStyledPage {} => "Toggle & ToggleGroup",
 			Route::TooltipPage {} | Route::TooltipStyledPage {} => "Tooltip",
+			Route::SheetStyledPage {} => "Sheet",
 		}
 	}
 
@@ -170,6 +173,7 @@ impl Route {
 			Route::RangeStyledPage {},
 			Route::SelectStyledPage {},
 			Route::SeparatorStyledPage {},
+			Route::SheetStyledPage {},
 			Route::SwitchStyledPage {},
 			Route::TabsStyledPage {},
 			Route::ToggleStyledPage {},
