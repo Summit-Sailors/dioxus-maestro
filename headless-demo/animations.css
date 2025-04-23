@@ -5,7 +5,7 @@
  * @license MIT
  */
 
-@theme inline {
+@theme static {
   /* Predefined values */
 
   --animation-delay-0: 0s;
@@ -57,13 +57,15 @@
 
   /* Animations and keyframes */
 
-  --animate-in: enter var(--tw-duration, 150ms) var(--tw-ease, ease);
-  --animate-out: exit var(--tw-duration, 150ms) var(--tw-ease, ease);
+  --animate-in: enter var(--tw-duration, 200ms) var(--tw-ease, ease);
+  --animate-out: exit var(--tw-duration, 200ms) var(--tw-ease, ease);
 
-  --animate-accordion-down: content-down var(--tw-duration, 200ms) ease-out;
-  --animate-accordion-up: content-up var(--tw-duration, 200ms) ease-out;
-  --animate-collapsible-down: content-down var(--tw-duration, 200ms) ease-out;
-  --animate-collapsible-up: content-up var(--tw-duration, 200ms) ease-out;
+  --animate-accordion-down: content-down var(--tw-duration, 200ms) linear;
+  --animate-accordion-up: content-up var(--tw-duration, 200ms) linear;
+  --animate-accordion-left: content-left var(--tw-duration, 200ms) linear;
+  --animate-accordion-right: content-right var(--tw-duration, 200ms) linear;
+  --animate-collapsible-down: content-down var(--tw-duration, 200ms) linear;
+  --animate-collapsible-up: content-up var(--tw-duration, 200ms) linear;
   --animate-caret-blink: caret-blink 1.25s ease-out infinite;
 
   @keyframes enter {
@@ -73,11 +75,6 @@
           var(--tw-enter-translate-x, 0),
           var(--tw-enter-translate-y, 0),
           0
-        )
-        scale3d(
-          var(--tw-enter-scale, 1),
-          var(--tw-enter-scale, 1),
-          var(--tw-enter-scale, 1)
         )
         rotate(var(--tw-enter-rotate, 0));
     }
@@ -91,11 +88,6 @@
           var(--tw-exit-translate-y, 0),
           0
         )
-        scale3d(
-          var(--tw-exit-scale, 1),
-          var(--tw-exit-scale, 1),
-          var(--tw-exit-scale, 1)
-        )
         rotate(var(--tw-exit-rotate, 0));
     }
   }
@@ -106,13 +98,8 @@
     }
     to {
       height: var(
-        --maestro-headless-accordion-content-height,
-        var(
-          var(
-            --maestro-headless-collapsible-content-height,
-            var(--maestro-headless-collapsible-content-height, auto)
-          )
-        )
+        --maestro-headless-accordion-height,
+        var(--maestro-headless-collapsible-height, auto)
       );
     }
   }
@@ -120,17 +107,36 @@
   @keyframes content-up {
     from {
       height: var(
-        --maestro-headless-accordion-content-height,
-        var(
-          var(
-            --maestro-headless-collapsible-content-height,
-            var(--bits-collapsible-content-height, auto)
-          )
-        )
+        --maestro-headless-accordion-height,
+        var(--maestro-headless-collapsible-height, auto)
       );
     }
     to {
       height: 0;
+    }
+  }
+
+  @keyframes content-left {
+    from {
+      width: 0;
+    }
+    to {
+      width: var(
+        --maestro-headless-accordion-width,
+        var(--maestro-headless-collapsible-width, auto)
+      );
+    }
+  }
+
+  @keyframes content-right {
+    from {
+      width: var(
+        --maestro-headless-accordion-width,
+        var(--maestro-headless-collapsible-width, auto)
+      );
+    }
+    to {
+      width: 0;
     }
   }
 
@@ -193,24 +199,6 @@
 @utility fade-out-* {
   --tw-exit-opacity: calc(--value(number) / 100);
   --tw-exit-opacity: --value(--percentage- *, [ *]);
-}
-
-@utility zoom-in {
-  --tw-enter-scale: 0;
-}
-@utility zoom-in-* {
-  --tw-enter-scale: calc(--value([percentage]) / 100%);
-  --tw-enter-scale: calc(--value([ratio], [number]));
-  --tw-enter-scale: --value(--percentage- *);
-}
-
-@utility zoom-out {
-  --tw-exit-scale: 0;
-}
-@utility zoom-out-* {
-  --tw-exit-scale: calc(--value([percentage]) / 100%);
-  --tw-exit-scale: calc(--value([ratio], [number]));
-  --tw-exit-scale: --value(--percentage- *);
 }
 
 @utility spin-in {

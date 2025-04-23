@@ -27,6 +27,8 @@ pub enum ERound {
 	Lg,
 	#[tw(class = "rounded-full")]
 	Full,
+	#[tw(class = "")]
+	None,
 }
 
 #[derive(TwVariant, PartialEq, Debug, Serialize, Deserialize, strum_macros::Display, strum_macros::EnumIter, strum_macros::EnumString)]

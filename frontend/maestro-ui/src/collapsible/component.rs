@@ -73,8 +73,8 @@ pub fn CollapsibleContent(props: CollapsibleContentProps) -> Element {
 		maestro_headless::collapsible::CollapsibleContent {
 			extra_attributes: props.attributes,
 			class: tw_merge!(
-					"data-[state=closed]:animate-slide-out data-[state=open]:animate-slide-in", props
-					.class.clone()
+					"data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down",
+					props.class.clone()
 			),
 			{props.children}
 		}

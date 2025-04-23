@@ -184,10 +184,26 @@ pub fn ButtonStyledPage() -> Element {
 				}
 			}
 		}
-		DescriptionSection { title: "Api Reference",
-			div { class: "flex flex-col space-y-6",
-				div { class: "flex flex-col gap-4",
-					p {
+		DescriptionSection { title: "Notes",
+			ul { class: "flex flex-col space-y-2 *:flex *:gap-2 *:items-baseline [&>li>span:first-child]:w-1.5 [&>li>span:first-child]:h-1.5 [&>li>span:first-child]:rounded-full [&>li>span:first-child]:bg-orange-600",
+				li { class: "",
+					span { class: "" }
+					span {
+						"Provided default styling. All need to do - add to "
+						span { class: "px-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
+							"input.css"
+						}
+						" variables for colors and animations or adjust provided example of styling from the "
+						Button {
+							variant: EVariant::Link,
+							class: "text-orange-500 hover:text-orange-600",
+							Link { to: Route::StyledHome {}, tabindex: "-1", "Ui Home Page" }
+						}
+					}
+				}
+				li { class: "",
+					span { class: "" }
+					span {
 						"Inherits all the props and behaviour of the"
 						Button {
 							variant: EVariant::Link,
@@ -195,33 +211,36 @@ pub fn ButtonStyledPage() -> Element {
 							Link { to: Route::ButtonPage {}, tabindex: "-1", "headless button" }
 						}
 					}
-					PropsTable {
-						content: Vec::from([
-								PropsStruct {
-										prop: "class".into(),
-										prop_default: "''".into(),
-										prop_type: "String".into(),
-										tooltip_text: None,
-								},
-								PropsStruct {
-										prop: "variant".into(),
-										prop_default: "EVariant::Primary".into(),
-										prop_type: "bool".into(),
-										tooltip_text: Some("Determines the main look of the button".into()),
-								},
-								PropsStruct {
-										prop: "size".into(),
-										prop_default: "ESize::Md".into(),
-										prop_type: "ESize".into(),
-										tooltip_text: Some("Determines the height of the button".into()),
-								},
-								PropsStruct {
-										prop: "round".into(),
-										prop_default: "ERound::Md".into(),
-										prop_type: "ERound".into(),
-										tooltip_text: Some("Determines border radius of the button".into()),
-								},
-						]),
+				}
+				li {
+					span { class: "" }
+					span {
+						"Each component takes additional prop "
+						span { class: "px-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
+							"class"
+						}
+						" props for custom styling. "
+					}
+				}
+				li {
+					span { class: "" }
+					span {
+						span { class: "px-1.5 py-0.5 font-mono text-orange-400 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
+							"Button"
+						}
+						" also takes "
+						span { class: "px-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
+							"size"
+						}
+						", "
+						span { class: "px-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
+							"variant"
+						}
+						" and "
+						span { class: "px-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
+							"round"
+						}
+						" props for more flexible customization of styling."
 					}
 				}
 			}

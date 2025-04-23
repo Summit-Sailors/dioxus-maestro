@@ -99,10 +99,10 @@ pub struct AccordionTriggerProps {
 pub fn AccordionTrigger(props: AccordionTriggerProps) -> Element {
 	let AccordionTriggerProps { hide_icon, class, attributes, children } = props;
 	rsx! {
-		maestro_headless::accordion::AccordionHeader {
+		maestro_headless::accordion::AccordionHeader { class: "flex-shrink-0",
 			maestro_headless::accordion::AccordionTrigger {
 				class: tw_merge!(
-						"flex items-center justify-between gap-3 [&>svg]:flex-shrink-0 [&>svg]:transition-transform [&>svg]:text-muted [&[data-state=open]>svg]:rotate-180 [&[data-orientation=horizontal]>svg]:-rotate-90 [&[data-orientation=horizontal][data-state=open]>svg]:rotate-0 px-3 py-2 h-full w-full transition-all focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none hover:underline hover:underline-offset-3",
+						"flex flex-shrink-0 items-center justify-between gap-3 [&>svg]:flex-shrink-0 [&>svg]:transition-transform [&>svg]:text-muted [&[data-state=open]>svg]:rotate-180 [&[data-orientation=horizontal]>svg]:-rotate-90 [&[data-orientation=horizontal][data-state=open]>svg]:rotate-0 px-3 py-2 h-full w-full transition-all focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none hover:underline hover:underline-offset-3",
 						class.clone()
 				),
 				extra_attributes: attributes.clone(),
@@ -143,7 +143,7 @@ pub fn AccordionContent(props: AccordionContentProps) -> Element {
 	rsx! {
 		maestro_headless::accordion::AccordionContent {
 			class: tw_merge!(
-					"flex w-full h-full data-[orientation=horizontal]:data-[state=open]:w-fit transition-all data-[orientation=horizontal]:data-[state=open]:animate-slide-in-accordion-horizontal data-[orientation=horizontal]:data-[state=closed]:animate-slide-out-accordion-horizontal data-[orientation=vertical]:data-[state=open]:animate-slide-in-accordion-vertical data-[orientation=vertical]:data-[state=closed]:animate-slide-out-accordion-vertical transition-all overflow-hidden",
+					"flex data-[orientation=horizontal]:data-[state=open]:animate-accordion-left data-[orientation=horizontal]:data-[state=closed]:animate-accordion-right data-[orientation=vertical]:data-[state=open]:animate-accordion-down data-[orientation=vertical]:data-[state=closed]:animate-accordion-up transition-all overflow-hidden",
 					props.class.clone()
 			),
 			extra_attributes: props.attributes,

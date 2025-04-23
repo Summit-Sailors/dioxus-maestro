@@ -32,6 +32,14 @@ pub fn AccordionStyledPage() -> Element {
 			class: "[&>h3]:lg:text-2xl [&>h3]:text-xl",
 			title: "Accordion",
 			description: "UI component that allows to toggle the visibility of content within sections, one or multiple sections at a time.",
+			p {
+				"Extends "
+				Button {
+					variant: EVariant::Link,
+					class: "text-orange-500 hover:text-orange-600",
+					Link { to: Route::AccordionPage {}, tabindex: "-1", "headless accordion" }
+				}
+			}
 		}
 		section { class: "container flex flex-col px-4 lg:py-6 py-4",
 			div { class: "flex flex-wrap gap-3 items-center mb-4",
@@ -116,59 +124,6 @@ pub fn AccordionStyledPage() -> Element {
 
 		DescriptionSection { title: "Usage and Anatomy",
 			ExampleCodeAnatomy { code: EXAMPLE_ANATOMY }
-		}
-		DescriptionSection { title: "Notes",
-			ul { class: "flex flex-col space-y-2 *:flex *:gap-2 *:items-baseline [&>li>span:first-child]:w-1.5 [&>li>span:first-child]:h-1.5 [&>li>span:first-child]:rounded-full [&>li>span:first-child]:bg-orange-600",
-				li { class: "",
-					span { class: "" }
-					span {
-						"Provided default styling. All need to do - add to "
-						span { class: "px-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
-							"input.css"
-						}
-						" variables for colors and animations or adjust provided example"
-						Button {
-							variant: EVariant::Link,
-							class: "text-orange-500 hover:text-orange-600",
-							Link { to: Route::AccordionPage {}, tabindex: "-1", "headless accordion" }
-						}
-					}
-				}
-				li { class: "",
-					span { class: "" }
-					span {
-						"Inherits all the props and behaviour of the"
-						Button {
-							variant: EVariant::Link,
-							class: "text-orange-500 hover:text-orange-600",
-							Link { to: Route::AccordionPage {}, tabindex: "-1", "headless accordion" }
-						}
-					}
-				}
-				li {
-					span { class: "" }
-					span {
-						"Each component takes additional prop "
-						span { class: "px-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
-							"class"
-						}
-						" props for custom styling. "
-					}
-				}
-				li {
-					span { class: "" }
-					span {
-						span { class: "px-1.5 py-0.5 font-mono text-orange-400 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
-							"AccordionTrigger"
-						}
-						" also takes "
-						span { class: "px-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
-							"hide_icon"
-						}
-						" prop, which allows user to hide default open/close indicator and use the custom one."
-					}
-				}
-			}
 		}
 	}
 }

@@ -451,22 +451,22 @@ pub fn SelectPage() -> Element {
 										description: "".into(),
 								},
 								AttrsStruct {
-										attr: "--maestro-select-anchor-width".into(),
+										attr: "--maestro-headless-select-anchor-width".into(),
 										value: "<>px".into(),
 										description: "CSS variable".into(),
 								},
 								AttrsStruct {
-										attr: "--maestro-select-anchor-height".into(),
+										attr: "--maestro-headless-select-anchor-height".into(),
 										value: "<>px".into(),
 										description: "CSS variable".into(),
 								},
 								AttrsStruct {
-										attr: "--maestro-select-content-width".into(),
+										attr: "--maestro-headless-select-content-width".into(),
 										value: "<>px".into(),
 										description: "CSS variable".into(),
 								},
 								AttrsStruct {
-										attr: "--maestro-select-content-height".into(),
+										attr: "--maestro-headless-select-content-height".into(),
 										value: "<>px".into(),
 										description: "CSS variable".into(),
 								},

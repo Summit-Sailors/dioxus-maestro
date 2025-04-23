@@ -3,7 +3,6 @@ use {
 		components::{
 			description_section::DescriptionSection,
 			example_code::{ExampleCodeAnatomy, ExampleCodeCollapsible},
-			features_list::Features,
 			tables::{AttrsStruct, PropsStruct},
 			tabs::PageTabs,
 		},

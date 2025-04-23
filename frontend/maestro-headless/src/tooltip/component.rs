@@ -46,12 +46,14 @@ pub struct TooltipRootProps {
 
 	#[props(extends = GlobalAttributes, extends = div)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	children: Element,
 }
 
 #[component]
 pub fn TooltipRoot(props: TooltipRootProps) -> Element {
-	let TooltipRootProps { delay_duration_ms, skip_delay_duration_ms, attributes, children } = props;
+	let TooltipRootProps { delay_duration_ms, skip_delay_duration_ms, attributes, extra_attributes, children } = props;
 
 	let mut is_open_delayed_ref = use_signal(|| true);
 	let mut is_pointer_in_transit_ref = use_signal(|| false);
@@ -92,7 +94,7 @@ pub fn TooltipRoot(props: TooltipRootProps) -> Element {
 	});
 
 	rsx! {
-		div { ..attributes,{children} }
+		div { ..attributes, ..extra_attributes,{children} }
 	}
 }
 
@@ -149,12 +151,14 @@ pub struct TooltipProps {
 
 	#[props(extends = GlobalAttributes, extends = div)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	children: Element,
 }
 
 #[component]
 pub fn Tooltip(props: TooltipProps) -> Element {
-	let TooltipProps { open, default_open, on_open_change, delay_duration, children, attributes } = props;
+	let TooltipProps { open, default_open, on_open_change, delay_duration, children, attributes, extra_attributes } = props;
 
 	let is_controlled = use_hook(move || open().is_some());
 	let (open, set_open) =
@@ -165,6 +169,9 @@ pub fn Tooltip(props: TooltipProps) -> Element {
 	let mut open_timer_ref = use_signal(|| None::<i32>);
 	let mut was_open_delayed_ref = use_signal(|| false);
 	let delay_duration = delay_duration.unwrap_or(provider_context.delay_duration);
+
+	let mut attrs = attributes.clone();
+	attrs.extend(extra_attributes.clone());
 
 	let state_attribute = use_memo(move || match open() {
 		true =>
@@ -232,7 +239,7 @@ pub fn Tooltip(props: TooltipProps) -> Element {
 		Popper {
 			position: "relative",
 			"data-state": if open() { "open" } else { "closed" },
-			extra_attributes: attributes,
+			extra_attributes: attrs.clone(),
 			{children}
 		}
 	}
@@ -246,17 +253,21 @@ pub struct TooltipTriggerProps {
 	#[props(extends = GlobalAttributes, extends = button)]
 	pub attributes: Vec<Attribute>,
 	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
 #[component]
 pub fn TooltipTrigger(props: TooltipTriggerProps) -> Element {
-	let TooltipTriggerProps { attributes, onclick, children } = props;
+	let TooltipTriggerProps { extra_attributes, attributes, onclick, children } = props;
 
 	let context = use_context::<TooltipContext>();
 	let provider_context = use_context::<TooltipProviderContext>();
 	let mut is_pointer_down_ref = use_signal(|| false);
 	let mut has_pointer_move_opened_ref = use_signal(|| false);
+
+	let mut attrs = attributes.clone();
+	attrs.extend(extra_attributes.clone());
 
 	rsx! {
 		PopperAnchor { role: "tooltip",
@@ -267,7 +278,7 @@ pub fn TooltipTrigger(props: TooltipTriggerProps) -> Element {
 				aria_haspopup: "dialog",
 				aria_expanded: *context.open.read(),
 				aria_controls: context.content_id.to_string(),
-				extra_attributes: attributes.clone(),
+				extra_attributes: attrs.clone(),
 				"data-state": if *context.open.read() { "open" } else { "closed" },
 				onmouseenter: move |_| {
 						if !*has_pointer_move_opened_ref.peek()
@@ -323,21 +334,32 @@ pub struct TooltipContentProps {
 	collision_padding: f32,
 	#[props(extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
 #[component]
 pub fn TooltipContent(props: TooltipContentProps) -> Element {
-	let TooltipContentProps { side, side_offset, align, align_offset, avoid_collisions, collision_padding, attributes, children } = props;
+	let TooltipContentProps { side, side_offset, align, align_offset, avoid_collisions, collision_padding, attributes, extra_attributes, children } = props;
 
 	let context = use_context::<TooltipContext>();
 	use_ref_provider();
 
 	let mut attrs = attributes.clone();
-	attrs.push(Attribute::new("--maestro-tooltip-anchor-height", "var(--maestro-popper-anchor-height)", Some("style"), false));
-	attrs.push(Attribute::new("--maestro-tooltip-anchor-width", "var(--maestro-popper-anchor-width)", Some("style"), false));
-	attrs.push(Attribute::new("--maestro-tooltip-content-height", "var(--maestro-popper-content-height)", Some("style"), false));
-	attrs.push(Attribute::new("--maestro-tooltip-content-width", "var(--maestro-popper-content-width)", Some("style"), false));
+	attrs.extend(extra_attributes);
+
+	let mut styled_attrs: Vec<Attribute> = Vec::new();
+	styled_attrs.push(Attribute::new("--maestro-headless-tooltip-anchor-height", "var(--maestro-headless-popper-anchor-height)", Some("style"), false));
+	styled_attrs.push(Attribute::new("--maestro-headless-tooltip-anchor-width", "var(--maestro-headless-popper-anchor-width)", Some("style"), false));
+	styled_attrs.push(Attribute::new("--maestro-headless-tooltip-content-height", "var(--maestro-headless-popper-content-height)", Some("style"), false));
+	styled_attrs.push(Attribute::new("--maestro-headless-tooltip-content-width", "var(--maestro-headless-popper-content-width)", Some("style"), false));
+	styled_attrs.push(Attribute::new(
+		"--maestro-headless-tooltip-content-transform-origin",
+		"var(--maestro-headless-popper-content-transform-origin)",
+		Some("style"),
+		false,
+	));
 
 	rsx! {
 		Presence { present: *context.open.read(),
@@ -355,6 +377,7 @@ pub fn TooltipContent(props: TooltipContentProps) -> Element {
 				"data-state": if *context.open.read() { "open" } else { "closed" },
 				"data-state-open": context.state_attribute.clone(),
 				extra_attributes: attrs.clone(),
+				styled_attributes: styled_attrs.clone(),
 				{children}
 			}
 		}
@@ -369,7 +392,7 @@ pub struct TooltipArrowProps {
 	height: f32,
 	#[props(extends = svg, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
-	#[props(default = None)]
+	#[props(default = Vec::new())]
 	pub children: Option<Element>,
 }
 

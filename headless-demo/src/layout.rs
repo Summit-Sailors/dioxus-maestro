@@ -16,9 +16,15 @@ pub fn Layout(children: Element) -> Element {
 	let current_route = use_route::<Route>();
 	let is_home = Route::Home {} == current_route;
 	let is_headless = current_route.to_string().starts_with("/headless");
-	let is_styled = current_route.to_string().starts_with("/styled");
+	let is_styled = current_route.to_string().starts_with("/ui");
 
-	let current_routes = if is_headless { Route::get_headless_routes() } else { Route::get_styled_routes() };
+	let current_routes = if is_home {
+		Route::get_home_routes()
+	} else if is_headless {
+		Route::get_headless_routes()
+	} else {
+		Route::get_styled_routes()
+	};
 
 	rsx! {
 		ToastFrame { manager: toast }

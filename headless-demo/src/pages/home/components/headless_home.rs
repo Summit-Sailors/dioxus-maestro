@@ -13,7 +13,7 @@ pub fn HeadlessHome() -> Element {
 		section { class: "w-full bg-neutral-900 text-orange-600 flex items-center justify-center",
 			div { class: "container py-8 flex flex-col gap-5",
 				h1 { class: "2xl:text-6xl md:text-5xl text-4xl font-semibold md:w-2/3",
-					"Maestro Headless HOME Components Library"
+					"Maestro Headless Components Library"
 				}
 				p { class: "text-xl font-medium text-neutral-200",
 					"Create custom user interfaces. Whether you're developing a complex web application or a simple website, headless components allow you to focus on your unique design while we handle the functional logic."

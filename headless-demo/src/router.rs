@@ -5,7 +5,8 @@ use {
 			AccordionPage, AccordionStyledPage, AspectRatioPage, AspectRatioStyledPage, AvatarPage, AvatarStyledPage, ButtonPage, ButtonStyledPage, CheckboxPage,
 			CheckboxStyledPage, CollapsiblePage, CollapsibleStyledPage, DialogPage, DialogStyledPage, HeadlessHome, Home, HoverCardPage, HoverCardStyledPage,
 			PopoverPage, PopoverStyledPage, ProgressBarPage, ProgressBarStyledPage, RadioPage, RadioStyledPage, RangePage, RangeStyledPage, SelectPage,
-			SelectStyledPage, SeparatorPage, SeparatorStyledPage, SwitchPage, SwitchStyledPage, TabsPage, TabsStyledPage, TogglePage, TooltipPage,
+			SelectStyledPage, SeparatorPage, SeparatorStyledPage, StyledHome, SwitchPage, SwitchStyledPage, TabsPage, TabsStyledPage, TogglePage, ToggleStyledPage,
+			TooltipPage, TooltipStyledPage,
 		},
 	},
 	dioxus::prelude::*,
@@ -59,7 +60,9 @@ pub enum Route {
 	TooltipPage,
 	#[end_nest]
 	#[end_nest]
-	#[nest("/styled")]
+	#[nest("/ui")]
+	#[route("/")]
+	StyledHome {},
 	#[nest("/components")]
 	#[route("/button")]
 	ButtonStyledPage,
@@ -93,13 +96,18 @@ pub enum Route {
 	SwitchStyledPage {},
 	#[route("/tabs")]
 	TabsStyledPage {},
+	#[route("/toggle-&-group")]
+	ToggleStyledPage,
+	#[route("/tooltip")]
+	TooltipStyledPage,
 }
 
 impl Route {
 	pub fn name(&self) -> &'static str {
 		match self {
 			Route::Home {} => "Home",
-			Route::HeadlessHome {} => "Headless",
+			Route::HeadlessHome {} => "Headless Lib",
+			Route::StyledHome {} => "UI Lib",
 			Route::AccordionPage {} | Route::AccordionStyledPage {} => "Accordion",
 			Route::AspectRatioPage {} | Route::AspectRatioStyledPage {} => "Aspect Ratio",
 			Route::AvatarPage {} | Route::AvatarStyledPage {} => "Avatar",
@@ -116,13 +124,14 @@ impl Route {
 			Route::SeparatorPage {} | Route::SeparatorStyledPage {} => "Separator",
 			Route::SwitchPage {} | Route::SwitchStyledPage {} => "Switch",
 			Route::TabsPage {} | Route::TabsStyledPage {} => "Tabs",
-			Route::TogglePage {} => "Toggle & ToggleGroup",
-			Route::TooltipPage {} => "Tooltip",
+			Route::TogglePage {} | Route::ToggleStyledPage {} => "Toggle & ToggleGroup",
+			Route::TooltipPage {} | Route::TooltipStyledPage {} => "Tooltip",
 		}
 	}
 
 	pub fn get_headless_routes() -> Vec<Route> {
 		Vec::from([
+			Route::Home {},
 			Route::AccordionPage {},
 			Route::AspectRatioPage {},
 			Route::AvatarPage {},
@@ -146,6 +155,7 @@ impl Route {
 
 	pub fn get_styled_routes() -> Vec<Route> {
 		Vec::from([
+			Route::Home {},
 			Route::AccordionStyledPage {},
 			Route::AspectRatioStyledPage {},
 			Route::AvatarStyledPage {},
@@ -162,8 +172,12 @@ impl Route {
 			Route::SeparatorStyledPage {},
 			Route::SwitchStyledPage {},
 			Route::TabsStyledPage {},
-			// Route::TogglePage {},
-			// Route::TooltipPage {},
+			Route::ToggleStyledPage {},
+			Route::TooltipStyledPage {},
 		])
+	}
+
+	pub fn get_home_routes() -> Vec<Route> {
+		Vec::from([Route::HeadlessHome {}, Route::StyledHome {}])
 	}
 }

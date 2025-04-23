@@ -1,5 +1,6 @@
 pub const EXAMPLE: &str = "use dioxus::prelude::*;
-maestro_ui::button::{Button, ButtonRound, ESize, ButtonVariant};
+use maestro_ui::button::Button;
+use maestro_ui::shared::{ERound, ESize, EVariant};
 
 let mut is_pending = use_signal(|| false);
 
@@ -8,6 +9,7 @@ rsx! {
     pending: is_pending,
     variant: ButtonVariant::Primary,
     round: ButtonRound::Md,
+    size: ESize::Md,
     onclick: move |_| {
       is_pending.set(true);
       spawn(async move {

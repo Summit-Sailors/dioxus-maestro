@@ -10,11 +10,13 @@ use {
 	maestro_headless::select::{OptionSelectedIndicator, SelectDropdown, SelectIcon, SelectOption, SelectRoot, SelectTrigger, SelectValue},
 	maestro_ui::{
 		avatar::{Avatar, AvatarFallback, AvatarImage, AvatarSize},
-		shared::ESide,
+		button::Button,
+		shared::{ESide, EVariant},
 	},
 	strum::IntoEnumIterator,
 };
 mod consts;
+use crate::router::Route;
 
 #[component]
 pub fn AvatarStyledPage() -> Element {
@@ -77,86 +79,50 @@ pub fn AvatarStyledPage() -> Element {
 		DescriptionSection { title: "Usage and Anatomy",
 			ExampleCodeAnatomy { code: EXAMPLE_ANATOMY }
 		}
-		DescriptionSection { title: "Api Reference",
-			div { class: "flex flex-col space-y-6",
-				div { class: "flex flex-col gap-4",
-					h4 { class: "font-medium text-lg text-orange-300", "AvatarRoot" }
-					p { "Wrapps all parts of the avatar." }
-					div { class: "overflow-hidden rounded-sm border border-neutral-700",
-						PropsTable {
-							content: Vec::from([
-									PropsStruct {
-											prop: "attributes".into(),
-											prop_default: "[]".into(),
-											prop_type: "Vec<Attribute>".into(),
-											tooltip_text: Some("Extends 'global' and 'div' attribules".into()),
-									},
-									PropsStruct {
-											prop: "children".into(),
-											prop_default: "-".into(),
-											prop_type: "Element".into(),
-											tooltip_text: Some("Required".into()),
-									},
-							]),
-						}
-					}
-				}
-				div { class: "flex flex-col gap-4",
-					h4 { class: "font-medium text-lg text-orange-300", "AvatarImage" }
-					p {
-						"Represents avatar image. It will be rendered only if image has successfully loaded and has "
+		DescriptionSection { title: "Notes",
+			ul { class: "flex flex-col space-y-2 *:flex *:gap-2 *:items-baseline [&>li>span:first-child]:w-1.5 [&>li>span:first-child]:h-1.5 [&>li>span:first-child]:rounded-full [&>li>span:first-child]:bg-orange-600",
+				li { class: "",
+					span { class: "" }
+					span {
+						"Provided default styling. All need to do - add to "
 						span { class: "px-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
-							"src"
+							"input.css"
 						}
-						" prop."
+						" variables for colors."
 					}
-					div { class: "overflow-hidden rounded-sm border border-neutral-700",
-						PropsTable {
-							content: Vec::from([
-									PropsStruct {
-											prop: "src".into(),
-											prop_default: "".into(),
-											prop_type: "String".into(),
-											tooltip_text: None,
-									},
-									PropsStruct {
-											prop: "attributes".into(),
-											prop_default: "[]".into(),
-											prop_type: "Vec<Attribute>".into(),
-											tooltip_text: Some("Extends 'global' and 'img' attribules".into()),
-									},
-							]),
+				}
+				li { class: "",
+					span { class: "" }
+					span {
+						"Inherits all the props and behaviour of the"
+						Button {
+							variant: EVariant::Link,
+							class: "text-orange-500 hover:text-orange-600",
+							Link { to: Route::AvatarPage {}, tabindex: "-1", "headless avatar" }
 						}
 					}
 				}
-				div { class: "flex flex-col gap-4",
-					h4 { class: "font-medium text-lg text-orange-300", "AvatarFallback" }
-					p {
-						"Will be rendered when the image hasn't loaded (if an image is loading or has error) or there is no image at all."
-					}
-					div { class: "overflow-hidden rounded-sm border border-neutral-700",
-						PropsTable {
-							content: Vec::from([
-									PropsStruct {
-											prop: "delay_ms".into(),
-											prop_default: "None".into(),
-											prop_type: "Option<u32>".into(),
-											tooltip_text: None,
-									},
-									PropsStruct {
-											prop: "attributes".into(),
-											prop_default: "[]".into(),
-											prop_type: "Vec<Attribute>".into(),
-											tooltip_text: Some("Extends 'global' and 'span' attribules".into()),
-									},
-									PropsStruct {
-											prop: "children".into(),
-											prop_default: "None".into(),
-											prop_type: "Element".into(),
-											tooltip_text: None,
-									},
-							]),
+				li {
+					span { class: "" }
+					span {
+						"Each component takes additional prop "
+						span { class: "px-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
+							"class"
 						}
+						" props for custom styling. "
+					}
+				}
+				li {
+					span { class: "" }
+					span {
+						span { class: "px-1.5 py-0.5 font-mono text-orange-400 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
+							"Avatar"
+						}
+						" also takes "
+						span { class: "px-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",
+							"size"
+						}
+						" prop, which allows user set width and height of the avatar."
 					}
 				}
 			}

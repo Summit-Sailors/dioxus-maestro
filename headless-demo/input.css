@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./animations.css";
 @source "../frontend/maestro-ui"; /* path to maestro-ui lib so that all styles were cought */
 @source "../frontend/maestro-headless";
 

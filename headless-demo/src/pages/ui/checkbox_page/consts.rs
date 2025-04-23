@@ -87,18 +87,22 @@ pub const EXAMPLE_GROUP_ANATOMY: &str = "CheckboxGroup {
   }
 }";
 
-pub const EXAMPLE:&str = "use dioxus::prelude::*;
-use maestro_headless::checkbox::{CheckboxRoot, CheckboxIndicator};
+pub const EXAMPLE: &str = "use dioxus::prelude::*;
+use maestro_ui::{
+  checkbox::{Checkbox, CheckboxIndicatorVariant, CheckboxRound, CheckboxSize},
+  shared::ESide
+};
 
 rsx! {
   div { 
     class: 'flex justify-center items-center gap-3',
-    CheckboxRoot {
+    Checkbox {
       id: 'maestro-box',
-      class: 'w-6 h-6 rounded flex items-center justify-center border border-neutral-100 transition-colors hover:border-orange-600 focus-visible:ring-2 ring-orange-600 ring-offset-neutral-950 focus-visible:ring-offset-2 focus-visible:outline-none',
       value: 'some',
       name: 'box',
-      CheckboxIndicator { class: 'text-neutral-100' }
+      size: CheckboxSize::Md,
+      indicator_variant: CheckboxIndicatorVariant::Tick,
+      round: CheckboxRound::Md
     }
     label { 
       class: 'text-slate-100', r#for: 'maestro-box', 'Check Me' 

@@ -59,7 +59,7 @@ pub fn DialogOverlay(props: DialogOverlayProps) -> Element {
 	rsx! {
 		maestro_headless::dialog::DialogOverlay {
 			class: tw_merge!(
-					"data-[state=closed]:animate-fade-out data-[state=open]:animate-fade-in fixed inset-0 z-50 bg-[#000]/30 backdrop-blur-xs",
+					"data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-[#000]/30 backdrop-blur-xs",
 					props.class.clone()
 			),
 		}
@@ -82,7 +82,7 @@ pub fn DialogContent(props: DialogContentProps) -> Element {
 		maestro_headless::dialog::DialogContent {
 			extra_attributes: props.attributes.clone(),
 			class: tw_merge!(
-					"relative bg-background data-[state=closed]:animate-fade-out data-[state=open]:animate-fade-in fixed top-[50%] left-[50%] z-50 w-full max-w-[98%] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-md border p-6 shadow-lg duration-200 lg:max-w-lg",
+					"relative bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed top-[50%] left-[50%] z-50 w-full max-w-[98%] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-md border p-6 shadow-lg duration-200 lg:max-w-lg",
 					props.class.clone()
 			),
 			{props.children}

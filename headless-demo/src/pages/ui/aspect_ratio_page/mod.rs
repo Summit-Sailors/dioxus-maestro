@@ -74,7 +74,9 @@ pub fn AspectRatioStyledPage() -> Element {
 						Button {
 							variant: EVariant::Link,
 							class: "text-orange-500 hover:text-orange-600",
-							Link { to: Route::AccordionPage {}, tabindex: "-1", "headless accordion" }
+							Link { to: Route::AspectRatioPage {}, tabindex: "-1",
+								"headless aspect-ratio"
+							}
 						}
 						". Accepts prop "
 						span { class: "px-1.5 py-0.5 font-mono text-neutral-300 font-light text-xs rounded-xs bg-neutral-600 inline-flex items-center justify-center",

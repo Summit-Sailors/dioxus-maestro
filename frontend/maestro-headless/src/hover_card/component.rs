@@ -220,10 +220,19 @@ pub fn HoverCardContent(props: HoverCardContentProps) -> Element {
 
 	let mut attrs = attributes.clone();
 	attrs.extend(extra_attributes);
-	attrs.push(Attribute::new("--maestro-hover-card-anchor-height", "var(--maestro-popper-anchor-height)", Some("style"), false));
-	attrs.push(Attribute::new("--maestro-hover-card-anchor-width", "var(--maestro-popper-anchor-width)", Some("style"), false));
-	attrs.push(Attribute::new("--maestro-hover-card-content-height", "var(--maestro-popper-content-height)", Some("style"), false));
-	attrs.push(Attribute::new("--maestro-hover-card-content-width", "var(--maestro-popper-content-width)", Some("style"), false));
+
+	let mut styled_attrs: Vec<Attribute> = Vec::new();
+
+	styled_attrs.push(Attribute::new("--maestro-headless-hover-card-anchor-height", "var(--maestro-headless-popper-anchor-height)", Some("style"), false));
+	styled_attrs.push(Attribute::new("--maestro-headless-hover-card-anchor-width", "var(--maestro-headless-popper-anchor-width)", Some("style"), false));
+	styled_attrs.push(Attribute::new("--maestro-headless-hover-card-content-height", "var(--maestro-headless-popper-content-height)", Some("style"), false));
+	styled_attrs.push(Attribute::new("--maestro-headless-hover-card-content-width", "var(--maestro-headless-popper-content-width)", Some("style"), false));
+	styled_attrs.push(Attribute::new(
+		"--maestro-headless-hover-card-content-transform-origin",
+		"var(--maestro-headless-popper-content-transform-origin)",
+		Some("style"),
+		false,
+	));
 
 	rsx! {
 		Presence { present: *context.open.read(),
@@ -241,6 +250,7 @@ pub fn HoverCardContent(props: HoverCardContentProps) -> Element {
 				aria_modal: true,
 				"data-state": if *context.open.read() { "open" } else { "closed" },
 				extra_attributes: attrs,
+				styled_attributes: styled_attrs,
 				onmouseenter: move |event| {
 						context.on_open.call(());
 						if let Some(callback) = onmouseenter.as_ref() {

@@ -125,7 +125,7 @@ pub fn RadioGroupItem(props: RadioGroupItemProps) -> Element {
 			disabled: is_disabled(),
 			required: context.required,
 			checked: checked(),
-			tabindex: if is_disabled() || !checked() { -1 } else { 0 },
+			tabindex: if is_disabled() { -1 } else { 0 },
 			aria_orientation: &*context.orientation.clone().read().to_string(),
 			"data-focusable": !is_disabled(),
 			on_change: move |checked: bool| {

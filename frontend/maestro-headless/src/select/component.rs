@@ -298,10 +298,18 @@ pub fn SelectDropdown(props: SelectDropdownProps) -> Element {
 
 	let mut attrs = attributes.clone();
 	attrs.extend(extra_attributes.clone());
-	attrs.push(Attribute::new("--maestro-select-anchor-height", "var(--maestro-popper-anchor-height)", Some("style"), false));
-	attrs.push(Attribute::new("--maestro-select-anchor-width", "var(--maestro-popper-anchor-width)", Some("style"), false));
-	attrs.push(Attribute::new("--maestro-select-content-height", "var(--maestro-popper-content-height)", Some("style"), false));
-	attrs.push(Attribute::new("--maestro-select-content-width", "var(--maestro-popper-content-width)", Some("style"), false));
+
+	let mut styled_attrs: Vec<Attribute> = Vec::new();
+	styled_attrs.push(Attribute::new("--maestro-headless-select-anchor-height", "var(--maestro-headless-popper-anchor-height)", Some("style"), false));
+	styled_attrs.push(Attribute::new("--maestro-headless-select-anchor-width", "var(--maestro-headless-popper-anchor-width)", Some("style"), false));
+	styled_attrs.push(Attribute::new("--maestro-headless-select-content-height", "var(--maestro-headless-popper-content-height)", Some("style"), false));
+	styled_attrs.push(Attribute::new("--maestro-headless-select-content-width", "var(--maestro-headless-popper-content-width)", Some("style"), false));
+	styled_attrs.push(Attribute::new(
+		"--maestro-headless-select-content-transform-origin",
+		"var(--maestro-headless-popper-content-transform-origin)",
+		Some("style"),
+		false,
+	));
 
 	rsx! {
 		Presence { present: *context.open.read(),
@@ -318,6 +326,7 @@ pub fn SelectDropdown(props: SelectDropdownProps) -> Element {
 				aria_hidden: !*context.open.read(),
 				"data-state": if *context.open.read() { "open" } else { "closed" },
 				extra_attributes: attrs.clone(),
+				styled_attributes: styled_attrs.clone(),
 				{children}
 			}
 		}

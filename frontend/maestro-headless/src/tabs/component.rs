@@ -125,7 +125,7 @@ pub fn TabsTrigger(props: TabsTriggerProps) -> Element {
 			role: "tab",
 			pointer_events: if disabled() { "none" } else { "auto" },
 			cursor: if disabled() { "" } else { "pointer" },
-			tabindex: if disabled() || !is_active() { -1 } else { 0 },
+			tabindex: if disabled() { -1 } else { 0 },
 			disabled: disabled(),
 			aria_controls: "{value()}-content".to_string(),
 			aria_selected: is_active(),

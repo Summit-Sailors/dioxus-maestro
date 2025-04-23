@@ -149,7 +149,7 @@ pub fn SelectDropdown(props: SelectDropdownProps) -> Element {
 	rsx! {
 		maestro_headless::select::SelectDropdown {
 			class: tw_merge!(
-					"bg-popover text-popover-foreground data-[state=open]:animate-fade-in data-[state=closed]:animate-fade-out relative z-50 max-h-52 min-w-[8rem] px-2 py-4 origin-(--radix-select-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border border-input shadow-md",
+					"bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 relative z-50 max-h-52 min-w-[8rem] px-2 py-4 origin-(--radix-select-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border border-input shadow-md",
 					class
 			),
 			side,
