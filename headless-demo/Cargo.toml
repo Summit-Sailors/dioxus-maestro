@@ -9,6 +9,7 @@ version = "0.1.0"
 
 maestro-headless = { path = "../frontend/maestro-headless" }
 maestro-toast = { path = "../frontend/maestro-toast", features = ["web"] }
+maestro-ui = { path = "../frontend/maestro-ui" }
 
 async-std = "1.13.0"
 chrono = { workspace = true }

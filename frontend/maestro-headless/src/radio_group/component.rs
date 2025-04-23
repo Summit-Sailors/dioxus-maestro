@@ -53,12 +53,14 @@ pub struct RadioGroupRootProps {
 
 	#[props(extends = div, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
 #[component]
 pub fn RadioGroupRoot(props: RadioGroupRootProps) -> Element {
-	let RadioGroupRootProps { value, default_value, on_value_change, disabled, required, orientation, children, attributes } = props;
+	let RadioGroupRootProps { value, default_value, on_value_change, disabled, required, orientation, children, attributes, extra_attributes } = props;
 
 	let is_controlled = use_hook(move || value().is_some());
 	let (value, set_value) = use_controllable_state(UseControllableStateParams {
@@ -86,6 +88,7 @@ pub fn RadioGroupRoot(props: RadioGroupRootProps) -> Element {
 			onkeydown: handle_key_down,
 			onmounted: move |event| container_ref.set(Some(event.data())),
 			..attributes,
+			..extra_attributes,
 			{children}
 		}
 	}
@@ -99,17 +102,22 @@ pub struct RadioGroupItemProps {
 
 	#[props(extends = button, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
 #[component]
 pub fn RadioGroupItem(props: RadioGroupItemProps) -> Element {
-	let RadioGroupItemProps { value, disabled, attributes, children } = props;
+	let RadioGroupItemProps { value, disabled, attributes, extra_attributes, children } = props;
 
 	let context = use_context::<RadioGroupContext>();
 	let checked = use_memo(move || context.value.read().clone() == value());
 
 	let is_disabled = use_memo(move || *context.disabled.read() || disabled());
+
+	let mut attrs = attributes.clone();
+	attrs.extend(extra_attributes);
 
 	rsx! {
 		Radio {
@@ -117,7 +125,7 @@ pub fn RadioGroupItem(props: RadioGroupItemProps) -> Element {
 			disabled: is_disabled(),
 			required: context.required,
 			checked: checked(),
-			tabindex: if is_disabled() || !checked() { -1 } else { 0 },
+			tabindex: if is_disabled() { -1 } else { 0 },
 			aria_orientation: &*context.orientation.clone().read().to_string(),
 			"data-focusable": !is_disabled(),
 			on_change: move |checked: bool| {
@@ -127,7 +135,7 @@ pub fn RadioGroupItem(props: RadioGroupItemProps) -> Element {
 							context.on_deselect();
 					}
 			},
-			extra_attributes: attributes.clone(),
+			extra_attributes: attrs.clone(),
 			{children}
 		}
 	}
@@ -137,19 +145,24 @@ pub fn RadioGroupItem(props: RadioGroupItemProps) -> Element {
 pub struct RadioGroupIndicatorProps {
 	#[props(extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	#[props(default = None)]
 	pub children: Option<Element>,
 }
 
 #[component]
 pub fn RadioGroupIndicator(props: RadioGroupIndicatorProps) -> Element {
+	let mut attrs = props.attributes.clone();
+	attrs.extend(props.extra_attributes);
+
 	if let Some(children) = props.children {
 		rsx! {
-			RadioIndicator { extra_attributes: props.attributes.clone(), {children} }
+			RadioIndicator { extra_attributes: attrs.clone(), {children} }
 		}
 	} else {
 		rsx! {
-			RadioIndicator { extra_attributes: props.attributes.clone() }
+			RadioIndicator { extra_attributes: attrs.clone() }
 		}
 	}
 }

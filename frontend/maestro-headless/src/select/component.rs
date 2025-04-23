@@ -68,12 +68,27 @@ pub struct SelectRootProps {
 
 	#[props(extends = select, extends = GlobalAttributes)]
 	attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
 #[component]
 pub fn SelectRoot(props: SelectRootProps) -> Element {
-	let SelectRootProps { open, default_open, on_open_change, disabled, value, default_value, on_value_change, required, multi, attributes, children } = props;
+	let SelectRootProps {
+		open,
+		default_open,
+		on_open_change,
+		disabled,
+		value,
+		default_value,
+		on_value_change,
+		required,
+		multi,
+		attributes,
+		extra_attributes,
+		children,
+	} = props;
 	let is_controlled = use_hook(move || value().is_some());
 	let (value, set_value) =
 		use_controllable_state(UseControllableStateParams { is_controlled, prop: value, default_prop: default_value, on_change: on_value_change });
@@ -91,6 +106,9 @@ pub fn SelectRoot(props: SelectRootProps) -> Element {
 	let mut current_ref = use_signal(|| None::<Rc<MountedData>>);
 	use_outside_click(current_ref, handle_close, open);
 
+	let mut attrs = attributes.clone();
+	attrs.extend(extra_attributes);
+
 	rsx! {
 		Popper {
 			aria_haspopup: "listbox",
@@ -102,7 +120,7 @@ pub fn SelectRoot(props: SelectRootProps) -> Element {
 			"data-role": "select",
 			role: "combobox",
 			onmounted: move |event: Event<MountedData>| current_ref.set(Some(event.data())),
-			extra_attributes: attributes.clone(),
+			extra_attributes: attrs.clone(),
 			{children}
 		}
 	}
@@ -115,14 +133,19 @@ pub struct SelectTriggerProps {
 
 	#[props(extends = button, extends = GlobalAttributes)]
 	attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
 #[component]
 pub fn SelectTrigger(props: SelectTriggerProps) -> Element {
-	let SelectTriggerProps { onclick, attributes, children } = props;
+	let SelectTriggerProps { onclick, attributes, extra_attributes, children } = props;
 
 	let context = use_context::<SelectContext>();
+
+	let mut attrs = attributes.clone();
+	attrs.extend(extra_attributes);
 
 	rsx! {
 		PopperAnchor {
@@ -142,7 +165,7 @@ pub fn SelectTrigger(props: SelectTriggerProps) -> Element {
 						onclick.unwrap_or_default().call(event);
 						context.set_open.call(!open);
 				},
-				extra_attributes: attributes.clone(),
+				extra_attributes: attrs.clone(),
 				{children}
 			}
 		}
@@ -202,13 +225,15 @@ pub struct SelectValueProps {
 
 	#[props(extends = span, extends = GlobalAttributes)]
 	attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	#[props(default = None)]
 	children: Option<Element>,
 }
 
 #[component]
 pub fn SelectValue(props: SelectValueProps) -> Element {
-	let SelectValueProps { placeholder, attributes, children } = props;
+	let SelectValueProps { placeholder, attributes, extra_attributes, children } = props;
 
 	let context = use_context::<SelectContext>();
 	let value = context.value.read().clone();
@@ -225,6 +250,7 @@ pub fn SelectValue(props: SelectValueProps) -> Element {
 		span {
 			"data-state": if !value.is_empty() { "value" } else { "placeholder" },
 			..attributes.clone(),
+			..extra_attributes.clone(),
 			if value.is_empty() {
 				"{placeholder}"
 			} else {
@@ -251,12 +277,14 @@ pub struct SelectDropdownProps {
 
 	#[props(extends = div, extends = GlobalAttributes)]
 	attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	children: Element,
 }
 
 #[component]
 pub fn SelectDropdown(props: SelectDropdownProps) -> Element {
-	let SelectDropdownProps { side, side_offset, align, align_offset, avoid_collisions, collision_padding, attributes, children } = props;
+	let SelectDropdownProps { side, side_offset, align, align_offset, avoid_collisions, collision_padding, attributes, extra_attributes, children } = props;
 
 	let context = use_context::<SelectContext>();
 
@@ -269,10 +297,19 @@ pub fn SelectDropdown(props: SelectDropdownProps) -> Element {
 	use_escape(handle_close, context.open);
 
 	let mut attrs = attributes.clone();
-	attrs.push(Attribute::new("--maestro-select-anchor-height", "var(--maestro-popper-anchor-height)", Some("style"), false));
-	attrs.push(Attribute::new("--maestro-select-anchor-width", "var(--maestro-popper-anchor-width)", Some("style"), false));
-	attrs.push(Attribute::new("--maestro-select-content-height", "var(--maestro-popper-content-height)", Some("style"), false));
-	attrs.push(Attribute::new("--maestro-select-content-width", "var(--maestro-popper-content-width)", Some("style"), false));
+	attrs.extend(extra_attributes.clone());
+
+	let mut styled_attrs: Vec<Attribute> = Vec::new();
+	styled_attrs.push(Attribute::new("--maestro-headless-select-anchor-height", "var(--maestro-headless-popper-anchor-height)", Some("style"), false));
+	styled_attrs.push(Attribute::new("--maestro-headless-select-anchor-width", "var(--maestro-headless-popper-anchor-width)", Some("style"), false));
+	styled_attrs.push(Attribute::new("--maestro-headless-select-content-height", "var(--maestro-headless-popper-content-height)", Some("style"), false));
+	styled_attrs.push(Attribute::new("--maestro-headless-select-content-width", "var(--maestro-headless-popper-content-width)", Some("style"), false));
+	styled_attrs.push(Attribute::new(
+		"--maestro-headless-select-content-transform-origin",
+		"var(--maestro-headless-popper-content-transform-origin)",
+		Some("style"),
+		false,
+	));
 
 	rsx! {
 		Presence { present: *context.open.read(),
@@ -289,6 +326,7 @@ pub fn SelectDropdown(props: SelectDropdownProps) -> Element {
 				aria_hidden: !*context.open.read(),
 				"data-state": if *context.open.read() { "open" } else { "closed" },
 				extra_attributes: attrs.clone(),
+				styled_attributes: styled_attrs.clone(),
 				{children}
 			}
 		}
@@ -303,13 +341,15 @@ pub struct SelectOptionProps {
 
 	#[props(extends = GlobalAttributes, extends = div)]
 	attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	#[props(default = None)]
 	children: Element,
 }
 
 #[component]
 pub fn SelectOption(props: SelectOptionProps) -> Element {
-	let SelectOptionProps { value, disabled, attributes, children } = props;
+	let SelectOptionProps { value, disabled, attributes, extra_attributes, children } = props;
 
 	let context = use_context::<SelectContext>();
 	let current_value = value.clone();
@@ -359,6 +399,7 @@ pub fn SelectOption(props: SelectOptionProps) -> Element {
 					}
 			},
 			..attributes,
+			..extra_attributes,
 			{children}
 		}
 	}

@@ -1,10 +1,8 @@
 use {
 	crate::router::Route,
 	dioxus::prelude::*,
-	dioxus_free_icons::{
-		Icon,
-		icons::io_icons::IoLogoGithub,
-	},
+	dioxus_free_icons::{Icon, icons::io_icons::IoLogoGithub},
+	dioxus_logger::tracing::info,
 	maestro_headless::button::Button,
 	maestro_toast::{init::use_init_toast_ctx, toast_frame_component::ToastFrame},
 	strum::IntoEnumIterator,
@@ -17,6 +15,16 @@ pub fn Layout(children: Element) -> Element {
 	let mut menu_open = use_signal(|| false);
 	let current_route = use_route::<Route>();
 	let is_home = Route::Home {} == current_route;
+	let is_headless = current_route.to_string().starts_with("/headless");
+	let is_styled = current_route.to_string().starts_with("/ui");
+
+	let current_routes = if is_home {
+		Route::get_home_routes()
+	} else if is_headless {
+		Route::get_headless_routes()
+	} else {
+		Route::get_styled_routes()
+	};
 
 	rsx! {
 		ToastFrame { manager: toast }
@@ -46,9 +54,10 @@ pub fn Layout(children: Element) -> Element {
 				),
 				nav { class: "flex-1 flex flex-col h-full *:not-last:border-b *:border-b-neutral-700 overflow-y-auto *:focus-visible:bg-neutral-800 *:focus-visible:text-neutral-100 *:hover:bg-neutral-800 *:hover:text-neutral-100 *:transition-colors *:ease-linear *:px-6 *:py-3 *:ring-0 *:ring-offset-0 *:focus-visible:outline-none",
 					{
-							Route::iter()
+							current_routes
+									.iter()
 									.map(|route| {
-											let is_current = route == current_route;
+											let is_current = route == &current_route;
 											rsx! {
 												Link { to: route.clone(), class: if is_current { "text-orange-600" } else { "" }, "{route.name()}" }
 											}

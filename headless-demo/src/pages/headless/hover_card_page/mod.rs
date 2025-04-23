@@ -423,22 +423,22 @@ pub fn HoverCardPage() -> Element {
 										description: "".into(),
 								},
 								AttrsStruct {
-										attr: "--maestro-hover-card-anchor-width".into(),
+										attr: "--maestro-headless-hover-card-anchor-width".into(),
 										value: "<>px".into(),
 										description: "CSS variable".into(),
 								},
 								AttrsStruct {
-										attr: "--maestro-hover-card-anchor-height".into(),
+										attr: "--maestro-headless-hover-card-anchor-height".into(),
 										value: "<>px".into(),
 										description: "CSS variable".into(),
 								},
 								AttrsStruct {
-										attr: "--maestro-hover-card-content-width".into(),
+										attr: "--maestro-headless-hover-card-content-width".into(),
 										value: "<>px".into(),
 										description: "CSS variable".into(),
 								},
 								AttrsStruct {
-										attr: "--maestro-hover-card-content-height".into(),
+										attr: "--maestro-headless-hover-card-content-height".into(),
 										value: "<>px".into(),
 										description: "CSS variable".into(),
 								},

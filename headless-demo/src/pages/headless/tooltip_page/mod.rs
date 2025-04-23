@@ -313,22 +313,22 @@ pub fn TooltipPage() -> Element {
 										description: "".into(),
 								},
 								AttrsStruct {
-										attr: "--maestro-tooltip-anchor-width".into(),
+										attr: "--maestro-headless-tooltip-anchor-width".into(),
 										value: "<>px".into(),
 										description: "CSS variable".into(),
 								},
 								AttrsStruct {
-										attr: "--maestro-tooltip-anchor-height".into(),
+										attr: "--maestro-headless-tooltip-anchor-height".into(),
 										value: "<>px".into(),
 										description: "CSS variable".into(),
 								},
 								AttrsStruct {
-										attr: "--maestro-tooltip-content-width".into(),
+										attr: "--maestro-headless-tooltip-content-width".into(),
 										value: "<>px".into(),
 										description: "CSS variable".into(),
 								},
 								AttrsStruct {
-										attr: "--maestro-tooltip-content-height".into(),
+										attr: "--maestro-headless-tooltip-content-height".into(),
 										value: "<>px".into(),
 										description: "CSS variable".into(),
 								},

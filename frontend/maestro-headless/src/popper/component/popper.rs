@@ -205,6 +205,8 @@ pub struct PopperContentProps {
 	pub attributes: Vec<Attribute>,
 	#[props(default = Vec::new())]
 	pub extra_attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	styled_attributes: Vec<Attribute>,
 	#[props(optional)]
 	children: Element,
 }
@@ -229,6 +231,7 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 		onmouseleave,
 		attributes,
 		extra_attributes,
+		styled_attributes,
 		children,
 	} = props;
 
@@ -425,24 +428,32 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 	let mut attrs = attributes.clone();
 	attrs.extend(extra_attributes.clone());
 
+	let mut style_attrs: Vec<Attribute> = styled_attributes.clone();
+
 	if !is_positioned() {
-		attrs.push(Attribute::new("animation", "none", Some("style"), false));
+		style_attrs.push(Attribute::new("animation", "none", Some("style"), false));
 	}
 	if let Some(height) = anchor_height() {
-		attrs.push(Attribute::new("--maestro-popper-anchor-height", format!("{}px", height), Some("style"), false));
+		style_attrs.push(Attribute::new("--maestro-headless-popper-anchor-height", format!("{}px", height), Some("style"), false));
 	}
 	if let Some(width) = anchor_width() {
-		attrs.push(Attribute::new("--maestro-popper-anchor-width", format!("{}px", width), Some("style"), false));
+		style_attrs.push(Attribute::new("--maestro-headless-popper-anchor-width", format!("{}px", width), Some("style"), false));
 	}
 	if let Some(height) = floating_height() {
-		attrs.push(Attribute::new("--maestro-popper-content-height", format!("{}px", height), Some("style"), false));
+		style_attrs.push(Attribute::new("--maestro-headless-popper-content-height", format!("{}px", height), Some("style"), false));
 	}
 	if let Some(width) = floating_width() {
-		attrs.push(Attribute::new("--maestro-popper-content-width", format!("{}px", width), Some("style"), false));
+		style_attrs.push(Attribute::new("--maestro-headless-popper-content-width", format!("{}px", width), Some("style"), false));
 	}
+	style_attrs.push(Attribute::new(
+		"--maestro-headless-popper-content-transform-origin",
+		format!("{} {}", transform_origin().x, transform_origin().y),
+		Some("style"),
+		false,
+	));
 
 	rsx! {
-		FocusTrap {
+		div {
 			position: floating_styles().style_position(),
 			top: floating_styles().style_top(),
 			left: floating_styles().style_left(),
@@ -458,50 +469,53 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 			min_width: "max-content",
 			max_height: "max-content",
 			will_change: "transform",
-			"data-side": format!("{:?}", placed_side).to_lowercase(),
-			"data-align": format!("{:?}", placed_align).to_lowercase(),
-			onmousedown: move |event| {
-					if let Some(handler) = onmousedown {
-							handler.call(event);
-					}
-			},
-			onkeydown: move |event| {
-					if let Some(handler) = onkeydown {
-							handler.call(event);
-					}
-			},
-			onkeyup: move |event| {
-					if let Some(handler) = onkeyup {
-							handler.call(event);
-					}
-			},
-			onmouseup: move |event| {
-					if let Some(handler) = onmouseup {
-							handler.call(event);
-					}
-			},
-			onmouseenter: move |event| {
-					if let Some(handler) = onmouseenter {
-							handler.call(event);
-					}
-			},
-			onmouseleave: move |event| {
-					if let Some(handler) = onmouseleave {
-							handler.call(event);
-					}
-			},
-			onfocus: move |event| {
-					if let Some(handler) = onfocus {
-							handler.call(event);
-					}
-			},
-			onblur: move |event| {
-					if let Some(handler) = onblur {
-							handler.call(event);
-					}
-			},
-			extra_attributes: attrs.clone(),
-			{children.clone()}
+			..style_attrs.clone(),
+			FocusTrap {
+				"data-side": format!("{:?}", placed_side).to_lowercase(),
+				"data-align": format!("{:?}", placed_align).to_lowercase(),
+				onmousedown: move |event| {
+						if let Some(handler) = onmousedown {
+								handler.call(event);
+						}
+				},
+				onkeydown: move |event| {
+						if let Some(handler) = onkeydown {
+								handler.call(event);
+						}
+				},
+				onkeyup: move |event| {
+						if let Some(handler) = onkeyup {
+								handler.call(event);
+						}
+				},
+				onmouseup: move |event| {
+						if let Some(handler) = onmouseup {
+								handler.call(event);
+						}
+				},
+				onmouseenter: move |event| {
+						if let Some(handler) = onmouseenter {
+								handler.call(event);
+						}
+				},
+				onmouseleave: move |event| {
+						if let Some(handler) = onmouseleave {
+								handler.call(event);
+						}
+				},
+				onfocus: move |event| {
+						if let Some(handler) = onfocus {
+								handler.call(event);
+						}
+				},
+				onblur: move |event| {
+						if let Some(handler) = onblur {
+								handler.call(event);
+						}
+				},
+				extra_attributes: attrs.clone(),
+				{children.clone()}
+			}
 		}
 	}
 }

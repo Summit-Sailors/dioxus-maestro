@@ -35,12 +35,14 @@ pub struct PopoverRootProps {
 
 	#[props(extends = div, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
 #[component]
 pub fn PopoverRoot(props: PopoverRootProps) -> Element {
-	let PopoverRootProps { open, default_open, on_open_change, children, attributes } = props;
+	let PopoverRootProps { open, default_open, on_open_change, children, attributes, extra_attributes } = props;
 
 	let is_controlled = use_hook(move || open().is_some());
 	let (open, set_open) =
@@ -56,6 +58,7 @@ pub fn PopoverRoot(props: PopoverRootProps) -> Element {
 	use_outside_click(current_ref, handle_close, open);
 
 	let mut attrs = attributes.clone();
+	attrs.extend(extra_attributes);
 	attrs.push(Attribute::new("position", "relative", Some("style"), false));
 
 	rsx! {
@@ -72,15 +75,20 @@ pub fn PopoverRoot(props: PopoverRootProps) -> Element {
 pub struct PopoverTriggerProps {
 	#[props(extends = GlobalAttributes, extends = button)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	#[props(optional)]
 	pub children: Element,
 }
 
 #[component]
 pub fn PopoverTrigger(props: PopoverTriggerProps) -> Element {
-	let PopoverTriggerProps { attributes, children } = props;
+	let PopoverTriggerProps { attributes, extra_attributes, children } = props;
 
 	let context = use_context::<PopoverContext>();
+
+	let mut attrs = attributes.clone();
+	attrs.extend(extra_attributes);
 
 	rsx! {
 		PopperAnchor {
@@ -96,7 +104,7 @@ pub fn PopoverTrigger(props: PopoverTriggerProps) -> Element {
 				aria_expanded: *context.open.read(),
 				aria_controls: context.content_id.to_string(),
 				"data-state": if *context.open.read() { "open" } else { "closed" },
-				extra_attributes: attributes.clone(),
+				extra_attributes: attrs.clone(),
 				{children}
 			}
 		}
@@ -119,12 +127,14 @@ pub struct PopoverContentProps {
 	collision_padding: f32,
 	#[props(extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
 #[component]
 pub fn PopoverContent(props: PopoverContentProps) -> Element {
-	let PopoverContentProps { side, side_offset, align, align_offset, avoid_collisions, collision_padding, attributes, children } = props;
+	let PopoverContentProps { side, side_offset, align, align_offset, avoid_collisions, collision_padding, attributes, extra_attributes, children } = props;
 
 	let context = use_context::<PopoverContext>();
 	let handle_close = use_callback(move |()| {
@@ -136,10 +146,20 @@ pub fn PopoverContent(props: PopoverContentProps) -> Element {
 	use_escape(handle_close, context.open);
 
 	let mut attrs = attributes.clone();
-	attrs.push(Attribute::new("--maestro-popover-anchor-height", "var(--maestro-popper-anchor-height)", Some("style"), false));
-	attrs.push(Attribute::new("--maestro-popover-anchor-width", "var(--maestro-popper-anchor-width)", Some("style"), false));
-	attrs.push(Attribute::new("--maestro-popover-content-height", "var(--maestro-popper-content-height)", Some("style"), false));
-	attrs.push(Attribute::new("--maestro-popover-content-width", "var(--maestro-popper-content-width)", Some("style"), false));
+	attrs.extend(extra_attributes);
+
+	let mut styled_attrs: Vec<Attribute> = Vec::new();
+
+	styled_attrs.push(Attribute::new("--maestro-headless-popover-anchor-height", "var(--maestro-headless-popper-anchor-height)", Some("style"), false));
+	styled_attrs.push(Attribute::new("--maestro-headless-popover-anchor-width", "var(--maestro-headless-popper-anchor-width)", Some("style"), false));
+	styled_attrs.push(Attribute::new("--maestro-headless-popover-content-height", "var(--maestro-headless-popper-content-height)", Some("style"), false));
+	styled_attrs.push(Attribute::new("--maestro-headless-popover-content-width", "var(--maestro-headless-popper-content-width)", Some("style"), false));
+	styled_attrs.push(Attribute::new(
+		"--maestro-headless-popover-content-transform-origin",
+		"var(--maestro-headless-popper-content-transform-origin)",
+		Some("style"),
+		false,
+	));
 
 	rsx! {
 		Presence { present: *context.open.read(),
@@ -156,6 +176,7 @@ pub fn PopoverContent(props: PopoverContentProps) -> Element {
 				aria_hidden: !*context.open.read(),
 				"data-state": if *context.open.read() { "open" } else { "closed" },
 				extra_attributes: attrs.clone(),
+				styled_attributes: styled_attrs.clone(),
 				{children}
 			}
 		}
@@ -167,18 +188,23 @@ pub struct PopoverCloseProps {
 	pub children: Element,
 	#[props(extends = GlobalAttributes, extends = button)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 }
 
 #[component]
 pub fn PopoverClose(props: PopoverCloseProps) -> Element {
 	let context = use_context::<PopoverContext>();
 
+	let mut attrs = props.attributes.clone();
+	attrs.extend(props.extra_attributes);
+
 	rsx! {
 		Button {
 			r#type: "button",
 			aria_label: "Close popup",
 			onclick: move |_| context.set_open.call(false),
-			extra_attributes: props.attributes.clone(),
+			extra_attributes: attrs.clone(),
 			{props.children}
 		}
 	}

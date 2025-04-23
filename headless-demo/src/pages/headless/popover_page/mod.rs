@@ -444,22 +444,22 @@ pub fn PopoverPage() -> Element {
 										description: "".into(),
 								},
 								AttrsStruct {
-										attr: "--maestro-popover-anchor-width".into(),
+										attr: "--maestro-headless-popover-anchor-width".into(),
 										value: "<>px".into(),
 										description: "CSS variable".into(),
 								},
 								AttrsStruct {
-										attr: "--maestro-popover-anchor-height".into(),
+										attr: "--maestro-headless-popover-anchor-height".into(),
 										value: "<>px".into(),
 										description: "CSS variable".into(),
 								},
 								AttrsStruct {
-										attr: "--maestro-popover-content-width".into(),
+										attr: "--maestro-headless-popover-content-width".into(),
 										value: "<>px".into(),
 										description: "CSS variable".into(),
 								},
 								AttrsStruct {
-										attr: "--maestro-popover-content-height".into(),
+										attr: "--maestro-headless-popover-content-height".into(),
 										value: "<>px".into(),
 										description: "CSS variable".into(),
 								},

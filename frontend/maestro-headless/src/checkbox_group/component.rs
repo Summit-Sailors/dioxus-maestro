@@ -59,12 +59,14 @@ pub struct CheckboxGroupProps {
 
 	#[props(extends = div, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
 #[component]
 pub fn CheckboxGroup(props: CheckboxGroupProps) -> Element {
-	let CheckboxGroupProps { value, default_value, on_value_change, disabled, required, orientation, children, attributes } = props;
+	let CheckboxGroupProps { value, default_value, on_value_change, disabled, required, orientation, children, attributes, extra_attributes } = props;
 
 	let is_controlled = use_hook(move || value().is_some());
 	let (value, set_value) = use_controllable_state(UseControllableStateParams {
@@ -92,6 +94,7 @@ pub fn CheckboxGroup(props: CheckboxGroupProps) -> Element {
 			onkeydown: handle_key_down,
 			onmounted: move |event| container_ref.set(Some(event.data())),
 			..attributes,
+			..extra_attributes,
 			{children}
 		}
 	}
@@ -104,19 +107,24 @@ pub struct CheckboxGroupItemProps {
 	pub disabled: ReadOnlySignal<bool>,
 	#[props(extends = button, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	#[props(default = None)]
 	pub children: Option<Element>,
 }
 
 #[component]
 pub fn CheckboxGroupItem(props: CheckboxGroupItemProps) -> Element {
-	let CheckboxGroupItemProps { value, disabled, attributes, children } = props;
+	let CheckboxGroupItemProps { value, disabled, attributes, extra_attributes, children } = props;
 
 	let context = use_context::<CheckboxGroupContext>();
 	let checked = use_memo(move || context.value.read().clone().contains(&value()));
 
 	let is_disabled = use_memo(move || *context.disabled.read() || disabled());
 	use_context_provider::<Memo<bool>>(|| is_disabled);
+
+	let mut attrs = attributes.clone();
+	attrs.extend(extra_attributes);
 
 	rsx! {
 		CheckboxRoot {
@@ -131,7 +139,7 @@ pub fn CheckboxGroupItem(props: CheckboxGroupItemProps) -> Element {
 							context.on_deselect(value());
 					}
 			},
-			extra_attributes: attributes.clone(),
+			extra_attributes: attrs.clone(),
 			{children}
 		}
 	}
@@ -143,17 +151,22 @@ pub struct CheckboxGroupIndicatorProps {
 	pub attributes: Vec<Attribute>,
 	#[props(default = None)]
 	pub children: Option<Element>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 }
 
 #[component]
 pub fn CheckboxGroupIndicator(props: CheckboxGroupIndicatorProps) -> Element {
+	let mut attrs = props.attributes.clone();
+	attrs.extend(props.extra_attributes.clone());
+
 	if let Some(children) = props.children {
 		rsx! {
-			CheckboxIndicator { extra_attributes: props.attributes.clone(), {children} }
+			CheckboxIndicator { extra_attributes: attrs.clone(), {children} }
 		}
 	} else {
 		rsx! {
-			CheckboxIndicator { extra_attributes: props.attributes.clone() }
+			CheckboxIndicator { extra_attributes: attrs.clone() }
 		}
 	}
 }

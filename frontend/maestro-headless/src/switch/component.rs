@@ -24,12 +24,14 @@ pub struct SwitchRootProps {
 
 	#[props(extends = GlobalAttributes, extends = button)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	pub children: Option<Element>,
 }
 
 #[component]
 pub fn SwitchRoot(props: SwitchRootProps) -> Element {
-	let SwitchRootProps { value, disabled, required, attributes, on_toggle_change, checked, default_checked, children } = props;
+	let SwitchRootProps { value, disabled, required, attributes, on_toggle_change, checked, default_checked, children, extra_attributes } = props;
 	let is_controlled = use_hook(move || checked().is_some());
 	let (checked, set_checked) =
 		use_controllable_state(UseControllableStateParams { is_controlled, prop: checked, default_prop: default_checked, on_change: on_toggle_change });
@@ -44,12 +46,15 @@ pub fn SwitchRoot(props: SwitchRootProps) -> Element {
 		}
 	});
 
+	let mut attrs = attributes.clone();
+	attrs.extend(extra_attributes);
+
 	rsx! {
 		div { position: "relative",
 			input {
 				position: "absolute",
-				width: 0,
-				height: 0,
+				width: "0px",
+				height: "0px",
 				opacity: 0,
 				margin: 0,
 				tabindex: -1,
@@ -59,6 +64,7 @@ pub fn SwitchRoot(props: SwitchRootProps) -> Element {
 				disabled: disabled(),
 				required,
 				aria_hidden: true,
+				class: "w-0 h-0",
 			}
 			Button {
 				r#type: "button",
@@ -71,7 +77,7 @@ pub fn SwitchRoot(props: SwitchRootProps) -> Element {
 				onclick: move |_| {
 						set_checked(!checked());
 				},
-				extra_attributes: attributes,
+				extra_attributes: attrs,
 				{children}
 			}
 		}
@@ -82,6 +88,8 @@ pub fn SwitchRoot(props: SwitchRootProps) -> Element {
 pub struct SwitchIndicatorProps {
 	#[props(extends = GlobalAttributes, extends = span)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	#[props(optional)]
 	pub children: Element,
 }
@@ -93,6 +101,7 @@ pub fn SwitchIndicator(props: SwitchIndicatorProps) -> Element {
 		span {
 			"data-state": if checked() { "checked" } else { "unchecked" },
 			..props.attributes,
+			..props.extra_attributes,
 			{props.children}
 		}
 	}

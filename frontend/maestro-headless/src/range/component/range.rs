@@ -53,13 +53,28 @@ pub struct RangeRootProps {
 
 	#[props(extends = GlobalAttributes, extends = div)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
 #[component]
 pub fn RangeRoot(props: RangeRootProps) -> Element {
-	let RangeRootProps { value, default_value, on_value_change, disabled, required, orientation, min, max, step, min_steps_between_thumbs, attributes, children } =
-		props;
+	let RangeRootProps {
+		value,
+		default_value,
+		on_value_change,
+		disabled,
+		required,
+		orientation,
+		min,
+		max,
+		step,
+		min_steps_between_thumbs,
+		attributes,
+		extra_attributes,
+		children,
+	} = props;
 
 	let is_controlled = use_hook(move || value().is_some());
 	let default = if default_value.is_empty() { Vec::from([min]) } else { default_value.clone() };
@@ -271,6 +286,7 @@ pub fn RangeRoot(props: RangeRootProps) -> Element {
 					}
 			},
 			..attributes,
+			..extra_attributes,
 			{children}
 		}
 	}
@@ -280,6 +296,8 @@ pub fn RangeRoot(props: RangeRootProps) -> Element {
 pub struct RangeTrackProps {
 	#[props(extends = GlobalAttributes, extends = div)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
@@ -295,6 +313,7 @@ pub fn RangeTrack(props: RangeTrackProps) -> Element {
 			aria_orientation: context.orientation.read().to_string(),
 			aria_disabled: *context.disabled.read(),
 			..props.attributes,
+			..props.extra_attributes,
 			{props.children.clone()}
 		}
 	}
@@ -304,6 +323,8 @@ pub fn RangeTrack(props: RangeTrackProps) -> Element {
 pub struct RangeProps {
 	#[props(extends = div, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
@@ -324,6 +345,7 @@ pub fn Range(props: RangeProps) -> Element {
 	};
 
 	let mut attributes = props.attributes.clone();
+	attributes.extend(props.extra_attributes.clone());
 	attributes.push(Attribute::new(start, format!("{}%", offset_start), Some("style"), false));
 	attributes.push(Attribute::new(end, format!("{}%", offset_end), Some("style"), false));
 	attributes.push(Attribute::new(dim, "100%", Some("style"), false));
@@ -345,6 +367,8 @@ pub fn Range(props: RangeProps) -> Element {
 pub struct RangeThumbProps {
 	#[props(extends = div, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 	pub children: Element,
 }
 
@@ -394,6 +418,7 @@ pub fn RangeThumb(props: RangeThumbProps) -> Element {
 	};
 
 	let mut attributes = props.attributes.clone();
+	attributes.extend(props.extra_attributes.clone());
 	attributes.push(Attribute::new(start, format!("calc({}% + {}px)", percent, thumb_in_bounds_offset), Some("style"), false));
 
 	rsx! {
@@ -409,7 +434,7 @@ pub fn RangeThumb(props: RangeThumbProps) -> Element {
 			aria_disabled: *context.disabled.read(),
 			tabindex: if *context.disabled.read() { "-1" } else { "0" },
 			display: if context.values.read().clone().get(index() as usize).is_none() { "none" } else { "flex" },
-			transform: if *context.orientation.read() == EOrientation::Horizontal { "translateY(0%) translateX(-50%)" } else { "translateX(-50%) translateY(-50%)" },
+			transform: if *context.orientation.read() == EOrientation::Horizontal { "translateY(0%) translateX(-50%)" } else { "translateX(0%) translateY(-50%)" },
 			position: "absolute",
 			onmounted: move |event| {
 					let new_index = context.thumbs.peek().len();

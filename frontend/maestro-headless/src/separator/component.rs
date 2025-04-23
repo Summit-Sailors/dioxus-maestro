@@ -6,11 +6,13 @@ pub struct SeparatorProps {
 	orientation: ReadOnlySignal<EOrientation>,
 	#[props(extends = div, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
+	#[props(default = Vec::new())]
+	pub extra_attributes: Vec<Attribute>,
 }
 
 #[component]
 pub fn Separator(props: SeparatorProps) -> Element {
-	let SeparatorProps { orientation, attributes } = props;
+	let SeparatorProps { orientation, attributes, extra_attributes } = props;
 
 	rsx! {
 		div {
@@ -18,6 +20,7 @@ pub fn Separator(props: SeparatorProps) -> Element {
 			"data-orientation": orientation().to_string(),
 			role: "separator",
 			..attributes,
+			..extra_attributes,
 		}
 	}
 }
