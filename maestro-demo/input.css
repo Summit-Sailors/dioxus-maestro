@@ -82,6 +82,7 @@
   --maestro-toggle-off-bg: var(--muted);
   --maestro-toggle-handle-bg: var(--foreground);
   --hover-text-color: var(--text-color);
+  --shadow-color: rgb(0 0 0);
 
   /* Interactive states - Using color-mix() */
   --hover-bg: color-mix(in oklch, var(--foreground) 6%, var(--background) 94%);
@@ -117,6 +118,7 @@
   --maestro-toggle-off-bg: oklch(0.3 0 0); /* Slightly lighter than bg-color */
   --maestro-toggle-handle-bg: oklch(0.9 0 0); /* Light enough for contrast */
   --hover-text-color: var(--text-color);
+  --shadow-color: rgb(255 255 255);
 
   /* Interactive states for dark theme */
   --hover-bg: color-mix(

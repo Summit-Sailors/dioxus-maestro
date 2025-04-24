@@ -157,3 +157,6 @@ pub fn FontSelector(props: FontSelectorProps) -> Element {
 		}
 	}
 }
+
+
+// /fix Also define the standard property 'line-clamp' for compatibility

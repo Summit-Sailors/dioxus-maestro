@@ -163,7 +163,7 @@ pub fn BorderRadiusEditor(props: BorderRadiusEditorProps) -> Element {
 																			rsx! {
 																				button {
 																					r#type: "button",
-																					class: "text-xs px-2 py-1 bg-muted hover:bg-hover-bg rounded border border-border text-muted-foreground hover:text-foreground",
+																					class: "text-xs px-2 py-1 bg-muted hover:bg-hover-bg rounded border border-border text-[color:var(--text-color)] text-muted-foreground hover:text-foreground",
 																					onclick: preset_handler,
 																					"{preset_name}"
 																				}

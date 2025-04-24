@@ -57,7 +57,7 @@ pub fn ToggleSwitch(props: ToggleSwitchProps) -> Element {
 							rsx! {
 								if EToggleSwitchLabelPlacement::Left == label_placement {
 									span {
-										class: tw_merge!("text-lg text-[color:var(--text-color)]", & props.label_class),
+										class: tw_merge!("text-lg maestro-toggle__label", & props.label_class),
 										aria_label: label,
 										{label}
 									}
@@ -72,7 +72,7 @@ pub fn ToggleSwitch(props: ToggleSwitchProps) -> Element {
 								}
 								if EToggleSwitchLabelPlacement::Right == label_placement {
 									span {
-										class: tw_merge!("text-lg text-[color:var(--text-color)]", & props.label_class),
+										class: tw_merge!("text-lg maestro-toggle__label", & props.label_class),
 										aria_label: label,
 										{label}
 									}
@@ -106,19 +106,19 @@ pub fn RawToggleSwitch(
 	rsx! {
 		button {
 			class: tw_merge!(
-					"relative inline-flex h-6 w-11 items-center rounded-full transition-colors maestro-toggle__switch",
-					class, if state() { format!("maestro-toggle__on {}", toggled_class) } else {
-					format!("maestro-toggle__off {}", default_class) }
+					"maestro-toggle__switch relative inline-flex h-6 w-11 items-center rounded-full transition-colors",
+					class, if state() { format!("maestro-toggleon {}", toggled_class) } else {
+					format!("maestro-toggleoff {}", default_class) }
 			),
 			r#type: "button",
 			role: "switch",
-			aria_checked: state,
+			aria_checked: state(),
 			onclick: move |_| {
 					state.toggle();
 			},
 			div {
 				class: tw_merge!(
-						"absolute h-5 w-5 transform rounded-full transition-transform maestro-toggle__handle",
+						"maestro-toggle__handle absolute h-5 w-5 transform rounded-full transition-transform",
 						if state() { format!("translate-x-5 {}", toggled_translate_class) } else {
 						format!("translate-x-1 {}", default_translate_class) }
 				),

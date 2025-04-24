@@ -4,6 +4,7 @@
     transition-property: background-color, border-color;
     transition-duration: 150ms;
     transition-timing-function: linear;
+    border: 1px solid var(--border-color);
   }
 
   .maestro-toggle__switch[aria-checked="true"] {
@@ -16,22 +17,22 @@
 
   .maestro-toggle__handle {
     background-color: var(--maestro-toggle-handle-bg);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
   }
 
   .maestro-toggle__label {
-    color: var(--maestro-toggle-label-color);
+    color: var(--text-color);
   }
 
-  /* Override classes for primary color */
-  .maestro-toggle__switch.maestro-primary[aria-checked="true"] {
-    background-color: var(--maestro-color-primary);
+  /* Hover states */
+  .maestro-toggle__switch:hover {
+    opacity: 0.9;
   }
 
-  .maestro-toggle__switch.maestro-primary[aria-checked="true"]:hover {
-    background-color: var(--maestro-color-primary-hover);
-  }
-  .maestro-toggle__handle {
-    border: 1px solid var(--border-color);
-    box-shadow: var(--shadow-sm);
+  .maestro-toggle__switch:focus {
+    outline: none;
+    @apply ring-2 ring-offset-2;
+    @apply ring-2 ring-offset-2 ring-[var(--ring)] ring-offset-[var(--background)];
   }
 }

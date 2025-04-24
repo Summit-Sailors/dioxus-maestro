@@ -11,7 +11,7 @@ use crate::{
 	components::{
 		backdrop::Backdrop,
 		maestro_themes::{
-			designer::state::{BorderRadiusSettings, ColorPalette, DesignerState, ShadowSettings, SpacingScale, TypographySettings},
+			designer::state::DesignerState,
 			exporter::{ExportFormat, ThemeOptions},
 		},
 	},
@@ -20,17 +20,20 @@ use crate::{
 
 #[derive(Props, PartialEq, Clone)]
 pub struct ThemeDesignerProps {
+	#[props(default = DesignerState::default())]
+	pub state: Option<DesignerState>,
 	pub components_id: String,
 }
 
 #[component]
 pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
-	let initial_state = DesignerState::default();
+	let designer_state = props.state.clone();
 	let components_id = props.components_id.clone();
 
 	let components_id_clone = components_id.clone();
 
-	let mut state = use_signal(|| initial_state);
+	let mut state = use_signal(|| designer_state.unwrap_or_default());
+
 	let mut active_tab = use_signal(|| "colors");
 
 	let with_doc_theme = use_signal(|| false);
@@ -43,23 +46,23 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 		state.set(DesignerState::default());
 	};
 
-	let update_color_palette = move |colors: ColorPalette| {
-		state.with_mut(|s| s.color = colors);
+	let update_color_palette = move |color| {
+		state.with_mut(|s| s.color = color);
 	};
 
-	let update_typography = move |typography: TypographySettings| {
+	let update_typography = move |typography| {
 		state.with_mut(|s| s.typography = typography);
 	};
 
-	let update_spacing = move |spacing: SpacingScale| {
+	let update_spacing = move |spacing| {
 		state.with_mut(|s| s.spacing = spacing);
 	};
 
-	let update_border_radius = move |border_radius: BorderRadiusSettings| {
+	let update_border_radius = move |border_radius| {
 		state.with_mut(|s| s.border_radius = border_radius);
 	};
 
-	let update_shadow = move |shadow: ShadowSettings| {
+	let update_shadow = move |shadow| {
 		state.with_mut(|s| s.shadow = shadow);
 	};
 
@@ -73,7 +76,7 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 		div {
 			id: "theme-designer",
 			class: "theme-designer-container flex flex-col md:flex-row gap-6",
-			div { class: "theme-designer-sidebar col-span-1 bg-[color:var(--card-bg)] p-6 rounded-lg border border-[color:var(--border-color)] shadow-md overflow-y-auto w-full md:w-3/4",
+			div { class: "theme-designer-sidebar col-span-1 bg-[color:var(--card-bg)] p-6 rounded-lg border border-[color:var(--border-color)] shadow-md overflow-y-auto w-full md:w-1/2",
 				h2 { class: "text-xl font-semibold mb-6 text-[color:var(--card-text)]",
 					"Theme Customization"
 				}
@@ -231,7 +234,7 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 								if active_tab() != "colors" { "hidden" } else { "" }
 						),
 						ColorPicker {
-							colors: state().color.clone(),
+							colors: state().color,
 							on_change: update_color_palette,
 						}
 					}
@@ -243,7 +246,7 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 								if active_tab() != "typography" { "hidden" } else { "" }
 						),
 						FontSelector {
-							typography: state().typography.clone(),
+							typography: state().typography,
 							on_change: update_typography,
 						}
 					}
@@ -255,7 +258,7 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 								if active_tab() != "spacing" { "hidden" } else { "" }
 						),
 						SpacingEditor {
-							spacing: state().spacing.clone(),
+							spacing: state().spacing,
 							on_change: update_spacing,
 						}
 					}
@@ -267,7 +270,7 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 								if active_tab() != "border-radius" { "hidden" } else { "" }
 						),
 						BorderRadiusEditor {
-							border_radius: state().border_radius.clone(),
+							border_radius: state().border_radius,
 							on_change: update_border_radius,
 						}
 					}
@@ -278,10 +281,7 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 								"tab-panel p-4 bg-[color:var(--input-bg)] rounded-[var(--radius-md)] transition-all",
 								if active_tab() != "shadows" { "hidden" } else { "" }
 						),
-						ShadowEditor {
-							shadow: state().shadow.clone(),
-							on_change: update_shadow,
-						}
+						ShadowEditor { shadow: state().shadow, on_change: update_shadow }
 					}
 				}
 
@@ -299,7 +299,7 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 				}
 			}
 
-			div { class: "theme-preview-wrapper col-span-1 lg:col-span-2 bg-[color:var(--bg-color)] p-6 rounded-lg border border-[color:var(--border-color)] shadow-lg w-full md:w-1/4",
+			div { class: "theme-preview-wrapper col-span-1 lg:col-span-2 bg-[color:var(--bg-color)] p-6 rounded-lg border border-[color:var(--border-color)] shadow-lg w-full md:w-1/2",
 				ThemePreview {
 					state: state(),
 					with_doc_theme: with_doc_theme(),

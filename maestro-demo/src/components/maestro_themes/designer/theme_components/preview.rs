@@ -23,14 +23,15 @@ pub fn ThemePreview(props: ThemePreviewProps) -> Element {
 	let content = get_components_section(&components_id_clone);
 
 	// Generate CSS variables
-	let css_variables = export_theme(&state, &theme_options);
+	let css_variables = export_theme(&state, &theme_options).replace("@theme", "#scoped-theme");
 
 	rsx! {
 		div { id: "theme-preview-container",
-			main {
+			main { id: "scoped-theme",
 				style { "{css_variables}" }
 				{content}
 			}
+
 		}
 	}
 }

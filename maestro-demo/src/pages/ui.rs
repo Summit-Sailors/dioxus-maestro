@@ -323,8 +323,15 @@ pub fn UIDemo() -> Element {
 									off: "Disabled",
 							}),
 							label_placement: Some(EToggleSwitchLabelPlacement::Right),
+							class: "border",
+							toggled_class: "bg-[color:var(--maestro-toggle-on-bg)]",
+							default_class: "bg-[color:var(--maestro-toggle-off-bg)]",
+							toggled_translate_class: "bg-[color:var(--maestro-toggle-handle-bg)]",
+							default_translate_class: "bg-[color:var(--maestro-toggle-handle-bg)]",
+							label_class: "text-[color:var(--text-color)]",
 						}
 					}
+
 					div { class: "text-[color:var(--text-color)]",
 						Radio {
 							class: "border-[color:var(--primary)] hover:border-[color:var(--primary)]",
