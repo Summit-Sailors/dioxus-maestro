@@ -25,12 +25,11 @@ pub struct TextInputProps {
 
 	#[props(extends = input, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
-	pub children: Element,
 }
 
 #[component]
 pub fn TextInput(props: TextInputProps) -> Element {
-	let TextInputProps { class, value, default_value, on_value_change, debounce_ms, disabled, invalid, attributes, children, oninput, onchange } = props;
+	let TextInputProps { class, value, default_value, on_value_change, debounce_ms, disabled, invalid, attributes, oninput, onchange } = props;
 
 	rsx! {
 		maestro_headless::text_input::TextInput {
@@ -47,7 +46,6 @@ pub fn TextInput(props: TextInputProps) -> Element {
 			extra_attributes: attributes.clone(),
 			oninput,
 			onchange,
-			{children}
 		}
 	}
 }

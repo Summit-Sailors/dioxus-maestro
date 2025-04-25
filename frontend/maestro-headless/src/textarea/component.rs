@@ -30,13 +30,11 @@ pub struct TextareaProps {
 	pub attributes: Vec<Attribute>,
 	#[props(default = Vec::new())]
 	pub extra_attributes: Vec<Attribute>,
-	pub children: Element,
 }
 
 #[component]
 pub fn Textarea(props: TextareaProps) -> Element {
-	let TextareaProps { value, default_value, on_value_change, debounce_ms, disabled, invalid, attributes, children, onchange, oninput, extra_attributes } =
-		props;
+	let TextareaProps { value, default_value, on_value_change, debounce_ms, disabled, invalid, attributes, onchange, oninput, extra_attributes } = props;
 
 	let is_controlled = use_hook(move || value().is_some());
 	let (value, set_value) =
@@ -68,7 +66,6 @@ pub fn Textarea(props: TextareaProps) -> Element {
 			},
 			..attributes,
 			..extra_attributes,
-			{children}
 		}
 	}
 }

@@ -25,12 +25,11 @@ pub struct TextareaProps {
 
 	#[props(extends = textarea, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
-	pub children: Element,
 }
 
 #[component]
 pub fn Textarea(props: TextareaProps) -> Element {
-	let TextareaProps { class, value, default_value, on_value_change, debounce_ms, disabled, invalid, attributes, children, onchange, oninput } = props;
+	let TextareaProps { class, value, default_value, on_value_change, debounce_ms, disabled, invalid, attributes, onchange, oninput } = props;
 
 	rsx! {
 		maestro_headless::textarea::Textarea {
@@ -47,7 +46,6 @@ pub fn Textarea(props: TextareaProps) -> Element {
 			onchange,
 			oninput,
 			extra_attributes: attributes.clone(),
-			{children}
 		}
 	}
 }

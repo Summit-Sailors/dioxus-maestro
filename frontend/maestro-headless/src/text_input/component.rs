@@ -30,13 +30,11 @@ pub struct TextInputProps {
 	pub attributes: Vec<Attribute>,
 	#[props(default = Vec::new())]
 	pub extra_attributes: Vec<Attribute>,
-	pub children: Element,
 }
 
 #[component]
 pub fn TextInput(props: TextInputProps) -> Element {
-	let TextInputProps { value, default_value, on_value_change, debounce_ms, disabled, invalid, attributes, children, oninput, onchange, extra_attributes } =
-		props;
+	let TextInputProps { value, default_value, on_value_change, debounce_ms, disabled, invalid, attributes, oninput, onchange, extra_attributes } = props;
 
 	let is_controlled = use_hook(move || value().is_some());
 	let (value, set_value) =
@@ -68,7 +66,6 @@ pub fn TextInput(props: TextInputProps) -> Element {
 			},
 			..attributes,
 			..extra_attributes,
-			{children}
 		}
 	}
 }
