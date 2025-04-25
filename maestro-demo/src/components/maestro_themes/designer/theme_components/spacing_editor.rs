@@ -1,39 +1,56 @@
+// Spacing editor component
+use std::collections::HashMap;
+
 use dioxus::prelude::*;
 
-use crate::components::maestro_themes::designer::state::SpacingScale;
+use crate::components::maestro_themes::designer::state::{
+	DesignerState,
+	ThemedesignerAction::{RemoveSpacingValue, UpdateSpacingUnit, UpdateSpacingValue},
+};
+
+const PX_TO_REM: f32 = 1.0 / 16.0; // 1rem = 16px
+const REM_TO_PX: f32 = 16.0; // 16px = 1rem
+const PX_TO_EM: f32 = 1.0 / 16.0; // 1em = 16px (assuming base font size)
+const EM_TO_PX: f32 = 16.0; // 16px = 1em (assuming base font size)
 
 #[derive(Props, PartialEq, Clone)]
 pub struct SpacingEditorProps {
-	pub spacing: SpacingScale,
-	pub on_change: EventHandler<SpacingScale>,
+	pub state: Signal<DesignerState>,
 }
 
 #[component]
 pub fn SpacingEditor(props: SpacingEditorProps) -> Element {
-	let mut spacing = use_signal(|| props.spacing.clone());
+	let state = props.state;
 
-	// callbacks for each operation
-	let on_change = props.on_change;
+	let handle_unit_change = move |value: String| {
+		let current_state = state();
+		let old_unit = current_state.spacing.unit.clone();
 
-	let handle_unit_change = use_callback(move |value: String| {
-		let mut new_spacing = spacing.read().clone();
-		new_spacing.unit = value;
-		spacing.set(new_spacing.clone());
-		on_change.call(new_spacing);
-	});
+		let mut converted_scale = HashMap::new();
+		for (key, val) in current_state.spacing.scale.iter() {
+			if let Some(converted_value) = convert_unit_value(val, &old_unit, &value) {
+				converted_scale.insert(key.clone(), converted_value);
+			} else {
+				// If conversion fails, keep the original value
+				converted_scale.insert(key.clone(), val.clone());
+			}
+		}
 
-	let handle_value_change = use_callback(move |(key, value): (String, String)| {
-		let mut new_spacing = spacing.read().clone();
-		new_spacing.scale.insert(key, value);
-		spacing.set(new_spacing.clone());
-		on_change.call(new_spacing);
-	});
+		state().apply_action(UpdateSpacingUnit { value });
 
-	let handle_add_value = use_callback(move |_: ()| {
-		let mut new_spacing = spacing.read().clone();
-		// find next available number key
+		for (key, val) in converted_scale {
+			state().apply_action(UpdateSpacingValue { key, value: val });
+		}
+	};
+
+	let handle_value_change = move |(key, value): (String, String)| {
+		state().apply_action(UpdateSpacingValue { key, value });
+	};
+
+	let handle_add_value = move |_: ()| {
+		let current_state = state();
 		let mut max_key = 0;
-		for key in new_spacing.scale.keys() {
+		for key in current_state.spacing.scale.keys() {
 			if let Ok(num) = key.parse::<u32>() {
 				if num > max_key {
 					max_key = num;
@@ -41,22 +58,18 @@ pub fn SpacingEditor(props: SpacingEditorProps) -> Element {
 			}
 		}
 		let next_key = format!("{}", max_key + 1);
-		let default_value = format!("{}rem", (max_key as f32 + 1.0) * 0.25);
-		new_spacing.scale.insert(next_key, default_value);
-		spacing.set(new_spacing.clone());
-		on_change.call(new_spacing);
-	});
+		let default_value = format!("{}{}", (max_key as f32 + 1.0) * 0.25, current_state.spacing.unit);
 
-	let handle_remove_value = use_callback(move |key: String| {
-		let mut new_spacing = spacing.read().clone();
-		new_spacing.scale.remove(&key);
-		spacing.set(new_spacing.clone());
-		on_change.call(new_spacing);
-	});
+		state().apply_action(UpdateSpacingValue { key: next_key, value: default_value });
+	};
+
+	let handle_remove_value = move |key: String| {
+		state().apply_action(RemoveSpacingValue { key });
+	};
 
 	// a memo for the sorted keys to avoid recalculating on each render
 	let sorted_keys = use_memo(move || {
-		let mut keys: Vec<String> = spacing.read().scale.keys().cloned().collect();
+		let mut keys: Vec<String> = state.read().spacing.scale.keys().cloned().collect();
 		keys.sort_by(|a, b| {
 			let a_num = a.parse::<u32>().unwrap_or(u32::MAX);
 			let b_num = b.parse::<u32>().unwrap_or(u32::MAX);
@@ -72,7 +85,7 @@ pub fn SpacingEditor(props: SpacingEditorProps) -> Element {
 				label { class: "block text-sm font-medium mb-1", "Unit" }
 				select {
 					class: "w-full border rounded px-2 py-1",
-					value: "{spacing.read().unit}",
+					value: "{state.read().spacing.unit}",
 					oninput: move |event| handle_unit_change(event.value().clone()),
 					option { value: "px", "px" }
 					option { value: "rem", "rem" }
@@ -82,10 +95,17 @@ pub fn SpacingEditor(props: SpacingEditorProps) -> Element {
 			h4 { class: "text-md font-medium mb-2 mt-4", "Spacing Scale" }
 			div { class: "spacing-scale-container",
 				{
-						let _ = sorted_keys
-								.iter()
+						let sorted_keys_clone = sorted_keys().clone();
+						sorted_keys_clone
+								.into_iter()
 								.map(|key| {
-										let value = spacing().scale.get(&*key).unwrap_or(&String::new()).clone();
+										let value = state
+												.read()
+												.spacing
+												.scale
+												.get(&*key)
+												.unwrap_or(&String::new())
+												.clone();
 										let key_for_value = key.clone();
 										let key_for_remove = key.clone();
 										rsx! {
@@ -99,21 +119,73 @@ pub fn SpacingEditor(props: SpacingEditorProps) -> Element {
 												}
 												button {
 													r#type: "button",
-													class: "text-red-500 px-2",
+													class: "text-[color:var(--destructive)] px-2",
 													onclick: move |_| handle_remove_value(key_for_remove.clone()),
 													"×"
 												}
 											}
 										}
-								});
+								})
 				}
 				button {
 					r#type: "button",
-					class: "mt-2 px-3 py-1 bg-blue-500 text-white rounded text-sm",
+					class: "mt-2 px-3 py-1 bg-[color:var(--primary)] text-white rounded text-sm",
 					onclick: move |_| handle_add_value(()),
 					"Add Spacing Value"
 				}
 			}
 		}
 	}
+}
+
+fn parse_value_and_unit(value: &str) -> Option<(f32, String)> {
+	// the position where the numeric part ends
+	let numeric_end = value.chars().position(|c| !c.is_ascii_digit() && c != '.' && c != '-')?;
+
+	let numeric_str = &value[0..numeric_end];
+	let numeric_value = numeric_str.parse::<f32>().ok()?;
+
+	let unit = value[numeric_end..].trim().to_string();
+
+	Some((numeric_value, unit))
+}
+
+fn convert_unit_value(value: &str, from_unit: &str, to_unit: &str) -> Option<String> {
+	if from_unit == to_unit {
+		return Some(value.to_string());
+	}
+
+	let (numeric_value, value_unit) = parse_value_and_unit(value)?;
+
+	// if the value's unit doesn't match the expected from_unit, we can't convert
+	if value_unit != from_unit {
+		// if the value already has the target unit
+		if value_unit == to_unit {
+			return Some(value.to_string());
+		}
+		// otherwise, assume the value is in the specified from_unit
+	}
+
+	// to px as an intermediate step if necessary
+	let px_value = match from_unit {
+		"px" => numeric_value,
+		"rem" => numeric_value * REM_TO_PX,
+		"em" => numeric_value * EM_TO_PX,
+		_ => return None,
+	};
+
+	// from px to target unit
+	let converted_value = match to_unit {
+		"px" => px_value,
+		"rem" => px_value * PX_TO_REM,
+		"em" => px_value * PX_TO_EM,
+		_ => return None,
+	};
+
+	let formatted_value = if converted_value.fract() < 0.01 { format!("{}", converted_value.round()) } else { format!("{:.2}", converted_value) };
+
+	// remove trailing zeros after decimal point
+	let formatted_value = if formatted_value.contains('.') { formatted_value.trim_end_matches('0').trim_end_matches('.').to_string() } else { formatted_value };
+
+	Some(format!("{}{}", formatted_value, to_unit))
 }

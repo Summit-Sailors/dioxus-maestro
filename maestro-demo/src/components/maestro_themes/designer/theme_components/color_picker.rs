@@ -1,38 +1,18 @@
 // Color selection component
 use dioxus::prelude::*;
 
-use crate::components::maestro_themes::designer::state::ColorPalette;
+use crate::components::maestro_themes::designer::state::{DesignerState, ThemedesignerAction::UpdateColor};
 
 #[derive(Props, PartialEq, Clone)]
 pub struct ColorPickerProps {
-	/// Current color Palette
-	colors: ColorPalette,
-	/// Callback when color changes
-	on_change: EventHandler<ColorPalette>,
+	state: Signal<DesignerState>,
 }
 
 #[component]
 pub fn ColorPicker(props: ColorPickerProps) -> Element {
-	let colors = use_signal(|| props.colors.clone());
-
+	let state = props.state;
 	let update_color = move |field: &str, value: String| {
-		match field {
-			"primary" => colors().primary = value,
-			"secondary" => colors().secondary = value,
-			"accent" => colors().accent = value,
-			"background" => colors().background = value,
-			"foreground" => colors().foreground = value,
-			"card" => colors().card = value,
-			"card_foreground" => colors().card_foreground = value,
-			"border" => colors().border = value,
-			"ring" => colors().ring = value,
-			"destructive" => colors().destructive = value,
-			"destructive_foreground" => colors().destructive_foreground = value,
-			"muted" => colors().muted = value,
-			"muted_foreground" => colors().muted_foreground = value,
-			_ => {},
-		}
-		props.on_change.call(colors());
+		state().apply_action(UpdateColor { key: field.to_string(), value });
 	};
 
 	rsx! {
@@ -41,67 +21,67 @@ pub fn ColorPicker(props: ColorPickerProps) -> Element {
 			div { class: "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4",
 				ColorInput {
 					label: "Primary",
-					value: colors().primary,
+					value: state().color.primary,
 					on_change: move |val| update_color("primary", val),
 				}
 				ColorInput {
 					label: "Secondary",
-					value: colors().secondary,
+					value: state().color.secondary,
 					on_change: move |val| update_color("secondary", val),
 				}
 				ColorInput {
 					label: "Accent",
-					value: colors().accent,
+					value: state().color.accent,
 					on_change: move |val| update_color("accent", val),
 				}
 				ColorInput {
 					label: "Background",
-					value: colors().background,
+					value: state().color.background,
 					on_change: move |val| update_color("background", val),
 				}
 				ColorInput {
 					label: "Foreground",
-					value: colors().foreground,
+					value: state().color.foreground,
 					on_change: move |val| update_color("foreground", val),
 				}
 				ColorInput {
 					label: "Card",
-					value: colors().card,
+					value: state().color.card,
 					on_change: move |val| update_color("card", val),
 				}
 				ColorInput {
 					label: "Card Foreground",
-					value: colors().card_foreground,
+					value: state().color.card_foreground,
 					on_change: move |val| update_color("card_foreground", val),
 				}
 				ColorInput {
 					label: "Border",
-					value: colors().border,
+					value: state().color.border,
 					on_change: move |val| update_color("border", val),
 				}
 				ColorInput {
 					label: "Ring",
-					value: colors().ring,
+					value: state().color.ring,
 					on_change: move |val| update_color("ring", val),
 				}
 				ColorInput {
 					label: "Destructive",
-					value: colors().destructive,
+					value: state().color.destructive,
 					on_change: move |val| update_color("destructive", val),
 				}
 				ColorInput {
 					label: "Destructive Foreground",
-					value: colors().destructive_foreground,
+					value: state().color.destructive_foreground,
 					on_change: move |val| update_color("destructive_foreground", val),
 				}
 				ColorInput {
 					label: "Muted",
-					value: colors().muted,
+					value: state().color.muted,
 					on_change: move |val| update_color("muted", val),
 				}
 				ColorInput {
 					label: "Muted Foreground",
-					value: colors().muted_foreground,
+					value: state().color.muted_foreground,
 					on_change: move |val| update_color("muted_foreground", val),
 				}
 			}
@@ -122,27 +102,23 @@ fn ColorInput(props: ColorInputProps) -> Element {
 
 	let handle_change = move |evt: Event<FormData>| {
 		let new_value = evt.value();
-		if new_value.starts_with('#') {
-			color_value.set(new_value.clone());
-			props.on_change.call(new_value);
-		} else {
-			log::warn!("Invalid color format: {}", new_value);
-		}
+		color_value.set(new_value.clone());
+		props.on_change.call(new_value);
 	};
 
 	rsx! {
 		div { class: "flex flex-col gap-2",
 			label { class: "text-sm font-medium", "{props.label}" }
-			div { class: "flex items-center gap-2",
+			div { class: "flex items-center gap-4",
 				input {
 					r#type: "color",
-					value: "{color_value}",
+					value: "{color_value()}",
 					class: "h-8 w-8 rounded border border-[var(--border-color)] bg-[var(--input-bg)] cursor-pointer",
 					oninput: handle_change,
 				}
 				input {
 					r#type: "text",
-					value: "{color_value}",
+					value: "{color_value()}",
 					class: "text-sm border border-[var(--border-color)] bg-[var(--input-bg)] rounded px-2 py-1 w-28 text-[var(--text-color)]",
 					oninput: handle_change,
 				}

@@ -159,6 +159,7 @@ pub enum ThemedesignerAction {
 	UpdateFontWight { name: String, value: u32 },
 	UpdateSpacingUnit { value: String },
 	UpdateSpacingValue { key: String, value: String },
+	RemoveSpacingValue { key: String },
 	UpdateBorderRadius { key: String, value: String },
 	UpdateShadow { key: String, value: String },
 	ResetToDefaults,
@@ -205,6 +206,9 @@ impl DesignerState {
 			},
 			ThemedesignerAction::UpdateSpacingValue { key, value } => {
 				self.spacing.scale.insert(key, value);
+			},
+			ThemedesignerAction::RemoveSpacingValue { key } => {
+				self.spacing.scale.remove(&key);
 			},
 			ThemedesignerAction::UpdateBorderRadius { key, value } => match key.as_str() {
 				"sm" => self.border_radius.sm = value,

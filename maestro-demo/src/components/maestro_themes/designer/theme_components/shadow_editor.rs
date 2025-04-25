@@ -3,7 +3,7 @@ use std::{fmt, rc::Rc, str::FromStr};
 
 use dioxus::prelude::*;
 
-use crate::components::maestro_themes::designer::state::ShadowSettings;
+use crate::components::maestro_themes::designer::state::{DesignerState, ThemedesignerAction};
 
 #[derive(Debug, Clone, PartialEq, Copy)]
 struct ShadowPart {
@@ -83,8 +83,7 @@ fn build_shadow_string(parts: &[ShadowPart]) -> String {
 
 #[derive(Props, PartialEq, Clone)]
 pub struct ShadowEditorProps {
-	pub shadow: ShadowSettings,
-	pub on_change: EventHandler<ShadowSettings>,
+	pub state: Signal<DesignerState>,
 }
 
 #[derive(Props, PartialEq, Clone)]
@@ -241,7 +240,6 @@ fn ShadowPartEditor(props: ShadowPartEditorProps) -> Element {
 							props.on_change.call((props.index, new_part));
 					},
 				}
-
 			}
 			div { class: "text-xs text-gray-500 mt-2",
 				"Preview: "
@@ -256,20 +254,26 @@ fn ShadowPartEditor(props: ShadowPartEditorProps) -> Element {
 #[derive(Props, PartialEq, Clone)]
 struct ShadowSizeEditorProps {
 	pub label: String,
+	pub size_key: String,
 	pub value: String,
-	pub on_change: EventHandler<Vec<ShadowPart>>,
+	pub state: Signal<DesignerState>,
 }
 
 #[component]
-fn ShadowSizeEditor(props: ShadowSizeEditorProps) -> Element {
+fn ShadowSizeEditor(mut props: ShadowSizeEditorProps) -> Element {
 	let mut shadow_parts = use_signal(|| parse_shadow_string(&props.value));
+	let state = props.state;
+
+	let size_key = use_signal(|| props.size_key.clone());
 
 	let mut update_shadow_part = move |index: usize, part: ShadowPart| {
 		let mut parts = shadow_parts.read().clone();
 		if index < parts.len() {
 			parts[index] = part;
 			shadow_parts.set(parts.clone());
-			props.on_change.call(parts);
+
+			let shadow_string = build_shadow_string(&parts);
+			state().apply_action(ThemedesignerAction::UpdateShadow { key: size_key(), value: shadow_string });
 		}
 	};
 
@@ -277,7 +281,9 @@ fn ShadowSizeEditor(props: ShadowSizeEditorProps) -> Element {
 		let mut parts = shadow_parts.read().clone();
 		parts.push(ShadowPart { x_offset: 0, y_offset: 4, blur: 8, spread: 0, color: "rgb(0 0 0)", opacity: 5 });
 		shadow_parts.set(parts.clone());
-		props.on_change.call(parts);
+
+		let shadow_string = build_shadow_string(&parts);
+		props.state.write().apply_action(ThemedesignerAction::UpdateShadow { key: size_key(), value: shadow_string });
 	};
 
 	let remove_shadow_part = move |index: usize| {
@@ -285,25 +291,36 @@ fn ShadowSizeEditor(props: ShadowSizeEditorProps) -> Element {
 		if parts.len() > 1 && index < parts.len() {
 			parts.remove(index);
 			shadow_parts.set(parts.clone());
-			props.on_change.call(parts);
+
+			let shadow_string = build_shadow_string(&parts);
+			props.state.write().apply_action(ThemedesignerAction::UpdateShadow { key: size_key(), value: shadow_string });
 		}
 	};
+
+	// a wrapper function that can be cloned and used in the closure
 
 	rsx! {
 		div { class: "shadow-size-editor mb-6",
 			h4 { class: "text-base font-medium mb-2", "{props.label}" }
 
 			div { class: "shadow-parts space-y-2",
-				for (i , part) in shadow_parts.read().iter().enumerate() {
-					ShadowPartEditor {
-						label: format!("Layer {}", i + 1),
-						part: *part,
-						index: i,
-						on_change: move |(idx, part)| update_shadow_part(idx, part),
-						on_add: add_shadow_part,
-						on_remove: remove_shadow_part,
-						can_remove: shadow_parts.read().len() > 1,
-					}
+				{
+						shadow_parts
+								.iter()
+								.enumerate()
+								.map(|(i, part)| {
+										rsx! {
+											ShadowPartEditor {
+												label: format!("Layer {}", i + 1),
+												part: *part,
+												index: i,
+												on_change: move |(idx, part)| update_shadow_part(idx, part),
+												on_add: add_shadow_part,
+												on_remove: remove_shadow_part,
+												can_remove: shadow_parts.read().len() > 1,
+											}
+										}
+								})
 				}
 			}
 
@@ -319,53 +336,7 @@ fn ShadowSizeEditor(props: ShadowSizeEditorProps) -> Element {
 
 #[component]
 pub fn ShadowEditor(props: ShadowEditorProps) -> Element {
-	let shadow = Rc::new(props.shadow.clone());
-
-	// Update handlers for each shadow size
-	let update_sm = {
-		let shadow = shadow.clone();
-		move |parts: Vec<ShadowPart>| {
-			let mut new_shadow = shadow.as_ref().clone();
-			new_shadow.sm = build_shadow_string(&parts);
-			props.on_change.call(new_shadow);
-		}
-	};
-
-	let update_md = {
-		let shadow = shadow.clone();
-		move |parts: Vec<ShadowPart>| {
-			let mut new_shadow = shadow.as_ref().clone();
-			new_shadow.md = build_shadow_string(&parts);
-			props.on_change.call(new_shadow);
-		}
-	};
-
-	let update_lg = {
-		let shadow = shadow.clone();
-		move |parts: Vec<ShadowPart>| {
-			let mut new_shadow = shadow.as_ref().clone();
-			new_shadow.lg = build_shadow_string(&parts);
-			props.on_change.call(new_shadow);
-		}
-	};
-
-	let update_xl = {
-		let shadow = shadow.clone();
-		move |parts: Vec<ShadowPart>| {
-			let mut new_shadow = shadow.as_ref().clone();
-			new_shadow.xl = build_shadow_string(&parts);
-			props.on_change.call(new_shadow);
-		}
-	};
-
-	let update_xxl = {
-		let shadow = shadow.clone();
-		move |parts: Vec<ShadowPart>| {
-			let mut new_shadow = shadow.as_ref().clone();
-			new_shadow.xxl = build_shadow_string(&parts);
-			props.on_change.call(new_shadow);
-		}
-	};
+	let shadow = Rc::new(props.state.read().shadow.clone());
 
 	rsx! {
 		div { class: "shadow-editor p-4 bg-[color:var(--card-bg)] rounded-lg",
@@ -420,8 +391,9 @@ pub fn ShadowEditor(props: ShadowEditorProps) -> Element {
 				div { class: "p-4 border-t",
 					ShadowSizeEditor {
 						label: "Small Shadow".to_string(),
+						size_key: "sm".to_string(),
 						value: shadow.sm.clone(),
-						on_change: update_sm,
+						state: props.state,
 					}
 				}
 			}
@@ -433,8 +405,9 @@ pub fn ShadowEditor(props: ShadowEditorProps) -> Element {
 				div { class: "p-4 border-t",
 					ShadowSizeEditor {
 						label: "Medium Shadow".to_string(),
+						size_key: "md".to_string(),
 						value: shadow.md.clone(),
-						on_change: update_md,
+						state: props.state,
 					}
 				}
 			}
@@ -446,8 +419,9 @@ pub fn ShadowEditor(props: ShadowEditorProps) -> Element {
 				div { class: "p-4 border-t",
 					ShadowSizeEditor {
 						label: "Large Shadow".to_string(),
+						size_key: "lg".to_string(),
 						value: shadow.lg.clone(),
-						on_change: update_lg,
+						state: props.state,
 					}
 				}
 			}
@@ -459,8 +433,9 @@ pub fn ShadowEditor(props: ShadowEditorProps) -> Element {
 				div { class: "p-4 border-t",
 					ShadowSizeEditor {
 						label: "Extra Large Shadow".to_string(),
+						size_key: "xl".to_string(),
 						value: shadow.xl.clone(),
-						on_change: update_xl,
+						state: props.state,
 					}
 				}
 			}
@@ -472,8 +447,9 @@ pub fn ShadowEditor(props: ShadowEditorProps) -> Element {
 				div { class: "p-4 border-t",
 					ShadowSizeEditor {
 						label: "2x Large Shadow".to_string(),
+						size_key: "xxl".to_string(),
 						value: shadow.xxl.clone(),
-						on_change: update_xxl,
+						state: props.state,
 					}
 				}
 			}

@@ -1,77 +1,61 @@
 // Border radius editor component
 use dioxus::prelude::*;
 
-use crate::components::maestro_themes::designer::state::BorderRadiusSettings;
+use crate::components::maestro_themes::designer::state::{BorderRadiusSettings, DesignerState, ThemedesignerAction};
 
 #[derive(Props, PartialEq, Clone)]
 pub struct BorderRadiusEditorProps {
-	pub border_radius: BorderRadiusSettings,
-	pub on_change: EventHandler<BorderRadiusSettings>,
+	pub state: Signal<DesignerState>,
 }
 
 #[component]
 pub fn BorderRadiusEditor(props: BorderRadiusEditorProps) -> Element {
-	let border_radius = props.border_radius.clone();
+	let state = props.state;
 
 	// CSS variable names from the stylesheet
 	let radius_options = [
-		("sm", "Small (sm)", &border_radius.sm, "--radius-sm"),
-		("md", "Medium (md)", &border_radius.md, "--radius-md"),
-		("lg", "Large (lg)", &border_radius.lg, "--radius-lg"),
-		("xl", "Extra Large (xl)", &border_radius.xl, "--radius-xl"),
-		("full", "Full", &border_radius.full, "--radius-full"),
+		("sm", "Small (sm)", &state().border_radius.sm, "--radius-sm"),
+		("md", "Medium (md)", &state().border_radius.md, "--radius-md"),
+		("lg", "Large (lg)", &state().border_radius.lg, "--radius-lg"),
+		("xl", "Extra Large (xl)", &state().border_radius.xl, "--radius-xl"),
+		("full", "Full", &state().border_radius.full, "--radius-full"),
 	];
 
-	let make_handler = |key: &'static str, on_change: &EventHandler<BorderRadiusSettings>, base_radius: &BorderRadiusSettings| {
-		let on_change = *on_change;
-		let base_radius = base_radius.clone();
+	let make_handler = |key: &'static str| {
+		let key_owned = key.to_string();
 
 		move |event: Event<FormData>| {
-			let mut new_radius = base_radius.clone();
 			let value = event.value().clone();
-
-			match key {
-				"sm" => new_radius.sm = value,
-				"md" => new_radius.md = value,
-				"lg" => new_radius.lg = value,
-				"xl" => new_radius.xl = value,
-				"full" => new_radius.full = value,
-				_ => {},
-			}
-
-			on_change.call(new_radius);
+			state().apply_action(ThemedesignerAction::UpdateBorderRadius { key: key_owned.clone(), value });
 		}
 	};
 
-	let make_reset_handler = |key: &'static str, on_change: &EventHandler<BorderRadiusSettings>, base_radius: &BorderRadiusSettings| {
-		let on_change = *on_change;
-		let base_radius = base_radius.clone();
+	let make_reset_handler = |key: &'static str| {
+		let key_owned = key.to_string();
 
 		move |_| {
-			let mut new_radius = base_radius.clone();
 			let default_radius = BorderRadiusSettings::default();
+			let default_value = match key {
+				"sm" => default_radius.sm,
+				"md" => default_radius.md,
+				"lg" => default_radius.lg,
+				"xl" => default_radius.xl,
+				"full" => default_radius.full,
+				_ => String::new(),
+			};
 
-			match key {
-				"sm" => new_radius.sm = default_radius.sm,
-				"md" => new_radius.md = default_radius.md,
-				"lg" => new_radius.lg = default_radius.lg,
-				"xl" => new_radius.xl = default_radius.xl,
-				"full" => new_radius.full = default_radius.full,
-				_ => {},
-			}
-
-			on_change.call(new_radius);
+			state().apply_action(ThemedesignerAction::UpdateBorderRadius { key: key_owned.clone(), value: default_value });
 		}
 	};
 
 	let is_modified = |key: &str| -> bool {
 		let default_radius = BorderRadiusSettings::default();
 		match key {
-			"sm" => border_radius.sm != default_radius.sm,
-			"md" => border_radius.md != default_radius.md,
-			"lg" => border_radius.lg != default_radius.lg,
-			"xl" => border_radius.xl != default_radius.xl,
-			"full" => border_radius.full != default_radius.full,
+			"sm" => state().border_radius.sm != default_radius.sm,
+			"md" => state().border_radius.md != default_radius.md,
+			"lg" => state().border_radius.lg != default_radius.lg,
+			"xl" => state().border_radius.xl != default_radius.xl,
+			"full" => state().border_radius.full != default_radius.full,
 			_ => false,
 		}
 	};
@@ -88,16 +72,8 @@ pub fn BorderRadiusEditor(props: BorderRadiusEditorProps) -> Element {
 						radius_options
 								.iter()
 								.map(|(key, label, value, _css_var)| {
-										let input_handler = make_handler(
-												key,
-												&props.on_change,
-												&props.border_radius,
-										);
-										let reset_handler = make_reset_handler(
-												key,
-												&props.on_change,
-												&props.border_radius,
-										);
+										let input_handler = make_handler(key);
+										let reset_handler = make_reset_handler(key);
 										let modified = is_modified(key);
 										rsx! {
 											div { key: "{key}",
@@ -145,19 +121,12 @@ pub fn BorderRadiusEditor(props: BorderRadiusEditorProps) -> Element {
 																			let preset_handler = {
 																					let key = key.to_string();
 																					let preset_value = preset_value.to_string();
-																					let on_change = props.on_change;
-																					let base_radius = props.border_radius.clone();
 																					move |_| {
-																							let mut new_radius = base_radius.clone();
-																							match key.as_str() {
-																									"sm" => new_radius.sm = preset_value.clone(),
-																									"md" => new_radius.md = preset_value.clone(),
-																									"lg" => new_radius.lg = preset_value.clone(),
-																									"xl" => new_radius.xl = preset_value.clone(),
-																									"full" => new_radius.full = preset_value.clone(),
-																									_ => {}
-																							}
-																							on_change.call(new_radius);
+																							state()
+																									.apply_action(ThemedesignerAction::UpdateBorderRadius {
+																											key: key.clone(),
+																											value: preset_value.clone(),
+																									});
 																					}
 																			};
 																			rsx! {

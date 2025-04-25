@@ -16,6 +16,7 @@ use maestro_ui::{
 
 use crate::components::ui::component_section::ComponentSection;
 
+// TODO: Apply CSS variables in a way that would correctly match the applied varibales during theme editing
 pub fn get_components_section(components_section_id: &str) -> Result<VNode, RenderError> {
 	let mut selected_option = use_signal(|| "Option 1".to_string());
 	let mut selected_options = use_signal(Vec::<String>::new);

@@ -11,12 +11,21 @@ use crate::{
 	components::{
 		backdrop::Backdrop,
 		maestro_themes::{
-			designer::state::DesignerState,
+			designer::state::{DesignerState, ThemedesignerAction::*},
 			exporter::{ExportFormat, ThemeOptions},
 		},
 	},
 	router::Route,
 };
+// TODO: The CurrentComponentGroup enum will be rendered in a Select component to help with switching between component groups while editing themes
+#[derive(Debug, Clone, PartialEq, strum_macros::EnumIter, strum_macros::Display, strum_macros::EnumString)]
+enum CurrentComponentGroup {
+	Buttons,
+	Select,
+	Input,
+	Toggle,
+	TextArea,
+}
 
 #[derive(Props, PartialEq, Clone)]
 pub struct ThemeDesignerProps {
@@ -32,7 +41,7 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 
 	let components_id_clone = components_id.clone();
 
-	let mut state = use_signal(|| designer_state.unwrap_or_default());
+	let state = use_signal(|| designer_state.unwrap_or_default());
 
 	let mut active_tab = use_signal(|| "colors");
 
@@ -42,28 +51,9 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 	let mut show_theme_viewer = use_signal(|| false);
 	let theme_options = use_signal(|| ThemeOptions { with_doc_themes: with_doc_theme(), format: export_format(), components_id });
 
+	// editor actions
 	let reset_theme = move |_| {
-		state.set(DesignerState::default());
-	};
-
-	let update_color_palette = move |color| {
-		state.with_mut(|s| s.color = color);
-	};
-
-	let update_typography = move |typography| {
-		state.with_mut(|s| s.typography = typography);
-	};
-
-	let update_spacing = move |spacing| {
-		state.with_mut(|s| s.spacing = spacing);
-	};
-
-	let update_border_radius = move |border_radius| {
-		state.with_mut(|s| s.border_radius = border_radius);
-	};
-
-	let update_shadow = move |shadow| {
-		state.with_mut(|s| s.shadow = shadow);
+		state().apply_action(ResetToDefaults);
 	};
 
 	// to navigate home
@@ -75,7 +65,7 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 	rsx! {
 		div {
 			id: "theme-designer",
-			class: "theme-designer-container flex flex-col md:flex-row gap-6",
+			class: "theme-designer-container flex flex-col md:flex-row gap-6 overflow-auto",
 			div { class: "theme-designer-sidebar col-span-1 bg-[color:var(--card-bg)] p-6 rounded-lg border border-[color:var(--border-color)] shadow-md overflow-y-auto w-full md:w-1/2",
 				h2 { class: "text-xl font-semibold mb-6 text-[color:var(--card-text)]",
 					"Theme Customization"
@@ -233,10 +223,7 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 								"tab-panel p-4 bg-[color:var(--input-bg)] rounded-[var(--radius-md)] transition-all",
 								if active_tab() != "colors" { "hidden" } else { "" }
 						),
-						ColorPicker {
-							colors: state().color,
-							on_change: update_color_palette,
-						}
+						ColorPicker { state }
 					}
 
 					// Typography tab
@@ -245,10 +232,7 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 								"tab-panel p-4 bg-[color:var(--input-bg)] rounded-[var(--radius-md)] transition-all",
 								if active_tab() != "typography" { "hidden" } else { "" }
 						),
-						FontSelector {
-							typography: state().typography,
-							on_change: update_typography,
-						}
+						FontSelector { state }
 					}
 
 					// Spacing tab
@@ -257,10 +241,7 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 								"tab-panel p-4 bg-[color:var(--input-bg)] rounded-[var(--radius-md)] transition-all",
 								if active_tab() != "spacing" { "hidden" } else { "" }
 						),
-						SpacingEditor {
-							spacing: state().spacing,
-							on_change: update_spacing,
-						}
+						SpacingEditor { state }
 					}
 
 					// Border Radius tab
@@ -269,10 +250,7 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 								"tab-panel p-4 bg-[color:var(--input-bg)] rounded-[var(--radius-md)] transition-all",
 								if active_tab() != "border-radius" { "hidden" } else { "" }
 						),
-						BorderRadiusEditor {
-							border_radius: state().border_radius,
-							on_change: update_border_radius,
-						}
+						BorderRadiusEditor { state }
 					}
 
 					// Shadows tab
@@ -281,7 +259,7 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 								"tab-panel p-4 bg-[color:var(--input-bg)] rounded-[var(--radius-md)] transition-all",
 								if active_tab() != "shadows" { "hidden" } else { "" }
 						),
-						ShadowEditor { shadow: state().shadow, on_change: update_shadow }
+						ShadowEditor { state }
 					}
 				}
 
@@ -299,9 +277,9 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 				}
 			}
 
-			div { class: "theme-preview-wrapper col-span-1 lg:col-span-2 bg-[color:var(--bg-color)] p-6 rounded-lg border border-[color:var(--border-color)] shadow-lg w-full md:w-1/2",
+			div { class: "theme-preview-wrapper col-span-2 lg:col-span-2 bg-[color:var(--bg-color)] p-6 rounded-lg border border-[color:var(--border-color)] shadow-lg w-full md:w-1/2",
 				ThemePreview {
-					state: state(),
+					state,
 					with_doc_theme: with_doc_theme(),
 					components_section_id: components_id_clone,
 				}

@@ -29,9 +29,9 @@ maestro-ui = { path = "../frontend/maestro-ui" }
 
 # thrird party deps
 anyhow = "1.0.98"
-apalis = { version = "0.7.0", default-features = false, features = ["limit", "retry"], optional = true }
-apalis-core = { version = "0.7.0", optional = true }
-apalis-sql = { version = "0.7.0", features = ["postgres", "tokio-comp"], optional = true }
+apalis = { version = "0.7.1", default-features = false, features = ["limit", "retry"], optional = true }
+apalis-core = { version = "0.7.1", optional = true }
+apalis-sql = { version = "0.7.1", features = ["postgres", "tokio-comp"], optional = true }
 async-std = "1.13.1"
 chrono = { workspace = true }
 dioxus = { version = "0.6.3", features = ["fullstack", "router"] }
@@ -66,11 +66,11 @@ validator = { version = "0.20.0", features = ["derive"] }
 
 tokio = { version = "1.44.2", features = ["full"], optional = true }
 tokio-stream = { version = "0.1.17", optional = true }
-tokio-util = { version = "0.7.14", features = ["full", "tracing"], optional = true }
+tokio-util = { version = "0.7.15", features = ["full", "tracing"], optional = true }
 
 sqlx = { version = "0.8.5", features = ["chrono", "postgres", "runtime-tokio", "tls-native-tls", "uuid"], optional = true }
 
-diesel = { version = "2.2.9", features = ["chrono", "numeric", "postgres", "serde_json", "uuid"], optional = true }
+diesel = { version = "2.2.10", features = ["chrono", "numeric", "postgres", "serde_json", "uuid"], optional = true }
 diesel-async = { version = "0.5.2", features = ["postgres"], optional = true }
 diesel-derive-enum = { version = "2.1.0", features = ["postgres"], optional = true }
 

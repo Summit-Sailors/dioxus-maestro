@@ -1,50 +1,37 @@
 use dioxus::prelude::*;
 
-use crate::components::maestro_themes::designer::state::TypographySettings;
+use crate::components::maestro_themes::designer::state::{
+	DesignerState,
+	ThemedesignerAction::{UpdateFontFamiliy, UpdateFontSize, UpdateFontWight, UpdateHeadingFontFamily, UpdateLineHeight},
+};
 
 #[derive(Props, PartialEq, Clone)]
 pub struct FontSelectorProps {
-	pub typography: TypographySettings,
-	pub on_change: EventHandler<TypographySettings>,
+	pub state: Signal<DesignerState>,
 }
 
 #[component]
 pub fn FontSelector(props: FontSelectorProps) -> Element {
-	let mut typography = use_signal(|| props.typography.clone());
+	let state = props.state;
 
-	let mut update_typography = move |new_typography: TypographySettings| {
-		typography.set(new_typography.clone());
-		props.on_change.call(new_typography);
+	let handle_font_family = move |value: String| {
+		state().apply_action(UpdateFontFamiliy { value });
 	};
 
-	let mut handle_font_family = move |value: String| {
-		let mut new_typography = typography.read().clone();
-		new_typography.font_family = value;
-		update_typography(new_typography);
+	let handle_heading_font_family = move |value: String| {
+		state().apply_action(UpdateHeadingFontFamily { value });
 	};
 
-	let mut handle_heading_font_family = move |value: String| {
-		let mut new_typography = typography.read().clone();
-		new_typography.heading_font_family = value;
-		update_typography(new_typography);
+	let handle_base_size = move |value: String| {
+		state().apply_action(UpdateFontSize { value });
 	};
 
-	let mut handle_base_size = move |value: String| {
-		let mut new_typography = typography.read().clone();
-		new_typography.base_size = value;
-		update_typography(new_typography);
+	let handle_line_height = move |value: String| {
+		state().apply_action(UpdateLineHeight { value });
 	};
 
-	let mut handle_line_height = move |value: String| {
-		let mut new_typography = typography.read().clone();
-		new_typography.line_height = value;
-		update_typography(new_typography);
-	};
-
-	let mut handle_font_weight = move |name: String, value: u32| {
-		let mut new_typography = typography.read().clone();
-		new_typography.font_weights.insert(name, value);
-		update_typography(new_typography);
+	let handle_font_weight = move |name: String, value: u32| {
+		state().apply_action(UpdateFontWight { name, value });
 	};
 
 	let common_fonts = [
@@ -69,7 +56,7 @@ pub fn FontSelector(props: FontSelectorProps) -> Element {
 				label { class: "block text-sm font-medium mb-1", "Font Family" }
 				select {
 					class: "w-full bg-[var(--input-bg)] text-[var(--text-color)] border border-[var(--border-color)] rounded-md px-3 py-2",
-					value: "{typography().font_family}",
+					value: "{state().typography.font_family}",
 					oninput: move |event| handle_font_family(event.value()),
 					{common_fonts.iter().map(|font| rsx! {
 						option { value: "{font}", "{font}" }
@@ -78,7 +65,7 @@ pub fn FontSelector(props: FontSelectorProps) -> Element {
 				input {
 					r#type: "text",
 					class: "w-full mt-2 bg-[var(--input-bg)] text-[var(--text-color)] border border-[var(--border-color)] rounded-md px-3 py-2",
-					value: "{typography().font_family}",
+					value: "{state().typography.font_family}",
 					oninput: move |event| handle_font_family(event.value()),
 					placeholder: "Or enter custom font stack",
 				}
@@ -88,7 +75,7 @@ pub fn FontSelector(props: FontSelectorProps) -> Element {
 				label { class: "block text-sm font-medium mb-1", "Heading Font Family" }
 				select {
 					class: "w-full bg-[var(--input-bg)] text-[var(--text-color)] border border-[var(--border-color)] rounded-md px-3 py-2",
-					value: "{typography().heading_font_family}",
+					value: "{state().typography.heading_font_family}",
 					oninput: move |event| handle_heading_font_family(event.value()),
 					{common_fonts.iter().map(|font| rsx! {
 						option { value: "{font}", "{font}" }
@@ -97,7 +84,7 @@ pub fn FontSelector(props: FontSelectorProps) -> Element {
 				input {
 					r#type: "text",
 					class: "w-full mt-2 bg-[var(--input-bg)] text-[var(--text-color)] border border-[var(--border-color)] rounded-md px-3 py-2",
-					value: "{typography().heading_font_family}",
+					value: "{state().typography.heading_font_family}",
 					oninput: move |event| handle_heading_font_family(event.value()),
 					placeholder: "Or enter custom font stack",
 				}
@@ -109,7 +96,7 @@ pub fn FontSelector(props: FontSelectorProps) -> Element {
 					input {
 						r#type: "text",
 						class: "w-full bg-[var(--input-bg)] text-[var(--text-color)] border border-[var(--border-color)] rounded-md px-3 py-2",
-						value: "{typography().base_size}",
+						value: "{state().typography.base_size}",
 						oninput: move |event| handle_base_size(event.value()),
 					}
 				}
@@ -119,7 +106,7 @@ pub fn FontSelector(props: FontSelectorProps) -> Element {
 					input {
 						r#type: "text",
 						class: "w-full bg-[var(--input-bg)] text-[var(--text-color)] border border-[var(--border-color)] rounded-md px-3 py-2",
-						value: "{typography().line_height}",
+						value: "{state().typography.line_height}",
 						oninput: move |event| handle_line_height(event.value()),
 					}
 				}
@@ -128,9 +115,9 @@ pub fn FontSelector(props: FontSelectorProps) -> Element {
 			h4 { class: "text-md font-semibold mb-3", "Font Weights" }
 			div { class: "grid grid-cols-2 gap-4",
 				{
-						let _ = typography()
-								.font_weights
-								.iter()
+						let font_weights = state().typography.font_weights.clone();
+						font_weights
+								.into_iter()
 								.map(|(name, weight)| {
 										let name_clone = name.clone();
 										rsx! {
@@ -151,12 +138,9 @@ pub fn FontSelector(props: FontSelectorProps) -> Element {
 												}
 											}
 										}
-								});
+								})
 				}
 			}
 		}
 	}
 }
-
-
-// /fix Also define the standard property 'line-clamp' for compatibility
