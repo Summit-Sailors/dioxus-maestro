@@ -65,13 +65,34 @@
     --radius-lg: 0.5rem;
     --radius-xl: 0.75rem;
     --radius-2xl: 1rem;
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
-    0 4px 6px -4px rgb(0 0 0 / 0.1);
-    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1),
-    0 8px 10px -6px rgb(0 0 0 / 0.1);
-    --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+    --shadow-sm: 0 1px 2px 0
+    var(--shadow-color);
+    @supports (color: color-mix(in lab, red, red)) {
+      --shadow-sm: 0 1px 2px 0
+    color-mix(in oklch, var(--shadow-color) 5%, transparent);
+    }
+    --shadow-md: 0 4px 6px -1px var(--shadow-color),
+    0 2px 4px -2px var(--shadow-color);
+    @supports (color: color-mix(in lab, red, red)) {
+      --shadow-md: 0 4px 6px -1px color-mix(in oklch, var(--shadow-color) 10%, transparent),
+    0 2px 4px -2px color-mix(in oklch, var(--shadow-color) 10%, transparent);
+    }
+    --shadow-lg: 0 10px 15px -3px var(--shadow-color),
+    0 4px 6px -4px var(--shadow-color);
+    @supports (color: color-mix(in lab, red, red)) {
+      --shadow-lg: 0 10px 15px -3px color-mix(in oklch, var(--shadow-color) 10%, transparent),
+    0 4px 6px -4px color-mix(in oklch, var(--shadow-color) 10%, transparent);
+    }
+    --shadow-xl: 0 20px 25px -5px var(--shadow-color),
+    0 8px 10px -6px var(--shadow-color);
+    @supports (color: color-mix(in lab, red, red)) {
+      --shadow-xl: 0 20px 25px -5px color-mix(in oklch, var(--shadow-color) 10%, transparent),
+    0 8px 10px -6px color-mix(in oklch, var(--shadow-color) 10%, transparent);
+    }
+    --shadow-2xl: 0 25px 50px -12px var(--shadow-color);
+    @supports (color: color-mix(in lab, red, red)) {
+      --shadow-2xl: 0 25px 50px -12px color-mix(in oklch, var(--shadow-color) 25%, transparent);
+    }
     --ease-out: cubic-bezier(0, 0, 0.2, 1);
     --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
     --animate-spin: spin 1s linear infinite;
@@ -965,6 +986,9 @@
   .bg-\[color\:var\(--muted\)\] {
     background-color: var(--muted);
   }
+  .bg-\[color\:var\(--muted-foreground\)\] {
+    background-color: var(--muted-foreground);
+  }
   .bg-\[color\:var\(--primary\)\] {
     background-color: var(--primary);
   }
@@ -1364,19 +1388,33 @@
     box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
   }
   .shadow-lg {
-    --tw-shadow: 0 10px 15px -3px var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 4px 6px -4px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
+    --tw-shadow: 0 10px 15px -3px var(--tw-shadow-color, var(--shadow-color)), 0 4px 6px -4px var(--tw-shadow-color, var(--shadow-color));
+    @supports (color: color-mix(in lab, red, red)) {
+      --tw-shadow: 0 10px 15px -3px var(--tw-shadow-color, color-mix(in oklch, var(--shadow-color) 10%, transparent)), 0 4px 6px -4px var(--tw-shadow-color, color-mix(in oklch, var(--shadow-color) 10%, transparent));
+    }
     box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
   }
   .shadow-md {
-    --tw-shadow: 0 4px 6px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 2px 4px -2px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
+    --tw-shadow: 0 4px 6px -1px var(--tw-shadow-color, var(--shadow-color)), 0 2px 4px -2px var(--tw-shadow-color, var(--shadow-color));
+    @supports (color: color-mix(in lab, red, red)) {
+      --tw-shadow: 0 4px 6px -1px var(--tw-shadow-color, color-mix(in oklch, var(--shadow-color) 10%, transparent)), 0 2px 4px -2px var(--tw-shadow-color, color-mix(in oklch, var(--shadow-color) 10%, transparent));
+    }
     box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
   }
   .shadow-sm {
-    --tw-shadow: 0 1px 2px 0 var(--tw-shadow-color, rgb(0 0 0 / 0.05));
+    --tw-shadow: 0 1px 2px var(--tw-shadow-color, 0
+)    var(--shadow-color);
+    @supports (color: color-mix(in lab, red, red)) {
+      --tw-shadow: 0 1px 2px var(--tw-shadow-color, 0
+)    color-mix(in oklch, var(--shadow-color) 5%, transparent);
+    }
     box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
   }
   .shadow-xl {
-    --tw-shadow: 0 20px 25px -5px var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 8px 10px -6px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
+    --tw-shadow: 0 20px 25px -5px var(--tw-shadow-color, var(--shadow-color)), 0 8px 10px -6px var(--tw-shadow-color, var(--shadow-color));
+    @supports (color: color-mix(in lab, red, red)) {
+      --tw-shadow: 0 20px 25px -5px var(--tw-shadow-color, color-mix(in oklch, var(--shadow-color) 10%, transparent)), 0 8px 10px -6px var(--tw-shadow-color, color-mix(in oklch, var(--shadow-color) 10%, transparent));
+    }
     box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
   }
   .ring {
@@ -1753,7 +1791,10 @@
   .hover\:shadow-lg {
     &:hover {
       @media (hover: hover) {
-        --tw-shadow: 0 10px 15px -3px var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 4px 6px -4px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
+        --tw-shadow: 0 10px 15px -3px var(--tw-shadow-color, var(--shadow-color)), 0 4px 6px -4px var(--tw-shadow-color, var(--shadow-color));
+        @supports (color: color-mix(in lab, red, red)) {
+          --tw-shadow: 0 10px 15px -3px var(--tw-shadow-color, color-mix(in oklch, var(--shadow-color) 10%, transparent)), 0 4px 6px -4px var(--tw-shadow-color, color-mix(in oklch, var(--shadow-color) 10%, transparent));
+        }
         box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
       }
     }
@@ -2327,7 +2368,7 @@
   --maestro-toggle-off-bg: var(--muted);
   --maestro-toggle-handle-bg: var(--foreground);
   --hover-text-color: var(--text-color);
-  --shadow-color: rgb(0 0 0);
+  --shadow-color: oklch(0 0 0);
   --hover-bg: color-mix(in srgb, oklch(0.2 0 0) 6%, oklch(0.99 0 0) 94%);
   @supports (color: color-mix(in lab, red, red)) {
     --hover-bg: color-mix(in oklch, var(--foreground) 6%, var(--background) 94%);
@@ -2373,7 +2414,7 @@
   --maestro-toggle-off-bg: oklch(0.3 0 0);
   --maestro-toggle-handle-bg: oklch(0.9 0 0);
   --hover-text-color: var(--text-color);
-  --shadow-color: rgb(255 255 255);
+  --shadow-color: oklch(0.95 0 0);
   --hover-bg: var(--text-color);
   @supports (color: color-mix(in lab, red, red)) {
     --hover-bg: color-mix(
@@ -3082,57 +3123,6 @@
   .fixed.inset-0 {
     animation: fadeIn 0.2s ease-out forwards;
   }
-}
-#scoped-theme {
-  --primary: #0070f3;
-  --primary-foreground: white;
-  --secondary: #383838;
-  --secondary-foreground: white;
-  --accent: #7928ca;
-  --accent-foreground: white;
-  --background: #fff;
-  --foreground: #000;
-  --card: #f9f9f9;
-  --card-foreground: #111;
-  --border: #eaeaea;
-  --ring: #bbbbbb;
-  --destructive: #ef4444;
-  --destructive-foreground: #fff;
-  --muted: #f3f4f6;
-  --muted-foreground: #64748b;
-  --font-sans: Inter, system-ui, sans-serif;
-  --font-heading: Inter, system-ui, sans-serif;
-  --font-size-base: 16px;
-  --line-height-normal: 1.5;
-  --font-weight-normal: 400;
-  --font-weight-medium: 500;
-  --font-weight-light: 300;
-  --font-weight-bold: 700;
-  --font-weight-semibold: 600;
-  --spacing-unit: rem;
-  --spacing-10: 2.5rem;
-  --spacing-5: 1.25rem;
-  --spacing-16: 4rem;
-  --spacing-4: 1rem;
-  --spacing-2: 0.5rem;
-  --spacing-0: 0px;
-  --spacing-6: 1.5rem;
-  --spacing-12: 3rem;
-  --spacing-8: 2rem;
-  --spacing-3: 0.75rem;
-  --spacing-1: 0.25rem;
-  --radius-sm: 0.125rem;
-  --radius-md: 0.25rem;
-  --radius-lg: 0.5rem;
-  --radius-xl: 1rem;
-  --radius-full: 9999px;
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.05);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
-    0 4px 6px -4px rgb(0 0 0 / 0.05);
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1),
-    0 8px 10px -6px rgb(0 0 0 / 0.05);
-  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
 }
 @property --tw-translate-x {
   syntax: "*";

@@ -345,7 +345,7 @@ pub mod desktop {
 
 #[cfg(not(any(feature = "web", feature = "desktop")))]
 pub mod mobile {
-	use crate::system::{SystemThemeDetector, ThemeChangeCallback};
+	use crate::components::maestro_themes::theme::system::{SystemThemeDetector, ThemeChangeCallback};
 	// Default implementation for unsupported platforms
 	pub struct DefaultThemeDetector;
 

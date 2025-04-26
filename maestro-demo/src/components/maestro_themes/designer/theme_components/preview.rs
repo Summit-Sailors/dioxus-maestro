@@ -8,14 +8,13 @@ use crate::components::maestro_themes::{
 
 #[derive(Props, PartialEq, Clone)]
 pub struct ThemePreviewProps {
-	state: Signal<DesignerState>,
 	with_doc_theme: bool,
 	components_section_id: String,
 }
 
 #[component]
 pub fn ThemePreview(props: ThemePreviewProps) -> Element {
-	let state = props.state;
+	let state = use_context::<Signal<DesignerState>>();
 	let components_id_clone = props.components_section_id.clone();
 	let theme_options = ThemeOptions { with_doc_themes: false, format: ExportFormat::CSSVariable, components_id: props.components_section_id };
 
@@ -26,12 +25,12 @@ pub fn ThemePreview(props: ThemePreviewProps) -> Element {
 	let css_variables = export_theme(&state(), &theme_options).replace("@theme", "#scoped-theme");
 
 	rsx! {
-		div { id: "theme-preview-container",
-			main { id: "scoped-theme",
-				style { "{css_variables}" }
-				{content}
-			}
-
-		}
-	}
+    div { id: "theme-preview-container",
+      main { id: "scoped-theme",
+        style { "{css_variables}" }
+        {content}
+      }
+    
+    }
+  }
 }
