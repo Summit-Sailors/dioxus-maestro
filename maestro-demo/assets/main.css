@@ -102,21 +102,21 @@
     --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     --default-font-family: var(--font-sans);
     --default-mono-font-family: var(--font-mono);
-    --primary: oklch(0.57 0.19 263.83);
-    --primary-foreground: white;
-    --secondary: oklch(0.5 0.1 264);
-    --secondary-foreground: white;
-    --accent: oklch(0.8 0.18 75.59);
-    --accent-foreground: white;
+    --primary: oklch(0.65 0.2 264);
+    --primary-foreground: oklch(0.99 0 0);
+    --secondary: oklch(0.55 0.1 264);
+    --secondary-foreground: oklch(0.99 0 0);
+    --accent: oklch(0.78 0.17 75);
+    --accent-foreground: oklch(0.15 0 0);
     --background: oklch(0.99 0 0);
-    --foreground: oklch(0.2 0 0);
-    --card: oklch(0.99 0 0);
-    --card-foreground: oklch(0.2 0 0);
-    --border-color: oklch(0.75 0 0);
+    --foreground: oklch(0.15 0 0);
+    --card: oklch(0.98 0 0);
+    --card-foreground: oklch(0.15 0 0);
+    --border-color: oklch(0.8 0 0);
     --ring: var(--primary);
-    --destructive: oklch(0.67 0.2 27.23);
-    --destructive-foreground: white;
-    --muted: oklch(0.95 0 0);
+    --destructive: oklch(0.65 0.2 25);
+    --destructive-foreground: oklch(0.99 0 0);
+    --muted: oklch(0.96 0 0);
     --muted-foreground: oklch(0.5 0 0);
     --font-heading: "Inter, system-ui, sans-serif";
     --font-size-base: 1rem;
@@ -2353,7 +2353,7 @@
 :root {
   --bg-color: var(--background);
   --text-color: var(--foreground);
-  --border-color: var(--border);
+  --border-color: var(--border-color);
   --input-bg: var(--muted);
   --card-bg: var(--card);
   --card-text: var(--card-foreground);
@@ -2369,7 +2369,7 @@
   --maestro-toggle-handle-bg: var(--foreground);
   --hover-text-color: var(--text-color);
   --shadow-color: oklch(0 0 0);
-  --hover-bg: color-mix(in srgb, oklch(0.2 0 0) 6%, oklch(0.99 0 0) 94%);
+  --hover-bg: color-mix(in srgb, oklch(0.15 0 0) 6%, oklch(0.99 0 0) 94%);
   @supports (color: color-mix(in lab, red, red)) {
     --hover-bg: color-mix(in oklch, var(--foreground) 6%, var(--background) 94%);
   }
@@ -2379,7 +2379,7 @@
   --range-thumb-bg: var(--background);
   --range-track-bg: color-mix(
     in oklch,
-    oklch(0.57 0.19 263.83) 40%,
+    oklch(0.65 0.2 264) 40%,
     oklch(0.99 0 0) 60%
   );
   @supports (color: color-mix(in lab, red, red)) {
@@ -2391,7 +2391,7 @@
   }
   --range-track-hover: color-mix(
     in oklch,
-    oklch(0.57 0.19 263.83) 60%,
+    oklch(0.65 0.2 264) 60%,
     oklch(0.99 0 0) 40%
   );
   @supports (color: color-mix(in lab, red, red)) {
@@ -2403,13 +2403,13 @@
   }
 }
 [data-theme="dark"] {
-  --bg-color: oklch(0.2 0 0);
+  --bg-color: oklch(0.18 0 0);
   --text-color: oklch(0.97 0 0);
   --border-color: oklch(0.4 0 0);
   --input-bg: oklch(0.25 0 0);
-  --card-bg: oklch(0.25 0 0);
+  --card-bg: oklch(0.22 0 0);
   --card-text: oklch(0.97 0 0);
-  --muted-text: oklch(0.65 0 0);
+  --muted-text: oklch(0.6 0 0);
   --maestro-toggle-on-bg: var(--primary);
   --maestro-toggle-off-bg: oklch(0.3 0 0);
   --maestro-toggle-handle-bg: oklch(0.9 0 0);
@@ -2417,11 +2417,7 @@
   --shadow-color: oklch(0.95 0 0);
   --hover-bg: var(--text-color);
   @supports (color: color-mix(in lab, red, red)) {
-    --hover-bg: color-mix(
-    in oklch,
-    var(--text-color) 6%,
-    var(--bg-color) 94%
-  );
+    --hover-bg: color-mix(in oklch, var(--text-color) 6%, var(--bg-color) 94%);
   }
   --highlight-color: color-mix(
     in oklch,
@@ -2686,7 +2682,7 @@
       background-color: var(--primary);
       color: var(--primary-foreground);
       &:hover {
-        background-color: color-mix(in srgb, oklch(0.57 0.19 263.83) 80%, black 20%);
+        background-color: color-mix(in srgb, oklch(0.65 0.2 264) 80%, black 20%);
         @supports (color: color-mix(in lab, red, red)) {
           background-color: color-mix(in srgb, var(--primary) 80%, black 20%);
         }
@@ -2697,7 +2693,7 @@
       border: 1px solid var(--border);
       color: var(--foreground);
       &:hover {
-        background-color: color-mix( in srgb, oklch(0.99 0 0) 95%, oklch(0.2 0 0) 5% );
+        background-color: color-mix( in srgb, oklch(0.99 0 0) 95%, oklch(0.15 0 0) 5% );
         @supports (color: color-mix(in lab, red, red)) {
           background-color: color-mix( in srgb, var(--background) 95%, var(--foreground) 5% );
         }
@@ -2707,7 +2703,7 @@
       background-color: transparent;
       color: var(--foreground);
       &:hover {
-        background-color: color-mix( in srgb, oklch(0.99 0 0) 95%, oklch(0.2 0 0) 5% );
+        background-color: color-mix( in srgb, oklch(0.99 0 0) 95%, oklch(0.15 0 0) 5% );
         @supports (color: color-mix(in lab, red, red)) {
           background-color: color-mix( in srgb, var(--background) 95%, var(--foreground) 5% );
         }
@@ -2729,7 +2725,7 @@
       color: var(--foreground);
       background-color: transparent;
       &:hover {
-        color: color-mix(in srgb, oklch(0.2 0 0) 80%, black 20%);
+        color: color-mix(in srgb, oklch(0.15 0 0) 80%, black 20%);
         @supports (color: color-mix(in lab, red, red)) {
           color: color-mix(in srgb, var(--foreground) 80%, black 20%);
         }

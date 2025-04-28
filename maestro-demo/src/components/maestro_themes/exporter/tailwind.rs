@@ -103,7 +103,6 @@ pub fn generate_tailwind_v4_css(state: &DesignerState, theme_options: ThemeOptio
   {}"#,
 		component_specific_styles
 	);
-	// Base theme configuration using CSS variables
 	let base_theme = format!(
 		r#"/**
 * Tailwind CSS v4 Configuration
@@ -159,7 +158,6 @@ pub fn generate_tailwind_v4_css(state: &DesignerState, theme_options: ThemeOptio
   --shadow-xl: {};
   --shadow-2xl: {};
 }}"#,
-		// Parameters remain the same
 		state.color.primary,
 		state.color.secondary,
 		state.color.accent,
@@ -266,7 +264,6 @@ pub fn generate_tailwind_v4_css(state: &DesignerState, theme_options: ThemeOptio
 
 /// Generate CSS variables from theme with support for light/dark themes
 pub fn generate_theme_variables(state: &DesignerState) -> String {
-	// Base theme configuration using updated naming convention for consistency with Tailwind v4
 	let base_theme = format!(
 		r#"/**
 * Generated theme CSS variables
@@ -282,7 +279,7 @@ pub fn generate_theme_variables(state: &DesignerState) -> String {
 --secondary-foreground: white;
 --accent: {};
 --accent-foreground: white;
---background: {};
+--bg-color: {};
 --foreground: {};
 --card: {};
 --card-foreground: {};

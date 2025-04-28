@@ -127,7 +127,7 @@ pub fn ThemeViewer(mut props: ThemeViewerProps) -> Element {
 				}
 			}
 			if !stylesheet().is_empty() {
-				div { class: "relative flex-1 rounded-lg flex flex-col bg-[color:var(--bg-color)] lg:px-16 sm:px-6 px-2 py-8 h-full overflow-x-auto mt-8",
+				div { class: "relative flex-1 w-full rounded-lg flex flex-col bg-[color:var(--bg-color)] lg:px-16 sm:px-6 px-2 py-8 h-full overflow-x-auto mt-8",
 
 					div { class: "flex w-full justify-between items-center bg-[color:var(--secondary-bg)] text-[color:var(--secondary-text)] text-xs px-4 py-2 rounded-t-md",
 						span { class: "font-mono", "Generated Stylesheet" }
