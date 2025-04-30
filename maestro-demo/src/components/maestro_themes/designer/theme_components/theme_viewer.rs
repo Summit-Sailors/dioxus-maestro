@@ -22,13 +22,13 @@ use crate::components::maestro_themes::{
 
 #[derive(Props, PartialEq, Clone)]
 pub struct ThemeViewerProps {
-	pub state: DesignerState,
 	pub theme_options: ThemeOptions,
 	pub show_generated_themes: Signal<bool>,
 }
 
 #[component]
 pub fn ThemeViewer(mut props: ThemeViewerProps) -> Element {
+	let state = use_context::<Signal<DesignerState>>();
 	let theme_viewer_props = props.clone();
 	let mut is_generating = use_signal(|| false);
 	let mut stylesheet = use_signal(String::new);
@@ -82,7 +82,7 @@ pub fn ThemeViewer(mut props: ThemeViewerProps) -> Element {
 
 	use_effect(move || {
 		is_generating.set(true);
-		stylesheet.set(highlight_code(export_theme(&theme_viewer_props.state, &props.theme_options).as_str(), props.theme_options.format.language()));
+		stylesheet.set(highlight_code(export_theme(&state(), &props.theme_options).as_str(), props.theme_options.format.language()));
 		is_generating.set(false);
 	});
 

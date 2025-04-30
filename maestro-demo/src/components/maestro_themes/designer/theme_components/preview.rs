@@ -18,19 +18,18 @@ pub fn ThemePreview(props: ThemePreviewProps) -> Element {
 	let components_id_clone = props.components_section_id.clone();
 	let theme_options = ThemeOptions { with_doc_themes: false, format: ExportFormat::CSSVariable, components_id: props.components_section_id };
 
+	let mut css_variables = use_signal(|| String::from(""));
+
+	use_effect(move || {
+		css_variables.set(export_theme(&state(), &theme_options).replace("@theme {", "").replace("\n", " ").replace("}", ""));
+	});
+
 	// UI components being shoucased
 	let content = get_components_section(&components_id_clone);
 
-	// Generate CSS variables
-	let css_variables = export_theme(&state(), &theme_options).replace("@theme", "#scoped-theme");
-
 	rsx! {
-    div { id: "theme-preview-container",
-      main { id: "scoped-theme",
-        style { "{css_variables}" }
-        {content}
-      }
-    
-    }
-  }
+		div { id: "theme-preview-container", style: "{css_variables()}",
+			main { id: "theme-previewer", {content} }
+		}
+	}
 }

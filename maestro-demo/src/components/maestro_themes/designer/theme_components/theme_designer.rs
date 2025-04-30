@@ -7,15 +7,12 @@ use strum::IntoEnumIterator;
 use tailwind_fuse::tw_merge;
 
 use super::prelude::*;
-use crate::{
-	components::{
-		backdrop::Backdrop,
-		maestro_themes::{
-			designer::state::{DesignerState, ThemedesignerAction},
-			exporter::{ExportFormat, ThemeOptions},
-		},
+use crate::components::{
+	backdrop::Backdrop,
+	maestro_themes::{
+		designer::state::{DesignerState, ThemedesignerAction},
+		exporter::{ExportFormat, ThemeOptions},
 	},
-	router::Route,
 };
 
 #[derive(Debug, Clone, PartialEq, strum_macros::EnumIter, strum_macros::Display, strum_macros::EnumString)]
@@ -53,38 +50,89 @@ pub struct ThemeDesignerProps {
 
 #[component]
 pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
-	let designer_state = props.state.clone();
-	let components_id = props.components_id.clone();
-	let components_id_clone = components_id.clone();
+	use_context_provider(|| Signal::new(props.state.unwrap_or_default()));
 
-	let mut state = use_context_provider(|| Signal::new(designer_state.unwrap_or_default()));
+	let components_id = props.components_id.clone();
 
 	let mut active_tab = use_signal(|| "colors");
 
-	let mut current_component_group = use_signal(|| components_id_clone.clone());
+	let mut current_component_group = use_signal(|| components_id.clone());
 
 	let with_doc_theme = use_signal(|| false);
 	let mut export_format = use_signal(|| ExportFormat::TailwindCSS);
 
 	let mut show_theme_viewer = use_signal(|| false);
-	let mut theme_options = use_signal(|| ThemeOptions { with_doc_themes: with_doc_theme(), format: export_format(), components_id });
+	let mut theme_options = use_signal(|| ThemeOptions { with_doc_themes: with_doc_theme(), format: export_format(), components_id: components_id.clone() });
+
+	let doc_theme_enabled = with_doc_theme();
+	let export_fmt = export_format();
+	let components_group = current_component_group();
 
 	// editor actions
 	let reset_theme = move |_| {
+		let mut state = use_context::<Signal<DesignerState>>();
 		state.with_mut(|s| s.apply_action(ThemedesignerAction::ResetToDefaults));
 	};
 
-	// to navigate home
-	let navigator = use_navigator();
-
 	let is_tab_active = move |tab: &str| -> bool { active_tab() == tab };
 
-	use_effect({
-		let comp_id = components_id_clone.clone();
-		move || {
-			theme_options.set(ThemeOptions { with_doc_themes: with_doc_theme(), format: export_format(), components_id: comp_id.clone() });
-		}
+	use_effect(move || {
+		theme_options.set(ThemeOptions { with_doc_themes: doc_theme_enabled, format: export_fmt.clone(), components_id: components_group.clone() });
 	});
+
+	let tab_content = {
+		match active_tab() {
+			"colors" => rsx! {
+				div { class: "tab-panel p-4 bg-[color:var(--input-bg)] rounded-[var(--radius-md)] transition-all",
+					ColorPicker {}
+				}
+			},
+			"typography" => rsx! {
+				div { class: "tab-panel p-4 bg-[color:var(--input-bg)] rounded-[var(--radius-md)] transition-all",
+					FontSelector {}
+				}
+			},
+			"spacing" => rsx! {
+				div { class: "tab-panel p-4 bg-[color:var(--input-bg)] rounded-[var(--radius-md)] transition-all",
+					SpacingEditor {}
+				}
+			},
+			"border-radius" => rsx! {
+				div { class: "tab-panel p-4 bg-[color:var(--input-bg)] rounded-[var(--radius-md)] transition-all",
+					BorderRadiusEditor {}
+				}
+			},
+			"shadows" => rsx! {
+				div { class: "tab-panel p-4 bg-[color:var(--input-bg)] rounded-[var(--radius-md)] transition-all",
+					ShadowEditor {}
+				}
+			},
+			_ => rsx! {
+				div {}
+			},
+		}
+	};
+
+	let theme_viewer = if show_theme_viewer() {
+		rsx! {
+			Backdrop { show: show_theme_viewer }
+			div { class: "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-3xl max-h-[80vh] overflow-y-auto bg-[color:var(--card-bg)] p-6 rounded-lg border border-[color:var(--border-color)] shadow-xl z-50 transition-appear",
+				ThemeViewer {
+					theme_options: theme_options(),
+					show_generated_themes: show_theme_viewer,
+				}
+			}
+		}
+	} else {
+		rsx! {}
+	};
+
+	let base_btn_classes = String::from("px-4 py-2 font-medium transition-all w-full text-left sm:text-center");
+	let active_tab_classes = String::from(
+		"border-b-2 sm:border-b-2 border-l-2 sm:border-l-0 border-[color:var(--primary-bg)] text-[color:var(--primary-bg)] bg-[color:var(--hover-bg)] sm:bg-transparent",
+	);
+	let inactive_tab_classes =
+		String::from("text-[color:var(--text-color)] hover:text-[color:var(--primary-bg)] border-b sm:border-b-0 border-[color:var(--border-color)]");
 
 	rsx! {
 		div {
@@ -95,42 +143,15 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 					"Theme Customization"
 				}
 
-				button {
-					class: "px-4 py-2 bg-[color:var(--primary-bg)] text-[color:var(--primary-text)] rounded-[var(--radius-md)] hover:bg-[color:var(--secondary-bg)] transition-all duration-200 flex items-center gap-2 mb-6 w-full sm:w-auto",
-					onclick: move |_| {
-							navigator.push(Route::HomePage {});
-					},
-					"Go Home"
-				}
-
-				{
-						if show_theme_viewer() {
-								rsx! {
-									Backdrop { show: show_theme_viewer }
-									div { class: "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-3xl max-h-[80vh] overflow-y-auto bg-[color:var(--card-bg)] p-6 rounded-lg border border-[color:var(--border-color)] shadow-xl z-50 transition-appear",
-										ThemeViewer {
-											state: state(),
-											theme_options: theme_options(),
-											show_generated_themes: show_theme_viewer,
-										}
-									}
-								}
-						} else {
-								rsx! {}
-						}
-				}
+				{theme_viewer}
 
 				div { class: "theme-designer-tabs mb-6",
 					ul { class: "flex flex-wrap sm:border-b border-[color:var(--border-color)]",
 						li { class: "mr-2 w-full sm:w-auto",
 							button {
 								class: tw_merge!(
-										"px-4 py-2 font-medium transition-all w-full text-left sm:text-center", if
-										is_tab_active("colors") {
-										"border-b-2 sm:border-b-2 border-l-2 sm:border-l-0 border-[color:var(--primary-bg)] text-[color:var(--primary-bg)] bg-[color:var(--hover-bg)] sm:bg-transparent"
-										} else {
-										"text-[color:var(--text-color)] hover:text-[color:var(--primary-bg)] border-b sm:border-b-0 border-[color:var(--border-color)]"
-										}
+										base_btn_classes.clone(), if is_tab_active("colors") { active_tab_classes.clone()
+										} else { inactive_tab_classes.clone() }
 								),
 								onclick: move |_| active_tab.set("colors"),
 								"Colors"
@@ -139,12 +160,8 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 						li { class: "mr-2 w-full sm:w-auto",
 							button {
 								class: tw_merge!(
-										"px-4 py-2 font-medium transition-all w-full text-left sm:text-center", if
-										is_tab_active("typography") {
-										"border-b-2 sm:border-b-2 border-l-2 sm:border-l-0 border-[color:var(--primary-bg)] text-[color:var(--primary-bg)] bg-[color:var(--hover-bg)] sm:bg-transparent"
-										} else {
-										"text-[color:var(--text-color)] hover:text-[color:var(--primary-bg)] border-b sm:border-b-0 border-[color:var(--border-color)]"
-										}
+										base_btn_classes.clone(), if is_tab_active("typography") { active_tab_classes
+										.clone() } else { inactive_tab_classes.clone() }
 								),
 								onclick: move |_| active_tab.set("typography"),
 								"Typography"
@@ -153,12 +170,8 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 						li { class: "mr-2 w-full sm:w-auto",
 							button {
 								class: tw_merge!(
-										"px-4 py-2 font-medium transition-all w-full text-left sm:text-center", if
-										is_tab_active("spacing") {
-										"border-b-2 sm:border-b-2 border-l-2 sm:border-l-0 border-[color:var(--primary-bg)] text-[color:var(--primary-bg)] bg-[color:var(--hover-bg)] sm:bg-transparent"
-										} else {
-										"text-[color:var(--text-color)] hover:text-[color:var(--primary-bg)] border-b sm:border-b-0 border-[color:var(--border-color)]"
-										}
+										base_btn_classes.clone(), if is_tab_active("spacing") { active_tab_classes
+										.clone() } else { inactive_tab_classes.clone() }
 								),
 								onclick: move |_| active_tab.set("spacing"),
 								"Spacing"
@@ -167,12 +180,8 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 						li { class: "mr-2 w-full sm:w-auto",
 							button {
 								class: tw_merge!(
-										"px-4 py-2 font-medium transition-all w-full text-left sm:text-center", if
-										is_tab_active("border-radius") {
-										"border-b-2 sm:border-b-2 border-l-2 sm:border-l-0 border-[color:var(--primary-bg)] text-[color:var(--primary-bg)] bg-[color:var(--hover-bg)] sm:bg-transparent"
-										} else {
-										"text-[color:var(--text-color)] hover:text-[color:var(--primary-bg)] border-b sm:border-b-0 border-[color:var(--border-color)]"
-										}
+										base_btn_classes.clone(), if is_tab_active("border-radius") { active_tab_classes
+										.clone() } else { inactive_tab_classes.clone() }
 								),
 								onclick: move |_| active_tab.set("border-radius"),
 								"Border Radius"
@@ -181,12 +190,8 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 						li { class: "mr-2 w-full sm:w-auto",
 							button {
 								class: tw_merge!(
-										"px-4 py-2 font-medium transition-all w-full text-left sm:text-center", if
-										is_tab_active("shadows") {
-										"border-b-2 sm:border-b-2 border-l-2 sm:border-l-0 border-[color:var(--primary-bg)] text-[color:var(--primary-bg)] bg-[color:var(--hover-bg)] sm:bg-transparent"
-										} else {
-										"text-[color:var(--text-color)] hover:text-[color:var(--primary-bg)] border-b sm:border-b-0 border-[color:var(--border-color)]"
-										}
+										base_btn_classes.clone(), if is_tab_active("shadows") { active_tab_classes
+										.clone() } else { inactive_tab_classes.clone() }
 								),
 								onclick: move |_| active_tab.set("shadows"),
 								"Shadows"
@@ -267,50 +272,7 @@ pub fn ThemeDesigner(props: ThemeDesignerProps) -> Element {
 							}
 						}
 					}
-					// Colors tab
-					div {
-						class: tw_merge!(
-								"tab-panel p-4 bg-[color:var(--input-bg)] rounded-[var(--radius-md)] transition-all",
-								if active_tab() != "colors" { "hidden" } else { "" }
-						),
-						ColorPicker {}
-					}
-
-					// Typography tab
-					div {
-						class: tw_merge!(
-								"tab-panel p-4 bg-[color:var(--input-bg)] rounded-[var(--radius-md)] transition-all",
-								if active_tab() != "typography" { "hidden" } else { "" }
-						),
-						FontSelector {}
-					}
-
-					// Spacing tab
-					div {
-						class: tw_merge!(
-								"tab-panel p-4 bg-[color:var(--input-bg)] rounded-[var(--radius-md)] transition-all",
-								if active_tab() != "spacing" { "hidden" } else { "" }
-						),
-						SpacingEditor {}
-					}
-
-					// Border Radius tab
-					div {
-						class: tw_merge!(
-								"tab-panel p-4 bg-[color:var(--input-bg)] rounded-[var(--radius-md)] transition-all",
-								if active_tab() != "border-radius" { "hidden" } else { "" }
-						),
-						BorderRadiusEditor {}
-					}
-
-					// Shadows tab
-					div {
-						class: tw_merge!(
-								"tab-panel p-4 bg-[color:var(--input-bg)] rounded-[var(--radius-md)] transition-all",
-								if active_tab() != "shadows" { "hidden" } else { "" }
-						),
-						ShadowEditor {}
-					}
+					{tab_content}
 				}
 
 				div { class: "theme-actions mt-8 flex flex-wrap gap-4",
