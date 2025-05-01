@@ -1,5 +1,5 @@
 use super::ThemeOptions;
-use crate::components::maestro_themes::{designer::state::DesignerState, exporter::component_styles::get_component_styles};
+use crate::maestro_themes::{editor::state::DesignerState, exporter::component_styles::get_component_styles};
 
 /// Generate Tailwind v4 CSS configuration with theme support
 pub fn generate_tailwind_v4_css(state: &DesignerState, theme_options: ThemeOptions) -> String {

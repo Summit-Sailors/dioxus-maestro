@@ -1,7 +1,7 @@
 //! Theme context and hooks (Unified context provider)
 use dioxus::prelude::*;
 
-use crate::components::maestro_themes::theme::types::{ResolvedTheme, Theme};
+use crate::maestro_themes::theme::types::{ResolvedTheme, Theme};
 
 /// Theme context to be used throughout the application
 

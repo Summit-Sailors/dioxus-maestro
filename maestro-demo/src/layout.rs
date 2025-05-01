@@ -21,171 +21,171 @@ pub fn Layout(children: Element) -> Element {
 	let current_route = use_route::<Route>();
 
 	let navigation_menu = rsx! {
-		// sidebar
-		nav {
-			class: tw_join!(
-					"relative py-6 sm:px-5 px-0 z-50 bg-[var(--bg-color)] border-l border-l-[var(--border-color)]",
-					"transform transition-transform duration-300 ease-in-out", (current_route.name()
-					== "Home").then_some("hidden lg:hidden translate-x-0")
-			),
-			Button {
-				variant: ButtonVariant::Icon,
-				size: ButtonSize::IconMd,
-				r#type: "button",
-				class: "text-[var(--muted-text)] hover:text-[var(--text-color)] xl:hidden transition-colors mx-auto",
-				onclick: move |_| menu_open.set(true),
-				Icon { icon: BsLayoutSidebar, class: "w-5 h-5" }
-			}
-			NavigationMenu { close_menu: menu_open }
-		}
-	};
+    // sidebar
+    nav {
+      class: tw_join!(
+          "relative py-6 sm:px-5 px-0 z-50 bg-[var(--bg-color)] border-l border-l-[var(--border-color)]",
+          "transform transition-transform duration-300 ease-in-out", (current_route.name()
+          == "Home").then_some("hidden lg:hidden translate-x-0")
+      ),
+      Button {
+        variant: ButtonVariant::Icon,
+        size: ButtonSize::IconMd,
+        r#type: "button",
+        class: "text-[var(--muted-text)] hover:text-[var(--text-color)] xl:hidden transition-colors mx-auto",
+        onclick: move |_| menu_open.set(true),
+        Icon { icon: BsLayoutSidebar, class: "w-5 h-5" }
+      }
+      NavigationMenu { close_menu: menu_open }
+    }
+  };
 
 	let content = rsx! {
-		match current_route {
-				Route::HomePage {} => rsx! {
-					Outlet::<Route> {}
-				},
-				_ => rsx! {
-					div { class: "flex-1 grid xl:grid-cols-[1fr_358px] sm:grid-cols-[1fr_80px] grid-cols-[1fr_42px] overflow-y-auto relative overflow-x-hidden bg-[var(--bg-color)] text-[var(--text-color)]",
-						CodeEditor {
-							title: current_route.name(),
-							code_map: get_source_code(&current_route),
-							demo: rsx! {
-								Outlet::<Route> {}
-							},
-						}
-						{navigation_menu}
-					}
-				},
-		}
-	};
+    match current_route {
+        Route::HomePage {} => rsx! {
+          Outlet::<Route> {}
+        },
+        _ => rsx! {
+          div { class: "flex-1 grid xl:grid-cols-[1fr_358px] sm:grid-cols-[1fr_80px] grid-cols-[1fr_42px] overflow-y-auto relative overflow-x-hidden bg-[var(--bg-color)] text-[var(--text-color)]",
+            CodeEditor {
+              title: current_route.name(),
+              code_map: get_source_code(&current_route),
+              demo: rsx! {
+                Outlet::<Route> {}
+              },
+            }
+            {navigation_menu}
+          }
+        },
+    }
+  };
 
 	rsx! {
-		head {
-			document::Link { rel: "icon", href: asset!("/assets/favicon.ico") }
-			document::Link { rel: "preconnect", href: "https://fonts.googleapis.com" }
-			document::Link {
-				rel: "stylesheet",
-				href: "https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap",
-			}
-		}
-		ToastFrame { manager: toast }
-		div {
-			id: "maestro-demo",
-			class: "flex flex-col h-screen bg-[var(--bg-color)] text-[var(--text-color)]",
-			Backdrop { show: menu_open }
+    head {
+      document::Link { rel: "icon", href: asset!("/assets/favicon.ico") }
+      document::Link { rel: "preconnect", href: "https://fonts.googleapis.com" }
+      document::Link {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap",
+      }
+    }
+    ToastFrame { manager: toast }
+    div {
+      id: "maestro-demo",
+      class: "flex flex-col h-screen bg-[var(--bg-color)] text-[var(--text-color)]",
+      Backdrop { show: menu_open }
 
-			NavBar {}
-			// main Content
-			main {
-				id: "maestro-demo-main",
-				class: "flex-1 flex flex-col overflow-hidden bg-[var(--card-bg)] text-[var(--card-text)]",
-				{content}
-			}
-		}
-	}
+      NavBar {}
+      // main Content
+      main {
+        id: "maestro-demo-main",
+        class: "flex-1 flex flex-col overflow-hidden bg-[var(--card-bg)] text-[var(--card-text)]",
+        {content}
+      }
+    }
+  }
 }
 
 #[component]
 fn NavigationMenu(close_menu: Signal<bool>) -> Element {
 	rsx! {
-		div {
-			id: "maestro-demo-nav",
-			class: tw_merge!(
-					"h-full xl:w-full w-80 bg-[var(--bg-color)] xl:sticky overflow-y-auto absolute transition-all ease-linear duration-300 top-0 -right-80 z-50 px-5 xl:px-0 py-6 xl:py-0 flex gap-4",
-					"xl:border-l-0 border-l border-l-[var(--border-color)] xl:border-t-0 border-t border-t-[var(--border-color)]",
-					(close_menu()).then_some("right-0")
-			),
-			Button {
-				variant: ButtonVariant::Icon,
-				size: ButtonSize::IconMd,
-				r#type: "button",
-				class: "text-[var(--muted-text)] hover:text-[var(--text-color)] xl:hidden transition-colors",
-				onclick: move |_| close_menu.set(false),
-				Icon { icon: BsLayoutSidebarReverse, class: "w-5 h-5" }
-			}
+    div {
+      id: "maestro-demo-nav",
+      class: tw_merge!(
+          "h-full xl:w-full w-80 bg-[var(--bg-color)] xl:sticky overflow-y-auto absolute transition-all ease-linear duration-300 top-0 -right-80 z-50 px-5 xl:px-0 py-6 xl:py-0 flex gap-4",
+          "xl:border-l-0 border-l border-l-[var(--border-color)] xl:border-t-0 border-t border-t-[var(--border-color)]",
+          (close_menu()).then_some("right-0")
+      ),
+      Button {
+        variant: ButtonVariant::Icon,
+        size: ButtonSize::IconMd,
+        r#type: "button",
+        class: "text-[var(--muted-text)] hover:text-[var(--text-color)] xl:hidden transition-colors",
+        onclick: move |_| close_menu.set(false),
+        Icon { icon: BsLayoutSidebarReverse, class: "w-5 h-5" }
+      }
 
-			div { class: "w-full flex-1 space-y-2 overflow-auto max-h-screen",
-				{
-						render_section(
-										"General",
-										&[
-												(Route::HomePage {}, "Home"),
-												(Route::UIDemo {}, "UI"),
-												(Route::FormsDemo {}, "Form"),
-												(Route::HooksDemo {}, "Hooks"),
-										],
-										close_menu,
-								)
-								.unwrap()
-				}
+      div { class: "w-full flex-1 space-y-2 overflow-auto max-h-screen",
+        {
+            render_section(
+                    "General",
+                    &[
+                        (Route::HomePage {}, "Home"),
+                        (Route::UIDemo {}, "UI"),
+                        (Route::FormsDemo {}, "Form"),
+                        (Route::HooksDemo {}, "Hooks"),
+                    ],
+                    close_menu,
+                )
+                .unwrap()
+        }
 
-				{
-						render_section(
-										"Components & Features",
-										&[
-												(Route::CalendarDemo {}, "Calendar"),
-												(Route::PlottersDemo {}, "Plotters"),
-												(Route::CompleteQueryDemo {}, "Query"),
-												(Route::RadioDemo {}, "Radio"),
-												(Route::ToastDemo {}, "Toast"),
-										],
-										close_menu,
-								)
-								.unwrap()
-				}
+        {
+            render_section(
+                    "Components & Features",
+                    &[
+                        (Route::CalendarDemo {}, "Calendar"),
+                        (Route::PlottersDemo {}, "Plotters"),
+                        (Route::CompleteQueryDemo {}, "Query"),
+                        (Route::RadioDemo {}, "Radio"),
+                        (Route::ToastDemo {}, "Toast"),
+                    ],
+                    close_menu,
+                )
+                .unwrap()
+        }
 
-				{
-						render_section(
-										"Database",
-										&[(Route::DieselDemo {}, "Diesel"), (Route::SqlxDemo {}, "Sqlx")],
-										close_menu,
-								)
-								.unwrap()
-				}
-				{
-						render_section(
-										"Others",
-										&[
-												(Route::ApalisDemo {}, "Apalis"),
-												(Route::SerpApiDemo {}, "SerpaAPI"),
-												(Route::AlpacaDemo {}, "Alpaca"),
-												(Route::AnthropicDemo {}, "Anthropic"),
-										],
-										close_menu,
-								)
-								.unwrap()
-				}
-			}
-
-		}
-	}
+        {
+            render_section(
+                    "Database",
+                    &[(Route::DieselDemo {}, "Diesel"), (Route::SqlxDemo {}, "Sqlx")],
+                    close_menu,
+                )
+                .unwrap()
+        }
+        {
+            render_section(
+                    "Others",
+                    &[
+                        (Route::ApalisDemo {}, "Apalis"),
+                        (Route::SerpApiDemo {}, "SerpaAPI"),
+                        (Route::AlpacaDemo {}, "Alpaca"),
+                        (Route::AnthropicDemo {}, "Anthropic"),
+                    ],
+                    close_menu,
+                )
+                .unwrap()
+        }
+      }
+    
+    }
+  }
 }
 
 fn render_section(title: &str, routes: &[(Route, &str)], mut close_menu: Signal<bool>) -> Element {
 	rsx! {
-		div { class: "border-b border-slate-700 pb-2 mb-2",
-			h3 { class: "text-slate-400 text-sm font-bold uppercase tracking-wide",
-				"{title}"
-			}
-		}
-		div {
-			for (route , name) in routes.iter() {
-				Link {
-					to: route.clone(),
-					class: tw_join!(
-							"block px-4 py-2 transition-colors w-full text-left font-small text-xl text-[var(--muted-text)]",
-							"hover:bg-[color-mix(in_oklch,var(--bg-color)_80%,black)] hover:text-[var(--text-color)]",
-							"focus:outline-none focus:ring-2 focus:ring-[var(--border-color)]", (use_route::<
-							Route > () == * route)
-							.then_some("bg-[color-mix(in_oklch,var(--bg-color)_60%,black)] text-[var(--text-color)]")
-					),
-					onclick: move |_| close_menu.set(false),
-					"{name}"
-				}
-			}
-		}
-	}
+    div { class: "border-b border-slate-700 pb-2 mb-2",
+      h3 { class: "text-slate-400 text-sm font-bold uppercase tracking-wide",
+        "{title}"
+      }
+    }
+    div {
+      for (route , name) in routes.iter() {
+        Link {
+          to: route.clone(),
+          class: tw_join!(
+              "block px-4 py-2 transition-colors w-full text-left font-small text-xl text-[var(--muted-text)]",
+              "hover:bg-[color-mix(in_oklch,var(--bg-color)_80%,black)] hover:text-[var(--text-color)]",
+              "focus:outline-none focus:ring-2 focus:ring-[var(--border-color)]", (use_route::<
+              Route > () == * route)
+              .then_some("bg-[color-mix(in_oklch,var(--bg-color)_60%,black)] text-[var(--text-color)]")
+          ),
+          onclick: move |_| close_menu.set(false),
+          "{name}"
+        }
+      }
+    }
+  }
 }
 
 // include code and it's deps/utilities
@@ -253,7 +253,7 @@ fn get_source_code(route: &Route) -> HashMap<String, String> {
 		Route::AnthropicDemo {} => {
 			code_map.insert("anthropic".to_string(), String::from(include_str!("clients/utilities/anthropic_demo.rs")));
 		},
-		Route::ThemeDesigner { components_id: _ } => {
+		Route::ThemeEditor { components_id: _ } => {
 			code_map.insert("anthropic".to_string(), String::from(""));
 		},
 		Route::NotFound { route: _ } => {

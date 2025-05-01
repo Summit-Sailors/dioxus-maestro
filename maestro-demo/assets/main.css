@@ -986,9 +986,6 @@
   .bg-\[color\:var\(--muted\)\] {
     background-color: var(--muted);
   }
-  .bg-\[color\:var\(--muted-foreground\)\] {
-    background-color: var(--muted-foreground);
-  }
   .bg-\[color\:var\(--primary\)\] {
     background-color: var(--primary);
   }

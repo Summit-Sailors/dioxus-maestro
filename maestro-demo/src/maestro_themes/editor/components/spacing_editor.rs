@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 use dioxus::prelude::*;
 
-use crate::components::maestro_themes::designer::state::{
+use crate::maestro_themes::editor::state::{
 	DesignerState,
 	ThemedesignerAction::{RemoveSpacingValue, UpdateSpacingUnit, UpdateSpacingValue},
 };

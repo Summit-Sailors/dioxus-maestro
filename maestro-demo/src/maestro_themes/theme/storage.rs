@@ -30,7 +30,7 @@ pub mod web {
 
 	use web_sys::window;
 
-	use crate::components::maestro_themes::theme::prelude::*;
+	use crate::maestro_themes::theme::prelude::*;
 
 	pub struct WebStorage;
 
@@ -66,7 +66,7 @@ pub mod desktop {
 
 	use directories::ProjectDirs;
 
-	use crate::components::maestro_themes::theme::storage::*;
+	use crate::maestro_themes::theme::storage::*;
 
 	pub struct DesktopStorage;
 
@@ -114,7 +114,7 @@ pub mod desktop {
 pub mod mobile {
 	use std::sync::{Arc, Mutex};
 
-	use crate::components::maestro_themes::theme::storage::{Theme, ThemeStorage, ThemeStorageError, ThemeStorageResult};
+	use crate::maestro_themes::theme::storage::{Theme, ThemeStorage, ThemeStorageError, ThemeStorageResult};
 
 	pub struct MemoryStorage {
 		theme: Arc<Mutex<Option<Theme>>>,

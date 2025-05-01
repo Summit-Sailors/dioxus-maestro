@@ -1,4 +1,4 @@
-use super::designer::state::DesignerState;
+use super::editor::state::DesignerState;
 
 mod component_styles;
 mod tailwind;

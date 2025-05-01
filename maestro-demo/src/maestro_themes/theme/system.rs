@@ -53,7 +53,7 @@ pub mod desktop {
 	};
 
 	use super::*;
-	use crate::components::maestro_themes::theme::system::ThemeChangeCallback;
+	use crate::maestro_themes::theme::system::ThemeChangeCallback;
 
 	pub struct DesktopThemeDetector {
 		pub dark_theme: Arc<Mutex<bool>>,
@@ -345,7 +345,7 @@ pub mod desktop {
 
 #[cfg(not(any(feature = "web", feature = "desktop")))]
 pub mod mobile {
-	use crate::components::maestro_themes::theme::system::{SystemThemeDetector, ThemeChangeCallback};
+	use crate::maestro_themes::theme::system::{SystemThemeDetector, ThemeChangeCallback};
 	// Default implementation for unsupported platforms
 	pub struct DefaultThemeDetector;
 

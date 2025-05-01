@@ -1,8 +1,8 @@
 // Theme preview component
 use dioxus::prelude::*;
 
-use crate::components::maestro_themes::{
-	designer::{state::DesignerState, theme_components::components_library::get_components_section},
+use crate::maestro_themes::{
+	editor::{misc::components_library::get_components_section, state::DesignerState},
 	exporter::{ExportFormat, ThemeOptions, export_theme},
 };
 
@@ -28,8 +28,8 @@ pub fn ThemePreview(props: ThemePreviewProps) -> Element {
 	let content = get_components_section(&components_id_clone);
 
 	rsx! {
-		div { id: "theme-preview-container", style: "{css_variables()}",
-			main { id: "theme-previewer", {content} }
-		}
-	}
+    div { id: "theme-preview-container", style: "{css_variables()}",
+      main { id: "theme-previewer", {content} }
+    }
+  }
 }
