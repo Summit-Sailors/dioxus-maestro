@@ -65,13 +65,13 @@ where
 		let mut form = *self;
 		let complete_submission = move || {
 			form.is_submitting.toggle();
-			if result.1 && form.should_auto_reset {
+			if result.1 && form.should_auto_reset && form.custom_errors.is_empty() {
 				form.reset_form();
 			}
 		};
 
 		handler.call((event, result.clone(), Box::new(complete_submission)));
-  ().spawn();
+		().spawn();
 	}
 
 	pub fn as_validated_struct(&mut self) -> FormResult<T> {
@@ -101,6 +101,10 @@ where
 		}
 		self.custom_errors.clear();
 		self.is_valid.set(true);
+	}
+
+	pub fn clear_custom_errors(&mut self) {
+		self.custom_errors.clear();
 	}
 
 	pub fn add_form_error(&mut self, error: String) {
