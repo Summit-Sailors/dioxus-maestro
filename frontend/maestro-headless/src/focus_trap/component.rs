@@ -1,9 +1,10 @@
 use {
 	dioxus::{prelude::*, web::WebEventExt},
+	dioxus_logger::tracing::info,
 	std::rc::Rc,
 	uuid::Uuid,
 	web_sys::{
-		EventTarget, HtmlElement,
+		EventTarget, HtmlElement, js_sys,
 		wasm_bindgen::{JsCast, JsValue, prelude::Closure},
 		window,
 	},
@@ -138,9 +139,6 @@ textarea:not([disabled]):not([aria-disabled='true']):not([data-disabled='true'])
 				let window = window().expect("should have a window in this context");
 				let document = window.document().expect("window should have a document");
 				let closure = Closure::wrap(Box::new(move |event: web_sys::KeyboardEvent| {
-					if !event.has_own_property(&JsValue::from_str("key")) {
-						return;
-					}
 					if let Some(node) = current_ref.read().as_ref() {
 						let node = node.try_as_web_event();
 						if node.is_some() {
@@ -150,6 +148,9 @@ textarea:not([disabled]):not([aria-disabled='true']):not([data-disabled='true'])
 								if let Some(active) = active {
 									let active_index = tabbables.iter().position(|el| *el == active);
 									if let Some(index) = active_index {
+										if !js_sys::Reflect::has(&event, &JsValue::from_str("key")).unwrap_or(false) {
+											return;
+										}
 										match event.key().as_str() {
 											"Tab" =>
 												if !event.shift_key() && active == *tabbables.last().unwrap() {

@@ -2,21 +2,21 @@
 @import "./animations.css";
 @source "./src"; /* path to maestro-ui lib so that all styles were cought */
 
-@theme static {
-  --color-background: var(--color-gray-50);
-  --color-foreground: var(--color-gray-900);
-  --color-primary: var(--color-gray-900);
-  --color-primary-foreground: var(--color-gray-50);
-  --color-secondary: var(--color-gray-100);
-  --color-secondary-foreground: var(--color-gray-800);
-  --color-muted: var(--color-gray-500);
-  --color-muted-foreground: var(--color-gray-50);
-  --color-accent: var(--color-gray-700);
-  --color-accent-foreground: var(--color-gray-100);
-  --color-danger: var(--color-red-600);
-  --color-border: var(--color-gray-200);
-  --color-input: var(--color-gray-400);
-  --color-ring: var(--color-gray-700);
-  --color-popover: var(--color-gray-100);
-  --color-popover-foreground: var(--color-gray-900);
+@theme {
+  --color-background: ;
+  --color-foreground: ;
+  --color-primary: ;
+  --color-primary-foreground: ;
+  --color-secondary: ;
+  --color-secondary-foreground: ;
+  --color-muted: ;
+  --color-muted-foreground: ;
+  --color-accent: ;
+  --color-accent-foreground: ;
+  --color-danger: ;
+  --color-border: ;
+  --color-input: ;
+  --color-ring: ;
+  --color-popover: ;
+  --color-popover-foreground: ;
 }

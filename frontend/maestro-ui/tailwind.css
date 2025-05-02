@@ -7,7 +7,6 @@
       "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
       "Courier New", monospace;
-    --color-red-600: oklch(57.7% 0.245 27.325);
     --color-blue-200: oklch(88.2% 0.059 254.128);
     --color-blue-500: oklch(62.3% 0.214 259.815);
     --color-gray-50: oklch(98.5% 0.002 247.839);
@@ -96,22 +95,22 @@
     --animate-collapsible-down: content-down var(--tw-duration, 200ms) linear;
     --animate-collapsible-up: content-up var(--tw-duration, 200ms) linear;
     --animate-caret-blink: caret-blink 1.25s ease-out infinite;
-    --color-background: var(--color-gray-50);
-    --color-foreground: var(--color-gray-900);
-    --color-primary: var(--color-gray-900);
-    --color-primary-foreground: var(--color-gray-50);
-    --color-secondary: var(--color-gray-100);
-    --color-secondary-foreground: var(--color-gray-800);
-    --color-muted: var(--color-gray-500);
-    --color-muted-foreground: var(--color-gray-50);
-    --color-accent: var(--color-gray-700);
-    --color-accent-foreground: var(--color-gray-100);
-    --color-danger: var(--color-red-600);
-    --color-border: var(--color-gray-200);
-    --color-input: var(--color-gray-400);
-    --color-ring: var(--color-gray-700);
-    --color-popover: var(--color-gray-100);
-    --color-popover-foreground: var(--color-gray-900);
+    --color-background: ;
+    --color-foreground: ;
+    --color-primary: ;
+    --color-primary-foreground: ;
+    --color-secondary: ;
+    --color-secondary-foreground: ;
+    --color-muted: ;
+    --color-muted-foreground: ;
+    --color-accent: ;
+    --color-accent-foreground: ;
+    --color-danger: ;
+    --color-border: ;
+    --color-input: ;
+    --color-ring: ;
+    --color-popover: ;
+    --color-popover-foreground: ;
   }
 }
 @layer base {
@@ -668,7 +667,7 @@
     background-color: var(--color-primary-foreground);
   }
   .bg-primary\/40 {
-    background-color: color-mix(in srgb, oklch(21% 0.034 264.665) 40%, transparent);
+    background-color: var(--color-primary);
     @supports (color: color-mix(in lab, red, red)) {
       background-color: color-mix(in oklab, var(--color-primary) 40%, transparent);
     }
@@ -797,7 +796,7 @@
     color: var(--color-popover-foreground);
   }
   .text-popover-foreground\/80 {
-    color: color-mix(in srgb, oklch(21% 0.034 264.665) 80%, transparent);
+    color: var(--color-popover-foreground);
     @supports (color: color-mix(in lab, red, red)) {
       color: color-mix(in oklab, var(--color-popover-foreground) 80%, transparent);
     }
@@ -1059,7 +1058,7 @@
   .hover\:bg-danger\/90 {
     &:hover {
       @media (hover: hover) {
-        background-color: color-mix(in srgb, oklch(57.7% 0.245 27.325) 90%, transparent);
+        background-color: var(--color-danger);
         @supports (color: color-mix(in lab, red, red)) {
           background-color: color-mix(in oklab, var(--color-danger) 90%, transparent);
         }
@@ -1083,7 +1082,7 @@
   .hover\:bg-muted\/90 {
     &:hover {
       @media (hover: hover) {
-        background-color: color-mix(in srgb, oklch(55.1% 0.027 264.364) 90%, transparent);
+        background-color: var(--color-muted);
         @supports (color: color-mix(in lab, red, red)) {
           background-color: color-mix(in oklab, var(--color-muted) 90%, transparent);
         }
@@ -1093,7 +1092,7 @@
   .hover\:bg-primary\/90 {
     &:hover {
       @media (hover: hover) {
-        background-color: color-mix(in srgb, oklch(21% 0.034 264.665) 90%, transparent);
+        background-color: var(--color-primary);
         @supports (color: color-mix(in lab, red, red)) {
           background-color: color-mix(in oklab, var(--color-primary) 90%, transparent);
         }
@@ -1103,7 +1102,7 @@
   .hover\:bg-secondary\/90 {
     &:hover {
       @media (hover: hover) {
-        background-color: color-mix(in srgb, oklch(96.7% 0.003 264.542) 90%, transparent);
+        background-color: var(--color-secondary);
         @supports (color: color-mix(in lab, red, red)) {
           background-color: color-mix(in oklab, var(--color-secondary) 90%, transparent);
         }
@@ -1223,7 +1222,7 @@
   }
   .focus-visible\:ring-ring\/50 {
     &:focus-visible {
-      --tw-ring-color: color-mix(in srgb, oklch(37.3% 0.034 259.733) 50%, transparent);
+      --tw-ring-color: var(--color-ring);
       @supports (color: color-mix(in lab, red, red)) {
         --tw-ring-color: color-mix(in oklab, var(--color-ring) 50%, transparent);
       }
@@ -1330,7 +1329,7 @@
   }
   .data-\[orientation\=horizontal\]\:border-b-muted\/30 {
     &[data-orientation="horizontal"] {
-      border-bottom-color: color-mix(in srgb, oklch(55.1% 0.027 264.364) 30%, transparent);
+      border-bottom-color: var(--color-muted);
       @supports (color: color-mix(in lab, red, red)) {
         border-bottom-color: color-mix(in oklab, var(--color-muted) 30%, transparent);
       }
@@ -1355,7 +1354,7 @@
     &[data-orientation="horizontal"] {
       &:hover {
         @media (hover: hover) {
-          border-bottom-color: color-mix(in srgb, oklch(21% 0.034 264.665) 80%, transparent);
+          border-bottom-color: var(--color-primary);
           @supports (color: color-mix(in lab, red, red)) {
             border-bottom-color: color-mix(in oklab, var(--color-primary) 80%, transparent);
           }
@@ -1417,7 +1416,7 @@
   }
   .data-\[orientation\=vertical\]\:border-r-muted\/30 {
     &[data-orientation="vertical"] {
-      border-right-color: color-mix(in srgb, oklch(55.1% 0.027 264.364) 30%, transparent);
+      border-right-color: var(--color-muted);
       @supports (color: color-mix(in lab, red, red)) {
         border-right-color: color-mix(in oklab, var(--color-muted) 30%, transparent);
       }
@@ -1437,7 +1436,7 @@
     &[data-orientation="vertical"] {
       &:hover {
         @media (hover: hover) {
-          border-right-color: color-mix(in srgb, oklch(21% 0.034 264.665) 80%, transparent);
+          border-right-color: var(--color-primary);
           @supports (color: color-mix(in lab, red, red)) {
             border-right-color: color-mix(in oklab, var(--color-primary) 80%, transparent);
           }
