@@ -4,7 +4,7 @@ use {
 	uuid::Uuid,
 	web_sys::{
 		EventTarget, HtmlElement,
-		wasm_bindgen::{JsCast, prelude::Closure},
+		wasm_bindgen::{JsCast, JsValue, prelude::Closure},
 		window,
 	},
 };
@@ -138,6 +138,9 @@ textarea:not([disabled]):not([aria-disabled='true']):not([data-disabled='true'])
 				let window = window().expect("should have a window in this context");
 				let document = window.document().expect("window should have a document");
 				let closure = Closure::wrap(Box::new(move |event: web_sys::KeyboardEvent| {
+					if !event.has_own_property(&JsValue::from_str("key")) {
+						return;
+					}
 					if let Some(node) = current_ref.read().as_ref() {
 						let node = node.try_as_web_event();
 						if node.is_some() {

@@ -2,7 +2,7 @@ use {
 	dioxus::prelude::*,
 	web_sys::{
 		AddEventListenerOptions,
-		wasm_bindgen::{JsCast, prelude::Closure},
+		wasm_bindgen::{JsCast, JsValue, prelude::Closure},
 		window,
 	},
 };
@@ -16,6 +16,9 @@ pub fn use_escape(on_outside_key: Callback<()>, flag: Memo<bool>) {
 
 		if closure_ref.peek().is_none() && flag() {
 			let closure = Closure::wrap(Box::new(move |event: web_sys::KeyboardEvent| {
+				if !event.has_own_property(&JsValue::from_str("key")) {
+					return;
+				}
 				if event.key().as_str() == "Escape" {
 					event.prevent_default();
 					on_outside_key.call(());

@@ -25,6 +25,10 @@ pub struct TextInputProps {
 	pub oninput: Option<EventHandler<Event<FormData>>>,
 	#[props(default = None)]
 	pub onchange: Option<EventHandler<Event<FormData>>>,
+	#[props(default = None)]
+	pub onblur: Option<EventHandler<Event<FocusData>>>,
+	#[props(default = None)]
+	pub onfocus: Option<EventHandler<Event<FocusData>>>,
 
 	#[props(extends = input, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
@@ -34,7 +38,20 @@ pub struct TextInputProps {
 
 #[component]
 pub fn TextInput(props: TextInputProps) -> Element {
-	let TextInputProps { value, default_value, on_value_change, debounce_ms, disabled, invalid, attributes, oninput, onchange, extra_attributes } = props;
+	let TextInputProps {
+		value,
+		default_value,
+		on_value_change,
+		debounce_ms,
+		disabled,
+		invalid,
+		attributes,
+		oninput,
+		onchange,
+		onfocus,
+		onblur,
+		extra_attributes,
+	} = props;
 
 	let is_controlled = use_hook(move || value().is_some());
 	let (value, set_value) =
@@ -63,6 +80,16 @@ pub fn TextInput(props: TextInputProps) -> Element {
 			},
 			oninput: move |event| {
 					on_input.action(event);
+			},
+			onfocus: move |event| {
+					if let Some(handler) = onfocus {
+							handler.call(event.clone());
+					}
+			},
+			onblur: move |event| {
+					if let Some(handler) = onblur {
+							handler.call(event.clone());
+					}
 			},
 			..attributes,
 			..extra_attributes,

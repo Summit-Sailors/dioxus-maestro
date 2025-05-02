@@ -25,6 +25,10 @@ pub struct TextareaProps {
 	pub oninput: Option<EventHandler<Event<FormData>>>,
 	#[props(default = None)]
 	pub onchange: Option<EventHandler<Event<FormData>>>,
+	#[props(default = None)]
+	pub onblur: Option<EventHandler<Event<FocusData>>>,
+	#[props(default = None)]
+	pub onfocus: Option<EventHandler<Event<FocusData>>>,
 
 	#[props(extends = textarea, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
@@ -34,7 +38,8 @@ pub struct TextareaProps {
 
 #[component]
 pub fn Textarea(props: TextareaProps) -> Element {
-	let TextareaProps { value, default_value, on_value_change, debounce_ms, disabled, invalid, attributes, onchange, oninput, extra_attributes } = props;
+	let TextareaProps { value, default_value, on_value_change, onchange, debounce_ms, disabled, invalid, attributes, oninput, onfocus, onblur, extra_attributes } =
+		props;
 
 	let is_controlled = use_hook(move || value().is_some());
 	let (value, set_value) =
@@ -63,6 +68,16 @@ pub fn Textarea(props: TextareaProps) -> Element {
 			},
 			oninput: move |event| {
 					on_input.action(event);
+			},
+			onfocus: move |event| {
+					if let Some(handler) = onfocus {
+							handler.call(event.clone());
+					}
+			},
+			onblur: move |event| {
+					if let Some(handler) = onblur {
+							handler.call(event.clone());
+					}
 			},
 			..attributes,
 			..extra_attributes,

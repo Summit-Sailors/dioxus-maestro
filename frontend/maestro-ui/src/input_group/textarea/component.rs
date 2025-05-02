@@ -22,6 +22,10 @@ pub struct TextareaProps {
 	pub oninput: Option<EventHandler<Event<FormData>>>,
 	#[props(default = None)]
 	pub onchange: Option<EventHandler<Event<FormData>>>,
+	#[props(default = None)]
+	pub onblur: Option<EventHandler<Event<FocusData>>>,
+	#[props(default = None)]
+	pub onfocus: Option<EventHandler<Event<FocusData>>>,
 
 	#[props(extends = textarea, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
@@ -29,7 +33,7 @@ pub struct TextareaProps {
 
 #[component]
 pub fn Textarea(props: TextareaProps) -> Element {
-	let TextareaProps { class, value, default_value, on_value_change, debounce_ms, disabled, invalid, attributes, onchange, oninput } = props;
+	let TextareaProps { class, value, default_value, on_value_change, debounce_ms, disabled, invalid, attributes, onchange, oninput, onblur, onfocus } = props;
 
 	rsx! {
 		maestro_headless::textarea::Textarea {
@@ -45,6 +49,8 @@ pub fn Textarea(props: TextareaProps) -> Element {
 			invalid,
 			onchange,
 			oninput,
+			onfocus,
+			onblur,
 			extra_attributes: attributes.clone(),
 		}
 	}

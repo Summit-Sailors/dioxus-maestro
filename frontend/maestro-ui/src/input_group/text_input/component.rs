@@ -22,6 +22,10 @@ pub struct TextInputProps {
 	pub oninput: Option<EventHandler<Event<FormData>>>,
 	#[props(default = None)]
 	pub onchange: Option<EventHandler<Event<FormData>>>,
+	#[props(default = None)]
+	pub onblur: Option<EventHandler<Event<FocusData>>>,
+	#[props(default = None)]
+	pub onfocus: Option<EventHandler<Event<FocusData>>>,
 
 	#[props(extends = input, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
@@ -29,7 +33,7 @@ pub struct TextInputProps {
 
 #[component]
 pub fn TextInput(props: TextInputProps) -> Element {
-	let TextInputProps { class, value, default_value, on_value_change, debounce_ms, disabled, invalid, attributes, oninput, onchange } = props;
+	let TextInputProps { class, value, default_value, on_value_change, debounce_ms, disabled, invalid, attributes, oninput, onchange, onblur, onfocus } = props;
 
 	rsx! {
 		maestro_headless::text_input::TextInput {
@@ -46,6 +50,8 @@ pub fn TextInput(props: TextInputProps) -> Element {
 			extra_attributes: attributes.clone(),
 			oninput,
 			onchange,
+			onfocus,
+			onblur,
 		}
 	}
 }
