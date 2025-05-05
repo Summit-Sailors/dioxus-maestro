@@ -5,6 +5,7 @@ edition = { workspace = true }
 license = ""
 name = "maestro-anthropic"
 repository = ""
+version = "0.1.0"
 
 
 [dependencies]

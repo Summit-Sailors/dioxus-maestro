@@ -13,8 +13,8 @@ pub struct ThemeProviderProps {
 pub fn ThemeProvider(props: ThemeProviderProps) -> Element {
 	#[cfg(feature = "server")]
 	return rsx! {
-    div { {props.children} }
-  };
+		div { {props.children} }
+	};
 
 	#[cfg(all(any(feature = "web", feature = "desktop"), not(feature = "server")))]
 	{
@@ -59,7 +59,7 @@ pub fn ThemeProvider(props: ThemeProviderProps) -> Element {
 		let theme_class = resolved_theme().to_string();
 
 		rsx! {
-      div { "data-theme": "{theme_class}", {props.children} }
-    }
+			div { "data-theme": "{theme_class}", {props.children} }
+		}
 	}
 }

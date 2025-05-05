@@ -5,6 +5,7 @@ edition = { workspace = true }
 license = ""
 name = "maestro-apalis"
 repository = ""
+version = "0.1.0"
 
 [dependencies]
 maestro-sqlx = { path = "../maestro-sqlx" }
@@ -12,9 +13,9 @@ maestro-sqlx = { path = "../maestro-sqlx" }
 bon = { workspace = true }
 serde = { workspace = true }
 
-apalis = { version = "0.7.0", default-features = false, features = ["limit"], optional = true }
-apalis-core = "0.7.0"
-apalis-sql = { version = "0.7.0", features = ["postgres", "tokio-comp"], optional = true }
+apalis = { version = "0.7.1", default-features = false, features = ["limit"], optional = true }
+apalis-core = "0.7.1"
+apalis-sql = { version = "0.7.1", features = ["postgres", "tokio-comp"], optional = true }
 tokio = { version = "1.44.2", optional = true }
 
 dioxus = { workspace = true, features = ["fullstack", "server"], optional = true }

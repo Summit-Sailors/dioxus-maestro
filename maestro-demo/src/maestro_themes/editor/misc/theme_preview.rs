@@ -28,8 +28,8 @@ pub fn ThemePreview(props: ThemePreviewProps) -> Element {
 	let content = get_components_section(&components_id_clone);
 
 	rsx! {
-    div { id: "theme-preview-container", style: "{css_variables()}",
-      main { id: "theme-previewer", {content} }
-    }
-  }
+		div { id: "theme-preview-container", style: "{css_variables()}",
+			main { id: "theme-previewer", {content} }
+		}
+	}
 }

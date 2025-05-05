@@ -45,94 +45,94 @@ pub fn BorderRadiusEditor() -> Element {
 		}
 	};
 
-	// Predefined size presets for quick selection
+	// predefined size presets for quick selection
 	let size_presets =
 		[("None", "0"), ("XS", "0.125rem"), ("SM", "0.25rem"), ("MD", "0.5rem"), ("LG", "0.75rem"), ("XL", "1rem"), ("2XL", "1.5rem"), ("Full", "9999px")];
 
 	rsx! {
-    div { class: "p-4 bg-card text-card-foreground rounded-lg border border-border space-y-4 shadow-sm",
-      h3 { class: "text-lg font-semibold", "Border Radius" }
-      div { class: "grid grid-cols-1 md:grid-cols-2 gap-4",
-        {
-            radius_options
-                .iter()
-                .map(|(_key, label, value, _css_var)| {
-                    let modified = is_modified(_key);
-                    let key_for_reset = _key.clone();
-                    let key_for_input = _key.clone();
-                    rsx! {
-                      div { key: _key,
-                        // label and reset button row
-                        div { class: "flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-1",
-                          label { class: "text-sm font-medium text-muted-foreground", "{label}" }
-                          {
-                              if modified {
-                                  rsx! {
-                                    button {
-                                      r#type: "button",
-                                      class: "text-xs text-muted-foreground hover:text-foreground",
-                                      onclick: move |_| reset_handler(key_for_reset.clone()),
-                                      "Reset"
-                                    }
-                                  }
-                              } else {
-                                  rsx! {}
-                              }
-                          }
-                        }
-                        // input and preview row
-                        div { class: "flex flex-col sm:flex-row sm:items-center gap-2",
-                          div { class: "flex-grow relative",
-                            input {
-                              r#type: "text",
-                              class: "w-full border border-border bg-input-bg text-sm px-3 py-1.5 rounded-md focus:outline-none focus:ring-2 focus:ring-ring",
-                              value: "{value}",
-                              oninput: move |event| input_handler(key_for_input.clone(), event),
-                            }
-                          }
-                          div {
-                            class: "w-10 h-10 rounded-md border border-border overflow-hidden flex items-center justify-center shrink-0",
-                            style: "border-radius: {value};",
-                            div { class: "w-full h-full bg-muted" }
-                          }
-                        }
-                        // preset buttons
-                        div { class: "mt-2 flex flex-wrap gap-1",
-                          {
-                              size_presets
-                                  .iter()
-                                  .map(|(preset_name, preset_value)| {
-                                      let key_for_preset = _key.clone();
-                                      let preset_value = preset_value.to_string();
-                                      let preset_handler = move |_| {
-                                          state
-                                              .with_mut(|s| {
-                                                  match key_for_preset.as_str() {
-                                                      "sm" => s.border_radius.sm = preset_value.clone(),
-                                                      "md" => s.border_radius.md = preset_value.clone(),
-                                                      "lg" => s.border_radius.lg = preset_value.clone(),
-                                                      "xl" => s.border_radius.xl = preset_value.clone(),
-                                                      "full" => s.border_radius.full = preset_value.clone(),
-                                                      _ => {}
-                                                  }
-                                              });
-                                      };
-                                      rsx! {
-                                        button {
-                                          r#type: "button",
-                                          class: "text-xs px-2 py-1 bg-muted hover:bg-hover-bg rounded border border-border text-[color:var(--text-color)] text-muted-foreground hover:text-foreground",
-                                          onclick: preset_handler,
-                                          "{preset_name}"
-                                        }
-                                      }
-                                  })
-                          }
-                        }
-                      }
-                    }
-                })
-        }
-      }
-    }
-  }
+		div { class: "p-4 bg-card text-card-foreground rounded-lg border border-border space-y-4 shadow-sm",
+			h3 { class: "text-lg font-semibold", "Border Radius" }
+			div { class: "grid grid-cols-1 md:grid-cols-2 gap-4",
+				{
+						radius_options
+								.iter()
+								.map(|(_key, label, value, _css_var)| {
+										let modified = is_modified(_key);
+										let key_for_reset = _key.clone();
+										let key_for_input = _key.clone();
+										rsx! {
+											div { key: _key,
+												// label and reset button row
+												div { class: "flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-1",
+													label { class: "text-sm font-medium text-muted-foreground", "{label}" }
+													{
+															if modified {
+																	rsx! {
+																		button {
+																			r#type: "button",
+																			class: "text-xs text-muted-foreground hover:text-foreground",
+																			onclick: move |_| reset_handler(key_for_reset.clone()),
+																			"Reset"
+																		}
+																	}
+															} else {
+																	rsx! {}
+															}
+													}
+												}
+												// input and preview row
+												div { class: "flex flex-col sm:flex-row sm:items-center gap-2",
+													div { class: "flex-grow relative",
+														input {
+															r#type: "text",
+															class: "w-full border border-border bg-input-bg text-sm px-3 py-1.5 rounded-md focus:outline-none focus:ring-2 focus:ring-ring",
+															value: "{value}",
+															oninput: move |event| input_handler(key_for_input.clone(), event),
+														}
+													}
+													div {
+														class: "w-10 h-10 rounded-md border border-border overflow-hidden flex items-center justify-center shrink-0",
+														style: "border-radius: {value};",
+														div { class: "w-full h-full bg-muted" }
+													}
+												}
+												// preset buttons
+												div { class: "mt-2 flex flex-wrap gap-1",
+													{
+															size_presets
+																	.iter()
+																	.map(|(preset_name, preset_value)| {
+																			let key_for_preset = _key.clone();
+																			let preset_value = preset_value.to_string();
+																			let preset_handler = move |_| {
+																					state
+																							.with_mut(|s| {
+																									match key_for_preset.as_str() {
+																											"sm" => s.border_radius.sm = preset_value.clone(),
+																											"md" => s.border_radius.md = preset_value.clone(),
+																											"lg" => s.border_radius.lg = preset_value.clone(),
+																											"xl" => s.border_radius.xl = preset_value.clone(),
+																											"full" => s.border_radius.full = preset_value.clone(),
+																											_ => {}
+																									}
+																							});
+																			};
+																			rsx! {
+																				button {
+																					r#type: "button",
+																					class: "text-xs px-2 py-1 bg-muted hover:bg-hover-bg rounded border border-border text-[color:var(--text-color)] text-muted-foreground hover:text-foreground",
+																					onclick: preset_handler,
+																					"{preset_name}"
+																				}
+																			}
+																	})
+													}
+												}
+											}
+										}
+								})
+				}
+			}
+		}
+	}
 }

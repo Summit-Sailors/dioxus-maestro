@@ -31,7 +31,11 @@ pub fn ThemeViewer(mut props: ThemeViewerProps) -> Element {
 	let state = use_context::<Signal<DesignerState>>();
 	let theme_viewer_props = props.clone();
 	let mut is_generating = use_signal(|| false);
-	let mut stylesheet = use_signal(String::new);
+
+	// the raw theme content separately for copying
+	let mut raw_stylesheet = use_signal(String::new);
+	// the highlighted HTML for display
+	let mut highlighted_stylesheet = use_signal(String::new);
 
 	let clipboard = use_clipboard();
 	let mut copy_status = use_signal(String::new);
@@ -64,7 +68,8 @@ pub fn ThemeViewer(mut props: ThemeViewerProps) -> Element {
 	};
 
 	let handle_copy = move |_| {
-		let content = stylesheet();
+		// Use the raw content for copying, not the highlighted HTML
+		let content = raw_stylesheet();
 		let mut clipboard = clipboard.clone();
 		is_copying.set(true);
 		spawn(async move {
@@ -82,73 +87,75 @@ pub fn ThemeViewer(mut props: ThemeViewerProps) -> Element {
 
 	use_effect(move || {
 		is_generating.set(true);
-		stylesheet.set(highlight_code(export_theme(&state(), &props.theme_options).as_str(), props.theme_options.format.language()));
+		let raw_content = export_theme(&state(), &props.theme_options);
+		raw_stylesheet.set(raw_content.clone());
+		highlighted_stylesheet.set(highlight_code(raw_content.as_str(), props.theme_options.format.language()));
 		is_generating.set(false);
 	});
 
 	rsx! {
-    div { class: "p-4 w-full max-w-lg mx-auto z-[9999] overflow-y-auto bg-[var(--card-bg)] text-[var(--card-text)] rounded-xl shadow-lg",
-      h1 { class: "text-2xl font-bold mb-4 text-[var(--text-color)]", "Stylesheet Preview" }
-      if is_generating() {
-        div { class: "p-4 mb-4 text-[var(--text-color)] bg-[var(--highlight-color)] rounded border border-[var(--border-color)]",
-          "Generating stylesheet..."
-        }
-      }
-      div { class: "relative flex items-center justify-between gap-2 mb-2",
-        button {
-          r#type: "button",
-          class: "text-[var(--muted-text)] hover:text-[var(--text-color)] transition-colors",
-          disabled: "{is_copying()}",
-          onclick: handle_copy,
-          title: "Copy Code",
-          Icon {
-            icon: IoCopyOutline,
-            width: 20,
-            height: 20,
-            class: "fill-none",
-          }
-        }
-        div {
-          class: tw_join!(
-              "absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs py-1 px-2 rounded transition-opacity duration-300 bg-[var(--accent-bg)] text-[var(--accent-text)]",
-              if copy_status().is_empty() { "opacity-0" } else { "opacity-100" }
-          ),
-          "{copy_status}"
-        }
-        button {
-          class: "px-4 py-2 border border-[color:var(--border-color)] rounded hover:bg-[var(--hover-bg)] text-[color:var(--text-color)]",
-          onclick: move |_| props.show_generated_themes.set(false),
-          Icon {
-            icon: IoCloseCircle,
-            width: 20,
-            height: 20,
-            class: "fill-none",
-          }
-        }
-      }
-      if !stylesheet().is_empty() {
-        div { class: "relative flex-1 w-full rounded-lg flex flex-col bg-[color:var(--bg-color)] lg:px-16 sm:px-6 px-2 py-8 h-full overflow-x-auto mt-8",
+		div { class: "p-4 w-full max-w-lg mx-auto z-[9999] overflow-y-auto bg-[var(--card-bg)] text-[var(--card-text)] rounded-xl shadow-lg",
+			h1 { class: "text-2xl font-bold mb-4 text-[var(--text-color)]", "Stylesheet Preview" }
+			if is_generating() {
+				div { class: "p-4 mb-4 text-[var(--text-color)] bg-[var(--highlight-color)] rounded border border-[var(--border-color)]",
+					"Generating stylesheet..."
+				}
+			}
+			div { class: "relative flex items-center justify-between gap-2 mb-2",
+				button {
+					r#type: "button",
+					class: "text-[var(--muted-text)] hover:text-[var(--text-color)] transition-colors",
+					disabled: "{is_copying()}",
+					onclick: handle_copy,
+					title: "Copy Code",
+					Icon {
+						icon: IoCopyOutline,
+						width: 20,
+						height: 20,
+						class: "fill-none",
+					}
+				}
+				div {
+					class: tw_join!(
+							"absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs py-1 px-2 rounded transition-opacity duration-300 bg-[var(--accent-bg)] text-[var(--accent-text)]",
+							if copy_status().is_empty() { "opacity-0" } else { "opacity-100" }
+					),
+					"{copy_status}"
+				}
+				button {
+					class: "px-4 py-2 border border-[color:var(--border-color)] rounded hover:bg-[var(--hover-bg)] text-[color:var(--text-color)]",
+					onclick: move |_| props.show_generated_themes.set(false),
+					Icon {
+						icon: IoCloseCircle,
+						width: 20,
+						height: 20,
+						class: "fill-none",
+					}
+				}
+			}
+			if !highlighted_stylesheet().is_empty() {
+				div { class: "relative flex-1 w-full rounded-lg flex flex-col bg-[color:var(--bg-color)] lg:px-16 sm:px-6 px-2 py-8 h-full overflow-x-auto mt-8",
 
-          div { class: "flex w-full justify-between items-center bg-[color:var(--secondary-bg)] text-[color:var(--secondary-text)] text-xs px-4 py-2 rounded-t-md",
-            span { class: "font-mono", "Generated Stylesheet" }
-            div { class: "flex gap-1",
-              span { class: "w-3 h-3 bg-red-500 rounded-full" }
-              span { class: "w-3 h-3 bg-yellow-500 rounded-full" }
-              span { class: "w-3 h-3 bg-green-500 rounded-full" }
-            }
-          }
+					div { class: "flex w-full justify-between items-center bg-[color:var(--secondary-bg)] text-[color:var(--secondary-text)] text-xs px-4 py-2 rounded-t-md",
+						span { class: "font-mono", "Generated Stylesheet" }
+						div { class: "flex gap-1",
+							span { class: "w-3 h-3 bg-red-500 rounded-full" }
+							span { class: "w-3 h-3 bg-yellow-500 rounded-full" }
+							span { class: "w-3 h-3 bg-green-500 rounded-full" }
+						}
+					}
 
-          div {
-            class: "font-mono text-sm whitespace-pre p-4 text-[color:var(--text-color)]",
-            // dangerous_inner_html to render the highlighted code
-            dangerous_inner_html: "{stylesheet()}",
-          }
-        }
-      } else if !is_generating() && stylesheet().is_empty() {
-        div { class: "p-4 mt-4 text-[var(--muted-text)] bg-[var(--input-bg)] rounded border border-[var(--border-color)] text-center",
-          "There was a problem generating the stylesheet."
-        }
-      }
-    }
-  }
+					div {
+						class: "font-mono text-sm whitespace-pre p-4 text-[color:var(--text-color)]",
+						// dangerous_inner_html to render the highlighted code
+						dangerous_inner_html: "{highlighted_stylesheet()}",
+					}
+				}
+			} else if !is_generating() && highlighted_stylesheet().is_empty() {
+				div { class: "p-4 mt-4 text-[var(--muted-text)] bg-[var(--input-bg)] rounded border border-[var(--border-color)] text-center",
+					"There was a problem generating the stylesheet."
+				}
+			}
+		}
+	}
 }

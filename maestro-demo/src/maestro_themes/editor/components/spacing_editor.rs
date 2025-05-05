@@ -86,63 +86,63 @@ pub fn SpacingEditor() -> Element {
 	});
 
 	rsx! {
-    div { class: "spacing-editor",
-      h3 { class: "text-lg font-medium mb-3", "Spacing" }
-      div { class: "mb-4",
-        label { class: "block text-sm font-medium mb-1", "Unit" }
-        select {
-          class: "w-full border rounded px-2 py-1",
-          value: "{state().spacing.unit}",
-          oninput: move |event| handle_unit_change(event.value()),
-          option { value: "px", "px" }
-          option { value: "rem", "rem" }
-          option { value: "em", "em" }
-        }
-      }
-      h4 { class: "text-md font-medium mb-2 mt-4", "Spacing Scale" }
-      div { class: "spacing-scale-container",
-        {
-            let sorted_keys_clone = sorted_keys().clone();
-            sorted_keys_clone
-                .into_iter()
-                .map(|key| {
-                    let value = state
-                        .read()
-                        .spacing
-                        .scale
-                        .get(&*key)
-                        .unwrap_or(&String::new())
-                        .clone();
-                    let key_for_value = key.clone();
-                    let key_for_remove = key.clone();
-                    rsx! {
-                      div { key: "{key}", class: "spacing-scale-row flex items-center space-x-2 mb-2",
-                        label { class: "block text-sm font-medium w-12", "{key}" }
-                        input {
-                          r#type: "text",
-                          class: "flex-grow border rounded px-2 py-1",
-                          value: "{value}",
-                          oninput: move |event| handle_value_change(key_for_value.clone(), event),
-                        }
-                        button {
-                          r#type: "button",
-                          class: "text-[color:var(--destructive)] px-2",
-                          onclick: move |_| handle_remove_value(key_for_remove.clone()),
-                          "×"
-                        }
-                      }
-                    }
-                })
-        }
-        button {
-          r#type: "button",
-          class: "mt-2 px-3 py-1 bg-[color:var(--primary)] text-white rounded text-sm",
-          onclick: move |_| handle_add_value(()),
-          "Add Spacing Value"
-        }
-      }
-    }
-  }
+		div { class: "spacing-editor",
+			h3 { class: "text-lg font-medium mb-3", "Spacing" }
+			div { class: "mb-4",
+				label { class: "block text-sm font-medium mb-1", "Unit" }
+				select {
+					class: "w-full border rounded px-2 py-1",
+					value: "{state().spacing.unit}",
+					oninput: move |event| handle_unit_change(event.value()),
+					option { value: "px", "px" }
+					option { value: "rem", "rem" }
+					option { value: "em", "em" }
+				}
+			}
+			h4 { class: "text-md font-medium mb-2 mt-4", "Spacing Scale" }
+			div { class: "spacing-scale-container",
+				{
+						let sorted_keys_clone = sorted_keys().clone();
+						sorted_keys_clone
+								.into_iter()
+								.map(|key| {
+										let value = state
+												.read()
+												.spacing
+												.scale
+												.get(&*key)
+												.unwrap_or(&String::new())
+												.clone();
+										let key_for_value = key.clone();
+										let key_for_remove = key.clone();
+										rsx! {
+											div { key: "{key}", class: "spacing-scale-row flex items-center space-x-2 mb-2",
+												label { class: "block text-sm font-medium w-12", "{key}" }
+												input {
+													r#type: "text",
+													class: "flex-grow border rounded px-2 py-1",
+													value: "{value}",
+													oninput: move |event| handle_value_change(key_for_value.clone(), event),
+												}
+												button {
+													r#type: "button",
+													class: "text-[color:var(--destructive)] px-2",
+													onclick: move |_| handle_remove_value(key_for_remove.clone()),
+													"×"
+												}
+											}
+										}
+								})
+				}
+				button {
+					r#type: "button",
+					class: "mt-2 px-3 py-1 bg-[color:var(--primary)] text-white rounded text-sm",
+					onclick: move |_| handle_add_value(()),
+					"Add Spacing Value"
+				}
+			}
+		}
+	}
 }
 
 fn parse_value_and_unit(value: &str) -> Option<(f32, String)> {

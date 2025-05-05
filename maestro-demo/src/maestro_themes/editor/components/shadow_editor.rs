@@ -18,7 +18,7 @@ struct ShadowPart {
 impl ShadowPart {
 	fn shadow_string(&self) -> String {
 		format!(
-			"{} {} {}px {}px rgb({} / {}%)",
+			"{}px {}px {}px {}px rgb({} / {}%)",
 			self.x_offset,
 			self.y_offset,
 			self.blur,
@@ -52,13 +52,13 @@ impl ShadowPart {
 		let spread_str = parts[3];
 		let spread = if let Some(s) = spread_str.strip_suffix("px") { i32::from_str(s).ok()? } else { i32::from_str(spread_str).ok()? };
 
-		// Extract color
+		// extract color
 		let color = if s.contains("rgb(") {
 			let start = s.find("rgb(").unwrap_or(0);
 			let end = s[start..].find(" /").map(|e| start + e).unwrap_or_else(|| s.find(")").map(|e| e + 1).unwrap_or(s.len()));
 			s[start..end].to_string()
 		} else {
-			"rgb(0 0 0)".to_string() // Default color
+			"rgb(0 0 0)".to_string() // default color
 		};
 
 		// opacity from color
@@ -352,7 +352,7 @@ fn ShadowSizeEditor(props: ShadowSizeEditorProps) -> Element {
 
 	let add_shadow_part = move |_| {
 		let mut parts = shadow_parts();
-		// Add a new part with the current theme's text color (defaulting to black)
+		// a new part with the current theme's text color (defaulting to black)
 		parts.push(ShadowPart { x_offset: 0, y_offset: 4, blur: 8, spread: 0, color: "rgb(0 0 0)".to_string(), opacity: 5 });
 		shadow_parts.set(parts.clone());
 

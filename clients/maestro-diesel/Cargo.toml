@@ -5,6 +5,7 @@ edition = { workspace = true }
 license = ""
 name = "maestro-diesel"
 repository = ""
+version = "0.1.0"
 
 
 [dependencies]
@@ -12,7 +13,7 @@ bon = { workspace = true }
 serde = { workspace = true }
 validator = { workspace = true }
 
-diesel = { version = "2.2.9", features = ["chrono", "postgres", "serde_json", "uuid"], optional = true }
+diesel = { version = "2.2.10", features = ["chrono", "postgres", "serde_json", "uuid"], optional = true }
 diesel-async = { version = "0.5.2", features = ["deadpool", "pool", "postgres"], optional = true }
 
 dioxus = { version = "0.6.3", features = ["fullstack"], optional = true }
