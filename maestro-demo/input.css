@@ -108,7 +108,7 @@
 
 /* Dark theme specific variables */
 [data-theme="dark"] {
-  /* Override with dark-specific values - Using OKLCH for consistency */
+  /* Override with dark-specific values */
   --bg-color: oklch(0.18 0 0);
   --text-color: oklch(0.97 0 0);
   --border-color: oklch(0.4 0 0);

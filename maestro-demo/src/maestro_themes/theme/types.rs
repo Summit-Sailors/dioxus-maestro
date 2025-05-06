@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, strum_macros::EnumIter, strum_macros::Display, strum_macros::EnumString)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, Default, strum_macros::EnumIter, strum_macros::Display, strum_macros::EnumString)]
 pub enum Theme {
 	Light,
 	Dark,

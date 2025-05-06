@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 use dioxus_free_icons::{
 	Icon,
-	icons::bs_icons::{BsCaretDownFill, BsGearFill, BsMoon, BsSun},
+	icons::bs_icons::{BsGearFill, BsMoon, BsSun},
 };
 use tailwind_fuse::tw_merge;
 
@@ -10,87 +10,64 @@ use crate::maestro_themes::theme::types::Theme;
 #[component]
 pub fn ThemeSelect() -> Element {
 	let theme_ctx = crate::maestro_themes::theme::context::use_theme();
-	let current_theme = theme_ctx.theme.read().clone().unwrap_or(Theme::Auto);
-	let mut is_open = use_signal(|| false);
+	let current_theme = (*theme_ctx.theme.read()).unwrap_or(Theme::Auto);
 
-	let mut set_theme = move |new_theme: Theme| {
+	let cycle_theme = move |_| {
+		let new_theme = match current_theme {
+			Theme::Light => Theme::Dark,
+			Theme::Dark => Theme::Auto,
+			Theme::Auto => Theme::Light,
+		};
 		theme_ctx.set_theme.call(new_theme);
-		is_open.set(false);
 	};
 
-	let get_label = |theme: Theme| {
-		rsx!(match theme {
-			Theme::Light => rsx! {
-				Icon { icon: BsSun, width: 16, height: 16 }
-				span { "Light" }
-			},
-			Theme::Dark => rsx! {
-				Icon { icon: BsMoon, width: 16, height: 16 }
-				span { "Dark" }
-			},
-			Theme::Auto => rsx! {
-				Icon { icon: BsGearFill, width: 16, height: 16 }
-				span { "Auto" }
-			},
-		})
+	let get_theme_content = |theme: Theme| match theme {
+		Theme::Light => rsx! {
+			Icon {
+				icon: BsSun,
+				width: 16,
+				height: 16,
+				class: "text-gray-900",
+			}
+			span { class: "ml-2", "Light" }
+		},
+		Theme::Dark => rsx! {
+			Icon {
+				icon: BsMoon,
+				width: 16,
+				height: 16,
+				class: "text-blue-500",
+			}
+			span { class: "ml-2", "Dark" }
+		},
+		Theme::Auto => rsx! {
+			Icon {
+				icon: BsGearFill,
+				width: 16,
+				height: 16,
+				class: "text-gray-500",
+			}
+			span { class: "ml-2", "Auto" }
+		},
+	};
+
+	let get_theme_label = |theme: Theme| match theme {
+		Theme::Light => "Light Mode",
+		Theme::Dark => "Dark Mode",
+		Theme::Auto => "Auto Theme",
 	};
 
 	rsx! {
-		div { class: "relative inline-block w-24",
-			button {
-				class: tw_merge!(
-						"w-full flex items-center justify-between p-2.5 text-sm text-left rounded-lg border shadow-sm transition",
-						"bg-[color:var(--bg-color)]", "text-[color:var(--text-color)]",
-						"border-gray-300 dark:border-gray-600",
-						"hover:shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
-				),
-				onclick: move |_| {
-						is_open.set(!is_open());
-				},
-				{get_label(current_theme)}
-				Icon {
-					icon: BsCaretDownFill,
-					class: tw_merge!(
-							"ml-2 transition-transform", if is_open() { "rotate-180" } else { "rotate-0" }
-					),
-				}
-			}
-
-			{is_open().then(|| rsx! {
-				div {
-					class: tw_merge!(
-							"absolute z-10 mt-2 w-full rounded-lg shadow-lg border",
-							"bg-[color:var(--bg-color)]", "border-gray-300 dark:border-gray-600"
-					),
-					button {
-						class: tw_merge!(
-								"flex items-center w-full px-4 py-2 text-sm text-left",
-								"hover:bg-gray-100 dark:hover:bg-gray-600"
-						),
-						onclick: move |_| set_theme(Theme::Light),
-						Icon { icon: BsSun, width: 16, height: 16 }
-						span { " Light" }
-					}
-					button {
-						class: tw_merge!(
-								"flex items-center w-full px-4 py-2 text-sm text-left",
-								"hover:bg-gray-100 dark:hover:bg-gray-600"
-						),
-						onclick: move |_| set_theme(Theme::Dark),
-						Icon { icon: BsMoon, width: 16, height: 16 }
-						span { " Dark" }
-					}
-					button {
-						class: tw_merge!(
-								"flex items-center w-full px-4 py-2 text-sm text-left",
-								"hover:bg-gray-100 dark:hover:bg-gray-600"
-						),
-						onclick: move |_| set_theme(Theme::Auto),
-						Icon { icon: BsGearFill, width: 16, height: 16 }
-						span { " Auto" }
-					}
-				}
-			})}
+		button {
+			class: tw_merge!(
+					"flex items-center justify-center p-2 rounded-full transition-all duration-200",
+					"hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500",
+					"text-[color:var(--text-color)] bg-[color:var(--bg-secondary-color)]"
+			),
+			onclick: cycle_theme,
+			title: get_theme_label(current_theme),
+			aria_label: get_theme_label(current_theme),
+			{get_theme_content(current_theme)}
 		}
 	}
 }
