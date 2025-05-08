@@ -64,7 +64,7 @@ syntect = { version = "5.2.0", default-features = false, features = ["default-fa
 tailwind_fuse = { version = "0.3.2", features = ["variant"] }
 validator = { version = "0.20.0", features = ["derive"] }
 
-tokio = { version = "1.44.2", features = ["full"], optional = true }
+tokio = { version = "1.44.5", features = ["full"], optional = true }
 tokio-stream = { version = "0.1.17", optional = true }
 tokio-util = { version = "0.7.15", features = ["full", "tracing"], optional = true }
 

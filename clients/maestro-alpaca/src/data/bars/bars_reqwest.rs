@@ -24,7 +24,7 @@ pub async fn bars_request_single_builder(
 			.maybe_adjustment(adjustment)
 			.maybe_page_token(page_token)
 			.timeframe(timeframe)
-			.feed(feed)
+			.feed(feed) 
 			.build(),
 		client,
 	)
