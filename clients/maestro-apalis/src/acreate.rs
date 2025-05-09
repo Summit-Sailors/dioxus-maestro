@@ -1,3 +1,5 @@
+#[allow(unused_imports)]
+use apalis_core::backend::BackendExpose;
 use apalis_sql::postgres::PostgresStorage;
 use maestro_sqlx::acreate::acreate_sqlx_pool;
 use serde::{Serialize, de::DeserializeOwned};
