@@ -128,7 +128,7 @@ pub fn ParallelQueriesDemo() -> Element {
 																	class: tw_join!(
 																			"p-4 rounded-lg border border-[color:var(--border)] transition-colors cursor-pointer",
 																			if is_selected { "border-[color:var(--primary)]" } else {
-																			"bg-[color:var(--muted)]" }
+																			"bg-[color:var(--bg-color)]" }
 																	),
 																	onclick: move |_| selected_dept.set(Some(dept.id.clone())),
 																	h3 { class: "font-semibold text-lg text-[color:var(--text-color)]", "{dept.name}" }
@@ -167,7 +167,7 @@ pub fn ParallelQueriesDemo() -> Element {
 																rsx! {
 																	div {
 																		key: emp.id.clone(),
-																		class: "p-4 bg-[color:var(--muted)] rounded-lg border border-[color:var(--border)] shadow-sm",
+																		class: "p-4 bg-[color:var(--bg-color)] rounded-lg border border-[color:var(--border)] shadow-sm",
 																		div { class: "space-y-2 text-center",
 																			h4 { class: "font-semibold text-lg", "{emp.name}" }
 																			p { class: "text-sm text-[color:var(--text-color)]", "{emp.title}" }

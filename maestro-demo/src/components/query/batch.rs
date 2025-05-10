@@ -111,7 +111,7 @@ fn render_query_state(query_result: &QueryResult<HashMap<String, String>, Error>
 	match query_result {
 		QueryResult::Ok(data) => {
 			rsx! {
-				div { class: "space-y-4 bg-[color:var(--muted)]",
+				div { class: "space-y-4 bg-[color:var(--bg-color)]",
 					for (key , value) in data.iter() {
 						div {
 							match key.as_str() {
@@ -119,7 +119,7 @@ fn render_query_state(query_result: &QueryResult<HashMap<String, String>, Error>
 											let items: Vec<User> = serde_json::from_str(value).unwrap_or_default();
 											rsx! {
 												div { class: "space-y-1",
-													h3 { class: "text-lg text-center font-semibold mb-2 text-[color:var(--foreground)]",
+													h3 { class: "text-lg text-center font-semibold mb-2 text-[color:var(--text-color)]",
 														"Users ({items.len()})"
 													}
 													div { class: "grid grid-cols-1 gap-2",
@@ -134,7 +134,7 @@ fn render_query_state(query_result: &QueryResult<HashMap<String, String>, Error>
 											let items: Vec<Post> = serde_json::from_str(value).unwrap_or_default();
 											rsx! {
 												div { class: "space-y-4",
-													h3 { class: "text-lg text-center font-semibold mb-2 text-[color:var(--foreground)]",
+													h3 { class: "text-lg text-center font-semibold mb-2 text-[color:var(--text-color)]",
 														"Posts ({items.len()})"
 													}
 													div { class: "grid grid-cols-1 gap-2",
@@ -149,7 +149,7 @@ fn render_query_state(query_result: &QueryResult<HashMap<String, String>, Error>
 											let items: Vec<Comment> = serde_json::from_str(value).unwrap_or_default();
 											rsx! {
 												div { class: "space-y-4",
-													h3 { class: "text-lg text-center font-semibold mb-2 text-[color:var(--foreground)]",
+													h3 { class: "text-lg text-center font-semibold mb-2 text-[color:var(--text-color)]",
 														"Comments ({items.len()})"
 													}
 													div { class: "grid grid-cols-1 gap-2",
@@ -181,7 +181,7 @@ fn render_query_state(query_result: &QueryResult<HashMap<String, String>, Error>
 		QueryResult::Loading(_) => {
 			rsx! {
 				div { class: "flex justify-center items-center p-8",
-					div { class: "animate-spin rounded-full h-8 w-8 border-b-2 border-[color:var(--foreground)]" }
+					div { class: "animate-spin rounded-full h-8 w-8 border-b-2 border-[color:var(--muted)] text-[color:var(--text-color)]" }
 				}
 			}
 		},
@@ -309,10 +309,10 @@ pub fn BatchOperationsDemo() -> Element {
 
 	rsx! {
 		div { class: "p-6 bg-[color:var(--bg-color)] rounded-lg shadow-lg",
-			h3 { class: "text-2xl text-[color:var(--foreground)] text-center font-bold mb-4",
+			h3 { class: "text-2xl text-[color:var(--text-color)] text-center font-bold mb-4",
 				"Batch Operations"
 			}
-			div { class: "mb-4 p-2 bg-[color:var(--muted)] rounded text-center text-[color:var(--foreground)]",
+			div { class: "mb-4 p-2 bg-[color:var(--bg-color)] border border-[color:var(--border)] rounded text-center text-[color:var(--text-color)]",
 				"Status: "
 				span {
 					class: match operation_status() {

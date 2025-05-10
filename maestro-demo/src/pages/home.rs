@@ -24,7 +24,7 @@ pub fn HomePage() -> Element {
 							Route::iter()
 									.filter(|route| {
 											route.name() != "Home" && route.name() != "Not Found"
-													&& route.name() != "Theme Designer"
+													&& route.name() != "Theme Editor"
 									})
 									.map(|route| {
 											rsx! {

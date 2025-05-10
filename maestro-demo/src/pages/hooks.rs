@@ -154,7 +154,7 @@ pub fn HooksDemo() -> Element {
 											width: 16,
 											height: 16,
 											icon: FaCopy,
-											class: "text-[color:var(--primary-text)]",
+											class: "text-[color:var(--text-color)]",
 										}
 									}
 								}
@@ -178,7 +178,7 @@ pub fn HooksDemo() -> Element {
 											width: 16,
 											height: 16,
 											icon: FaPaste,
-											class: "text-[color:var(--accent-text)]",
+											class: "text-[color:var(--text-color)]",
 										}
 									}
 								}

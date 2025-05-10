@@ -12,7 +12,7 @@ bon = { workspace = true }
 maestro-hooks = { workspace = true }
 
 dioxus-lib = { version = "0.6.2", default-features = false, features = ["hooks", "macro", "signals"] }
-dioxus-radio = "0.4.0"
+dioxus-radio = "0.5.2"
 futures-util = "0.3.31"
 instant = { version = "0.1.13", features = ["wasm-bindgen"] }
 warnings = "0.2.1"

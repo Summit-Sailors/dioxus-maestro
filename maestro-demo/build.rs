@@ -36,6 +36,6 @@ fn main() {
 	}
 	let output = tailwind_cmd.output().expect("Failed to execute tailwindcss command");
 	if !output.status.success() {
-		panic!("Tailwind CSS compilation failed: {}", String::from_utf8_lossy(&output.stderr));
+		panic!("Tailwind CSS compilation errored: {}", String::from_utf8_lossy(&output.stderr));
 	}
 }
