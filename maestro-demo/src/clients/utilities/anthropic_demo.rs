@@ -54,7 +54,7 @@ pub fn AnthropicDemo() -> Element {
 					is_loading.set(false);
 				},
 				Err(e) => {
-					error.set(Some(format!("Error: {:?}", e)));
+					error.set(Some(format!("Error: {e:?}")));
 					messages.write().pop();
 					is_loading.set(false);
 				},

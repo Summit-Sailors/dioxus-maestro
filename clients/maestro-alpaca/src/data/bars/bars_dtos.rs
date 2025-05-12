@@ -1,9 +1,10 @@
 use std::collections::HashMap;
 
-use chrono::{DateTime, Duration, Timelike, Utc};
+use chrono::{Duration, Timelike, Utc};
 use serde::{Deserialize, Serialize};
 
 use crate::data::{
+	common::Bar,
 	enums::{adjustment::Adjustment, feed::Feed, timeframe::TimeFrame},
 	last_quotes::last_quotes_dtos::serialize_vec_to_csv,
 };
@@ -25,6 +26,12 @@ pub struct BarsSingleRequestDTO {
 	#[serde(skip_serializing_if = "Option::is_none")]
 	pub end: Option<String>,
 	#[serde(skip_serializing_if = "Option::is_none")]
+	pub asof: Option<String>,
+	#[serde(skip_serializing_if = "Option::is_none")]
+	pub currency: Option<String>,
+	#[serde(skip_serializing_if = "Option::is_none")]
+	pub sort: Option<String>,
+	#[serde(skip_serializing_if = "Option::is_none")]
 	pub adjustment: Option<Adjustment>,
 	#[serde(skip_serializing_if = "Option::is_none")]
 	pub page_token: Option<String>,
@@ -39,34 +46,14 @@ pub struct BarsMultiRequestDTO {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct NewBar {
-	#[serde(alias = "t")]
-	pub time: DateTime<Utc>,
-	#[serde(alias = "o")]
-	pub open: f32,
-	#[serde(alias = "c")]
-	pub close: f32,
-	#[serde(alias = "h")]
-	pub high: f32,
-	#[serde(alias = "l")]
-	pub low: f32,
-	#[serde(alias = "v")]
-	pub volume: i32,
-	#[serde(alias = "n")]
-	pub trade_count: i32,
-	#[serde(alias = "vw")]
-	pub weighted_average: f32,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BarsDTO {
-	pub bars: Vec<NewBar>,
+	pub bars: Vec<Bar>,
 	pub symbol: String,
 	pub next_page_token: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BarsMultiApiDTO {
-	pub bars: HashMap<String, Vec<NewBar>>,
+	pub bars: HashMap<String, Vec<Bar>>,
 	pub next_page_token: Option<String>,
 }

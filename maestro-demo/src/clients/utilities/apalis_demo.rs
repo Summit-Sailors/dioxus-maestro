@@ -22,7 +22,7 @@ pub fn JobForm() -> Element {
 					body.set(String::new());
 				},
 				Err(e) => {
-					status.set(format!("Error adding job: {}", e));
+					status.set(format!("Error adding job: {e}"));
 				},
 			}
 		}
@@ -88,7 +88,7 @@ pub fn JobsList() -> Element {
 				jobs_states.set(job_list);
 			},
 			Err(e) => {
-				println!("Error fetching jobs status: {}", e);
+				println!("Error fetching jobs status: {e}");
 			},
 		}
 		loading.set(false);

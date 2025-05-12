@@ -60,7 +60,7 @@ pub fn SpacingEditor() -> Element {
 		};
 
 		// format the value and remove trailing zeros
-		let formatted_value = if numeric_value.fract() < 0.01 { format!("{}", numeric_value.round()) } else { format!("{:.2}", numeric_value) };
+		let formatted_value = if numeric_value.fract() < 0.01 { format!("{}", numeric_value.round()) } else { format!("{numeric_value:.2}") };
 
 		let formatted_value = if formatted_value.contains('.') { formatted_value.trim_end_matches('0').trim_end_matches('.').to_string() } else { formatted_value };
 
@@ -189,10 +189,10 @@ fn convert_unit_value(value: &str, from_unit: &str, to_unit: &str) -> Option<Str
 		_ => return None,
 	};
 
-	let formatted_value = if converted_value.fract() < 0.01 { format!("{}", converted_value.round()) } else { format!("{:.2}", converted_value) };
+	let formatted_value = if converted_value.fract() < 0.01 { format!("{}", converted_value.round()) } else { format!("{converted_value:.2}") };
 
 	// remove trailing zeros after decimal point
 	let formatted_value = if formatted_value.contains('.') { formatted_value.trim_end_matches('0').trim_end_matches('.').to_string() } else { formatted_value };
 
-	Some(format!("{}{}", formatted_value, to_unit))
+	Some(format!("{formatted_value}{to_unit}"))
 }

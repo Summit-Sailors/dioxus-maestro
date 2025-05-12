@@ -48,7 +48,7 @@ pub async fn add_email_job(to: String, subject: String, body: String) -> Result<
 			.await;
 
 		if let Err(e) = run_result {
-			eprintln!("Monitor error: {}", e);
+			eprintln!("Monitor error: {e}");
 		}
 	});
 

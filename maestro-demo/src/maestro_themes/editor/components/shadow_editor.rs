@@ -127,7 +127,7 @@ fn rgb_to_hex(rgb: &str) -> Option<String> {
 	let g = u8::from_str(parts[1]).ok()?;
 	let b = u8::from_str(parts[2]).ok()?;
 
-	Some(format!("#{:02x}{:02x}{:02x}", r, g, b))
+	Some(format!("#{r:02x}{g:02x}{b:02x}"))
 }
 
 #[derive(Props, PartialEq, Clone)]
@@ -204,7 +204,7 @@ fn ColorInput(label: String, color: String, on_change: EventHandler<String>) -> 
 					oninput: move |evt| {
 							let hex_value = evt.value();
 							if let Some((r, g, b)) = hex_to_rgb(&hex_value) {
-									let rgb_color = format!("rgb({} {} {})", r, g, b);
+									let rgb_color = format!("rgb({r} {g} {b})");
 									on_change.call(rgb_color);
 							}
 					},

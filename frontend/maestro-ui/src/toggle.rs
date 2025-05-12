@@ -107,8 +107,8 @@ pub fn RawToggleSwitch(
 		button {
 			class: tw_merge!(
 					"maestro-toggle__switch relative inline-flex h-6 w-11 items-center rounded-full transition-colors",
-					class, if state() { format!("maestro-toggleon {}", toggled_class) } else {
-					format!("maestro-toggleoff {}", default_class) }
+					class, if state() { format!("maestro-toggleon {toggled_class}") } else {
+					format!("maestro-toggleoff {default_class}") }
 			),
 			r#type: "button",
 			role: "switch",
@@ -119,8 +119,8 @@ pub fn RawToggleSwitch(
 			div {
 				class: tw_merge!(
 						"maestro-toggle__handle absolute h-5 w-5 transform rounded-full transition-transform",
-						if state() { format!("translate-x-5 {}", toggled_translate_class) } else {
-						format!("translate-x-1 {}", default_translate_class) }
+						if state() { format!("translate-x-5 {toggled_translate_class}") } else {
+						format!("translate-x-1 {default_translate_class}") }
 				),
 			}
 		}

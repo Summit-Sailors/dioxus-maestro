@@ -100,8 +100,7 @@ pub fn generate_tailwind_v4_css(state: &DesignerState, theme_options: ThemeOptio
     }}
     }}
   }}
-  {}"#,
-		component_specific_styles
+  {component_specific_styles}"#
 	);
 	let base_theme = format!(
 		r#"/**
@@ -175,9 +174,9 @@ pub fn generate_tailwind_v4_css(state: &DesignerState, theme_options: ThemeOptio
 		state.typography.heading_font_family,
 		state.typography.base_size,
 		state.typography.line_height,
-		state.typography.font_weights.iter().map(|(name, weight)| format!("  --font-weight-{}: {};", name, weight)).collect::<Vec<String>>().join("\n"),
+		state.typography.font_weights.iter().map(|(name, weight)| format!("  --font-weight-{name}: {weight};")).collect::<Vec<String>>().join("\n"),
 		state.spacing.unit,
-		state.spacing.scale.iter().map(|(key, value)| format!("  --spacing-{}: {};", key, value)).collect::<Vec<String>>().join("\n"),
+		state.spacing.scale.iter().map(|(key, value)| format!("  --spacing-{key}: {value};")).collect::<Vec<String>>().join("\n"),
 		state.border_radius.sm,
 		state.border_radius.md,
 		state.border_radius.lg,
@@ -193,7 +192,7 @@ pub fn generate_tailwind_v4_css(state: &DesignerState, theme_options: ThemeOptio
 	// If theme support is enabled, build an integrated theme system
 	if theme_options.with_doc_themes {
 		format!(
-			r#"{}
+			r#"{base_theme}
 
 /* Dark variant based on data-theme attribute */
 @variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
@@ -248,16 +247,14 @@ pub fn generate_tailwind_v4_css(state: &DesignerState, theme_options: ThemeOptio
   --range-track-bg: #4b5563; /* gray-600 */
   --range-track-hover: #6b7280; /* gray-500 */
 }}
-    {}
-"#,
-			base_theme, base_elements_styles
+    {base_elements_styles}
+"#
 		)
 	} else {
 		// just the base theme if theme support is not enabled
 		format!(
-			r#"{}
-    {}"#,
-			base_theme, base_elements_styles
+			r#"{base_theme}
+    {base_elements_styles}"#
 		)
 	}
 }
@@ -335,9 +332,9 @@ pub fn generate_theme_variables(state: &DesignerState) -> String {
 		state.typography.heading_font_family,
 		state.typography.base_size,
 		state.typography.line_height,
-		state.typography.font_weights.iter().map(|(name, weight)| format!("  --font-weight-{}: {};", name, weight)).collect::<Vec<String>>().join("\n"),
+		state.typography.font_weights.iter().map(|(name, weight)| format!("  --font-weight-{name}: {weight};")).collect::<Vec<String>>().join("\n"),
 		state.spacing.unit,
-		state.spacing.scale.iter().map(|(key, value)| format!("  --spacing-{}: {};", key, value)).collect::<Vec<String>>().join("\n"),
+		state.spacing.scale.iter().map(|(key, value)| format!("  --spacing-{key}: {value};")).collect::<Vec<String>>().join("\n"),
 		state.border_radius.sm,
 		state.border_radius.md,
 		state.border_radius.lg,
@@ -355,10 +352,10 @@ pub fn generate_theme_variables(state: &DesignerState) -> String {
 /// Generate Tailwind config from theme with theme mode support (for Tailwind v3  and below)
 pub fn generate_tailwind_config(state: &DesignerState, with_themes: bool) -> String {
 	// font weights mapping
-	let font_weights = state.typography.font_weights.iter().map(|(name, weight)| format!(" '{}': '{}',", name, weight)).collect::<Vec<String>>().join("\n");
+	let font_weights = state.typography.font_weights.iter().map(|(name, weight)| format!(" '{name}': '{weight}',")).collect::<Vec<String>>().join("\n");
 
 	// spacing values mapping
-	let spacing_values = state.spacing.scale.iter().map(|(key, value)| format!(" '{}': '{}',", key, value)).collect::<Vec<String>>().join("\n");
+	let spacing_values = state.spacing.scale.iter().map(|(key, value)| format!(" '{key}': '{value}',")).collect::<Vec<String>>().join("\n");
 
 	let base_config = format!(
 		r#"/**
@@ -584,7 +581,7 @@ pub fn generate_rust_theme(state: &DesignerState) -> String {
 		.typography
 		.font_weights
 		.iter()
-		.map(|(name, weight)| format!("    font_weights.insert(String::from(\"{}\"), {});", name, weight))
+		.map(|(name, weight)| format!("    font_weights.insert(String::from(\"{name}\"), {weight});"))
 		.collect::<Vec<String>>()
 		.join("\n");
 
@@ -592,7 +589,7 @@ pub fn generate_rust_theme(state: &DesignerState) -> String {
 		.spacing
 		.scale
 		.iter()
-		.map(|(key, value)| format!("    scale.insert(String::from(\"{}\"), String::from(\"{}\"));", key, value))
+		.map(|(key, value)| format!("    scale.insert(String::from(\"{key}\"), String::from(\"{value}\"));"))
 		.collect::<Vec<String>>()
 		.join("\n");
 

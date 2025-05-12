@@ -52,7 +52,7 @@ pub fn AlpacaDemo() -> Element {
 		},
 		Err(e) => {
 			loading.set(false);
-			error.set(Some(format!("Error fetching data: {}", e)));
+			error.set(Some(format!("Error fetching data: {e}")));
 		},
 	};
 

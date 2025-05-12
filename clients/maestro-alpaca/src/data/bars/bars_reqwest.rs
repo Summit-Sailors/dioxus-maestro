@@ -10,6 +10,9 @@ pub async fn bars_request_single_builder(
 	limit: Option<usize>,
 	start: Option<DateTime<Utc>>,
 	end: Option<DateTime<Utc>>,
+	asof: Option<DateTime<Utc>>,
+	currency: Option<String>,
+	sort: Option<String>,
 	adjustment: Option<Adjustment>,
 	page_token: Option<String>,
 	#[builder(default)] timeframe: TimeFrame,
@@ -21,10 +24,13 @@ pub async fn bars_request_single_builder(
 			.maybe_limit(limit)
 			.maybe_start(start.map(|start| start.to_rfc3339()))
 			.maybe_end(end.map(|start| start.to_rfc3339()))
+			.maybe_asof(asof.map(|date| date.to_rfc3339()))
+			.maybe_currency(currency)
+			.maybe_sort(sort)
 			.maybe_adjustment(adjustment)
 			.maybe_page_token(page_token)
 			.timeframe(timeframe)
-			.feed(feed) 
+			.feed(feed)
 			.build(),
 		client,
 	)
@@ -42,6 +48,9 @@ pub async fn bars_request_multi_builder(
 	limit: Option<usize>,
 	start: Option<DateTime<Utc>>,
 	end: Option<DateTime<Utc>>,
+	asof: Option<DateTime<Utc>>,
+	currency: Option<String>,
+	sort: Option<String>,
 	adjustment: Option<Adjustment>,
 	page_token: Option<String>,
 	#[builder(default)] timeframe: TimeFrame,
@@ -55,6 +64,9 @@ pub async fn bars_request_multi_builder(
 					.maybe_limit(limit)
 					.maybe_start(start.map(|start| start.to_rfc3339()))
 					.maybe_end(end.map(|start| start.to_rfc3339()))
+					.maybe_asof(asof.map(|date| date.to_rfc3339()))
+					.maybe_currency(currency)
+					.maybe_sort(sort)
 					.maybe_adjustment(adjustment)
 					.maybe_page_token(page_token)
 					.timeframe(timeframe)
@@ -69,4 +81,22 @@ pub async fn bars_request_multi_builder(
 
 pub async fn bars_request_multi(request: BarsMultiRequestDTO, client: reqwest::Client) -> Result<BarsMultiApiDTO, reqwest::Error> {
 	client.get("https://data.alpaca.markets/v2/stocks/bars".to_string()).query(&request).send().await?.json::<BarsMultiApiDTO>().await
+}
+
+#[bon::builder]
+pub async fn bars_request_latest_builder(
+	client: reqwest::Client,
+	symbols: Vec<String>,
+	currency: Option<String>,
+	#[builder(default)] feed: Feed,
+) -> Result<BarsMultiApiDTO, reqwest::Error> {
+	bars_request_latest(
+		BarsMultiRequestDTO::builder().symbols(symbols).params(BarsSingleRequestDTO::builder().maybe_currency(currency).feed(feed).build()).build(),
+		client,
+	)
+	.await
+}
+
+pub async fn bars_request_latest(request: BarsMultiRequestDTO, client: reqwest::Client) -> Result<BarsMultiApiDTO, reqwest::Error> {
+	client.get("https://data.alpaca.markets/v2/stocks/bars/latest".to_string()).query(&request).send().await?.json::<BarsMultiApiDTO>().await
 }

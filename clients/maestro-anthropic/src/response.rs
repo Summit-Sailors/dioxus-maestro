@@ -69,13 +69,13 @@ impl Content {
 impl std::fmt::Display for Content {
 	fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
 		match self {
-			Self::SinglePart(string) => write!(f, "{}", string),
+			Self::SinglePart(string) => write!(f, "{string}"),
 			// This could be derived but the `Join` trait is not stable. Neither
 			// is `Iterator::intersperse`. This also has fewer allocations.
 			Self::MultiPart(parts) => {
 				let mut iter = parts.iter();
 				if let Some(part) = iter.next() {
-					write!(f, "{}", part)?;
+					write!(f, "{part}")?;
 					for part in iter {
 						write!(f, "{}{}", Self::SEP, part)?;
 					}
@@ -131,7 +131,7 @@ impl Block {
 			(Block::ToolUse { call: Use { input, .. } }, Delta::Json { partial_json }) => {
 				use serde_json::Value::Object;
 				let partial_json: serde_json::Value = serde_json::from_str(&partial_json)
-					.map_err(|e| DeltaError::Parse { error: format!("Could not merge partial json `{}` into `{}` because {}", partial_json, input, e) })?;
+					.map_err(|e| DeltaError::Parse { error: format!("Could not merge partial json `{partial_json}` into `{input}` because {e}") })?;
 				if let (Object(new), Object(old)) = (partial_json, input) {
 					old.extend(new);
 				}

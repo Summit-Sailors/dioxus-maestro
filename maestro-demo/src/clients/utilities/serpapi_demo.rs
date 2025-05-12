@@ -28,7 +28,7 @@ pub fn SerpApiDemo() -> Element {
 						query,
 						results: Vec::new(),
 						loading: false,
-						error: Some(format!("Error: An error occurred while running the search query: {}", e)),
+						error: Some(format!("Error: An error occurred while running the search query: {e}")),
 					});
 				},
 			}

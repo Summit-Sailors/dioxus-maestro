@@ -82,7 +82,7 @@ pub fn ThemeEditor(props: ThemeDesignerProps) -> Element {
 
 	// to update URL based on active tab and component group
 	let update_url = move |tab: String, component: String| {
-		let new_url = format!("/themes/{}?tab={}", component, tab);
+		let new_url = format!("/themes/{component}?tab={tab}");
 		router.replace(NavigationTarget::Internal(new_url));
 	};
 

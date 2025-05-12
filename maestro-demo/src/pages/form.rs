@@ -42,7 +42,7 @@ pub fn FormsDemo() -> Element {
 					toast.write().popup(ToastInfo::builder().context(format!("Form submitted successfully for user: {:?}", submitted_user.username)).build());
 				},
 				Err(err) => {
-					toast.write().popup(ToastInfo::builder().context(format!("Submission failed: {}", err)).build());
+					toast.write().popup(ToastInfo::builder().context(format!("Submission failed: {err}")).build());
 				},
 			}
 

@@ -935,8 +935,8 @@
   .border-\[color\:var\(--destructive\)\] {
     border-color: var(--destructive);
   }
-  .border-\[color\:var\(--foreground\)\] {
-    border-color: var(--foreground);
+  .border-\[color\:var\(--muted\)\] {
+    border-color: var(--muted);
   }
   .border-\[color\:var\(--primary\)\] {
     border-color: var(--primary);

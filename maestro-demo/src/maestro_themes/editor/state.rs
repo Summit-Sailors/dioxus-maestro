@@ -184,7 +184,7 @@ impl DesignerState {
 				"destructive_foreground" => self.color.destructive_foreground = value,
 				"muted" => self.color.muted = value,
 				"muted_foreground" => self.color.muted_foreground = value,
-				_ => println!("Unknown color key: {}", key),
+				_ => println!("Unknown color key: {key}"),
 			},
 			ThemedesignerAction::UpdateFontFamiliy { value } => {
 				self.typography.font_family = value;
@@ -216,7 +216,7 @@ impl DesignerState {
 				"lg" => self.border_radius.lg = value,
 				"xl" => self.border_radius.xl = value,
 				"full" => self.border_radius.full = value,
-				_ => println!("Unknown border radius key: {}", key),
+				_ => println!("Unknown border radius key: {key}"),
 			},
 			ThemedesignerAction::UpdateShadow { key, value } => match key.as_str() {
 				"sm" => self.shadow.sm = value,
@@ -224,7 +224,7 @@ impl DesignerState {
 				"lg" => self.shadow.lg = value,
 				"xl" => self.shadow.xl = value,
 				"xxl" => self.shadow.xxl = value,
-				_ => println!("Unknown shadow key: {}", key),
+				_ => println!("Unknown shadow key: {key}"),
 			},
 			ThemedesignerAction::ResetToDefaults => {
 				*self = DesignerState::default();

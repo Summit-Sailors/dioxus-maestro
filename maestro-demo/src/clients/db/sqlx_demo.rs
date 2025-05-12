@@ -67,7 +67,7 @@ pub fn SqlxDemo() -> Element {
 			} else {
 				div { class: "flex flex-col items-center justify-center mt-4 w-full",
 					h2 { class: "text-xl font-semibold mb-4 text-center text-[color:var(--text-color)]",
-						{format!("{} users fetched", users_len)}
+						{format!("{users_len} users fetched")}
 					}
 					div { class: "w-full max-w-5xl mx-auto bg-[color:var(--card-bg)] p-6 border border-[color:var(--border-color)] rounded-2xl shadow-lg mb-6 max-h-[80vh] overflow-y-auto space-y-4",
 						{

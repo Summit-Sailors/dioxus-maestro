@@ -144,7 +144,7 @@ pub fn QueryDemo() -> Element {
 
 					toast.write().popup(ToastInfo {
 						heading: Some("Role Updated".into()),
-						context: format!("Updated role for {}", username_clone),
+						context: format!("Updated role for {username_clone}"),
 						icon: Some(EToastCode::Success),
 						position: EToastPosition::TopRight,
 						allow_toast_close: true,

@@ -14,23 +14,23 @@ pub fn get_component_styles(components_section_id: &str) -> Result<String, Error
 			let select_css = include_str!("../../../css/select.css");
 			let multiselect_css = include_str!("../../../css/multiselect.css");
 
-			let combined_css = format!("{}\n{}", select_css, multiselect_css);
+			let combined_css = format!("{select_css}\n{multiselect_css}");
 			Ok(combined_css)
 		},
 		"toggle-and-radio" => {
 			let radio_css = include_str!("../../../css/radio.css");
 			let toggle_css = include_str!("../../../css/toggle.css");
 
-			let combined_css = format!("{}\n{}", radio_css, toggle_css);
+			let combined_css = format!("{radio_css}\n{toggle_css}");
 			Ok(combined_css)
 		},
 		"textarea-spinner-range" => {
 			let textarea_css = include_str!("../../../css/textarea.css");
 			let range_css = include_str!("../../../css/range.css");
 
-			let combined_css = format!("{}\n{}", textarea_css, range_css);
+			let combined_css = format!("{textarea_css}\n{range_css}");
 			Ok(combined_css)
 		},
-		_ => Err(Error::msg(format!("Unsupported components section ID: {}", components_section_id))),
+		_ => Err(Error::msg(format!("Unsupported components section ID: {components_section_id}"))),
 	}
 }
