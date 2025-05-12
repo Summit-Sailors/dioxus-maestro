@@ -1,6 +1,7 @@
 use dioxus::prelude::*;
 use maestro_alpaca::data::{
-	bars::bars_dtos::{BarsDTO, BarsSingleRequestDTO, NewBar},
+	bars::bars_dtos::{BarsDTO, BarsSingleRequestDTO},
+	common::Bar,
 	enums::{feed::Feed, timeframe::TimeFrame},
 };
 
@@ -318,7 +319,7 @@ fn StockChart(bars: BarsDTO) -> Element {
 													bars.bars
 															.iter()
 															.map(|bar| {
-																	let time = bar.time.format("%Y-%m-%d %H:%M").to_string();
+																	let time = bar.timestamp.format("%Y-%m-%d %H:%M").to_string();
 																	let price_change = bar.close - bar.open;
 																	let price_change_percent = (price_change / bar.open) * 100.0;
 																	let price_class = if price_change > 0.0 {
@@ -356,7 +357,7 @@ fn StockChart(bars: BarsDTO) -> Element {
 }
 
 #[component]
-fn ExtendedStockStats(bars: Vec<NewBar>) -> Element {
+fn ExtendedStockStats(bars: Vec<Bar>) -> Element {
 	// basic statistics
 	let latest_bar = bars.first().unwrap();
 	let earliest_bar = bars.last().unwrap();
@@ -432,7 +433,7 @@ fn ExtendedStockStats(bars: Vec<NewBar>) -> Element {
 					h3 { class: "font-medium text-foreground", "Latest Price" }
 					p { class: "text-xl {change_class}", "{latest_bar.close:.2}" }
 					p { class: "text-sm text-muted-foreground",
-						{format!("{}", latest_bar.time.format("%Y-%m-%d %H:%M"))}
+						{format!("{}", latest_bar.timestamp.format("%Y-%m-%d %H:%M"))}
 					}
 				}
 			}

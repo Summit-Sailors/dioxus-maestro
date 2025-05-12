@@ -7,17 +7,17 @@ pub struct Bar {
 	#[serde(alias = "t")]
 	pub timestamp: DateTime<Utc>,
 	#[serde(alias = "o")]
-	pub open: f64,
+	pub open: f32,
 	#[serde(alias = "h")]
-	pub high: f64,
+	pub high: f32,
 	#[serde(alias = "l")]
-	pub low: f64,
+	pub low: f32,
 	#[serde(alias = "c")]
-	pub close: f64,
+	pub close: f32,
 	#[serde(alias = "v")]
-	pub volume: i64,
+	pub volume: i32,
 	#[serde(alias = "n")]
-	pub trade_count: i64,
+	pub trade_count: i32,
 	#[serde(alias = "vw")]
-	pub volume_weighted_avg_price: f64,
+	pub volume_weighted_avg_price: f32,
 }
