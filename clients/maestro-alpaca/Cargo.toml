@@ -25,6 +25,8 @@ url = { workspace = true }
 uuid = { workspace = true, optional = true }
 validator = { workspace = true }
 
+bigdecimal = { version = "0.4.8", features = ["serde-json"] }
+
 
 diesel = { version = "2.2.10", features = ["chrono", "postgres", "serde_json", "uuid"], optional = true }
 diesel-async = { version = "0.5.2", features = ["postgres"], optional = true }

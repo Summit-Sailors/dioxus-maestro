@@ -22,7 +22,7 @@ where
 	vec.join(",").serialize(serializer)
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct QuoteDTO {
 	#[serde(rename = "t")]
 	pub time: DateTime<Utc>,
