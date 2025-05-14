@@ -2,7 +2,7 @@ use dioxus::prelude::*;
 use maestro_alpaca::data::{
 	bars::bars_dtos::{BarsDTO, BarsSingleRequestDTO},
 	common::Bar,
-	enums::{feed::Feed, timeframe::TimeFrame},
+	enums::{feed::Feed, market_data::AssetClass, timeframe::TimeFrame},
 };
 
 use crate::components::ui::features::Features;
@@ -42,6 +42,7 @@ pub fn AlpacaDemo() -> Element {
 		maestro_alpaca::data::bars::functions::get_alpaca_bars_from_server(
 			selected_symbol(),
 			BarsSingleRequestDTO::builder().timeframe(selected_timeframe()).feed(selected_feed()).limit(selected_limit() as usize).build(),
+			AssetClass::Stocks,
 		)
 	})?
 	.suspend()?;

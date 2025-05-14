@@ -12,7 +12,7 @@ pub enum TimeFrameOne {
 	Day,
 }
 
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, EnumIter, Display, EnumString)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, EnumIter, Display, EnumString)]
 pub enum TimeFrame {
 	#[serde(rename = "1Min")]
 	#[strum(to_string = "1 Minute")]

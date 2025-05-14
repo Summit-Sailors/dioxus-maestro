@@ -35,12 +35,15 @@ pub struct BarsSingleRequestDTO {
 	pub adjustment: Option<Adjustment>,
 	#[serde(skip_serializing_if = "Option::is_none")]
 	pub page_token: Option<String>,
+	/// Only for Crypto
+	#[serde(skip_serializing_if = "Option::is_none")]
+	pub loc: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, bon::Builder)]
 pub struct BarsMultiRequestDTO {
 	#[serde(flatten)]
-	params: BarsSingleRequestDTO,
+	pub params: BarsSingleRequestDTO,
 	#[serde(serialize_with = "serialize_vec_to_csv")]
 	symbols: Vec<String>,
 }

@@ -1,7 +1,8 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
-// Common Bar Structure for Daily, Minute, and Previous Daily Bars
+use super::enums::market_data::{AssetClass, MarketDataClass};
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Bar {
 	#[serde(alias = "t")]
@@ -20,4 +21,12 @@ pub struct Bar {
 	pub trade_count: i32,
 	#[serde(alias = "vw")]
 	pub volume_weighted_avg_price: f32,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, bon::Builder, Default)]
+pub struct MarketData {
+	#[builder(default)]
+	pub asset_class: AssetClass,
+	#[builder(default)]
+	pub asset_class_data_type: Vec<MarketDataClass>,
 }

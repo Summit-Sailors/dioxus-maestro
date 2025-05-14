@@ -1,7 +1,7 @@
 use chrono::{DateTime, Utc};
 
 use super::bars_dtos::{BarsDTO, BarsMultiApiDTO, BarsMultiRequestDTO, BarsSingleRequestDTO};
-use crate::data::enums::{adjustment::Adjustment, feed::Feed, timeframe::TimeFrame};
+use crate::data::enums::{adjustment::Adjustment, feed::Feed, market_data::AssetClass, timeframe::TimeFrame};
 
 #[bon::builder]
 pub async fn bars_request_single_builder(
@@ -15,8 +15,10 @@ pub async fn bars_request_single_builder(
 	sort: Option<String>,
 	adjustment: Option<Adjustment>,
 	page_token: Option<String>,
+	loc: Option<String>,
 	#[builder(default)] timeframe: TimeFrame,
 	#[builder(default)] feed: Feed,
+	#[builder(default = AssetClass::Stocks)] asset_class: AssetClass,
 ) -> Result<BarsDTO, reqwest::Error> {
 	bars_request_single(
 		symbol,
@@ -29,16 +31,24 @@ pub async fn bars_request_single_builder(
 			.maybe_sort(sort)
 			.maybe_adjustment(adjustment)
 			.maybe_page_token(page_token)
+			.maybe_loc(loc)
 			.timeframe(timeframe)
 			.feed(feed)
 			.build(),
 		client,
+		asset_class,
 	)
 	.await
 }
 
-pub async fn bars_request_single(symbol: String, request: BarsSingleRequestDTO, client: reqwest::Client) -> Result<BarsDTO, reqwest::Error> {
-	client.get(format!("https://data.alpaca.markets/v2/stocks/{symbol}/bars")).query(&request).send().await?.json::<BarsDTO>().await
+pub async fn bars_request_single(
+	symbol: String,
+	request: BarsSingleRequestDTO,
+	client: reqwest::Client,
+	asset_class: AssetClass,
+) -> Result<BarsDTO, reqwest::Error> {
+	let url = get_bars_url(&asset_class, "single", Some(&symbol), request.loc.as_deref());
+	client.get(url).query(&request).send().await?.json::<BarsDTO>().await
 }
 
 #[bon::builder]
@@ -53,8 +63,10 @@ pub async fn bars_request_multi_builder(
 	sort: Option<String>,
 	adjustment: Option<Adjustment>,
 	page_token: Option<String>,
+	loc: Option<String>,
 	#[builder(default)] timeframe: TimeFrame,
 	#[builder(default)] feed: Feed,
+	#[builder(default = AssetClass::Stocks)] asset_class: AssetClass,
 ) -> Result<BarsMultiApiDTO, reqwest::Error> {
 	bars_request_multi(
 		BarsMultiRequestDTO::builder()
@@ -69,18 +81,21 @@ pub async fn bars_request_multi_builder(
 					.maybe_sort(sort)
 					.maybe_adjustment(adjustment)
 					.maybe_page_token(page_token)
+					.maybe_loc(loc)
 					.timeframe(timeframe)
 					.feed(feed)
 					.build(),
 			)
 			.build(),
 		client,
+		asset_class,
 	)
 	.await
 }
 
-pub async fn bars_request_multi(request: BarsMultiRequestDTO, client: reqwest::Client) -> Result<BarsMultiApiDTO, reqwest::Error> {
-	client.get("https://data.alpaca.markets/v2/stocks/bars".to_string()).query(&request).send().await?.json::<BarsMultiApiDTO>().await
+pub async fn bars_request_multi(request: BarsMultiRequestDTO, client: reqwest::Client, asset_class: AssetClass) -> Result<BarsMultiApiDTO, reqwest::Error> {
+	let url = get_bars_url(&asset_class, "multi", None, request.params.loc.as_deref());
+	client.get(url).query(&request).send().await?.json::<BarsMultiApiDTO>().await
 }
 
 #[bon::builder]
@@ -88,15 +103,62 @@ pub async fn bars_request_latest_builder(
 	client: reqwest::Client,
 	symbols: Vec<String>,
 	currency: Option<String>,
+	loc: Option<String>,
 	#[builder(default)] feed: Feed,
+	#[builder(default = AssetClass::Stocks)] asset_class: AssetClass,
 ) -> Result<BarsMultiApiDTO, reqwest::Error> {
 	bars_request_latest(
-		BarsMultiRequestDTO::builder().symbols(symbols).params(BarsSingleRequestDTO::builder().maybe_currency(currency).feed(feed).build()).build(),
+		BarsMultiRequestDTO::builder().symbols(symbols).params(BarsSingleRequestDTO::builder().maybe_currency(currency).maybe_loc(loc).feed(feed).build()).build(),
 		client,
+		asset_class,
 	)
 	.await
 }
 
-pub async fn bars_request_latest(request: BarsMultiRequestDTO, client: reqwest::Client) -> Result<BarsMultiApiDTO, reqwest::Error> {
-	client.get("https://data.alpaca.markets/v2/stocks/bars/latest".to_string()).query(&request).send().await?.json::<BarsMultiApiDTO>().await
+pub async fn bars_request_latest(request: BarsMultiRequestDTO, client: reqwest::Client, asset_class: AssetClass) -> Result<BarsMultiApiDTO, reqwest::Error> {
+	let url = get_bars_url(&asset_class, "latest", None, request.params.loc.as_deref());
+	client.get(url).query(&request).send().await?.json::<BarsMultiApiDTO>().await
+}
+
+#[bon::builder]
+pub async fn bars_request_latest_single_builder(
+	client: reqwest::Client,
+	symbol: String,
+	currency: Option<String>,
+	#[builder(default)] feed: Feed,
+) -> Result<BarsDTO, reqwest::Error> {
+	bars_request_latest_single(symbol, BarsSingleRequestDTO::builder().maybe_currency(currency).feed(feed).build(), client).await
+}
+
+pub async fn bars_request_latest_single(symbol: String, request: BarsSingleRequestDTO, client: reqwest::Client) -> Result<BarsDTO, reqwest::Error> {
+	client.get(format!("https://data.alpaca.markets/v2/stocks/{symbol}/bars/latest")).query(&request).send().await?.json::<BarsDTO>().await
+}
+
+fn get_bars_url(asset_class: &AssetClass, endpoint_type: &str, symbol: Option<&str>, loc: Option<&str>) -> String {
+	match asset_class {
+		AssetClass::Stocks => match endpoint_type {
+			"single" => format!("https://data.alpaca.markets/v2/stocks/{}/bars", symbol.unwrap_or("")),
+			"multi" => "https://data.alpaca.markets/v2/stocks/bars".to_string(),
+			"latest" =>
+				if let Some(sym) = symbol {
+					format!("https://data.alpaca.markets/v2/stocks/{sym}/bars/latest")
+				} else {
+					"https://data.alpaca.markets/v2/stocks/bars/latest".to_string()
+				},
+			_ => panic!("Unknown endpoint type: {endpoint_type}"),
+		},
+		AssetClass::Options => match endpoint_type {
+			"multi" => "https://data.alpaca.markets/v1beta1/options/bars".to_string(),
+			_ => panic!("Unsupported endpoint type for options: {endpoint_type}"),
+		},
+		AssetClass::Crypto => {
+			let location = loc.unwrap_or("us");
+			match endpoint_type {
+				"multi" => format!("https://data.alpaca.markets/v1beta3/crypto/{location}/bars"),
+				"latest" => format!("https://data.alpaca.markets/v1beta3/crypto/{location}/latest/bars"),
+				_ => panic!("Unsupported endpoint type for crypto: {endpoint_type}"),
+			}
+		},
+		_ => panic!("Maestro Alpaca does not have support for the provided AssetClass. The only supported Asset classes are Stocks/ETFs, Options and Crypto"),
+	}
 }
