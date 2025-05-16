@@ -28,5 +28,5 @@ pub struct MarketData {
 	#[builder(default)]
 	pub asset_class: AssetClass,
 	#[builder(default)]
-	pub asset_class_data_type: Vec<MarketDataClass>,
+	pub asset_class_data_type: MarketDataClass,
 }

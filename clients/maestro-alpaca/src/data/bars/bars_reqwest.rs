@@ -1,8 +1,9 @@
 use chrono::{DateTime, Utc};
 
-use super::bars_dtos::{BarsDTO, BarsMultiApiDTO, BarsMultiRequestDTO, BarsSingleRequestDTO};
+use super::bars_dtos::{BarsDTO, BarsLatestSingleDTO, BarsMultiApiDTO, BarsMultiRequestDTO, BarsSingleRequestDTO};
 use crate::data::enums::{adjustment::Adjustment, feed::Feed, market_data::AssetClass, timeframe::TimeFrame};
 
+/// Request Bars data for a single symbol
 #[bon::builder]
 pub async fn bars_request_single_builder(
 	client: reqwest::Client,
@@ -125,13 +126,13 @@ pub async fn bars_request_latest_single_builder(
 	client: reqwest::Client,
 	symbol: String,
 	currency: Option<String>,
-	#[builder(default)] feed: Feed,
-) -> Result<BarsDTO, reqwest::Error> {
+	#[builder(default = Feed::Sip)] feed: Feed,
+) -> Result<BarsLatestSingleDTO, reqwest::Error> {
 	bars_request_latest_single(symbol, BarsSingleRequestDTO::builder().maybe_currency(currency).feed(feed).build(), client).await
 }
 
-pub async fn bars_request_latest_single(symbol: String, request: BarsSingleRequestDTO, client: reqwest::Client) -> Result<BarsDTO, reqwest::Error> {
-	client.get(format!("https://data.alpaca.markets/v2/stocks/{symbol}/bars/latest")).query(&request).send().await?.json::<BarsDTO>().await
+pub async fn bars_request_latest_single(symbol: String, request: BarsSingleRequestDTO, client: reqwest::Client) -> Result<BarsLatestSingleDTO, reqwest::Error> {
+	client.get(format!("https://data.alpaca.markets/v2/stocks/{symbol}/bars/latest")).query(&request).send().await?.json::<BarsLatestSingleDTO>().await
 }
 
 fn get_bars_url(asset_class: &AssetClass, endpoint_type: &str, symbol: Option<&str>, loc: Option<&str>) -> String {
@@ -159,6 +160,6 @@ fn get_bars_url(asset_class: &AssetClass, endpoint_type: &str, symbol: Option<&s
 				_ => panic!("Unsupported endpoint type for crypto: {endpoint_type}"),
 			}
 		},
-		_ => panic!("Maestro Alpaca does not have support for the provided AssetClass. The only supported Asset classes are Stocks/ETFs, Options and Crypto"),
+		_ => panic!("There is no Bars data for the provided AssetClass. The only supported Asset classes are Stocks/ETFs, Options and Crypto"),
 	}
 }

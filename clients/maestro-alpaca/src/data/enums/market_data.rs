@@ -1,8 +1,25 @@
 use serde::{Deserialize, Serialize};
+use strum_macros::EnumIter;
 
 use super::timeframe::TimeFrame;
 
 pub trait DataType: Serialize + Deserialize<'static> + Clone + PartialEq + Eq + std::fmt::Debug + Send + Sync + 'static {}
+
+/// Scope of data to be fetched for the data type specified in the market data class
+#[derive(Debug, PartialEq, Clone, Default)]
+pub enum MarketDataScope {
+	/// Historical data for multiple symbols
+	Historical,
+	/// Latest data for multiple symbols
+	Latest,
+	/// Historical data for single symbol
+	HistoricalSingle,
+	/// Latest data for single symbol
+	LatestSingle,
+	/// Historical and Latest data for multiple symbols
+	#[default]
+	All,
+}
 
 /// Majorly focused on OLHCV data AKA Bars data
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Hash, Default)]
@@ -41,7 +58,7 @@ impl Default for CodeType {
 }
 
 /// Market Data structure that combines asset class and data type
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash, EnumIter)]
 #[serde(tag = "class", content = "type")]
 pub enum MarketDataClass {
 	/// Equity securities representing ownership in companies
@@ -140,13 +157,19 @@ pub enum StocksDataType {
 	Quotes,
 }
 
+impl Default for StocksDataType {
+	fn default() -> Self {
+		Self::Bars { timeframe: TimeFrame::Day }
+	}
+}
+
 /// Data types available for cryptocurrency
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash)]
 #[serde(tag = "data_type")]
 pub enum CryptoDataType {
 	/// OHLCV bars/candles with specified timeframe
 	#[serde(rename = "bars")]
-	Bars { timeframe: TimeFrame },
+	Bars { timeframe: TimeFrame, loc: String },
 
 	/// Individual trades executed on exchanges
 	#[serde(rename = "trades")]
@@ -163,6 +186,12 @@ pub enum CryptoDataType {
 	/// Complete or partial order book showing pending buy/sell orders
 	#[serde(rename = "orderbooks")]
 	OrderBooks,
+}
+
+impl Default for CryptoDataType {
+	fn default() -> Self {
+		Self::Bars { timeframe: TimeFrame::Day, loc: "us".to_string() }
+	}
 }
 
 /// Data types available for options
@@ -197,39 +226,49 @@ pub enum OptionsDataType {
 	Trades,
 }
 
+impl Default for OptionsDataType {
+	fn default() -> Self {
+		Self::Bars { timeframe: TimeFrame::Day }
+	}
+}
+
 /// Data types available for fixed income
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash, Default)]
 #[serde(tag = "data_type")]
 pub enum FixedIncomeDataType {
 	/// Current or historical price data for fixed income securities
 	#[serde(rename = "prices")]
+	#[default]
 	LatestPrices,
 }
 
 /// Data types available for corporate actions
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash, Default)]
 #[serde(tag = "data_type")]
 pub enum CorporateActionsDataType {
 	/// Dividends, splits, mergers, acquisitions and other corporate events
 	#[serde(rename = "corporate-actions")]
+	#[default]
 	CorporateActions,
 }
 
 /// Data types available for logos
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash, Default)]
 #[serde(tag = "data_type")]
 pub enum LogosDataType {
 	/// Company logos and brand images
 	#[serde(rename = "logos")]
+	#[default]
 	Logos,
 }
 
 /// Data types available for screeners
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash, Default)]
 #[serde(tag = "data_type")]
 pub enum ScreenerDataType {
 	/// Securities with high trading activity or volume
 	#[serde(rename = "most-actives")]
+	#[default]
 	MostActive,
 
 	/// Top gainers, losers, and most active securities
@@ -238,23 +277,21 @@ pub enum ScreenerDataType {
 }
 
 /// Data types available for news
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash, Default)]
 #[serde(tag = "data_type")]
 pub enum NewsDataType {
 	/// Financial news articles and press releases
 	#[serde(rename = "news")]
+	#[default]
 	Articles,
 }
 
 /// Data types available for forex
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash, Default)]
 #[serde(tag = "data_type")]
 pub enum ForexDataType {
 	/// Exchange rates between different currencies (latest and historical)
 	#[serde(rename = "rates")]
+	#[default]
 	CurrencyRates,
 }
-
-// TODO: crypto bars fetching -> required args = loc, symbols, timeframe
-// TODO: Steer towards getting data for asset classes with the suggested ticker symbols
-// TODO: Code Optimization and setting up migrations for data storage

@@ -50,8 +50,9 @@ pub struct BarsMultiRequestDTO {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BarsDTO {
-	pub bars: Vec<Bar>,
 	pub symbol: String,
+	pub bars: Vec<Bar>,
+	pub currency: String,
 	pub next_page_token: Option<String>,
 }
 
@@ -59,4 +60,12 @@ pub struct BarsDTO {
 pub struct BarsMultiApiDTO {
 	pub bars: HashMap<String, Vec<Bar>>,
 	pub next_page_token: Option<String>,
+	pub currency: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BarsLatestSingleDTO {
+	pub bar: Bar,
+	pub symbol: String,
+	pub currency: String,
 }
