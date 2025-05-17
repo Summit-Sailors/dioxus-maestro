@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 use strum_macros::{Display, EnumIter, EnumString};
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, EnumIter, Display, EnumString)]
+#[allow(clippy::upper_case_acronyms)]
 pub enum Feed {
 	/// Use the Investors Exchange (IEX) as the data source.
 	///
@@ -18,4 +19,7 @@ pub enum Feed {
 	#[serde(rename = "sip")]
 	#[strum(to_string = "SIP")]
 	Sip,
+	#[serde(rename = "otc")]
+	#[strum(to_string = "OTC")]
+	OTC,
 }

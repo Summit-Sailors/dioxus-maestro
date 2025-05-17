@@ -1,20 +1,23 @@
 use serde::{Deserialize, Serialize};
-use strum_macros::EnumIter;
+use strum_macros::{Display, EnumIter, EnumString};
 
 use super::timeframe::TimeFrame;
 
 pub trait DataType: Serialize + Deserialize<'static> + Clone + PartialEq + Eq + std::fmt::Debug + Send + Sync + 'static {}
 
 /// Scope of data to be fetched for the data type specified in the market data class
-#[derive(Debug, PartialEq, Clone, Default)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, EnumIter, Display, EnumString)]
+#[serde(rename_all = "lowercase")]
 pub enum MarketDataScope {
 	/// Historical data for multiple symbols
 	Historical,
 	/// Latest data for multiple symbols
 	Latest,
 	/// Historical data for single symbol
+	#[serde(rename = "historical_single")]
 	HistoricalSingle,
 	/// Latest data for single symbol
+	#[serde(rename = "latest_single")]
 	LatestSingle,
 	/// Historical and Latest data for multiple symbols
 	#[default]
@@ -63,7 +66,7 @@ impl Default for CodeType {
 pub enum MarketDataClass {
 	/// Equity securities representing ownership in companies
 	#[serde(rename = "stocks")]
-	Stocks {
+	Stock {
 		/// Stock data type information
 		data_type: StocksDataType,
 	},
@@ -75,7 +78,7 @@ pub enum MarketDataClass {
 	},
 	/// Options data types
 	#[serde(rename = "options")]
-	Options {
+	Option {
 		/// Options data type information
 		data_type: OptionsDataType,
 	},
@@ -119,7 +122,7 @@ pub enum MarketDataClass {
 
 impl Default for MarketDataClass {
 	fn default() -> Self {
-		Self::Stocks { data_type: StocksDataType::Bars { timeframe: TimeFrame::Day } }
+		Self::Stock { data_type: StocksDataType::Bars { timeframe: TimeFrame::Day } }
 	}
 }
 
@@ -293,5 +296,66 @@ pub enum ForexDataType {
 	/// Exchange rates between different currencies (latest and historical)
 	#[serde(rename = "rates")]
 	#[default]
+	CurrencyRates,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Hash, Default)]
+#[serde(tag = "data_type")]
+pub enum MarketDataType {
+	/// OHLCV bars/candles with specified timeframe
+	#[serde(rename = "bars")]
+	#[default]
+	Bars,
+	/// Individual trades executed on markets
+	#[serde(rename = "trades")]
+	Trades,
+
+	/// Order book snapshots providing market depth (Level 2 data)
+	#[serde(rename = "snapshots")]
+	Snapshots,
+
+	/// Results of aggregated buy and sell orders matched at a specific time
+	#[serde(rename = "auctions")]
+	Auctions,
+
+	/// Security reference data and metadata
+	#[serde(rename = "codes")]
+	Codes,
+
+	/// Best bid and ask prices with associated sizes (Level 1 data)
+	#[serde(rename = "quotes")]
+	Quotes,
+
+	/// Complete or partial order book showing pending buy/sell orders
+	#[serde(rename = "orderbooks")]
+	OrderBooks,
+
+	/// Options chain data showing available strike prices and expiration dates
+	#[serde(rename = "option_chain")]
+	OptionChain,
+
+	/// Current or historical price data for fixed income securities
+	#[serde(rename = "prices")]
+	LatestPrices,
+
+	#[serde(rename = "corporate-actions")]
+	CorporateActions,
+
+	/// Company logos and brand images
+	#[serde(rename = "logos")]
+	Logos,
+	/// Securities with high trading activity or volume
+	#[serde(rename = "most-actives")]
+	MostActive,
+
+	/// Top gainers, losers, and most active securities
+	#[serde(rename = "movers")]
+	MarketMovers,
+
+	/// Financial news articles and press releases
+	#[serde(rename = "news")]
+	Articles,
+	/// Exchange rates between different currencies (latest and historical)
+	#[serde(rename = "rates")]
 	CurrencyRates,
 }
