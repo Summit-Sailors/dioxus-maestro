@@ -62,14 +62,14 @@ impl FloatingStyles {
 	}
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct ArrowData {
 	pub x: Option<f32>,
 	pub y: Option<f32>,
 	pub center_offset: f32,
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct TransformOriginData {
 	pub x: String,
 	pub y: String,

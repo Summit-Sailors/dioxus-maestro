@@ -7,7 +7,7 @@ use {
 	std::fmt::Debug,
 };
 
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct RadioContext {
 	pub value: ReadOnlySignal<String>,
 	pub checked: Memo<bool>,
@@ -22,7 +22,7 @@ impl RadioContext {
 	}
 }
 
-#[derive(Props, PartialEq, Debug, Clone)]
+#[derive(Clone, Debug, PartialEq, Props)]
 pub struct RadioProps {
 	pub value: ReadOnlySignal<String>,
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
@@ -91,7 +91,7 @@ pub fn Radio(props: RadioProps) -> Element {
 	}
 }
 
-#[derive(Props, PartialEq, Debug, Clone)]
+#[derive(Clone, Debug, PartialEq, Props)]
 pub struct RadioIndicatorProps {
 	#[props(extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,

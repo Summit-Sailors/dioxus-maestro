@@ -7,7 +7,7 @@ use {
 	std::{fmt::Debug, rc::Rc},
 };
 
-#[derive(Clone, PartialEq, Debug, Copy)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct ToggleGroupContext {
 	pub value: Memo<String>,
 	pub set_value: Callback<String>,
@@ -29,7 +29,7 @@ impl ToggleGroupContext {
 	}
 }
 
-#[derive(Props, Clone, PartialEq)]
+#[derive(Clone, PartialEq, Props)]
 pub struct ToggleGroupRootProps {
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
 	pub value: ReadOnlySignal<Option<String>>,
@@ -84,7 +84,7 @@ pub fn ToggleGroupRoot(props: ToggleGroupRootProps) -> Element {
 	}
 }
 
-#[derive(Props, Clone, PartialEq)]
+#[derive(Clone, PartialEq, Props)]
 pub struct ToggleGroupItemProps {
 	pub value: ReadOnlySignal<String>,
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]

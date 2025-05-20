@@ -1,6 +1,5 @@
 use {
 	dioxus::{prelude::*, web::WebEventExt},
-	dioxus_logger::tracing::info,
 	std::rc::Rc,
 	uuid::Uuid,
 	web_sys::{
@@ -10,7 +9,7 @@ use {
 	},
 };
 
-#[derive(Props, PartialEq, Clone)]
+#[derive(Clone, PartialEq, Props)]
 pub struct FocusTrapProps {
 	#[props(default = None)]
 	pub onclick: Option<EventHandler<Event<MouseData>>>,

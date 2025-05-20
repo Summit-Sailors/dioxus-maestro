@@ -5,7 +5,7 @@ use {
 	std::time::Duration,
 };
 
-#[derive(Props, Clone, PartialEq)]
+#[derive(Clone, PartialEq, Props)]
 pub struct TextareaProps {
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
 	pub value: ReadOnlySignal<Option<String>>,

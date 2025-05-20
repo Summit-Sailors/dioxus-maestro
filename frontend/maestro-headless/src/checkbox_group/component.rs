@@ -7,7 +7,7 @@ use {
 	std::{fmt::Debug, rc::Rc},
 };
 
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct CheckboxGroupContext {
 	pub value: Memo<Vec<String>>,
 	pub set_value: Callback<Vec<String>>,
@@ -42,7 +42,7 @@ impl CheckboxGroupContext {
 	}
 }
 
-#[derive(Props, Clone, PartialEq)]
+#[derive(Clone, PartialEq, Props)]
 pub struct CheckboxGroupProps {
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
 	pub value: ReadOnlySignal<Option<Vec<String>>>,
@@ -100,7 +100,7 @@ pub fn CheckboxGroup(props: CheckboxGroupProps) -> Element {
 	}
 }
 
-#[derive(Props, Clone, PartialEq)]
+#[derive(Clone, PartialEq, Props)]
 pub struct CheckboxGroupItemProps {
 	pub value: ReadOnlySignal<String>,
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]
@@ -145,7 +145,7 @@ pub fn CheckboxGroupItem(props: CheckboxGroupItemProps) -> Element {
 	}
 }
 
-#[derive(Props, PartialEq, Debug, Clone)]
+#[derive(Clone, Debug, PartialEq, Props)]
 pub struct CheckboxGroupIndicatorProps {
 	#[props(extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,

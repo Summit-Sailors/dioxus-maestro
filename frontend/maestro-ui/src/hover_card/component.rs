@@ -4,7 +4,7 @@ use {
 	tailwind_fuse::*,
 };
 
-#[derive(Props, PartialEq, Clone)]
+#[derive(Clone, PartialEq, Props)]
 pub struct HoverCardProps {
 	#[props(default = String::new())]
 	pub class: String,

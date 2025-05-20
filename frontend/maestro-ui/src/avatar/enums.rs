@@ -10,7 +10,7 @@ pub struct AvatarClass {
 	pub size: AvatarSize,
 }
 
-#[derive(TwVariant, PartialEq, Debug, Serialize, Deserialize, strum_macros::Display, strum_macros::EnumIter, strum_macros::EnumString)]
+#[derive(Debug, Deserialize, strum_macros::Display, strum_macros::EnumIter, strum_macros::EnumString, PartialEq, Serialize, TwVariant)]
 pub enum AvatarSize {
 	#[tw(class = "w-8 h-8")]
 	Xs,

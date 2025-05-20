@@ -9,7 +9,7 @@ use {
 	uuid::{Error as UuidError, Uuid},
 };
 
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
 pub enum Class {
 	#[serde(rename = "us_equity")]
 	#[default]
@@ -18,7 +18,7 @@ pub enum Class {
 	Crypto,
 }
 
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
 pub enum Status {
 	#[serde(rename = "active")]
 	#[default]
@@ -27,7 +27,7 @@ pub enum Status {
 	Inactive,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ParseSymbolError {
 	InvalidSymbol(char),
 	UnknownExchange,
@@ -48,7 +48,7 @@ impl Display for ParseSymbolError {
 	}
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub enum Symbol {
 	Sym(String),
 	SymExchg(String, Exchange),
@@ -62,7 +62,7 @@ impl From<Uuid> for Symbol {
 	}
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub enum Exchange {
 	#[serde(rename = "AMEX")]
 	Amex,
@@ -94,7 +94,7 @@ impl AsRef<str> for Exchange {
 	}
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct Asset {
 	pub id: Uuid,
 	pub class: Class,
@@ -108,7 +108,7 @@ pub struct Asset {
 	pub fractionable: bool,
 }
 
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
 struct AssetsGetRequest {
 	status: Option<Status>,
 	asset_class: Option<Class>,

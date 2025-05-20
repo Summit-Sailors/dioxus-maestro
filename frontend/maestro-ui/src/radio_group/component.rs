@@ -7,7 +7,7 @@ use {
 	tailwind_fuse::*,
 };
 
-#[derive(Props, Clone, PartialEq)]
+#[derive(Clone, PartialEq, Props)]
 pub struct RadioGroupProps {
 	#[props(default = ReadOnlySignal::new(Signal::new(String::new())))]
 	pub class: ReadOnlySignal<String>,

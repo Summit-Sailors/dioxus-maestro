@@ -60,7 +60,7 @@ impl AnthropicClient {
 	}
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct ChatRequest {
 	pub model: String,
 	pub messages: Vec<Message>,
@@ -68,7 +68,7 @@ pub struct ChatRequest {
 	pub stream: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Message {
 	pub role: String,
 	pub content: String,
@@ -135,7 +135,7 @@ pub enum AnthropicClientError {
 	Stream(#[from] eventsource_stream::EventStreamError<reqwest::Error>),
 }
 
-#[derive(Debug, thiserror::Error, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Deserialize, thiserror::Error, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
 pub enum AnthropicError {

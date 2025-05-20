@@ -1,0 +1,65 @@
+{
+  "openapi": "3.0.3",
+  "info": { "title": "Web Scraper API", "description": "Simple web scraping API using Selenium for content fetching", "version": "1.0.0" },
+  "paths": {
+    "/fetch-html": {
+      "post": {
+        "summary": "Fetch HTML content from a URL",
+        "operationId": "fetch_html_fetch_html_post",
+        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UrlRequest" } } }, "required": true },
+        "responses": {
+          "200": {
+            "description": "Returns the HTML content from the requested URL",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/HtmlResponse" } } }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/HTTPValidationError" } } }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health Check",
+        "operationId": "health_check_health_get",
+        "responses": { "200": { "description": "Successful Response", "content": { "application/json": { "schema": {} } } } }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HTTPValidationError": {
+        "properties": { "detail": { "items": { "$ref": "#/components/schemas/ValidationError" }, "type": "array", "title": "Detail" } },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HtmlResponse": {
+        "properties": {
+          "html": { "type": "string", "title": "Html" },
+          "url": { "type": "string", "maxLength": 2083, "minLength": 1, "format": "uri", "title": "Url" }
+        },
+        "type": "object",
+        "required": ["html", "url"],
+        "title": "HtmlResponse"
+      },
+      "UrlRequest": {
+        "properties": { "url": { "type": "string", "maxLength": 2083, "minLength": 1, "format": "uri", "title": "Url" } },
+        "type": "object",
+        "required": ["url"],
+        "title": "UrlRequest",
+        "example": { "url": "https://example.com" }
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": { "items": { "anyOf": [{ "type": "string" }, { "type": "integer" }] }, "type": "array", "title": "Location" },
+          "msg": { "type": "string", "title": "Message" },
+          "type": { "type": "string", "title": "Error Type" }
+        },
+        "type": "object",
+        "required": ["loc", "msg", "type"],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

@@ -1,6 +1,6 @@
 use plotters::prelude::*;
 
-#[derive(Debug, Clone, PartialEq, bon::Builder)]
+#[derive(bon::Builder, Clone, Debug, PartialEq)]
 pub struct ChartOptions {
 	#[builder(default = "Chart".to_string())]
 	pub title: String,

@@ -8,7 +8,7 @@ use {
 	serde::{Deserialize, Serialize},
 };
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct CalendarGetRequest {
 	#[serde(skip_serializing_if = "Option::is_none")]
 	pub start: Option<NaiveDate>,
@@ -26,7 +26,7 @@ pub async fn assets_get_request(
 	client.get(EAlpacaRoute::Api(EApiRoute::Calendar).url_path(urls)).query(&CalendarGetRequest { start, end }).send().await?.json().await
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct OpenCloseDTO {
 	pub date: NaiveDate,
 	pub open: NaiveTime,

@@ -1,20 +1,21 @@
 [package]
-authors = []
-description = ""
-edition = "2021"
-license = ""
+authors = { workspace = true }
+description = { workspace = true }
+edition = { workspace = true }
+license = { workspace = true }
 name = "maestro-serpapi"
-repository = ""
+repository = { workspace = true }
 
 [dependencies]
 bon = { workspace = true }
+chrome-fastapi = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 strum = { workspace = true }
 strum_macros = { workspace = true }
 
 dioxus = { version = "0.6.3", features = ["fullstack"], optional = true }
-reqwest = { version = "0.12.12", features = ["json", "multipart"], optional = true }
+reqwest = { version = "0.12.15", features = ["json", "multipart"], optional = true }
 
 [features]
 dioxus = []

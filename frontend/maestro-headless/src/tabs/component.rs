@@ -8,7 +8,7 @@ use {
 	std::rc::Rc,
 };
 
-#[derive(Clone, PartialEq, Debug, Copy)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 struct TabsContext {
 	pub value: Memo<String>,
 	pub set_value: Callback<String>,
@@ -21,7 +21,7 @@ impl TabsContext {
 	}
 }
 
-#[derive(Props, Clone, PartialEq)]
+#[derive(Clone, PartialEq, Props)]
 pub struct TabsRootProps {
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
 	pub value: ReadOnlySignal<Option<String>>,
@@ -61,7 +61,7 @@ pub fn TabsRoot(props: TabsRootProps) -> Element {
 	}
 }
 
-#[derive(Props, Clone, PartialEq)]
+#[derive(Clone, PartialEq, Props)]
 pub struct TabsListProps {
 	#[props(extends = div, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,

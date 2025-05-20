@@ -1,6 +1,6 @@
 use {crate::shared::EOrientation, dioxus::prelude::*};
 
-#[derive(Props, PartialEq, Clone)]
+#[derive(Clone, PartialEq, Props)]
 pub struct SeparatorProps {
 	#[props(default = ReadOnlySignal::new(Signal::new(EOrientation::Horizontal)))]
 	orientation: ReadOnlySignal<EOrientation>,

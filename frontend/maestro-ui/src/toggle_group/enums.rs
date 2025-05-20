@@ -15,7 +15,7 @@ pub struct ToggleItemClass {
 	pub round: ToggleItemRound,
 }
 
-#[derive(PartialEq, TwVariant, Debug, Serialize, Deserialize, strum_macros::Display, strum_macros::EnumIter, strum_macros::EnumString)]
+#[derive(Debug, Deserialize, strum_macros::Display, strum_macros::EnumIter, strum_macros::EnumString, PartialEq, Serialize, TwVariant)]
 pub enum ToggleItemRound {
 	#[tw(class = "first:rounded-l-xs last:rounded-r-xs")]
 	Xs,
@@ -27,7 +27,7 @@ pub enum ToggleItemRound {
 	Lg,
 }
 
-#[derive(TwVariant, PartialEq, Debug, Serialize, Deserialize, strum_macros::Display, strum_macros::EnumIter, strum_macros::EnumString)]
+#[derive(Debug, Deserialize, strum_macros::Display, strum_macros::EnumIter, strum_macros::EnumString, PartialEq, Serialize, TwVariant)]
 pub enum ToggleItemVariant {
 	#[tw(
 		default,

@@ -8,7 +8,7 @@ use {
 	tailwind_fuse::*,
 };
 
-#[derive(Props, Clone, PartialEq)]
+#[derive(Clone, PartialEq, Props)]
 pub struct ToggleGroupProps {
 	#[props(default = String::new())]
 	pub class: String,
@@ -50,7 +50,7 @@ pub fn ToggleGroup(props: ToggleGroupProps) -> Element {
 	}
 }
 
-#[derive(Props, Clone, PartialEq)]
+#[derive(Clone, PartialEq, Props)]
 pub struct ToggleGroupItemProps {
 	#[props(default = String::new())]
 	pub class: String,

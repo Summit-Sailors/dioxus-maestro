@@ -6,7 +6,7 @@ use {
 	dioxus::prelude::*,
 };
 
-#[derive(Props, Clone, PartialEq)]
+#[derive(Clone, PartialEq, Props)]
 pub struct NumberInputProps {
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
 	pub value: ReadOnlySignal<Option<f32>>,

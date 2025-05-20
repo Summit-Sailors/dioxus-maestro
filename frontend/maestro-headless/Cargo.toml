@@ -1,10 +1,10 @@
 [package]
-authors = []
-description = ""
-edition = "2024"
-license = ""
+authors = { workspace = true }
+description = { workspace = true }
+edition = { workspace = true }
+license = { workspace = true }
 name = "maestro-headless"
-repository = ""
+repository = { workspace = true }
 
 
 [dependencies]
@@ -18,7 +18,7 @@ strum = { workspace = true }
 strum_macros = { workspace = true }
 uuid = { workspace = true }
 
-async-std = "1.13.0"
+async-std = "1.13.1"
 tailwind_fuse = { workspace = true }
 
 tracing-wasm = { version = "0.2.1", optional = true }

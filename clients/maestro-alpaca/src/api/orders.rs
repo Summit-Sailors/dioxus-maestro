@@ -8,7 +8,7 @@ use {
 	serde::{Deserialize, Serialize},
 };
 
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
 pub enum Status {
 	#[serde(rename = "open")]
 	Open,
@@ -19,7 +19,7 @@ pub enum Status {
 	All,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct OrdersGetRequest {
 	pub symbols: Vec<String>,
 	pub status: Status,
@@ -27,7 +27,7 @@ pub struct OrdersGetRequest {
 	pub nested: bool,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 struct OrdersDTO {
 	orders: Vec<OrderDTO>,
 }
