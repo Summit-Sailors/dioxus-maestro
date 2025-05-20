@@ -1,6 +1,6 @@
 use {dioxus::prelude::*, tailwind_fuse::*};
 
-#[derive(Props, Clone, PartialEq)]
+#[derive(Clone, PartialEq, Props)]
 pub struct TextInputProps {
 	#[props(default = String::new())]
 	pub class: String,

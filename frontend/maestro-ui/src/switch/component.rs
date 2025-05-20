@@ -5,7 +5,7 @@ use {
 	tailwind_fuse::*,
 };
 
-#[derive(Props, PartialEq, Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Props)]
 pub struct SwitchProps {
 	#[props(default = String::new())]
 	pub class: String,

@@ -11,16 +11,18 @@ maestro-headless = { path = "../frontend/maestro-headless" }
 maestro-toast = { path = "../frontend/maestro-toast", features = ["web"] }
 maestro-ui = { path = "../frontend/maestro-ui" }
 
-async-std = "1.13.0"
+
 chrono = { workspace = true }
-dioxus = { version = "0.6.3", features = ["fullstack", "router"] }
+dioxus = { workspace = true, features = ["fullstack", "router"] }
 dioxus-free-icons = { workspace = true }
-dioxus-logger = "0.6.2"
+dioxus-logger = { workspace = true }
+
+async-std = "1.13.1"
 instant = { version = "0.1.13", features = ["wasm-bindgen"] }
 js-sys = "0.3.77"
-log = "0.4.26"
-serde = { version = "1.0.218", features = ["derive"] }
-serde_json = "1.0.139"
+log = "0.4.27"
+serde = { version = "1.0.219", features = ["derive"] }
+serde_json = "1.0.140"
 strum = "0.27.1"
 strum_macros = "0.27.1"
 tailwind_fuse = { version = "0.3.2", features = ["variant"] }

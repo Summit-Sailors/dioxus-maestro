@@ -13,8 +13,7 @@ sort-d:
   set -euo pipefail
   cargo sort-derives
 
-pack-ext:
+chrome-fastapi:
   #!/usr/bin/env bash
   set -euo pipefail
-  just pack
-  cargo run -p extension-builder
+  rye run python chrome-fastapi/chrome_fastapi/server.py

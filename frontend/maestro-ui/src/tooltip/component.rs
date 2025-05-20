@@ -4,7 +4,7 @@ use {
 	tailwind_fuse::*,
 };
 
-#[derive(Props, PartialEq, Clone)]
+#[derive(Clone, PartialEq, Props)]
 pub struct TooltipRootProps {
 	#[props(default = String::new())]
 	pub class: String,
@@ -31,7 +31,7 @@ pub fn TooltipRoot(props: TooltipRootProps) -> Element {
 	}
 }
 
-#[derive(Props, PartialEq, Clone)]
+#[derive(Clone, PartialEq, Props)]
 pub struct TooltipProps {
 	#[props(default = String::new())]
 	pub class: String,

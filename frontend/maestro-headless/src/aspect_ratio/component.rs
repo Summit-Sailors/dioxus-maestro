@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-#[derive(Props, Clone, PartialEq)]
+#[derive(Clone, PartialEq, Props)]
 pub struct AspectRatioRootProps {
 	#[props(default = 1.0)]
 	pub ratio: f32,

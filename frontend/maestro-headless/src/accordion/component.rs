@@ -9,7 +9,7 @@ use {
 	uuid::Uuid,
 };
 
-#[derive(Clone, PartialEq, Debug, Copy, strum_macros::Display, strum_macros::EnumIter, strum_macros::EnumString)]
+#[derive(Debug, Clone, Copy, PartialEq, strum_macros::EnumIter, strum_macros::Display, strum_macros::EnumString)]
 pub enum AccordionVariant {
 	Single,
 	Multiple,
@@ -33,7 +33,7 @@ impl TryFrom<&String> for AccordionVariant {
 	}
 }
 
-#[derive(Clone, PartialEq, Debug, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct AccordionItemContext {
 	pub value: Memo<String>,
 	pub open: Memo<bool>,
@@ -47,7 +47,7 @@ impl AccordionItemContext {
 	}
 }
 
-#[derive(Clone, PartialEq, Debug, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 struct AccordionContext {
 	pub value: Memo<Vec<String>>,
 	pub set_value: Callback<Vec<String>>,
@@ -99,7 +99,7 @@ impl AccordionContext {
 	}
 }
 
-#[derive(Props, Clone, PartialEq)]
+#[derive(Clone, PartialEq, Props)]
 pub struct AccordionRootProps {
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
 	pub value: ReadOnlySignal<Option<Vec<String>>>,
@@ -155,7 +155,7 @@ pub fn AccordionRoot(props: AccordionRootProps) -> Element {
 	}
 }
 
-#[derive(Props, Clone, PartialEq)]
+#[derive(Clone, PartialEq, Props)]
 pub struct AccordionItemProps {
 	pub value: String,
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]

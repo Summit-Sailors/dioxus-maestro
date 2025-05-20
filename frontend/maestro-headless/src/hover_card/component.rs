@@ -13,7 +13,7 @@ use {
 	},
 };
 
-#[derive(Clone, Debug, PartialEq, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 struct HoverCardContext {
 	pub open: Memo<bool>,
 	pub set_open: Callback<bool>,
@@ -38,7 +38,7 @@ impl HoverCardContext {
 	}
 }
 
-#[derive(Props, PartialEq, Clone)]
+#[derive(Clone, PartialEq, Props)]
 pub struct HoverCardRootProps {
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
 	pub open: ReadOnlySignal<Option<bool>>,

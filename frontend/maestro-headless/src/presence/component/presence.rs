@@ -8,7 +8,7 @@ use {
 	},
 };
 
-#[derive(Props, PartialEq, Clone)]
+#[derive(Clone, PartialEq, Props)]
 pub struct PresenceProps {
 	present: ReadOnlySignal<bool>,
 	children: Element,
@@ -29,14 +29,14 @@ pub fn Presence(props: PresenceProps) -> Element {
 	}
 }
 
-#[derive(Clone, Debug)]
+#[derive(Debug, Clone)]
 struct AnimationState {
 	animation_name: String,
 	has_transition: bool,
 	is_animating: bool,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum EMountState {
 	Mounted,
 	Unmounted,

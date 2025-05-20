@@ -1,0 +1,6 @@
+{
+  "extDescription": {
+    "message": "Disable the Content-Security-Policy of websites. When the icon is red, CSP headers are disabled.",
+    "description": "The description of this extention"
+  }
+}

@@ -1,6 +1,6 @@
 use {crate::shared::EOrientation, dioxus::prelude::*, tailwind_fuse::*};
 
-#[derive(Props, PartialEq, Clone)]
+#[derive(Clone, PartialEq, Props)]
 pub struct SeparatorProps {
 	#[props(default = String::new())]
 	pub class: String,

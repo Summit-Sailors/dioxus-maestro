@@ -7,7 +7,7 @@ use {
 	},
 };
 
-#[derive(Debug, Clone, PartialEq, Default)]
+#[derive(Debug, Default, Clone, PartialEq)]
 pub struct PropsStruct {
 	pub prop: String,
 	pub prop_type: String,
@@ -15,7 +15,7 @@ pub struct PropsStruct {
 	pub tooltip_text: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Default)]
+#[derive(Debug, Default, Clone, PartialEq)]
 pub struct AttrsStruct {
 	pub attr: String,
 	pub description: String,

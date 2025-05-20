@@ -10,7 +10,7 @@ use {
 	uuid::Uuid,
 };
 
-#[derive(Clone, PartialEq, Debug, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 struct PopoverContext {
 	pub open: Memo<bool>,
 	pub set_open: Callback<bool>,
@@ -24,7 +24,7 @@ impl PopoverContext {
 	}
 }
 
-#[derive(Props, Clone, PartialEq)]
+#[derive(Clone, PartialEq, Props)]
 pub struct PopoverRootProps {
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
 	pub open: ReadOnlySignal<Option<bool>>,

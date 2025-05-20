@@ -6,7 +6,7 @@ use {
 	dioxus::prelude::*,
 };
 
-#[derive(Props, PartialEq, Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Props)]
 pub struct SwitchRootProps {
 	#[props(default = ReadOnlySignal::new(Signal::new(None)))]
 	pub value: ReadOnlySignal<Option<String>>,
@@ -84,7 +84,7 @@ pub fn SwitchRoot(props: SwitchRootProps) -> Element {
 	}
 }
 
-#[derive(Props, PartialEq, Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Props)]
 pub struct SwitchIndicatorProps {
 	#[props(extends = GlobalAttributes, extends = span)]
 	pub attributes: Vec<Attribute>,

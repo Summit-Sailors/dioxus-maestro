@@ -15,7 +15,7 @@ pub struct EClass {
 	pub round: ERound,
 }
 
-#[derive(PartialEq, TwVariant, Debug, Serialize, Deserialize, strum_macros::Display, strum_macros::EnumIter, strum_macros::EnumString)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, strum_macros::EnumIter, strum_macros::Display, strum_macros::EnumString, TwVariant)]
 pub enum ERound {
 	#[tw(class = "rounded-xs")]
 	Xs,
@@ -31,7 +31,7 @@ pub enum ERound {
 	None,
 }
 
-#[derive(TwVariant, PartialEq, Debug, Serialize, Deserialize, strum_macros::Display, strum_macros::EnumIter, strum_macros::EnumString)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, strum_macros::EnumIter, strum_macros::Display, strum_macros::EnumString, TwVariant)]
 pub enum EVariant {
 	#[tw(default, class = "text-primary-foreground bg-primary hover:bg-primary/90")]
 	Primary,
@@ -49,7 +49,7 @@ pub enum EVariant {
 	Muted,
 }
 
-#[derive(TwVariant, PartialEq, Debug, Serialize, Deserialize, strum_macros::Display, strum_macros::EnumIter, strum_macros::EnumString)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, strum_macros::EnumIter, strum_macros::Display, strum_macros::EnumString, TwVariant)]
 pub enum ESize {
 	#[tw(class = "h-8")]
 	Xs,

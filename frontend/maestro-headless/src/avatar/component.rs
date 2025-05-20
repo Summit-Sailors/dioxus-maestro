@@ -9,7 +9,7 @@ use {
 	},
 };
 
-#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum ImageLoadingStatus {
 	Idle,
 	Loading,
@@ -17,12 +17,12 @@ pub enum ImageLoadingStatus {
 	Error,
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 struct AvatarContextValue {
 	image_loading_status: Signal<ImageLoadingStatus>,
 }
 
-#[derive(Props, PartialEq, Clone)]
+#[derive(Clone, PartialEq, Props)]
 pub struct AvatarRootProps {
 	#[props(extends = GlobalAttributes, extends = div)]
 	pub attributes: Vec<Attribute>,
@@ -41,7 +41,7 @@ pub fn AvatarRoot(props: AvatarRootProps) -> Element {
 	}
 }
 
-#[derive(Props, PartialEq, Clone)]
+#[derive(Clone, PartialEq, Props)]
 pub struct AvatarImageProps {
 	#[props(default = ReadOnlySignal::new(Signal::new(String::new())))]
 	pub src: ReadOnlySignal<String>,
@@ -107,7 +107,7 @@ pub fn AvatarImage(props: AvatarImageProps) -> Element {
 	}
 }
 
-#[derive(Props, PartialEq, Clone)]
+#[derive(Clone, PartialEq, Props)]
 pub struct AvatarFallbackProps {
 	#[props(default = None)]
 	pub delay_ms: Option<u32>,

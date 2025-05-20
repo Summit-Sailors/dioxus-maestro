@@ -15,7 +15,7 @@ use {
 	},
 };
 
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct RangeContext {
 	pub disabled: ReadOnlySignal<bool>,
 	pub min: f32,
@@ -27,7 +27,7 @@ pub struct RangeContext {
 	pub orientation: ReadOnlySignal<EOrientation>,
 }
 
-#[derive(Props, Clone, PartialEq)]
+#[derive(Clone, PartialEq, Props)]
 pub struct RangeRootProps {
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
 	pub value: ReadOnlySignal<Option<Vec<f32>>>,
@@ -292,7 +292,7 @@ pub fn RangeRoot(props: RangeRootProps) -> Element {
 	}
 }
 
-#[derive(Props, Clone, PartialEq)]
+#[derive(Clone, PartialEq, Props)]
 pub struct RangeTrackProps {
 	#[props(extends = GlobalAttributes, extends = div)]
 	pub attributes: Vec<Attribute>,
@@ -319,7 +319,7 @@ pub fn RangeTrack(props: RangeTrackProps) -> Element {
 	}
 }
 
-#[derive(Props, Clone, PartialEq)]
+#[derive(Clone, PartialEq, Props)]
 pub struct RangeProps {
 	#[props(extends = div, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,
@@ -363,7 +363,7 @@ pub fn Range(props: RangeProps) -> Element {
 	}
 }
 
-#[derive(Props, Clone, PartialEq)]
+#[derive(Clone, PartialEq, Props)]
 pub struct RangeThumbProps {
 	#[props(extends = div, extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,

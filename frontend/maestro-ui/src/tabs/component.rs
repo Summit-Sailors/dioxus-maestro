@@ -1,6 +1,6 @@
 use {crate::shared::EOrientation, dioxus::prelude::*, tailwind_fuse::*};
 
-#[derive(Props, Clone, PartialEq)]
+#[derive(Clone, PartialEq, Props)]
 pub struct TabsProps {
 	#[props(default = String::new())]
 	pub class: String,
@@ -36,7 +36,7 @@ pub fn Tabs(props: TabsProps) -> Element {
 	}
 }
 
-#[derive(Props, Clone, PartialEq)]
+#[derive(Clone, PartialEq, Props)]
 pub struct TabsListProps {
 	#[props(default = String::new())]
 	pub class: String,

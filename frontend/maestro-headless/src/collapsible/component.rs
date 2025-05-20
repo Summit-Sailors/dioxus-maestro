@@ -8,7 +8,7 @@ use {
 	uuid::Uuid,
 };
 
-#[derive(Clone, PartialEq, Debug, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 struct CollapsibleContext {
 	pub open: Memo<bool>,
 	pub set_open: Callback<bool>,
@@ -23,7 +23,7 @@ impl CollapsibleContext {
 	}
 }
 
-#[derive(Props, Clone, PartialEq)]
+#[derive(Clone, PartialEq, Props)]
 pub struct CollapsibleRootProps {
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
 	pub open: ReadOnlySignal<Option<bool>>,

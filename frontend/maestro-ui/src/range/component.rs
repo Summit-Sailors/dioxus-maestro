@@ -1,6 +1,6 @@
 use {crate::shared::EOrientation, dioxus::prelude::*, tailwind_fuse::*};
 
-#[derive(Props, Clone, PartialEq)]
+#[derive(Clone, PartialEq, Props)]
 pub struct RangeProps {
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
 	pub value: ReadOnlySignal<Option<Vec<f32>>>,
@@ -74,7 +74,7 @@ pub fn Range(props: RangeProps) -> Element {
 	}
 }
 
-#[derive(Props, Clone, PartialEq)]
+#[derive(Clone, PartialEq, Props)]
 pub struct RangeThumbProps {
 	#[props(default = String::new())]
 	pub class: String,

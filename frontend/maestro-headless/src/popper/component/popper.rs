@@ -15,12 +15,12 @@ use {
 	},
 };
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct PopperContext {
 	anchor: Signal<Option<Rc<MountedData>>>,
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct PopperContentContext {
 	content: Signal<Option<Rc<MountedData>>>,
 	placement: Signal<Placement>,
@@ -28,7 +28,7 @@ pub struct PopperContentContext {
 	arrow: Signal<Option<Rc<MountedData>>>,
 }
 
-#[derive(Props, Clone, PartialEq)]
+#[derive(Clone, PartialEq, Props)]
 pub struct PopperProps {
 	#[props(optional, default = None)]
 	pub onmounted: Option<EventHandler<Event<MountedData>>>,
@@ -62,7 +62,7 @@ pub fn Popper(props: PopperProps) -> Element {
 	}
 }
 
-#[derive(Props, PartialEq, Clone)]
+#[derive(Clone, PartialEq, Props)]
 pub struct PopperAnchorProps {
 	#[props(optional, default = None)]
 	onclick: Option<EventHandler<MouseEvent>>,
@@ -166,7 +166,7 @@ pub fn PopperAnchor(props: PopperAnchorProps) -> Element {
 	}
 }
 
-#[derive(Props, PartialEq, Clone)]
+#[derive(Clone, PartialEq, Props)]
 pub struct PopperContentProps {
 	#[props(default = ReadOnlySignal::new(Signal::new(ESide::Bottom)))]
 	side: ReadOnlySignal<ESide>,
@@ -520,7 +520,7 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 	}
 }
 
-#[derive(Props, PartialEq, Clone)]
+#[derive(Clone, PartialEq, Props)]
 pub struct PopperArrowProps {
 	#[props(default = 10.0)]
 	width: f32,

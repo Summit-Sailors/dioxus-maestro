@@ -1,6 +1,6 @@
 use {dioxus::prelude::*, tailwind_fuse::*};
 
-#[derive(Props, Clone, PartialEq)]
+#[derive(Clone, PartialEq, Props)]
 pub struct HelpTextProps {
 	#[props(default = ReadOnlySignal::new(Signal::new(false)))]
 	pub visible: ReadOnlySignal<bool>,
