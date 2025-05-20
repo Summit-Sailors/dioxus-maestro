@@ -10,13 +10,13 @@ use {
 	uuid::Uuid,
 };
 
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct SelectOptionContext {
 	pub selected: Memo<bool>,
 	pub disabled: ReadOnlySignal<bool>,
 }
 
-#[derive(Clone, PartialEq, Debug, Copy)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct SelectContext {
 	pub value: Memo<Vec<String>>,
 	pub set_value: Callback<Vec<String>>,
@@ -126,7 +126,7 @@ pub fn SelectRoot(props: SelectRootProps) -> Element {
 	}
 }
 
-#[derive(Props, PartialEq, Clone)]
+#[derive(Clone, PartialEq, Props)]
 pub struct SelectTriggerProps {
 	#[props(default = None)]
 	pub onclick: Option<EventHandler<Event<MouseData>>>,
@@ -172,7 +172,7 @@ pub fn SelectTrigger(props: SelectTriggerProps) -> Element {
 	}
 }
 
-#[derive(Props, PartialEq, Clone)]
+#[derive(Clone, PartialEq, Props)]
 pub struct SelectIconProps {
 	#[props(extends = span, extends = GlobalAttributes)]
 	attributes: Vec<Attribute>,
@@ -218,7 +218,7 @@ pub fn SelectIcon(props: SelectIconProps) -> Element {
 	}
 }
 
-#[derive(Props, PartialEq, Clone)]
+#[derive(Clone, PartialEq, Props)]
 pub struct SelectValueProps {
 	#[props(default = String::default())]
 	pub placeholder: String,
@@ -260,7 +260,7 @@ pub fn SelectValue(props: SelectValueProps) -> Element {
 	}
 }
 
-#[derive(Props, PartialEq, Clone)]
+#[derive(Clone, PartialEq, Props)]
 pub struct SelectDropdownProps {
 	#[props(default = ESide::Bottom)]
 	side: ESide,
@@ -333,7 +333,7 @@ pub fn SelectDropdown(props: SelectDropdownProps) -> Element {
 	}
 }
 
-#[derive(Props, PartialEq, Clone)]
+#[derive(Clone, PartialEq, Props)]
 pub struct SelectOptionProps {
 	pub value: String,
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(false)))]
@@ -405,7 +405,7 @@ pub fn SelectOption(props: SelectOptionProps) -> Element {
 	}
 }
 
-#[derive(Props, PartialEq, Clone)]
+#[derive(Clone, PartialEq, Props)]
 pub struct OptionSelectedIndicator {
 	#[props(extends = span, extends = GlobalAttributes)]
 	attributes: Vec<Attribute>,

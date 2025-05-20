@@ -56,7 +56,7 @@ pub fn Select(props: SelectProps) -> Element {
 	}
 }
 
-#[derive(Props, PartialEq, Clone)]
+#[derive(Clone, PartialEq, Props)]
 pub struct SelectTriggerProps {
 	#[props(default = String::new())]
 	pub class: String,
@@ -88,7 +88,7 @@ pub fn SelectTrigger(props: SelectTriggerProps) -> Element {
 	}
 }
 
-#[derive(Props, PartialEq, Clone)]
+#[derive(Clone, PartialEq, Props)]
 pub struct SelectValueProps {
 	#[props(default = String::new())]
 	pub class: String,
@@ -117,7 +117,7 @@ pub fn SelectValue(props: SelectValueProps) -> Element {
 	}
 }
 
-#[derive(Props, PartialEq, Clone)]
+#[derive(Clone, PartialEq, Props)]
 pub struct SelectDropdownProps {
 	#[props(default = String::new())]
 	pub class: String,
@@ -164,7 +164,7 @@ pub fn SelectDropdown(props: SelectDropdownProps) -> Element {
 	}
 }
 
-#[derive(Props, PartialEq, Clone)]
+#[derive(Clone, PartialEq, Props)]
 pub struct SelectOptionProps {
 	#[props(default = String::new())]
 	pub class: String,

@@ -1,17 +1,17 @@
 [package]
-authors = []
-description = ""
-edition = "2021"
-license = ""
+authors = { workspace = true }
+description = { workspace = true }
+edition = { workspace = true }
+license = { workspace = true }
 name = "maestro-sqlx"
-repository = ""
+repository = { workspace = true }
 
 
 [dependencies]
 serde = { workspace = true }
 
-sqlx = { version = "0.8.3", features = ["postgres", "runtime-tokio"], optional = true }
-tokio = { version = "1.43.0", features = ["full"], optional = true }
+sqlx = { version = "0.8.6", features = ["postgres", "runtime-tokio"], optional = true }
+tokio = { version = "1.45.0", features = ["full"], optional = true }
 
 [features]
 acreate = ["dep:sqlx"]

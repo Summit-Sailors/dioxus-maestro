@@ -6,7 +6,7 @@ use {
 	},
 };
 
-#[derive(Props, PartialEq, Clone)]
+#[derive(Clone, PartialEq, Props)]
 pub struct StyledAccordionProps {
 	#[props(optional, default = None)]
 	pub value: Option<Vec<String>>,

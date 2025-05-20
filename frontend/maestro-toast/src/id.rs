@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-#[derive(Debug, Clone)]
+#[derive(Clone, Debug)]
 pub struct ToastID(usize);
 
 impl ToastID {

@@ -1,6 +1,6 @@
 use {dioxus::prelude::*, tailwind_fuse::tw_merge};
 
-#[derive(Props, Clone, PartialEq)]
+#[derive(Clone, PartialEq, Props)]
 pub struct AspectRatioProps {
 	#[props(default = String::new())]
 	pub class: String,

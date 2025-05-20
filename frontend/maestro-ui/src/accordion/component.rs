@@ -4,7 +4,7 @@ use {
 	tailwind_fuse::tw_merge,
 };
 
-#[derive(Props, Clone, PartialEq)]
+#[derive(Clone, PartialEq, Props)]
 pub struct AccordionProps {
 	#[props(default = String::new())]
 	pub class: String,
@@ -52,7 +52,7 @@ pub fn Accordion(props: AccordionProps) -> Element {
 	}
 }
 
-#[derive(Props, Clone, PartialEq)]
+#[derive(Clone, PartialEq, Props)]
 pub struct AccordionItemProps {
 	#[props(default = String::new())]
 	pub class: String,

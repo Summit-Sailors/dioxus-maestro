@@ -12,7 +12,7 @@ pub async fn account_configurations_get_request(urls: AlpacaUrls, #[builder(defa
 	client.get(EAlpacaRoute::Api(EApiRoute::AccountActivities).url_path(urls)).send().await?.json().await
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 enum TradeConfirmation {
 	#[serde(rename = "all")]
 	Email,
@@ -20,7 +20,7 @@ enum TradeConfirmation {
 	None,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 struct Configuration {
 	#[serde(rename = "trade_confirm_email")]
 	pub trade_confirmation: TradeConfirmation,

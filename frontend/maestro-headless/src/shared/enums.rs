@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 // TO DO: use for key nav
-#[derive(Clone, PartialEq, Debug, Copy, Serialize, Deserialize, strum_macros::Display)]
+#[derive(Clone, Copy, Debug, Deserialize, strum_macros::Display, PartialEq, Serialize)]
 pub enum EOrientation {
 	#[strum(to_string = "horizontal")]
 	Horizontal,
@@ -9,7 +9,7 @@ pub enum EOrientation {
 	Vertical,
 }
 
-#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, strum_macros::Display)]
+#[derive(Clone, Copy, Debug, Deserialize, strum_macros::Display, Eq, Hash, PartialEq, Serialize)]
 pub enum ESide {
 	#[strum(to_string = "top")]
 	Top,
@@ -46,7 +46,7 @@ impl TryFrom<&String> for ESide {
 	}
 }
 
-#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, strum_macros::Display)]
+#[derive(Clone, Copy, Debug, Deserialize, strum_macros::Display, Eq, Hash, PartialEq, Serialize)]
 pub enum EAlign {
 	#[strum(to_string = "start")]
 	Start,

@@ -1,5 +1,6 @@
 *.lock
 *-lock.yaml
+**/downloaded_files
 
 *.env*
 !**/.env.example

@@ -3,7 +3,7 @@ use {
 	serde::{Deserialize, Serialize},
 };
 
-#[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize, strum_macros::Display)]
+#[derive(Clone, Copy, Debug, Deserialize, strum_macros::Display, PartialEq, Serialize)]
 enum ProgressState {
 	#[strum(to_string = "init")]
 	Init,
@@ -13,7 +13,7 @@ enum ProgressState {
 	Completed,
 }
 
-#[derive(Clone, Copy, PartialEq, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct ProgressContext {
 	value: Memo<f32>,
 	max: f32,
@@ -37,7 +37,7 @@ impl ProgressContext {
 
 const DEFAULT_MAX: f32 = 100.0;
 
-#[derive(Props, PartialEq, Clone)]
+#[derive(Clone, PartialEq, Props)]
 pub struct ProgressRootProps {
 	#[props(default = ReadOnlySignal::new(Signal::new(0.0)))]
 	value: ReadOnlySignal<f32>,
@@ -75,7 +75,7 @@ pub fn ProgressRoot(props: ProgressRootProps) -> Element {
 	}
 }
 
-#[derive(Props, PartialEq, Clone)]
+#[derive(Clone, PartialEq, Props)]
 pub struct ProgressIndicatorProps {
 	#[props(extends = div, extends = GlobalAttributes)]
 	attributes: Vec<Attribute>,

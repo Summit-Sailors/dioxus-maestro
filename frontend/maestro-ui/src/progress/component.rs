@@ -1,6 +1,6 @@
 use {dioxus::prelude::*, tailwind_fuse::*};
 
-#[derive(Props, PartialEq, Clone)]
+#[derive(Clone, PartialEq, Props)]
 pub struct ProgressProps {
 	#[props(default = ReadOnlySignal::new(Signal::new(0.0)))]
 	value: ReadOnlySignal<f32>,
@@ -30,7 +30,7 @@ pub fn Progress(props: ProgressProps) -> Element {
 	}
 }
 
-#[derive(Props, PartialEq, Clone)]
+#[derive(Clone, PartialEq, Props)]
 pub struct ProgressIndicatorProps {
 	#[props(extends = div, extends = GlobalAttributes)]
 	attributes: Vec<Attribute>,

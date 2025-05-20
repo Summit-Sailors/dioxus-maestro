@@ -13,7 +13,7 @@ pub struct PaginationRequestDTO<T> {
 	pub query: T,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct PaginatedResultDTO<T> {
 	pub records: Vec<T>,
 	pub total_pages: i64,

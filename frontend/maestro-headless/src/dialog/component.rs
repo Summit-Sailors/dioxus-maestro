@@ -11,7 +11,7 @@ use {
 	web_sys::window,
 };
 
-#[derive(Clone, PartialEq, Debug, Copy)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 struct DialogContext {
 	pub open: Memo<bool>,
 	pub on_close: Option<Callback>,
@@ -35,7 +35,7 @@ impl DialogContext {
 	}
 }
 
-#[derive(Props, Clone, PartialEq)]
+#[derive(Clone, PartialEq, Props)]
 pub struct DialogRootProps {
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
 	pub open: ReadOnlySignal<Option<bool>>,

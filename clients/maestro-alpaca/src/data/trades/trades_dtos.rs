@@ -5,7 +5,7 @@ use {
 	serde::{Deserialize, Serialize},
 };
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct TradesRequestDTO {
 	#[serde(skip_serializing_if = "Option::is_none")]
 	pub start: Option<DateTime<Utc>>,
@@ -19,7 +19,7 @@ pub struct TradesRequestDTO {
 	pub page_token: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq)]
 pub struct TradeDTO {
 	#[serde(rename = "t")]
 	pub timestamp: DateTime<Utc>,
@@ -29,7 +29,7 @@ pub struct TradeDTO {
 	pub size: usize,
 }
 
-#[derive(Debug, PartialEq, Eq, Deserialize)]
+#[derive(Debug, Deserialize, Eq, PartialEq)]
 pub struct TradesDTO {
 	pub trades: Vec<TradeDTO>,
 	pub symbol: String,

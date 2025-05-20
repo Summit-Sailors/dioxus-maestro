@@ -13,7 +13,7 @@ pub struct SwitchClass {
 	pub round: SwitchRound,
 }
 
-#[derive(PartialEq, TwVariant, Debug, Serialize, Deserialize, strum_macros::Display, strum_macros::EnumIter, strum_macros::EnumString)]
+#[derive(Debug, Deserialize, strum_macros::Display, strum_macros::EnumIter, strum_macros::EnumString, PartialEq, Serialize, TwVariant)]
 pub enum SwitchRound {
 	#[tw(class = "rounded-xs")]
 	Sm,
@@ -25,7 +25,7 @@ pub enum SwitchRound {
 	Full,
 }
 
-#[derive(TwVariant, PartialEq, Debug, Serialize, Deserialize, strum_macros::Display, strum_macros::EnumIter, strum_macros::EnumString)]
+#[derive(Debug, Deserialize, strum_macros::Display, strum_macros::EnumIter, strum_macros::EnumString, PartialEq, Serialize, TwVariant)]
 pub enum SwitchSize {
 	#[tw(default, class = "w-8 h-4.5")]
 	Sm,

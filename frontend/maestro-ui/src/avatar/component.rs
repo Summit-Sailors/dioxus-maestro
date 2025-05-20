@@ -4,7 +4,7 @@ use {
 	tailwind_fuse::{tw_merge, IntoTailwindClass},
 };
 
-#[derive(Props, Clone, PartialEq)]
+#[derive(Clone, PartialEq, Props)]
 pub struct AvatarProps {
 	#[props(default = String::new())]
 	pub class: String,
@@ -25,7 +25,7 @@ pub fn Avatar(props: AvatarProps) -> Element {
 	}
 }
 
-#[derive(Props, PartialEq, Clone)]
+#[derive(Clone, PartialEq, Props)]
 pub struct AvatarImageProps {
 	#[props(default = String::new())]
 	pub class: String,
@@ -46,7 +46,7 @@ pub fn AvatarImage(props: AvatarImageProps) -> Element {
 	}
 }
 
-#[derive(Props, PartialEq, Clone)]
+#[derive(Clone, PartialEq, Props)]
 pub struct AvatarFallbackProps {
 	#[props(default = String::new())]
 	pub class: String,

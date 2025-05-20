@@ -1,6 +1,6 @@
 use {crate::shared::EOrientation, dioxus::prelude::*};
 
-#[derive(Props, Clone, PartialEq)]
+#[derive(Clone, PartialEq, Props)]
 pub struct LabelProps {
 	#[props(default = ReadOnlySignal::new(Signal::new(EOrientation::Vertical)))]
 	pub orientation: ReadOnlySignal<EOrientation>,

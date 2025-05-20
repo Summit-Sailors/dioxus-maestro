@@ -1,0 +1,131 @@
+[build-system]
+build-backend = "hatchling.build"
+requires = ["hatchling"]
+
+[project]
+authors = []
+dependencies = []
+description = ''
+name = "services"
+readme = "README.md"
+requires-python = ">=3.13,<3.14"
+version = "0.0.1"
+
+[tool.rye.workspace]
+members = ["chrome-fastapi"]
+
+[tool.rye]
+dev-dependencies = [
+  "autoflake==2.3.1",
+  "autopep8==2.3.2",
+  "flake8-plugin-utils==1.3.3",
+  "flake8-type-checking==3.0.0",
+  "flake8==7.2.0",
+  "hypothesis==6.131.19",
+  "ipykernel==6.29.5",
+  "ipython==9.2.0",
+  "isort==6.0.1",
+  "jupyterlab-quarto==0.3.5",
+  "jupyterlab==4.4.2",
+  "jupyterthemes==0.20.0",
+  "pre-commit==4.2.0",
+  "pylint==3.3.7",
+  "rich==14.0.0",
+  "ruff==0.11.10",
+]
+virtual = true
+
+
+[tool.ruff]
+extend-include = ["*.ipynb"]
+include = ["*.ipynb", "*.py", "*.pyi"]
+indent-width = 2
+line-length = 160
+target-version = "py312"
+
+[tool.ruff.lint]
+dummy-variable-rgx = "(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+extend-select = [
+  "A",
+  "ANN001",
+  "ANN201",
+  "ANN202",
+  "ANN204",
+  "ANN205",
+  "ANN206",
+  "ANN401",
+  "ASYNC",
+  "B",
+  "C4",
+  "DTZ",
+  "E101",
+  "E4",
+  "E7",
+  "E703",
+  "E711",
+  "E712",
+  "E721",
+  "E722",
+  "E731",
+  "E9",
+  "E902",
+  # "E999",
+  "F",
+  "FBT",
+  "FURB",
+  "I",
+  "I001",
+  "I002",
+  "ISC",
+  "NPY",
+  "PD",
+  "PERF",
+  "PIE",
+  "PL",
+  "PTH",
+  "Q",
+  "RET",
+  "RUF",
+  "S",
+  "SIM",
+  "SLF",
+  "T",
+  "TC",
+  "TID",
+  "TRY",
+  "UP007",
+  "UP034",
+  "W291",
+  "W292",
+  "W293",
+  "W605",
+]
+fixable = ["ALL"]
+ignore = ["ISC001", "PLR0912", "PLR0913", "W191"]
+unfixable = ["B"]
+
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.ruff.lint.flake8-type-checking]
+exempt-modules = ["typing", "typing_extensions"]
+quote-annotations = true
+runtime-evaluated-base-classes = ["mixins.id.UuidPKMixin", "pydantic.BaseModel", "sqlalchemy.orm.DeclarativeBase", "sqlmodel.SQLModel"]
+runtime-evaluated-decorators = ["attrs.define", "pydantic.BaseModel", "pydantic.validate_call", "sqlalchemy.orm.DeclarativeBase", "sqlmodel.SQLModel"]
+strict = true
+
+
+[tool.ruff.lint.per-file-ignores]
+"**/{tests,docs,tools}/*" = ["E402"]
+
+[tool.ruff.format]
+indent-style = "space"
+quote-style = "double"
+skip-magic-trailing-comma = false
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+force-wrap-aliases = true
+known-first-party = []
+length-sort = true

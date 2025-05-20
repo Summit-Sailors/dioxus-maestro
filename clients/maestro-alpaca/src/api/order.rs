@@ -9,7 +9,7 @@ use {
 	uuid::Uuid,
 };
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub enum Status {
 	#[serde(rename = "new")]
 	New,
@@ -53,7 +53,7 @@ impl Status {
 	}
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub enum Class {
 	#[serde(rename = "simple")]
 	Simple,
@@ -71,7 +71,7 @@ impl Default for Class {
 	}
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct OrderPostRequest {
 	pub symbol: Symbol,
 	#[serde(flatten)]
@@ -92,7 +92,7 @@ pub struct OrderPostRequest {
 	pub client_order_id: Option<String>,
 }
 
-#[derive(Debug, Default, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
 pub struct OrderPatchRequest {
 	#[serde(rename = "qty")]
 	pub quantity: Option<BigDecimal>,
@@ -103,7 +103,7 @@ pub struct OrderPatchRequest {
 	pub client_order_id: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct OrderDTO {
 	pub id: Uuid,
 	pub client_order_id: String,
