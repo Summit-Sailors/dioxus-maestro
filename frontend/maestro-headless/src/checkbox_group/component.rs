@@ -7,7 +7,7 @@ use {
 	std::{fmt::Debug, rc::Rc},
 };
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct CheckboxGroupContext {
 	pub value: Memo<Vec<String>>,
 	pub set_value: Callback<Vec<String>>,
@@ -145,7 +145,7 @@ pub fn CheckboxGroupItem(props: CheckboxGroupItemProps) -> Element {
 	}
 }
 
-#[derive(Debug, Clone, PartialEq, Props)]
+#[derive(Clone, Debug, PartialEq, Props)]
 pub struct CheckboxGroupIndicatorProps {
 	#[props(extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,

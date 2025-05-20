@@ -5,7 +5,7 @@ use {
 	std::{error::Error, f32::consts::PI},
 };
 
-#[derive(Debug, Clone, PartialEq, bon::Builder)]
+#[derive(bon::Builder, Clone, Debug, PartialEq)]
 pub struct PieChartOptions {
 	#[builder(default = (0,0))]
 	pub center: (i32, i32),

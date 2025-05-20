@@ -13,7 +13,7 @@ pub async fn clock_get_request(urls: AlpacaUrls, #[builder(default = Client::new
 	client.get(EAlpacaRoute::Api(EApiRoute::Clock).url_path(urls)).send().await?.json().await
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct ClockDTO {
 	#[serde(rename = "is_open")]
 	pub open: bool,

@@ -7,7 +7,7 @@ use {
 	std::{fmt::Debug, rc::Rc},
 };
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct RadioGroupContext {
 	pub value: Memo<String>,
 	pub set_value: Callback<String>,
@@ -141,7 +141,7 @@ pub fn RadioGroupItem(props: RadioGroupItemProps) -> Element {
 	}
 }
 
-#[derive(Debug, Clone, PartialEq, Props)]
+#[derive(Clone, Debug, PartialEq, Props)]
 pub struct RadioGroupIndicatorProps {
 	#[props(extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,

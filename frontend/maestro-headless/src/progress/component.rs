@@ -3,7 +3,7 @@ use {
 	serde::{Deserialize, Serialize},
 };
 
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, strum_macros::Display)]
+#[derive(Clone, Copy, Debug, Deserialize, strum_macros::Display, PartialEq, Serialize)]
 enum ProgressState {
 	#[strum(to_string = "init")]
 	Init,
@@ -13,7 +13,7 @@ enum ProgressState {
 	Completed,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct ProgressContext {
 	value: Memo<f32>,
 	max: f32,

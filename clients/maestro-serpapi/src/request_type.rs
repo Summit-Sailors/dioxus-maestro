@@ -1,13 +1,13 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Default, Clone, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Default, Eq, PartialEq, Serialize)]
 pub enum Engine {
 	#[default]
 	#[serde(rename = "google")]
 	Google,
 }
 
-#[derive(Debug, Default, Clone, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Default, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Device {
 	#[default]
@@ -16,7 +16,7 @@ pub enum Device {
 	Tablet,
 }
 
-#[derive(Debug, Default, Clone, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Default, Eq, PartialEq, Serialize)]
 pub enum SearchType {
 	#[serde(rename = "")]
 	#[default]
@@ -35,7 +35,7 @@ pub enum SearchType {
 	Patents,
 }
 
-#[derive(Debug, Default, Clone, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Default, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum OutputFormat {
 	#[default]
@@ -43,7 +43,7 @@ pub enum OutputFormat {
 	Html,
 }
 
-#[derive(Debug, Default, Clone, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Default, Eq, PartialEq, Serialize)]
 pub enum SafeSearch {
 	#[serde(rename = "active")]
 	Active,
@@ -52,7 +52,7 @@ pub enum SafeSearch {
 	Off,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, strum_macros::EnumIter, strum_macros::Display, strum_macros::EnumString)]
+#[derive(Clone, Debug, Deserialize, strum_macros::Display, strum_macros::EnumIter, strum_macros::EnumString, Eq, PartialEq, Serialize)]
 pub enum ETimeFrame {
 	#[strum(to_string = "qdr:h")]
 	Hour,
@@ -66,7 +66,7 @@ pub enum ETimeFrame {
 	Year,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct SearchRequest {
 	pub engine: Engine,
 	pub q: String,

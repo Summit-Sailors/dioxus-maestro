@@ -6,7 +6,7 @@ use {
 	web_sys::{HtmlElement, wasm_bindgen::JsCast, window},
 };
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Rect {
 	pub x: f32,
 	pub y: f32,
@@ -14,13 +14,13 @@ pub struct Rect {
 	pub height: f32,
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Placement {
 	pub side: ESide,
 	pub alignment: Option<Alignment>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub enum Alignment {
 	Start,
 	End,
@@ -36,7 +36,7 @@ impl Placement {
 	}
 }
 
-#[derive(Debug, Default, Clone, PartialEq)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct FloatingStyles {
 	pub position: String,
 	pub top: String,
@@ -62,14 +62,14 @@ impl FloatingStyles {
 	}
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct ArrowData {
 	pub x: Option<f32>,
 	pub y: Option<f32>,
 	pub center_offset: f32,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct TransformOriginData {
 	pub x: String,
 	pub y: String,

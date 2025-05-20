@@ -10,13 +10,13 @@ use {
 	uuid::Uuid,
 };
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct SelectOptionContext {
 	pub selected: Memo<bool>,
 	pub disabled: ReadOnlySignal<bool>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct SelectContext {
 	pub value: Memo<Vec<String>>,
 	pub set_value: Callback<Vec<String>>,

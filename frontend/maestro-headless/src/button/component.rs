@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-#[derive(Debug, Clone, PartialEq, Props)]
+#[derive(Clone, Debug, PartialEq, Props)]
 pub struct ButtonProps {
 	#[props(default = ReadOnlySignal::new(Signal::new(false)))]
 	pub pending: ReadOnlySignal<bool>,

@@ -29,14 +29,14 @@ pub fn Presence(props: PresenceProps) -> Element {
 	}
 }
 
-#[derive(Debug, Clone)]
+#[derive(Clone, Debug)]
 struct AnimationState {
 	animation_name: String,
 	has_transition: bool,
 	is_animating: bool,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum EMountState {
 	Mounted,
 	Unmounted,

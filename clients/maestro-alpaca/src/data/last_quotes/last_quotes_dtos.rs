@@ -5,7 +5,7 @@ use {
 	std::collections::HashMap,
 };
 
-#[derive(Debug, Clone, Serialize, Deserialize, bon::Builder)]
+#[derive(bon::Builder, Clone, Debug, Deserialize, Serialize)]
 pub struct LatestQuotesRequestDTO {
 	#[serde(serialize_with = "serialize_vec_to_csv")]
 	symbols: Vec<String>,
@@ -22,7 +22,7 @@ where
 	vec.join(",").serialize(serializer)
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct QuoteDTO {
 	#[serde(rename = "t")]
 	pub time: DateTime<Utc>,
@@ -44,12 +44,12 @@ pub struct QuoteDTO {
 	pub tape: String,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct LatestQuotesResponseDTO {
 	quotes: HashMap<String, QuoteDTO>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct QuoteResponseDTO {
 	pub symbol: String,
 	#[serde(flatten)]

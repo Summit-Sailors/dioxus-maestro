@@ -61,7 +61,7 @@ pub mod types {
 	/// }
 	/// ```
 	/// </details>
-	#[derive(Debug, Clone, ::serde::Serialize, ::serde::Deserialize)]
+	#[derive(Clone, Debug, ::serde::Deserialize, ::serde::Serialize)]
 	pub struct HtmlResponse {
 		pub html: ::std::string::String,
 		pub url: ::std::string::String,
@@ -91,7 +91,7 @@ pub mod types {
 	/// }
 	/// ```
 	/// </details>
-	#[derive(Debug, Clone, ::serde::Serialize, ::serde::Deserialize)]
+	#[derive(Clone, Debug, ::serde::Deserialize, ::serde::Serialize)]
 	pub struct HttpValidationError {
 		#[serde(default, skip_serializing_if = "::std::vec::Vec::is_empty")]
 		pub detail: ::std::vec::Vec<ValidationError>,
@@ -123,7 +123,7 @@ pub mod types {
 	/// }
 	/// ```
 	/// </details>
-	#[derive(Debug, Clone, ::serde::Serialize, ::serde::Deserialize)]
+	#[derive(Clone, Debug, ::serde::Deserialize, ::serde::Serialize)]
 	#[serde(untagged)]
 	pub enum LocationItem {
 		Variant0(::std::string::String),
@@ -204,7 +204,7 @@ pub mod types {
 	/// }
 	/// ```
 	/// </details>
-	#[derive(Debug, Clone, ::serde::Serialize, ::serde::Deserialize)]
+	#[derive(Clone, Debug, ::serde::Deserialize, ::serde::Serialize)]
 	pub struct UrlRequest {
 		pub url: ::std::string::String,
 	}
@@ -253,7 +253,7 @@ pub mod types {
 	/// }
 	/// ```
 	/// </details>
-	#[derive(Debug, Clone, ::serde::Serialize, ::serde::Deserialize)]
+	#[derive(Clone, Debug, ::serde::Deserialize, ::serde::Serialize)]
 	pub struct ValidationError {
 		pub loc: ::std::vec::Vec<LocationItem>,
 		pub msg: ::std::string::String,
@@ -266,7 +266,7 @@ pub mod types {
 		}
 	}
 }
-#[derive(Debug, Clone)]
+#[derive(Clone, Debug)]
 /**Client for Web Scraper API
 
 Simple web scraping API using Selenium for content fetching

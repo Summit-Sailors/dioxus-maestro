@@ -12,7 +12,7 @@ pub struct RadioClass {
 	pub size: RadioSize,
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize, strum_macros::EnumIter, strum_macros::Display, strum_macros::EnumString, TwVariant)]
+#[derive(Debug, Deserialize, strum_macros::Display, strum_macros::EnumIter, strum_macros::EnumString, PartialEq, Serialize, TwVariant)]
 pub enum RadioSize {
 	#[tw(class = "w-5 h-5")]
 	Sm,
@@ -28,7 +28,7 @@ pub struct RadioIndicatorClass {
 	pub variant: RadioIndicatorVariant,
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize, strum_macros::EnumIter, strum_macros::Display, strum_macros::EnumString, TwVariant)]
+#[derive(Debug, Deserialize, strum_macros::Display, strum_macros::EnumIter, strum_macros::EnumString, PartialEq, Serialize, TwVariant)]
 pub enum RadioIndicatorVariant {
 	#[tw(class = "text-primary")]
 	Tick,

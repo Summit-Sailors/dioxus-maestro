@@ -15,7 +15,7 @@ use {
 	},
 };
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct RangeContext {
 	pub disabled: ReadOnlySignal<bool>,
 	pub min: f32,

@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case", tag = "type")]
 pub enum Choice {
 	Auto,
@@ -8,7 +8,7 @@ pub enum Choice {
 	Tool { name: String },
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, bon::Builder)]
+#[derive(bon::Builder, Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct Tool {
 	pub name: String,
 	pub description: String,

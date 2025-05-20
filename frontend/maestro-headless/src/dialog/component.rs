@@ -11,7 +11,7 @@ use {
 	web_sys::window,
 };
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 struct DialogContext {
 	pub open: Memo<bool>,
 	pub on_close: Option<Callback>,

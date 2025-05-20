@@ -10,7 +10,7 @@ use {
 	uuid::Uuid,
 };
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 struct PopoverContext {
 	pub open: Memo<bool>,
 	pub set_open: Callback<bool>,

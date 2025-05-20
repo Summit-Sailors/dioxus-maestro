@@ -8,7 +8,7 @@ use {
 	std::fmt::Debug,
 };
 
-#[derive(Debug, Clone, Copy, QueryId)]
+#[derive(Clone, Copy, Debug, QueryId)]
 pub struct Paginated<T> {
 	pub query: T,
 	pub page_size: i64,
