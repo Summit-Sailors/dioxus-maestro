@@ -1,13 +1,13 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(strum_macros::AsRefStr, Clone, Copy, Debug, Deserialize, strum_macros::Display, PartialEq, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, strum_macros::Display, strum_macros::AsRefStr)]
 #[serde(rename_all = "snake_case")]
 pub enum Role {
 	User,
 	Assistant,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ChatMessage {
 	pub role: Role,
 	pub content: String,

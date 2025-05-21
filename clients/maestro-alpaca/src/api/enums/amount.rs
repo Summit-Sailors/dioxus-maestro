@@ -3,7 +3,7 @@ use {
 	serde::{Deserialize, Serialize},
 };
 
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Amount {
 	Quantity { quantity: BigDecimal },
 	Notional { notional: BigDecimal },

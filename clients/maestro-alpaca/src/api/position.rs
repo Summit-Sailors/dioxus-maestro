@@ -8,7 +8,7 @@ use {
 	uuid::Uuid,
 };
 
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Position {
 	pub asset_id: Uuid,
 	pub symbol: String,

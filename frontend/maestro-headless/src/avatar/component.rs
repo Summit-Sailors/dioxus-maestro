@@ -9,7 +9,7 @@ use {
 	},
 };
 
-#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum ImageLoadingStatus {
 	Idle,
 	Loading,
@@ -17,7 +17,7 @@ pub enum ImageLoadingStatus {
 	Error,
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 struct AvatarContextValue {
 	image_loading_status: Signal<ImageLoadingStatus>,
 }

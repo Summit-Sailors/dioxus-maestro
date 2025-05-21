@@ -3,14 +3,14 @@ use {
 	serde::{Deserialize, Serialize},
 };
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(rename = "stop_loss")]
 struct StopLossSerde {
 	stop_price: BigDecimal,
 	limit_price: Option<BigDecimal>,
 }
 
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum StopLoss {
 	Stop(BigDecimal),
 	StopLimit(BigDecimal, BigDecimal),

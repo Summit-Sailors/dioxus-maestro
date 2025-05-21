@@ -8,7 +8,7 @@ use {
 	std::rc::Rc,
 };
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 struct TabsContext {
 	pub value: Memo<String>,
 	pub set_value: Callback<String>,

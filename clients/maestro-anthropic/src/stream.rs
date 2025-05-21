@@ -8,7 +8,7 @@ use {
 	std::{pin::Pin, task::Poll},
 };
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case", tag = "type")]
 pub enum Event {
 	Ping,
@@ -20,7 +20,7 @@ pub enum Event {
 	MessageStop,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Serialize, Deserialize)]
 #[serde(untagged)]
 enum ApiResult {
 	Event {
@@ -32,7 +32,7 @@ enum ApiResult {
 	},
 }
 
-#[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case", tag = "type")]
 pub enum Delta {
 	#[serde(alias = "text_delta")]
@@ -56,7 +56,7 @@ pub struct OutOfBounds {
 	pub max: usize,
 }
 
-#[derive(Debug, thiserror::Error, derive_more::From, Serialize)]
+#[derive(Debug, thiserror::Error, Serialize, derive_more::From)]
 pub enum DeltaError {
 	#[error("Cannot apply delta because: {error}")]
 	ContentMismatch { error: ContentMismatch },
@@ -90,7 +90,7 @@ impl Delta {
 	}
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct MessageStats {
 	#[serde(skip_serializing_if = "Option::is_none")]
 	pub stop_reason: Option<StopReason>,

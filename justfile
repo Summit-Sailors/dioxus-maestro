@@ -1,4 +1,9 @@
 set shell := ["bash", "-uc"]
+set export
+set dotenv-load
+
+
+DERIVE_ORDER:="Debug,Default,Error,Clone,Copy,Deref,DerefMut,PartialEq,Eq,PartialOrd,Ord,Hash,Serialize,Deserialize,FromStr,EnumIter,Display,EnumString,JsonSchema"
 
 default:
   @just --choose --justfile {{justfile()}}
@@ -6,7 +11,8 @@ default:
 clear:
   #!/usr/bin/env bash
   set -euo pipefail
-  rm -rf ~/.cargo/.package-cache ~/.cargo/registry ~/.cache/rust-analyzer *.lock target .venv
+  cargo clean
+  rm -rf .venv *.lock target .venv
 
 sort-d:
   #!/usr/bin/env bash

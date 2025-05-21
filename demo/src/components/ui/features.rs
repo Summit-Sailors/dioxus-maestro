@@ -8,7 +8,7 @@ use {
 	tailwind_fuse::tw_join,
 };
 
-#[derive(Clone, Debug, PartialEq, Props)]
+#[derive(Debug, Clone, PartialEq, Props)]
 pub struct FeatureProps {
 	pub title: String,
 	pub features: Vec<String>,

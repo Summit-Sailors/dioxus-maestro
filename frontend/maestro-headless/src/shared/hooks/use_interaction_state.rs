@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct InteractionStateContext {
 	pub is_hovered: Signal<bool>,
 	pub is_focused: Signal<bool>,

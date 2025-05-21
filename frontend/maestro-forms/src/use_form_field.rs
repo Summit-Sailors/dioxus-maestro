@@ -1,4 +1,5 @@
 use {
+	super::use_formik::Formik,
 	dioxus::prelude::*,
 	serde::{Deserialize, Serialize},
 	serde_json::Value,
@@ -49,7 +50,7 @@ impl FormField {
 	where
 		TReturnType: for<'de> serde::Deserialize<'de>,
 	{
-		serde_json::from_value(self.value.read().clone()).expect("Failed to parse with serde_json")
+		serde_json::from_value(self.value.peek().clone()).expect("Failed to parse with serde_json")
 	}
 
 	pub fn clear_errors(&mut self) {
@@ -77,5 +78,5 @@ pub fn use_formik_field<T>(name: impl Into<String>) -> FormField
 where
 	T: Validate + Clone + Serialize + PartialEq + 'static + for<'de> Deserialize<'de>,
 {
-	use_context::<super::use_formik::Formik<T>>().get_form_field(name.into())
+	use_context::<Formik<T>>().get_form_field(name.into())
 }

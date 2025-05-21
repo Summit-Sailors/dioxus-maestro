@@ -15,7 +15,7 @@ pub async fn account_get_request(urls: AlpacaUrls, #[builder(default = Client::n
 	client.get(EAlpacaRoute::Api(EApiRoute::AccountActivities).url_path(urls)).send().await?.json().await
 }
 
-#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Status {
 	#[serde(rename = "ONBOARDING")]
 	Onboarding,
@@ -33,7 +33,7 @@ pub enum Status {
 	Rejected,
 }
 
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Account {
 	pub id: Uuid,
 	pub status: Status,

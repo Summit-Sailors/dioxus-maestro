@@ -20,7 +20,7 @@ pub struct TooltipRootProps {
 
 #[component]
 pub fn TooltipRoot(props: TooltipRootProps) -> Element {
-	let TooltipRootProps { class, delay_duration_ms, skip_delay_duration_ms, attributes, children } = props;
+	let TooltipRootProps { class, attributes, children, .. } = props;
 
 	rsx! {
 		maestro_headless::tooltip::TooltipRoot {

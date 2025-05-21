@@ -1,6 +1,5 @@
 use {
-	crate::{shared::EOrientation, toggle::ToggleSize},
-	dioxus::prelude::*,
+	crate::toggle::ToggleSize,
 	serde::{Deserialize, Serialize},
 	tailwind_fuse::*,
 };
@@ -15,7 +14,7 @@ pub struct ToggleItemClass {
 	pub round: ToggleItemRound,
 }
 
-#[derive(Debug, Deserialize, strum_macros::Display, strum_macros::EnumIter, strum_macros::EnumString, PartialEq, Serialize, TwVariant)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, strum_macros::EnumIter, strum_macros::Display, strum_macros::EnumString, TwVariant)]
 pub enum ToggleItemRound {
 	#[tw(class = "first:rounded-l-xs last:rounded-r-xs")]
 	Xs,
@@ -27,7 +26,7 @@ pub enum ToggleItemRound {
 	Lg,
 }
 
-#[derive(Debug, Deserialize, strum_macros::Display, strum_macros::EnumIter, strum_macros::EnumString, PartialEq, Serialize, TwVariant)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, strum_macros::EnumIter, strum_macros::Display, strum_macros::EnumString, TwVariant)]
 pub enum ToggleItemVariant {
 	#[tw(
 		default,

@@ -14,7 +14,7 @@ use {
 	},
 };
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 struct TooltipProviderContext {
 	pub is_open_delayed_ref: Signal<bool>,
 	pub delay_duration: f32,
@@ -98,7 +98,7 @@ pub fn TooltipRoot(props: TooltipRootProps) -> Element {
 	}
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 struct TooltipContext {
 	pub open: Memo<bool>,
 	pub set_open: Callback<bool>,

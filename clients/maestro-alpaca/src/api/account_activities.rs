@@ -11,7 +11,7 @@ use {
 	uuid::Uuid,
 };
 
-#[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Serialize, Deserialize)]
 struct ActivityRequest {
 	#[serde(rename = "activity_types")]
 	types: Vec<ActivityType>,
@@ -47,7 +47,7 @@ pub async fn account_activities_get_request(
 		.await
 }
 
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct TradeActivity {
 	pub id: String,
 	pub transaction_time: DateTime<Utc>,
@@ -64,7 +64,7 @@ pub struct TradeActivity {
 	pub price: BigDecimal,
 }
 
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct NonTradeActivity {
 	pub id: String,
 	#[serde(rename = "activity_type")]
@@ -79,7 +79,7 @@ pub struct NonTradeActivity {
 	pub description: Option<String>,
 }
 
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Activity {
 	Trade(TradeActivity),
 	NonTrade(NonTradeActivity),

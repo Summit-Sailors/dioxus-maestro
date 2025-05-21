@@ -5,13 +5,13 @@ use {
 	std::borrow::Cow,
 };
 
-#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum StreamType {
 	#[serde(rename = "trade_updates")]
 	OrderUpdates,
 }
 
-#[derive(Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub enum AuthenticationStatus {
 	#[serde(rename = "authorized")]
 	Authorized,
@@ -19,12 +19,12 @@ pub enum AuthenticationStatus {
 	Unauthorized,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Authentication {
 	pub status: AuthenticationStatus,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(tag = "action")]
 pub enum Authenticate<'d> {
 	#[serde(rename = "auth")]
@@ -36,11 +36,11 @@ pub enum Authenticate<'d> {
 	},
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct OrderUpdate {
 	pub event: OrderStatus,
 	pub order: OrderDTO,
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum OrderUpdates {}

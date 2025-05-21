@@ -1,5 +1,5 @@
 use {
-	crate::checkbox::{Checkbox, CheckboxClass, CheckboxIndicatorClass, CheckboxIndicatorVariant, CheckboxProps},
+	crate::checkbox::{CheckboxClass, CheckboxIndicatorClass, CheckboxIndicatorVariant, CheckboxProps},
 	dioxus::prelude::*,
 	maestro_headless::shared::EOrientation,
 	tailwind_fuse::*,
@@ -32,8 +32,11 @@ pub struct CheckboxGroupProps {
 
 #[component]
 pub fn CheckboxGroup(props: CheckboxGroupProps) -> Element {
-	let CheckboxGroupProps { class, value, default_value, on_value_change, disabled, required, orientation, attributes, extra_attributes, children } = props;
-	let class = tw_merge!("flex data-[orientation=vertical]:flex-col gap-3 data-[orientation=horizontal]:items-center data-[disabled=true]:opacity-50 data-[disabled=true]:*:pointer-events-none data-[disabled=true]:*:cursor-auto", class());
+	let CheckboxGroupProps { class, value, default_value, on_value_change, disabled, required, orientation, attributes, children, .. } = props;
+	let class = tw_merge!(
+		"flex data-[orientation=vertical]:flex-col gap-3 data-[orientation=horizontal]:items-center data-[disabled=true]:opacity-50 data-[disabled=true]:*:pointer-events-none data-[disabled=true]:*:cursor-auto",
+		class()
+	);
 
 	rsx! {
 		maestro_headless::checkbox_group::CheckboxGroup {
