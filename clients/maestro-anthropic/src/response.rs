@@ -6,20 +6,20 @@ use {
 	serde::{Deserialize, Serialize},
 };
 
-#[derive(strum_macros::AsRefStr, Clone, Copy, Debug, Deserialize, strum_macros::Display, PartialEq, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, strum_macros::Display, strum_macros::AsRefStr)]
 #[serde(rename_all = "snake_case")]
 pub enum Role {
 	User,
 	Assistant,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Message {
 	pub role: Role,
 	pub content: Content,
 }
 
-#[derive(Clone, Debug, Deserialize, derive_more::IsVariant, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, derive_more::IsVariant)]
 #[serde(rename_all = "snake_case")]
 #[serde(untagged)]
 pub enum Content {
@@ -91,7 +91,7 @@ impl Content {
 	pub const SEP: &'static str = "\n\n";
 }
 
-#[derive(Clone, Debug, Deserialize, strum_macros::Display, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, strum_macros::Display)]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
 pub enum Block {
@@ -157,7 +157,7 @@ impl Block {
 	}
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ResponseMessage {
 	pub id: String,
 	#[serde(flatten)]
@@ -187,7 +187,7 @@ impl ResponseMessage {
 	}
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum StopReason {
 	EndTurn,
@@ -196,20 +196,20 @@ pub enum StopReason {
 	ToolUse,
 }
 
-#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Usage {
 	pub input_tokens: u64,
 	pub output_tokens: u64,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Use {
 	pub id: String,
 	pub name: String,
 	pub input: serde_json::Value,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ToolBlock {
 	pub tool_use_id: String,
 	pub content: Content,

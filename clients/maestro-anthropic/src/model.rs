@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Copy, Debug, Default, Deserialize, strum_macros::EnumIter, Eq, Ord, PartialEq, PartialOrd, Serialize)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize, strum_macros::EnumIter)]
 #[serde(rename_all = "snake_case")]
 pub enum Model {
 	#[serde(rename = "claude-3-7-sonnet-20250219")]

@@ -15,12 +15,12 @@ use {
 	},
 };
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct PopperContext {
 	anchor: Signal<Option<Rc<MountedData>>>,
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct PopperContentContext {
 	content: Signal<Option<Rc<MountedData>>>,
 	placement: Signal<Placement>,

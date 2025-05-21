@@ -1,6 +1,6 @@
 use {
 	crate::{
-		radio::{Radio, RadioClass, RadioIndicatorClass, RadioIndicatorVariant, RadioProps},
+		radio::{RadioClass, RadioIndicatorClass, RadioIndicatorVariant, RadioProps},
 		shared::EOrientation,
 	},
 	dioxus::prelude::*,
@@ -33,7 +33,10 @@ pub struct RadioGroupProps {
 pub fn RadioGroup(props: RadioGroupProps) -> Element {
 	let RadioGroupProps { class, value, default_value, on_value_change, disabled, required, orientation, children, attributes } = props;
 
-	let class = tw_merge!("flex data-[orientation=vertical]:flex-col gap-3 data-[orientation=horizontal]:items-center data-[disabled=true]:opacity-50 data-[disabled=true]:*:pointer-events-none data-[disabled=true]:*:cursor-auto", class());
+	let class = tw_merge!(
+		"flex data-[orientation=vertical]:flex-col gap-3 data-[orientation=horizontal]:items-center data-[disabled=true]:opacity-50 data-[disabled=true]:*:pointer-events-none data-[disabled=true]:*:cursor-auto",
+		class()
+	);
 
 	rsx! {
 		maestro_headless::radio_group::RadioGroupRoot {
@@ -73,7 +76,11 @@ pub fn RadioGroupItem(props: RadioProps) -> Element {
 	let indicator_class = RadioIndicatorClass { variant: indicator_variant() }.with_class(indicator_class.clone());
 
 	rsx! {
-		maestro_headless::radio_group::RadioGroupItem { value, disabled, class, extra_attributes: attrs,
+		maestro_headless::radio_group::RadioGroupItem {
+			value,
+			disabled,
+			class,
+			extra_attributes: attrs,
 			maestro_headless::radio_group::RadioGroupIndicator {
 				if indicator_variant() == RadioIndicatorVariant::Circle {
 					span { class: indicator_class.clone() }

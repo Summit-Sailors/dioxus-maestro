@@ -1,6 +1,6 @@
 use crate::{toast_code::EToastCode, toast_position::EToastPosition};
 
-#[derive(bon::Builder, Clone, Debug)]
+#[derive(Debug, Clone, bon::Builder)]
 pub struct ToastInfo {
 	pub heading: Option<String>,
 	pub context: String,

@@ -7,7 +7,7 @@ use {
 	std::fmt::Debug,
 };
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct CheckboxContext {
 	pub checked: Memo<bool>,
 	pub disabled: ReadOnlySignal<bool>,
@@ -19,7 +19,7 @@ impl CheckboxContext {
 	}
 }
 
-#[derive(Clone, Debug, PartialEq, Props)]
+#[derive(Debug, Clone, PartialEq, Props)]
 pub struct CheckboxRootProps {
 	#[props(optional, default = ReadOnlySignal::new(Signal::new(None)))]
 	pub checked: ReadOnlySignal<Option<bool>>,
@@ -86,7 +86,7 @@ pub fn CheckboxRoot(props: CheckboxRootProps) -> Element {
 	}
 }
 
-#[derive(Clone, Debug, PartialEq, Props)]
+#[derive(Debug, Clone, PartialEq, Props)]
 pub struct CheckboxIndicatorProps {
 	#[props(extends = GlobalAttributes)]
 	pub attributes: Vec<Attribute>,

@@ -78,7 +78,7 @@ pub enum AnthropicClientError {
 	UnexpectedResponse { message: &'static str },
 }
 
-#[derive(Debug, Deserialize, thiserror::Error, PartialEq, Serialize)]
+#[derive(Debug, thiserror::Error, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
 #[allow(missing_docs)]

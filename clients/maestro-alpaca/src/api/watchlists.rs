@@ -4,7 +4,7 @@ use {
 	uuid::Uuid,
 };
 
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 pub struct WatchlistItem {
 	pub id: Uuid,
 	pub name: String,

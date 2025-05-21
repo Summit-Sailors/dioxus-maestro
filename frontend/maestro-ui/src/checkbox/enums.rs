@@ -1,5 +1,4 @@
 use {
-	dioxus::prelude::*,
 	serde::{Deserialize, Serialize},
 	tailwind_fuse::*,
 };
@@ -13,7 +12,7 @@ pub struct CheckboxClass {
 	pub round: CheckboxRound,
 }
 
-#[derive(Debug, Deserialize, strum_macros::Display, strum_macros::EnumIter, strum_macros::EnumString, PartialEq, Serialize, TwVariant)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, strum_macros::EnumIter, strum_macros::Display, strum_macros::EnumString, TwVariant)]
 pub enum CheckboxRound {
 	#[tw(class = "rounded-xs")]
 	Sm,
@@ -36,7 +35,7 @@ impl TryFrom<&String> for CheckboxRound {
 	}
 }
 
-#[derive(Debug, Deserialize, strum_macros::Display, strum_macros::EnumIter, strum_macros::EnumString, PartialEq, Serialize, TwVariant)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, strum_macros::EnumIter, strum_macros::Display, strum_macros::EnumString, TwVariant)]
 pub enum CheckboxSize {
 	#[tw(class = "w-5 h-5")]
 	Sm,
@@ -65,7 +64,7 @@ pub struct CheckboxIndicatorClass {
 	pub variant: CheckboxIndicatorVariant,
 }
 
-#[derive(Debug, Deserialize, strum_macros::Display, strum_macros::EnumIter, strum_macros::EnumString, PartialEq, Serialize, TwVariant)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, strum_macros::EnumIter, strum_macros::Display, strum_macros::EnumString, TwVariant)]
 pub enum CheckboxIndicatorVariant {
 	#[tw(default, class = "text-primary-foreground")]
 	Tick,

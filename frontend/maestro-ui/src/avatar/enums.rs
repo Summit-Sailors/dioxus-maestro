@@ -1,5 +1,4 @@
 use {
-	dioxus::prelude::*,
 	serde::{Deserialize, Serialize},
 	tailwind_fuse::*,
 };
@@ -10,7 +9,7 @@ pub struct AvatarClass {
 	pub size: AvatarSize,
 }
 
-#[derive(Debug, Deserialize, strum_macros::Display, strum_macros::EnumIter, strum_macros::EnumString, PartialEq, Serialize, TwVariant)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, strum_macros::EnumIter, strum_macros::Display, strum_macros::EnumString, TwVariant)]
 pub enum AvatarSize {
 	#[tw(class = "w-8 h-8")]
 	Xs,

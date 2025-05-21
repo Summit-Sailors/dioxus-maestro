@@ -4,7 +4,7 @@ use {
 	validator::{Validate, ValidationError},
 };
 
-#[derive(Clone, Debug, Deserialize, Display, EnumString, Eq, Hash, PartialEq, Serialize, VariantNames)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, Display, EnumString, VariantNames)]
 #[serde(rename_all = "lowercase")]
 pub enum Role {
 	#[strum(serialize = "admin")]
@@ -23,7 +23,7 @@ fn validate_word_count(text: &str) -> Result<(), ValidationError> {
 	Ok(())
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Validate)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
 pub struct User {
 	#[validate(length(min = 3, max = 20, message = "Username must be between 3 and 20 characters"))]
 	pub username: String,
@@ -42,7 +42,7 @@ impl Default for User {
 	}
 }
 
-#[derive(Clone, Default, Deserialize, PartialEq, Serialize)]
+#[derive(Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct UserAttrs {
 	pub gender: String,
 	pub favorite_color: String,

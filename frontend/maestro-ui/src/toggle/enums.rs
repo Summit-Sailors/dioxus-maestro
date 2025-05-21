@@ -1,5 +1,4 @@
 use {
-	dioxus::prelude::*,
 	serde::{Deserialize, Serialize},
 	tailwind_fuse::*,
 };
@@ -14,7 +13,7 @@ pub struct ToggleClass {
 	pub round: ToggleRound,
 }
 
-#[derive(Debug, Deserialize, strum_macros::Display, strum_macros::EnumIter, strum_macros::EnumString, PartialEq, Serialize, TwVariant)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, strum_macros::EnumIter, strum_macros::Display, strum_macros::EnumString, TwVariant)]
 pub enum ToggleRound {
 	#[tw(class = "rounded-xs")]
 	Xs,
@@ -26,7 +25,7 @@ pub enum ToggleRound {
 	Lg,
 }
 
-#[derive(Debug, Deserialize, strum_macros::Display, strum_macros::EnumIter, strum_macros::EnumString, PartialEq, Serialize, TwVariant)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, strum_macros::EnumIter, strum_macros::Display, strum_macros::EnumString, TwVariant)]
 pub enum ToggleVariant {
 	#[tw(default, class = "bg-background border border-border hover:bg-accent data-[state=on]:bg-primary data-[state=on]:text-primary-foreground")]
 	Outline,
@@ -34,7 +33,7 @@ pub enum ToggleVariant {
 	Ghost,
 }
 
-#[derive(Debug, Deserialize, strum_macros::Display, strum_macros::EnumIter, strum_macros::EnumString, PartialEq, Serialize, TwVariant)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, strum_macros::EnumIter, strum_macros::Display, strum_macros::EnumString, TwVariant)]
 pub enum ToggleSize {
 	#[tw(class = "h-6 w-6")]
 	Xs,

@@ -4,7 +4,7 @@ use {
 	std::num::NonZeroU16,
 };
 
-#[derive(bon::Builder, Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct Prompt {
 	#[builder(finish_fn)]
 	pub stream: bool,

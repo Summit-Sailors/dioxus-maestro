@@ -5,7 +5,7 @@ use {
 	uuid::Uuid,
 };
 
-#[derive(Debug, Deserialize, Eq, PartialEq)]
+#[derive(Debug, PartialEq, Eq, Deserialize)]
 pub struct Watchlist {
 	pub id: Uuid,
 	pub name: String,
@@ -15,7 +15,7 @@ pub struct Watchlist {
 	pub assets: Vec<Asset>,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct UpdateReq {
 	pub name: String,
 	pub symbols: Vec<String>,

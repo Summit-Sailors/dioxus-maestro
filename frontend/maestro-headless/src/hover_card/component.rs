@@ -13,7 +13,7 @@ use {
 	},
 };
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 struct HoverCardContext {
 	pub open: Memo<bool>,
 	pub set_open: Callback<bool>,

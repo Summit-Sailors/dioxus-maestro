@@ -7,7 +7,7 @@ use {
 	std::{fmt::Debug, rc::Rc},
 };
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct ToggleGroupContext {
 	pub value: Memo<String>,
 	pub set_value: Callback<String>,

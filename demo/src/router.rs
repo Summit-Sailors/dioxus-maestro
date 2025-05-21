@@ -7,7 +7,7 @@ use {
 	strum_macros::EnumIter,
 };
 
-#[derive(Clone, EnumIter, PartialEq, Routable)]
+#[derive(Clone, PartialEq, EnumIter, Routable)]
 pub enum Route {
 	#[layout(Layout)]
 	#[route("/")]

@@ -15,7 +15,7 @@ use {
 	},
 };
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct RangeContext {
 	pub disabled: ReadOnlySignal<bool>,
 	pub min: f32,
@@ -164,7 +164,7 @@ pub fn RangeRoot(props: RangeRootProps) -> Element {
 				{
 					rect_ref.set(Some(range_element.get_bounding_client_rect()));
 					if range_element.contains(Some(&target)) {
-						target.set_pointer_capture(event.pointer_id());
+						let _ = target.set_pointer_capture(event.pointer_id());
 						event.prevent_default();
 						if thumb_refs.peek().clone().iter().any(|data: &(Uuid, Rc<MountedData>)| {
 							if let Some(thumb_element) = data.1.try_as_web_event().and_then(|element| element.dyn_into::<HtmlElement>().ok()) {
