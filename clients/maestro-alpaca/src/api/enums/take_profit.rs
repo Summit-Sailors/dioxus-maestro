@@ -3,13 +3,13 @@ use {
 	serde::{Deserialize, Serialize},
 };
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(rename = "take_profit")]
 struct TakeProfitSerde {
 	limit_price: BigDecimal,
 }
 
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum TakeProfit {
 	Limit(BigDecimal),
 }

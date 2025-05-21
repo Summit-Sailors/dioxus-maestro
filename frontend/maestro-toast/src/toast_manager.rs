@@ -4,7 +4,7 @@ use {
 	std::collections::BTreeMap,
 };
 
-#[derive(Clone, Debug)]
+#[derive(Debug, Clone)]
 pub struct ToastManagerItem {
 	pub info: ToastInfo,
 	pub hide_after: i64,

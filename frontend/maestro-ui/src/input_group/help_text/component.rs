@@ -1,4 +1,4 @@
-use {dioxus::prelude::*, tailwind_fuse::*};
+use dioxus::prelude::*;
 
 #[derive(Clone, PartialEq, Props)]
 pub struct HelpTextProps {
@@ -14,7 +14,7 @@ pub struct HelpTextProps {
 
 #[component]
 pub fn HelpText(props: HelpTextProps) -> Element {
-	let HelpTextProps { class, visible, attributes, children } = props;
+	let HelpTextProps { visible, attributes, children, .. } = props;
 
 	rsx! {
 		maestro_headless::help_text::HelpText {

@@ -6,7 +6,7 @@ use {
 	dioxus::prelude::*,
 };
 
-#[derive(Clone, Debug, PartialEq, Props)]
+#[derive(Debug, Clone, PartialEq, Props)]
 pub struct ToggleProps {
 	pub value: ReadOnlySignal<String>,
 	#[props(default = ReadOnlySignal::new(Signal::new(None)))]

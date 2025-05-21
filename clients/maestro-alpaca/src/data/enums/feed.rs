@@ -3,7 +3,7 @@ use {
 	strum_macros::{Display, EnumIter, EnumString},
 };
 
-#[derive(Clone, Copy, Debug, Default, Deserialize, Display, EnumIter, EnumString, Eq, PartialEq, Serialize)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, EnumIter, Display, EnumString)]
 pub enum Feed {
 	/// Use the Investors Exchange (IEX) as the data source.
 	///

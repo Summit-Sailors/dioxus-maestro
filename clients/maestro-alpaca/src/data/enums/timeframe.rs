@@ -3,7 +3,7 @@ use {
 	strum_macros::{Display, EnumIter, EnumString},
 };
 
-#[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum TimeFrameOne {
 	#[serde(rename = "1Min")]
 	Minute,
@@ -14,7 +14,7 @@ pub enum TimeFrameOne {
 	Day,
 }
 
-#[derive(Clone, Copy, Debug, Default, Deserialize, Display, EnumIter, EnumString, Eq, PartialEq, Serialize)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, EnumIter, Display, EnumString)]
 pub enum TimeFrame {
 	#[serde(rename = "1Min")]
 	#[strum(to_string = "1 Minute")]

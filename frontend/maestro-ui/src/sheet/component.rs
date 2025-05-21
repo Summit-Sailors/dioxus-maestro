@@ -1,9 +1,9 @@
 use {
 	crate::shared::{EClass, ERound, ESide, ESize, EVariant},
 	dioxus::prelude::*,
-	dioxus_free_icons::{icons::ld_icons::LdX, Icon},
+	dioxus_free_icons::{Icon, icons::ld_icons::LdX},
 	maestro_headless::dialog::DialogRootProps,
-	tailwind_fuse::{merge::tw_merge, *},
+	tailwind_fuse::*,
 };
 
 #[component]

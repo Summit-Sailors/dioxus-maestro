@@ -1,5 +1,4 @@
 use {
-	dioxus::prelude::*,
 	serde::{Deserialize, Serialize},
 	tailwind_fuse::*,
 };
@@ -12,7 +11,7 @@ pub struct RadioClass {
 	pub size: RadioSize,
 }
 
-#[derive(Debug, Deserialize, strum_macros::Display, strum_macros::EnumIter, strum_macros::EnumString, PartialEq, Serialize, TwVariant)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, strum_macros::EnumIter, strum_macros::Display, strum_macros::EnumString, TwVariant)]
 pub enum RadioSize {
 	#[tw(class = "w-5 h-5")]
 	Sm,
@@ -28,7 +27,7 @@ pub struct RadioIndicatorClass {
 	pub variant: RadioIndicatorVariant,
 }
 
-#[derive(Debug, Deserialize, strum_macros::Display, strum_macros::EnumIter, strum_macros::EnumString, PartialEq, Serialize, TwVariant)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, strum_macros::EnumIter, strum_macros::Display, strum_macros::EnumString, TwVariant)]
 pub enum RadioIndicatorVariant {
 	#[tw(class = "text-primary")]
 	Tick,

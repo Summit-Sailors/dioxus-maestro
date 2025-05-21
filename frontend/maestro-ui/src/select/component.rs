@@ -103,7 +103,7 @@ pub struct SelectValueProps {
 
 #[component]
 pub fn SelectValue(props: SelectValueProps) -> Element {
-	let SelectValueProps { class, placeholder, attributes, children } = props;
+	let SelectValueProps { class, placeholder, attributes, .. } = props;
 
 	rsx! {
 		maestro_headless::select::SelectValue {
@@ -143,8 +143,7 @@ pub struct SelectDropdownProps {
 
 #[component]
 pub fn SelectDropdown(props: SelectDropdownProps) -> Element {
-	let SelectDropdownProps { class, side, side_offset, align, align_offset, avoid_collisions, collision_padding, attributes, extra_attributes, children } =
-		props;
+	let SelectDropdownProps { class, side, side_offset, align, align_offset, avoid_collisions, collision_padding, attributes, children, .. } = props;
 
 	rsx! {
 		maestro_headless::select::SelectDropdown {

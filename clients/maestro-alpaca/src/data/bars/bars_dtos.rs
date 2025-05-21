@@ -8,7 +8,7 @@ use {
 	std::collections::HashMap,
 };
 
-#[derive(bon::Builder, Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, bon::Builder)]
 pub struct BarsSingleRequestDTO {
 	#[builder(default)]
 	pub timeframe: TimeFrame,
@@ -30,7 +30,7 @@ pub struct BarsSingleRequestDTO {
 	pub page_token: Option<String>,
 }
 
-#[derive(bon::Builder, Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, bon::Builder)]
 pub struct BarsMultiRequestDTO {
 	#[serde(flatten)]
 	params: BarsSingleRequestDTO,
@@ -38,7 +38,7 @@ pub struct BarsMultiRequestDTO {
 	symbols: Vec<String>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct NewBar {
 	#[serde(alias = "t")]
 	pub time: DateTime<Utc>,
@@ -58,14 +58,14 @@ pub struct NewBar {
 	pub weighted_average: f32,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BarsDTO {
 	pub bars: Vec<NewBar>,
 	pub symbol: String,
 	pub next_page_token: Option<String>,
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BarsMultiApiDTO {
 	pub bars: HashMap<String, Vec<NewBar>>,
 	pub next_page_token: Option<String>,

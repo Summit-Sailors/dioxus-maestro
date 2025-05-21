@@ -3,7 +3,7 @@ use {
 	std::ops::Not,
 };
 
-#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum SideBSSS {
 	#[serde(rename = "buy")]
 	Buy,
@@ -13,7 +13,7 @@ pub enum SideBSSS {
 	ShortSell,
 }
 
-#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum SideBS {
 	#[serde(rename = "buy")]
 	Buy,
@@ -33,7 +33,7 @@ impl Not for SideBS {
 	}
 }
 
-#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum SideLS {
 	#[serde(rename = "long")]
 	Long,

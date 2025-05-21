@@ -1,5 +1,4 @@
 use {
-	dioxus::prelude::*,
 	serde::{Deserialize, Serialize},
 	tailwind_fuse::*,
 };
@@ -13,7 +12,7 @@ pub struct SwitchClass {
 	pub round: SwitchRound,
 }
 
-#[derive(Debug, Deserialize, strum_macros::Display, strum_macros::EnumIter, strum_macros::EnumString, PartialEq, Serialize, TwVariant)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, strum_macros::EnumIter, strum_macros::Display, strum_macros::EnumString, TwVariant)]
 pub enum SwitchRound {
 	#[tw(class = "rounded-xs")]
 	Sm,
@@ -25,7 +24,7 @@ pub enum SwitchRound {
 	Full,
 }
 
-#[derive(Debug, Deserialize, strum_macros::Display, strum_macros::EnumIter, strum_macros::EnumString, PartialEq, Serialize, TwVariant)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, strum_macros::EnumIter, strum_macros::Display, strum_macros::EnumString, TwVariant)]
 pub enum SwitchSize {
 	#[tw(default, class = "w-8 h-4.5")]
 	Sm,

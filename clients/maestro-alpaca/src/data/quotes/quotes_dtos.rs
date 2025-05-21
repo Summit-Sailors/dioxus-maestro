@@ -4,7 +4,7 @@ use {
 	serde::{Deserialize, Serialize},
 };
 
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct QuotesRequestDTO {
 	pub start: DateTime<Utc>,
 	pub end: DateTime<Utc>,
@@ -16,7 +16,7 @@ pub struct QuotesRequestDTO {
 	pub page_token: Option<String>,
 }
 
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct QuotesDTO {
 	// #[serde(deserialize_with = "vec_from_str")]
 	pub quotes: Vec<QuoteDTO>,

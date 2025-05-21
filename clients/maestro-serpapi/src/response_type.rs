@@ -3,7 +3,7 @@ use {
 	std::collections::HashMap,
 };
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct SearchResponse {
 	#[serde(flatten)]
 	pub metadata: HashMap<String, serde_json::Value>,
@@ -11,7 +11,7 @@ pub struct SearchResponse {
 	pub organic_results: Vec<OrganicResult>,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct OrganicResult {
 	pub position: u32,
 	pub title: String,

@@ -20,7 +20,7 @@ pub struct Event {
 	pub color: Option<String>,
 }
 
-#[derive(bon::Builder, PartialEq)]
+#[derive(PartialEq, bon::Builder)]
 pub struct CalendarDisplayProps {
 	#[builder(default = Signal::new(chrono::Local::now().date_naive().month().into()))]
 	display_month: Signal<ECalendarMonth>,
@@ -68,7 +68,7 @@ impl Clone for CalendarDisplayProps {
 
 impl Copy for CalendarDisplayProps {}
 
-#[derive(bon::Builder, PartialEq)]
+#[derive(PartialEq, bon::Builder)]
 pub struct CalendarSelectProps {
 	#[builder(default = Signal::new(chrono::Local::now().date_naive().month().into()))]
 	selected_month: Signal<ECalendarMonth>,

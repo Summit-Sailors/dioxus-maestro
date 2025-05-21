@@ -1,7 +1,7 @@
 #[cfg(feature = "desktop")]
 use dioxus::prelude::*;
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum ClipboardError {
 	FailedToRead,
 	FailedToSet,

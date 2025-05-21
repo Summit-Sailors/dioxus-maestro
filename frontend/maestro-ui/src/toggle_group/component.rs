@@ -1,7 +1,7 @@
 use {
 	crate::{
 		shared::EOrientation,
-		toggle::{ToggleSize, ToggleVariant},
+		toggle::ToggleSize,
 		toggle_group::{ToggleItemClass, ToggleItemRound, ToggleItemVariant},
 	},
 	dioxus::prelude::*,

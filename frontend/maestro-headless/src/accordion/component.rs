@@ -9,7 +9,7 @@ use {
 	uuid::Uuid,
 };
 
-#[derive(Clone, Copy, Debug, strum_macros::Display, strum_macros::EnumIter, strum_macros::EnumString, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, strum_macros::EnumIter, strum_macros::Display, strum_macros::EnumString)]
 pub enum AccordionVariant {
 	Single,
 	Multiple,
@@ -33,7 +33,7 @@ impl TryFrom<&String> for AccordionVariant {
 	}
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct AccordionItemContext {
 	pub value: Memo<String>,
 	pub open: Memo<bool>,
@@ -47,7 +47,7 @@ impl AccordionItemContext {
 	}
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 struct AccordionContext {
 	pub value: Memo<Vec<String>>,
 	pub set_value: Callback<Vec<String>>,
