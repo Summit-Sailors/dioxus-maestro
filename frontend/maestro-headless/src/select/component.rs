@@ -110,20 +110,20 @@ pub fn SelectRoot(props: SelectRootProps) -> Element {
 	attrs.extend(extra_attributes);
 
 	rsx! {
-		Popper {
-			aria_haspopup: "listbox",
-			aria_expanded: open(),
-			aria_disabled: disabled(),
-			aria_required: required(),
-			"data-disabled": disabled(),
-			"data-required": required(),
-			"data-role": "select",
-			role: "combobox",
-			onmounted: move |event: Event<MountedData>| current_ref.set(Some(event.data())),
-			extra_attributes: attrs.clone(),
-			{children}
-		}
-	}
+    Popper {
+      aria_haspopup: "listbox",
+      aria_expanded: open(),
+      aria_disabled: disabled(),
+      aria_required: required(),
+      "data-disabled": disabled(),
+      "data-required": required(),
+      "data-role": "select",
+      role: "combobox",
+      onmounted: move |event: Event<MountedData>| current_ref.set(Some(event.data())),
+      extra_attributes: attrs.clone(),
+      {children}
+    }
+  }
 }
 
 #[derive(Clone, PartialEq, Props)]
@@ -148,28 +148,28 @@ pub fn SelectTrigger(props: SelectTriggerProps) -> Element {
 	attrs.extend(extra_attributes);
 
 	rsx! {
-		PopperAnchor {
-			Button {
-				id: context.trigger_id.to_string(),
-				disabled: *context.disabled.read(),
-				aria_controls: context.container_id.to_string(),
-				aria_haspopup: "listbox",
-				aria_expanded: *context.open.read(),
-				"data-state": if *context.open.read() { "open" } else { "closed" },
-				r#type: "button",
-				pointer_events: if *context.disabled.read() { "none" } else { "auto" },
-				cursor: if *context.disabled.read() { "" } else { "pointer" },
-				tabindex: if *context.disabled.read() { "-1" } else { "0" },
-				onclick: move |event| {
-						let open = *context.open.peek();
-						onclick.unwrap_or_default().call(event);
-						context.set_open.call(!open);
-				},
-				extra_attributes: attrs.clone(),
-				{children}
-			}
-		}
-	}
+    PopperAnchor {
+      Button {
+        id: context.trigger_id.to_string(),
+        disabled: *context.disabled.read(),
+        aria_controls: context.container_id.to_string(),
+        aria_haspopup: "listbox",
+        aria_expanded: *context.open.read(),
+        "data-state": if *context.open.read() { "open" } else { "closed" },
+        r#type: "button",
+        pointer_events: if *context.disabled.read() { "none" } else { "auto" },
+        cursor: if *context.disabled.read() { "" } else { "pointer" },
+        tabindex: if *context.disabled.read() { "-1" } else { "0" },
+        onclick: move |event| {
+            let open = *context.open.peek();
+            onclick.unwrap_or_default().call(event);
+            context.set_open.call(!open);
+        },
+        extra_attributes: attrs.clone(),
+        {children}
+      }
+    }
+  }
 }
 
 #[derive(Clone, PartialEq, Props)]
@@ -186,36 +186,36 @@ pub fn SelectIcon(props: SelectIconProps) -> Element {
 
 	let icon_down = if let Some(children) = props.children {
 		rsx! {
-			{children}
-		}
+      {children}
+    }
 	} else {
 		rsx! {
-			svg {
-				stroke: "currentColor",
-				fill: "currentColor",
-				stroke_width: "0",
-				view_box: "0 0 512 512",
-				height: "16px",
-				width: "16px",
-				xmlns: "http://www.w3.org/2000/svg",
-				path {
-					fill: "none",
-					stroke_linecap: "round",
-					stroke_linejoin: "round",
-					stroke_width: "48",
-					d: "m112 184 144 144 144-144",
-				}
-			}
-		}
+      svg {
+        stroke: "currentColor",
+        fill: "currentColor",
+        stroke_width: "0",
+        view_box: "0 0 512 512",
+        height: "16px",
+        width: "16px",
+        xmlns: "http://www.w3.org/2000/svg",
+        path {
+          fill: "none",
+          stroke_linecap: "round",
+          stroke_linejoin: "round",
+          stroke_width: "48",
+          d: "m112 184 144 144 144-144",
+        }
+      }
+    }
 	};
 
 	rsx! {
-		span {
-			transform: if *context.open.read() { "rotateX(180deg)" } else { "rotateX(0)" },
-			..props.attributes,
-			{icon_down}
-		}
-	}
+    span {
+      transform: if *context.open.read() { "rotateX(180deg)" } else { "rotateX(0)" },
+      ..props.attributes,
+      {icon_down}
+    }
+  }
 }
 
 #[derive(Clone, PartialEq, Props)]
@@ -239,25 +239,25 @@ pub fn SelectValue(props: SelectValueProps) -> Element {
 	let value = context.value.read().clone();
 	let display_value = if let Some(children) = children {
 		rsx! {
-			{children}
-		}
+      {children}
+    }
 	} else {
 		let v = if *context.multi.read() { value.join(", ") } else { (value.first().unwrap_or(&String::new())).to_string() };
 		rsx! { "{v}" }
 	};
 
 	rsx! {
-		span {
-			"data-state": if !value.is_empty() { "value" } else { "placeholder" },
-			..attributes.clone(),
-			..extra_attributes.clone(),
-			if value.is_empty() {
-				"{placeholder}"
-			} else {
-				{display_value}
-			}
-		}
-	}
+    span {
+      "data-state": if !value.is_empty() { "value" } else { "placeholder" },
+      ..attributes.clone(),
+      ..extra_attributes.clone(),
+      if value.is_empty() {
+        "{placeholder}"
+      } else {
+        {display_value}
+      }
+    }
+  }
 }
 
 #[derive(Clone, PartialEq, Props)]
@@ -312,25 +312,25 @@ pub fn SelectDropdown(props: SelectDropdownProps) -> Element {
 	));
 
 	rsx! {
-		Presence { present: *context.open.read(),
-			PopperContent {
-				role: "listbox",
-				id: context.container_id.to_string(),
-				side,
-				side_offset,
-				align,
-				align_offset,
-				avoid_collisions,
-				collision_padding,
-				aria_labelledby: context.trigger_id.to_string(),
-				aria_hidden: !*context.open.read(),
-				"data-state": if *context.open.read() { "open" } else { "closed" },
-				extra_attributes: attrs.clone(),
-				styled_attributes: styled_attrs.clone(),
-				{children}
-			}
-		}
-	}
+    Presence { present: *context.open.read(),
+      PopperContent {
+        role: "listbox",
+        id: context.container_id.to_string(),
+        side,
+        side_offset,
+        align,
+        align_offset,
+        avoid_collisions,
+        collision_padding,
+        aria_labelledby: context.trigger_id.to_string(),
+        aria_hidden: !*context.open.read(),
+        "data-state": if *context.open.read() { "open" } else { "closed" },
+        extra_attributes: attrs.clone(),
+        styled_attributes: styled_attrs.clone(),
+        {children}
+      }
+    }
+  }
 }
 
 #[derive(Clone, PartialEq, Props)]
@@ -380,29 +380,33 @@ pub fn SelectOption(props: SelectOptionProps) -> Element {
 	});
 
 	rsx! {
-		div {
-			"data-selected": selected(),
-			aria_selected: selected(),
-			"data-role": "option",
-			aria_disabled: disabled(),
-			"data-disabled": disabled(),
-			role: "option",
-			tabindex: if !disabled() { "0" } else { "-1" },
-			pointer_events: if disabled() { "none" } else { "all" },
-			cursor: if disabled() { "auto" } else { "pointer" },
-			onclick: move |_| handle_change(()),
-			onkeydown: move |event| {
-					if event.key() == Key::Enter || event.code() == Code::Space {
-							event.stop_propagation();
-							event.prevent_default();
-							handle_change(());
-					}
-			},
-			..attributes,
-			..extra_attributes,
-			{children}
-		}
-	}
+    div {
+      "data-selected": selected(),
+      aria_selected: selected(),
+      "data-role": "option",
+      aria_disabled: disabled(),
+      "data-disabled": disabled(),
+      role: "option",
+      tabindex: if !disabled() { "0" } else { "-1" },
+      pointer_events: if disabled() { "none" } else { "all" },
+      cursor: if disabled() { "auto" } else { "pointer" },
+      onclick: move |event| {
+          event.stop_propagation();
+          event.prevent_default();
+          handle_change(());
+      },
+      onkeydown: move |event| {
+          if event.key() == Key::Enter || event.code() == Code::Space {
+              event.stop_propagation();
+              event.prevent_default();
+              handle_change(());
+          }
+      },
+      ..attributes,
+      ..extra_attributes,
+      {children}
+    }
+  }
 }
 
 #[derive(Clone, PartialEq, Props)]
@@ -419,39 +423,39 @@ pub fn OptionSelectedIndicator(props: OptionSelectedIndicator) -> Element {
 
 	let indicator = if let Some(children) = props.children {
 		rsx! {
-			{children}
-		}
+      {children}
+    }
 	} else {
 		rsx! {
-			svg {
-				stroke: "currentColor",
-				fill: "currentColor",
-				stroke_width: "0",
-				view_box: "0 0 512 512",
-				height: "16px",
-				width: "16px",
-				xmlns: "http://www.w3.org/2000/svg",
-				path {
-					fill: "none",
-					stroke_linecap: "round",
-					stroke_linejoin: "round",
-					stroke_width: "32",
-					d: "M416 128 192 384l-96-96",
-				}
-			}
-		}
+      svg {
+        stroke: "currentColor",
+        fill: "currentColor",
+        stroke_width: "0",
+        view_box: "0 0 512 512",
+        height: "16px",
+        width: "16px",
+        xmlns: "http://www.w3.org/2000/svg",
+        path {
+          fill: "none",
+          stroke_linecap: "round",
+          stroke_linejoin: "round",
+          stroke_width: "32",
+          d: "M416 128 192 384l-96-96",
+        }
+      }
+    }
 	};
 
 	rsx! {
-		span {
-			width: "fit",
-			height: "fit",
-			hidden: !*context.selected.read(),
-			aria_hidden: !*context.selected.read(),
-			"data-hidden": !*context.selected.read(),
-			"data-role": "indicator",
-			..props.attributes,
-			{indicator}
-		}
-	}
+    span {
+      width: "fit",
+      height: "fit",
+      hidden: !*context.selected.read(),
+      aria_hidden: !*context.selected.read(),
+      "data-hidden": !*context.selected.read(),
+      "data-role": "indicator",
+      ..props.attributes,
+      {indicator}
+    }
+  }
 }

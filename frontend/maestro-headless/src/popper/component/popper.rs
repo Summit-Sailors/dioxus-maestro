@@ -49,17 +49,17 @@ pub fn Popper(props: PopperProps) -> Element {
 	use_context_provider::<PopperContext>(|| PopperContext { anchor });
 
 	rsx! {
-		div {
-			onmounted: move |event| {
-					if let Some(callback) = onmounted {
-							callback.call(event);
-					}
-			},
-			..attributes,
-			..extra_attributes,
-			{children}
-		}
-	}
+    div {
+      onmounted: move |event| {
+          if let Some(callback) = onmounted {
+              callback.call(event);
+          }
+      },
+      ..attributes,
+      ..extra_attributes,
+      {children}
+    }
+  }
 }
 
 #[derive(Clone, PartialEq, Props)]
@@ -110,60 +110,60 @@ pub fn PopperAnchor(props: PopperAnchorProps) -> Element {
 	let mut context = use_context::<PopperContext>();
 
 	rsx! {
-		div {
-			max_width: "max-content",
-			width: "max-content",
-			onclick: move |event| {
-					if let Some(onclick) = onclick {
-							onclick.call(event);
-					}
-			},
-			onmousedown: move |event| {
-					if let Some(handler) = onmousedown {
-							handler.call(event);
-					}
-			},
-			onkeydown: move |event| {
-					if let Some(handler) = onkeydown {
-							handler.call(event);
-					}
-			},
-			onkeyup: move |event| {
-					if let Some(handler) = onkeyup {
-							handler.call(event);
-					}
-			},
-			onmouseup: move |event| {
-					if let Some(handler) = onmouseup {
-							handler.call(event);
-					}
-			},
-			onmouseenter: move |event| {
-					if let Some(handler) = onmouseenter {
-							handler.call(event);
-					}
-			},
-			onmouseleave: move |event| {
-					if let Some(handler) = onmouseleave {
-							handler.call(event);
-					}
-			},
-			onfocus: move |event| {
-					if let Some(handler) = onfocus {
-							handler.call(event);
-					}
-			},
-			onblur: move |event| {
-					if let Some(handler) = onblur {
-							handler.call(event);
-					}
-			},
-			onmounted: move |event| context.anchor.set(Some(event.data())),
-			..attributes,
-			..extra_attributes,
-			{children}
-		}
-	}
+    div {
+      max_width: "max-content",
+      width: "max-content",
+      onclick: move |event| {
+          if let Some(onclick) = onclick {
+              onclick.call(event);
+          }
+      },
+      onmousedown: move |event| {
+          if let Some(handler) = onmousedown {
+              handler.call(event);
+          }
+      },
+      onkeydown: move |event| {
+          if let Some(handler) = onkeydown {
+              handler.call(event);
+          }
+      },
+      onkeyup: move |event| {
+          if let Some(handler) = onkeyup {
+              handler.call(event);
+          }
+      },
+      onmouseup: move |event| {
+          if let Some(handler) = onmouseup {
+              handler.call(event);
+          }
+      },
+      onmouseenter: move |event| {
+          if let Some(handler) = onmouseenter {
+              handler.call(event);
+          }
+      },
+      onmouseleave: move |event| {
+          if let Some(handler) = onmouseleave {
+              handler.call(event);
+          }
+      },
+      onfocus: move |event| {
+          if let Some(handler) = onfocus {
+              handler.call(event);
+          }
+      },
+      onblur: move |event| {
+          if let Some(handler) = onblur {
+              handler.call(event);
+          }
+      },
+      onmounted: move |event| context.anchor.set(Some(event.data())),
+      ..attributes,
+      ..extra_attributes,
+      {children}
+    }
+  }
 }
 
 #[derive(Clone, PartialEq, Props)]
@@ -453,71 +453,71 @@ pub fn PopperContent(props: PopperContentProps) -> Element {
 	));
 
 	rsx! {
-		div {
-			position: floating_styles().style_position(),
-			top: floating_styles().style_top(),
-			left: floating_styles().style_left(),
-			transform: floating_styles()
-					.style_transform()
-					.unwrap_or_else(|| {
-							if is_positioned() {
-									"none".to_string()
-							} else {
-									"translate(0, -200%)".to_string()
-							}
-					}),
-			min_width: "max-content",
-			max_height: "max-content",
-			will_change: "transform",
-			..style_attrs.clone(),
-			FocusTrap {
-				"data-side": format!("{:?}", placed_side).to_lowercase(),
-				"data-align": format!("{:?}", placed_align).to_lowercase(),
-				onmousedown: move |event| {
-						if let Some(handler) = onmousedown {
-								handler.call(event);
-						}
-				},
-				onkeydown: move |event| {
-						if let Some(handler) = onkeydown {
-								handler.call(event);
-						}
-				},
-				onkeyup: move |event| {
-						if let Some(handler) = onkeyup {
-								handler.call(event);
-						}
-				},
-				onmouseup: move |event| {
-						if let Some(handler) = onmouseup {
-								handler.call(event);
-						}
-				},
-				onmouseenter: move |event| {
-						if let Some(handler) = onmouseenter {
-								handler.call(event);
-						}
-				},
-				onmouseleave: move |event| {
-						if let Some(handler) = onmouseleave {
-								handler.call(event);
-						}
-				},
-				onfocus: move |event| {
-						if let Some(handler) = onfocus {
-								handler.call(event);
-						}
-				},
-				onblur: move |event| {
-						if let Some(handler) = onblur {
-								handler.call(event);
-						}
-				},
-				extra_attributes: attrs.clone(),
-				{children.clone()}
-			}
-		}
-	}
+    div {
+      position: if floating_styles().style_position().is_empty() { "fixed" } else { floating_styles().style_position() },
+      top: floating_styles().style_top(),
+      left: floating_styles().style_left(),
+      transform: floating_styles()
+          .style_transform()
+          .unwrap_or_else(|| {
+              if is_positioned() {
+                  "none".to_string()
+              } else {
+                  "translate(0, -200%)".to_string()
+              }
+          }),
+      min_width: "max-content",
+      max_height: "max-content",
+      will_change: "transform",
+      ..style_attrs.clone(),
+      FocusTrap {
+        "data-side": format!("{:?}", placed_side).to_lowercase(),
+        "data-align": format!("{:?}", placed_align).to_lowercase(),
+        onmousedown: move |event| {
+            if let Some(handler) = onmousedown {
+                handler.call(event);
+            }
+        },
+        onkeydown: move |event| {
+            if let Some(handler) = onkeydown {
+                handler.call(event);
+            }
+        },
+        onkeyup: move |event| {
+            if let Some(handler) = onkeyup {
+                handler.call(event);
+            }
+        },
+        onmouseup: move |event| {
+            if let Some(handler) = onmouseup {
+                handler.call(event);
+            }
+        },
+        onmouseenter: move |event| {
+            if let Some(handler) = onmouseenter {
+                handler.call(event);
+            }
+        },
+        onmouseleave: move |event| {
+            if let Some(handler) = onmouseleave {
+                handler.call(event);
+            }
+        },
+        onfocus: move |event| {
+            if let Some(handler) = onfocus {
+                handler.call(event);
+            }
+        },
+        onblur: move |event| {
+            if let Some(handler) = onblur {
+                handler.call(event);
+            }
+        },
+        extra_attributes: attrs.clone(),
+        {children.clone()}
+      }
+    }
+  }
 }
 
 #[derive(Clone, PartialEq, Props)]
@@ -564,27 +564,27 @@ pub fn PopperArrow(props: PopperArrowProps) -> Element {
 	};
 
 	rsx! {
-		span {
-			position: "absolute",
-			transform: arrow_transform,
-			left,
-			top,
-			transform_origin: arrow_transform_origin,
-			if let Some(children) = children {
-				{children}
-			} else {
-				svg {
-					width,
-					height,
-					view_box: "0 0 30 10",
-					style: "display: block",
-					preserve_aspect_ratio: "none",
-					onmounted: move |event| content_context.arrow.set(Some(event.data())),
-					..attributes,
-					..extra_attributes,
-					polygon { points: "0,0 30,0 15,10", fill: "currentColor" }
-				}
-			}
-		}
-	}
+    span {
+      position: "absolute",
+      transform: arrow_transform,
+      left,
+      top,
+      transform_origin: arrow_transform_origin,
+      if let Some(children) = children {
+        {children}
+      } else {
+        svg {
+          width,
+          height,
+          view_box: "0 0 30 10",
+          style: "display: block",
+          preserve_aspect_ratio: "none",
+          onmounted: move |event| content_context.arrow.set(Some(event.data())),
+          ..attributes,
+          ..extra_attributes,
+          polygon { points: "0,0 30,0 15,10", fill: "currentColor" }
+        }
+      }
+    }
+  }
 }
