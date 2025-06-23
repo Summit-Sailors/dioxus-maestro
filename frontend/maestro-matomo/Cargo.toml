@@ -1,0 +1,16 @@
+[package]
+authors = { workspace = true }
+description = { workspace = true }
+edition = { workspace = true }
+license = { workspace = true }
+name = "maestro-matomo"
+repository = { workspace = true }
+
+
+[dependencies]
+dioxus = { workspace = true }
+
+[features]
+default = []
+server = ["dioxus/server"]
+web = ["dioxus/web"]
