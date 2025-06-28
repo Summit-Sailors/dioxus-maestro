@@ -8,11 +8,6 @@ DERIVE_ORDER:="Debug,Default,Error,Clone,Copy,Deref,DerefMut,PartialEq,Eq,Partia
 default:
   @just --choose --justfile {{justfile()}}
 
-clear:
-  #!/usr/bin/env bash
-  set -euo pipefail
-  cargo clean
-  rm -rf .venv *.lock target .venv
 
 sort-d:
   #!/usr/bin/env bash
@@ -23,3 +18,9 @@ chrome-fastapi:
   #!/usr/bin/env bash
   set -euo pipefail
   rye run python chrome-fastapi/chrome_fastapi/server.py
+
+clear:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  cargo clean
+  rm *.lock
