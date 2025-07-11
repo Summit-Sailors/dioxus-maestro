@@ -1,15 +1,17 @@
+#[allow(unused_imports)]
+use apalis_core::backend::BackendExpose;
 use {
-	apalis::postgres::PostgresStorage,
+	apalis_sql::postgres::PostgresStorage,
 	maestro_sqlx::acreate::acreate_sqlx_pool,
-	serde::{de::DeserializeOwned, Serialize},
+	serde::{Serialize, de::DeserializeOwned},
 };
 
 #[bon::builder]
-pub async fn acreate_apalis_storage<T>(db_url: Option<&str>) -> PostgresStorage<T>
+pub async fn acreate_apalis_storage<T>(db_url: &str) -> PostgresStorage<T>
 where
-	T: apalis::prelude::Job + Serialize + DeserializeOwned,
+	T: Serialize + DeserializeOwned,
 {
-	let pool = acreate_sqlx_pool(db_url.unwrap_or(std::env::var("APALIS_DATABASE_URL").unwrap().as_str())).await;
-	PostgresStorage::setup(&pool).await.expect("apalis migrations failed");
+	let pool = acreate_sqlx_pool(db_url).await;
+	PostgresStorage::setup(&pool).await.expect("Apalis migrations failed");
 	PostgresStorage::new(pool)
 }

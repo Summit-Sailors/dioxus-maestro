@@ -1,11 +1,11 @@
 [package]
-authors = { workspace = true }
-description = { workspace = true }
+authors = []
+description = ""
 edition = { workspace = true }
-license = { workspace = true }
+license = ""
 name = "maestro-apalis"
-repository = { workspace = true }
-
+repository = ""
+version = "0.1.0"
 
 [dependencies]
 maestro-sqlx = { path = "../maestro-sqlx" }
@@ -13,8 +13,10 @@ maestro-sqlx = { path = "../maestro-sqlx" }
 bon = { workspace = true }
 serde = { workspace = true }
 
-apalis = { version = "0.5.5", features = ["cron", "postgres"], optional = true }
-tokio = { version = "1.45.0", optional = true }
+apalis = { version = "0.7.2", default-features = false, features = ["limit"], optional = true }
+apalis-core = "0.7.2"
+apalis-sql = { version = "0.7.2", features = ["postgres", "tokio-comp"], optional = true }
+tokio = { version = "1.46.1", optional = true }
 
 dioxus = { workspace = true, features = ["fullstack", "server"], optional = true }
 
@@ -22,4 +24,4 @@ dioxus = { workspace = true, features = ["fullstack", "server"], optional = true
 acreate = ["dep:apalis", "maestro-sqlx/acreate"]
 create = ["acreate", "dep:tokio", "maestro-sqlx/create"]
 dioxus = ["dep:dioxus", "server"]
-server = ["dep:apalis"]
+server = ["dep:apalis", "dep:apalis-sql"]

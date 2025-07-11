@@ -1,6 +1,6 @@
 use {
 	super::AsyncDieselPool,
-	diesel_async::pooled_connection::{deadpool, AsyncDieselConnectionManager},
+	diesel_async::pooled_connection::{AsyncDieselConnectionManager, deadpool},
 };
 
 pub fn acreate_diesel_pool(connection_url: &str) -> AsyncDieselPool {

@@ -1,6 +1,6 @@
 use {
 	super::{dtos::PaginatedResultDTO, paginate::Paginated},
-	diesel::{query_dsl::methods::LoadQuery, PgConnection, QueryResult},
+	diesel::{PgConnection, QueryResult, query_dsl::methods::LoadQuery},
 };
 
 pub trait Paginate: Sized {

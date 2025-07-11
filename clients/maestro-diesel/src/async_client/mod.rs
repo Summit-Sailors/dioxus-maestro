@@ -1,4 +1,4 @@
-use diesel_async::{pooled_connection::deadpool, AsyncPgConnection};
+use diesel_async::{AsyncPgConnection, pooled_connection::deadpool};
 
 pub type AsyncDieselConn = deadpool::Object<AsyncPgConnection>;
 pub type AsyncDieselPool = deadpool::Pool<AsyncPgConnection>;

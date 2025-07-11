@@ -1,6 +1,6 @@
 use diesel::{
-	r2d2::{ConnectionManager, Pool, PooledConnection},
 	PgConnection,
+	r2d2::{ConnectionManager, Pool, PooledConnection},
 };
 
 pub type DieselPool = Pool<ConnectionManager<PgConnection>>;

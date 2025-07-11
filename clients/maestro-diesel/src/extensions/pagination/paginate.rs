@@ -1,9 +1,9 @@
 use {
 	diesel::{
+		PgConnection, QueryResult,
 		pg::Pg,
 		query_builder::{AstPass, Query, QueryFragment, QueryId},
 		sql_types::BigInt,
-		PgConnection, QueryResult,
 	},
 	std::fmt::Debug,
 };

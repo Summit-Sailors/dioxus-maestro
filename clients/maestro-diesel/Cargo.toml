@@ -1,10 +1,11 @@
 [package]
-authors = { workspace = true }
-description = { workspace = true }
+authors = []
+description = ""
 edition = { workspace = true }
-license = { workspace = true }
+license = ""
 name = "maestro-diesel"
-repository = { workspace = true }
+repository = ""
+version = "0.1.0"
 
 
 [dependencies]
@@ -12,10 +13,10 @@ bon = { workspace = true }
 serde = { workspace = true }
 validator = { workspace = true }
 
-diesel = { version = "2.2.10", features = ["chrono", "postgres", "serde_json", "uuid"], optional = true }
-diesel-async = { version = "0.5.2", features = ["deadpool", "pool", "postgres"], optional = true }
+diesel = { version = "2.2.12", features = ["chrono", "postgres", "serde_json", "uuid"], optional = true }
+diesel-async = { version = "0.6.1", features = ["deadpool", "pool", "postgres"], optional = true }
 
-dioxus = { workspace = true, features = ["fullstack"], optional = true }
+dioxus = { version = "0.6.3", features = ["fullstack"], optional = true }
 
 
 [features]

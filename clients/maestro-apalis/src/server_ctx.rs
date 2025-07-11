@@ -1,7 +1,7 @@
 pub use apalis::prelude::Storage;
-use {apalis::postgres::PostgresStorage, dioxus::prelude::*};
+use {apalis_sql::postgres::PostgresStorage, dioxus::prelude::*};
 
-pub async fn apalis_storage_from_ctx<T>() -> Result<apalis::postgres::PostgresStorage<T>, ServerFnError>
+pub async fn apalis_storage_from_ctx<T>() -> Result<PostgresStorage<T>, ServerFnError>
 where
 	T: Sync + Send + 'static,
 {

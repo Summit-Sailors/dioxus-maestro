@@ -1,17 +1,17 @@
 use {
 	crate::acreate::acreate_apalis_storage,
-	apalis::{postgres::PostgresStorage, prelude::Job},
-	serde::{de::DeserializeOwned, Serialize},
+	apalis_sql::postgres::PostgresStorage,
+	serde::{Serialize, de::DeserializeOwned},
 	tokio::runtime::Runtime,
 };
 
-#[bon::builder]
-pub fn create_apalis_storage_sync<T>(db_url: Option<&str>) -> PostgresStorage<T>
+#[bon::builder(derive(Clone))]
+pub fn create_apalis_storage_sync<T>(db_url: &str) -> PostgresStorage<T>
 where
-	T: Job + Serialize + DeserializeOwned,
+	T: Serialize + DeserializeOwned,
 {
 	match tokio::runtime::Handle::try_current() {
-		Ok(handle) => handle.block_on(acreate_apalis_storage().maybe_db_url(db_url).call()),
-		Err(_) => Runtime::new().unwrap().block_on(acreate_apalis_storage().maybe_db_url(db_url).call()),
+		Ok(handle) => handle.block_on(acreate_apalis_storage().db_url(db_url).call()),
+		Err(_) => Runtime::new().unwrap().block_on(acreate_apalis_storage().db_url(db_url).call()),
 	}
 }
